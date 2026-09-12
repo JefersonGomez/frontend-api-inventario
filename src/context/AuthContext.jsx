@@ -31,11 +31,20 @@ const [user, setUser] = useState(() => {
     setToken(null)
     setUser(null)
   }
+  
+  function updateUser(partialData) {
+  setUser((prev) => {
+    const updated = { ...prev, ...partialData }
+    localStorage.setItem("user", JSON.stringify(updated))
+    return updated
+  })
+}
 
   return (
-    <AuthContext.Provider value={{ token, user, login, logout }}>
+   <AuthContext.Provider value={{ token, user, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
+    
   )
 }
 

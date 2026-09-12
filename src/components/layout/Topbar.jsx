@@ -1,6 +1,6 @@
-import { Search, Bell, Menu, LogOut } from "lucide-react"
+import { Search, Bell, Menu, LogOut, User } from "lucide-react"
 import { useNavigate } from "react-router-dom"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -12,6 +12,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useAuth } from "@/context/AuthContext"
+
+const API_URL = "http://localhost:3000"
 
 export function Topbar({ onMenuClick }) {
   const { user, logout } = useAuth()
@@ -49,32 +51,41 @@ export function Topbar({ onMenuClick }) {
           <Bell className="w-4 h-4" />
         </button>
 
-     <DropdownMenu>
-  <DropdownMenuTrigger
-    render={<Button variant="ghost" size="icon" className="rounded-full h-9 w-9 p-0" />}
-  >
-    <Avatar>
-      <AvatarFallback className="bg-primary/20 text-primary text-xs font-medium">
-        {initials || "US"}
-      </AvatarFallback>
-    </Avatar>
-  </DropdownMenuTrigger>
-  <DropdownMenuContent align="end">
-    <DropdownMenuGroup>
-      <DropdownMenuLabel>
-        <p className="font-medium">{user?.name}</p>
-        <p className="text-xs text-muted-foreground font-normal">{user?.email}</p>
-      </DropdownMenuLabel>
-    </DropdownMenuGroup>
-    <DropdownMenuSeparator />
-    <DropdownMenuGroup>
-      <DropdownMenuItem onClick={handleLogout}>
-        <LogOut className="w-4 h-4 mr-2" />
-        Cerrar sesión
-      </DropdownMenuItem>
-    </DropdownMenuGroup>
-  </DropdownMenuContent>
-</DropdownMenu>
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            render={<Button variant="ghost" size="icon" className="rounded-full h-9 w-9 p-0" />}
+          >
+            <Avatar>
+              {user?.avatarUrl && (
+                <AvatarImage src={`${API_URL}${user.avatarUrl}`} alt={user.name} />
+              )}
+              <AvatarFallback className="bg-primary/20 text-primary text-xs font-medium">
+                {initials || "US"}
+              </AvatarFallback>
+            </Avatar>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuGroup>
+              <DropdownMenuLabel>
+                <p className="font-medium">{user?.name}</p>
+                <p className="text-xs text-muted-foreground font-normal">{user?.email}</p>
+              </DropdownMenuLabel>
+            </DropdownMenuGroup>
+            <DropdownMenuGroup>
+              <DropdownMenuItem onClick={() => navigate("/profile")}>
+                <User className="w-4 h-4 mr-2" />
+                Mi perfil
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuItem onClick={handleLogout}>
+                <LogOut className="w-4 h-4 mr-2" />
+                Cerrar sesión
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   )

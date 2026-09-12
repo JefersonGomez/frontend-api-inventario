@@ -8,6 +8,7 @@ import { Reports } from "@/pages/Reports"
 import { Login } from "@/pages/Login"
 import { ProtectedRoute } from "@/routes/ProtectedRoute"
 import { Register } from "@/pages/Register"
+import { Profile } from "@/pages/Profile"
 const router = createBrowserRouter([
   {
     path: "/login",
@@ -27,6 +28,7 @@ const router = createBrowserRouter([
       { path: "categories", element: <Categories /> },
       { path: "movements", element: <Movements /> },
       { path: "reports", element: <Reports /> },
+      { path: "profile", element: <Profile /> },
     ],
   },
 ])
