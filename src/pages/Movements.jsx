@@ -1,8 +1,8 @@
 import { useState } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { useTranslation } from "react-i18next" // 1. Importar hook
+import { useTranslation } from "react-i18next"
 import { getMovements, createMovement } from "@/api/movements"
-import { getProducts } from "@/api/products"
+import { getProducts, getProductByBarcode } from "@/api/products" // Importar nueva función
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -17,14 +17,16 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
 import { Plus, ArrowDownCircle, ArrowUpCircle, RotateCcw } from "lucide-react"
+import { BarcodeScanner } from "@/components/BarcodeScanner" // Importar componente reutilizable
 
 const emptyForm = { productId: "", type: "IN", quantity: "", reason: "" }
 
 export function Movements() {
-  const { t } = useTranslation() // 2. Llamar al hook
+  const { t } = useTranslation()
   const queryClient = useQueryClient()
   const [dialogOpen, setDialogOpen] = useState(false)
   const [form, setForm] = useState(emptyForm)
+  const [isSearching, setIsSearching] = useState(false) // Estado para feedback visual
 
   const movementsQuery = useQuery({ queryKey: ["movements"], queryFn: getMovements })
   const productsQuery = useQuery({ queryKey: ["products"], queryFn: getProducts })
@@ -50,6 +52,23 @@ export function Movements() {
     createMutation.mutate()
   }
 
+  // Lógica principal del escáner en movimientos
+  const handleScan = async (code) => {
+    setIsSearching(true)
+    try {
+      const product = await getProductByBarcode(code)
+      if (product) {
+        setForm((prev) => ({ ...prev, productId: product.id }))
+      } else {
+        alert(t("movements.dialog.product_not_found"))
+      }
+    } catch (error) {
+      alert(t("movements.dialog.product_not_found"),error)
+    } finally {
+      setIsSearching(false)
+    }
+  }
+
   // Configuración de tipos traducida
   const typeConfig = {
     IN: { label: t("movements.types.in"), variant: "default", icon: ArrowDownCircle },
@@ -61,7 +80,6 @@ export function Movements() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          {/* 3. Reemplazar texto por t() */}
           <h1 className="text-2xl font-semibold">{t("movements.title")}</h1>
           <p className="text-sm text-muted-foreground">{t("movements.subtitle")}</p>
         </div>
@@ -124,23 +142,36 @@ export function Movements() {
               <DialogTitle>{t("movements.dialog.title")}</DialogTitle>
             </DialogHeader>
 
+            {/* CAMPO DE PRODUCTO CON ESCÁNER INTEGRADO */}
             <div className="space-y-2">
               <Label>{t("movements.dialog.label_product")}</Label>
-              <Select
-                value={form.productId}
-                onValueChange={(value) => setForm({ ...form, productId: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder={t("movements.dialog.placeholder_product")} />
-                </SelectTrigger>
-                <SelectContent>
-                  {productsQuery.data?.map((p) => (
-                    <SelectItem key={p.id} value={p.id}>
-                      {p.name} ({p.sku})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="flex gap-2">
+                <Select
+                  value={form.productId}
+                  onValueChange={(value) => setForm({ ...form, productId: value })}
+                  disabled={isSearching}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={t("movements.dialog.placeholder_product")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {productsQuery.data?.map((p) => (
+                      <SelectItem key={p.id} value={p.id}>
+                        {p.name} ({p.sku})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                
+                {/* Botón de escaneo integrado */}
+                <BarcodeScanner onScan={handleScan} />
+              </div>
+              
+              {isSearching && (
+                <p className="text-xs text-muted-foreground animate-pulse">
+                  {t("movements.dialog.scanning")}...
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -190,7 +221,7 @@ export function Movements() {
             )}
 
             <DialogFooter>
-              <Button type="submit" disabled={createMutation.isPending}>
+              <Button type="submit" disabled={createMutation.isPending || isSearching || !form.productId}>
                 {createMutation.isPending ? t("common.saving") : t("movements.dialog.submit")}
               </Button>
             </DialogFooter>

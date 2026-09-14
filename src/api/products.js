@@ -18,3 +18,8 @@ export async function deleteProduct(id) {
   const response = await api.delete(`/products/${id}`)
   return response.data
 }
+
+export async function getProductByBarcode(code) {
+  const response = await api.get(`/products/barcode/${code}`)
+  return response.data
+}

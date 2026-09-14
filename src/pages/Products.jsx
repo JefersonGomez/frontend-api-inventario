@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { useTranslation } from "react-i18next" // 1. Importar hook
+import { useTranslation } from "react-i18next"
 import { getProducts, createProduct, updateProduct, deleteProduct } from "@/api/products"
 import { getCategories } from "@/api/categories"
 import { Button } from "@/components/ui/button"
@@ -21,11 +21,21 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
 import { Plus, Pencil, Trash2 } from "lucide-react"
+import { BarcodeScanner } from "@/components/BarcodeScanner" // Importar el escáner
 
-const emptyForm = { sku: "", name: "", description: "", price: "", stock: "", minStock: "", categoryId: "" }
+const emptyForm = { 
+  sku: "", 
+  barcode: "", // Agregado
+  name: "", 
+  description: "", 
+  price: "", 
+  stock: "", 
+  minStock: "", 
+  categoryId: "" 
+}
 
 export function Products() {
-  const { t } = useTranslation() // 2. Llamar al hook
+  const { t } = useTranslation()
   const queryClient = useQueryClient()
 
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -43,6 +53,7 @@ export function Products() {
         price: Number(form.price),
         stock: Number(form.stock),
         minStock: Number(form.minStock),
+        // barcode ya viene en form
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] })
@@ -54,6 +65,7 @@ export function Products() {
     mutationFn: () =>
       updateProduct(editingProduct.id, {
         name: form.name,
+        barcode: form.barcode, // Agregado
         description: form.description,
         price: Number(form.price),
         minStock: Number(form.minStock),
@@ -83,6 +95,7 @@ export function Products() {
     setEditingProduct(product)
     setForm({
       sku: product.sku,
+      barcode: product.barcode || "", // Cargar barcode existente
       name: product.name,
       description: product.description ?? "",
       price: String(product.price),
@@ -114,13 +127,17 @@ export function Products() {
     }
   }
 
+  // Función para manejar el resultado del escaneo
+  const handleScan = (code) => {
+    setForm((prev) => ({ ...prev, barcode: code }))
+  }
+
   const isSaving = createMutation.isPending || updateMutation.isPending
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          {/* 3. Reemplazar texto por t() */}
           <h1 className="text-2xl font-semibold">{t("products.title")}</h1>
           <p className="text-sm text-muted-foreground">{t("products.subtitle")}</p>
         </div>
@@ -195,6 +212,19 @@ export function Products() {
                 />
               </div>
             )}
+
+            {/* NUEVO CAMPO: Código de Barras con Escáner */}
+            <div className="space-y-2">
+              <Label>{t("products.dialog.label_barcode")}</Label>
+              <div className="flex gap-2">
+                <Input
+                  value={form.barcode}
+                  onChange={(e) => setForm({ ...form, barcode: e.target.value })}
+                  placeholder="Escanea o escribe aquí"
+                />
+                <BarcodeScanner onScan={handleScan} />
+              </div>
+            </div>
 
             <div className="space-y-2">
               <Label>{t("products.dialog.label_name")}</Label>
