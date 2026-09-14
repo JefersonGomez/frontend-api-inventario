@@ -1,16 +1,25 @@
 import { LayoutDashboard, Package, FolderTree, ArrowLeftRight, BarChart3 } from "lucide-react"
 import { NavLink } from "react-router-dom"
+import { useTranslation } from "react-i18next"
 import { cn } from "@/lib/utils"
-
-const navItems = [
-  { to: "/", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/products", label: "Productos", icon: Package },
-  { to: "/categories", label: "Categorías", icon: FolderTree },
-  { to: "/movements", label: "Movimientos", icon: ArrowLeftRight },
-  { to: "/reports", label: "Reportes", icon: BarChart3 },
-]
-
+import { Settings as SettingsIcon } from "lucide-react"
+import { Users as UsersIcon } from "lucide-react"
+import { useAuth } from "@/context/AuthContext"
 export function Sidebar({ className }) {
+  const { t } = useTranslation()
+  const { user } = useAuth()
+  const navItems = [
+    { to: "/", label: t("sidebar.dashboard"), icon: LayoutDashboard },
+    { to: "/products", label: t("sidebar.products"), icon: Package },
+    { to: "/categories", label: t("sidebar.categories"), icon: FolderTree },
+    { to: "/movements", label: t("sidebar.movements"), icon: ArrowLeftRight },
+    { to: "/reports", label: t("sidebar.reports"), icon: BarChart3 },
+    ...(user?.role === "ADMIN"
+    ? [{ to: "/users", label: t("sidebar.users", "Empleados"), icon: UsersIcon }]
+    : []),
+    { to: "/settings", label: t("sidebar.settings", "Configuración"), icon: SettingsIcon },
+  ]
+
   return (
     <aside className={cn("flex flex-col justify-between bg-[#100E1F] w-64 min-h-screen p-4", className)}>
       <div>
@@ -22,7 +31,7 @@ export function Sidebar({ className }) {
         </div>
 
         <p className="text-xs uppercase tracking-wide text-muted-foreground px-2 mb-2">
-          Menú principal
+          {t("sidebar.mainMenu", "Menú principal")}
         </p>
         <nav className="flex flex-col gap-1 text-sm">
           {navItems.map(({ to, label, icon: Icon }) => (

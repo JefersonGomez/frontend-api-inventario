@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
+import { useTranslation } from "react-i18next" // 1. Importar hook
 import { getLowStockReport, getInventoryValueReport, getMovementsReport } from "@/api/reports"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -9,13 +10,8 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table"
 
-const typeLabels = {
-  IN: { label: "Entrada", variant: "default" },
-  OUT: { label: "Salida", variant: "destructive" },
-  ADJUSTMENT: { label: "Ajuste", variant: "secondary" },
-}
-
 export function Reports() {
+  const { t } = useTranslation() // 2. Llamar al hook
   const [from, setFrom] = useState("")
   const [to, setTo] = useState("")
 
@@ -34,18 +30,26 @@ export function Reports() {
     queryFn: () => getMovementsReport(from || undefined, to || undefined),
   })
 
+  // Configuración de tipos traducida dinámicamente
+  const typeLabels = {
+    IN: { label: t("reports.types.in"), variant: "default" },
+    OUT: { label: t("reports.types.out"), variant: "destructive" },
+    ADJUSTMENT: { label: t("reports.types.adjustment"), variant: "secondary" },
+  }
+
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold">Reportes</h1>
-        <p className="text-sm text-muted-foreground">Visión general del estado del inventario</p>
+        {/* 3. Reemplazar texto por t() */}
+        <h1 className="text-2xl font-semibold">{t("reports.title")}</h1>
+        <p className="text-sm text-muted-foreground">{t("reports.subtitle")}</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Card>
           <CardHeader>
             <CardTitle className="text-sm font-normal text-muted-foreground">
-              Valor total del inventario
+              {t("reports.cards.total_value_title")}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -53,7 +57,7 @@ export function Reports() {
               ${inventoryValueQuery.data?.totalValue?.toLocaleString() ?? "..."}
             </p>
             <p className="text-xs text-muted-foreground mt-1">
-              {inventoryValueQuery.data?.totalProducts ?? 0} productos en catálogo
+              {inventoryValueQuery.data?.totalProducts ?? 0} {t("reports.cards.products_in_catalog")}
             </p>
           </CardContent>
         </Card>
@@ -61,36 +65,36 @@ export function Reports() {
         <Card>
           <CardHeader>
             <CardTitle className="text-sm font-normal text-muted-foreground">
-              Productos con stock bajo
+              {t("reports.cards.low_stock_title")}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-semibold">{lowStockQuery.data?.length ?? "..."}</p>
-            <p className="text-xs text-muted-foreground mt-1">requieren reposición</p>
+            <p className="text-xs text-muted-foreground mt-1">{t("reports.cards.require_restock")}</p>
           </CardContent>
         </Card>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Stock bajo — detalle</CardTitle>
+          <CardTitle>{t("reports.tables.low_stock_detail_title")}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="border border-border rounded-lg overflow-hidden overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>SKU</TableHead>
-                  <TableHead>Producto</TableHead>
-                  <TableHead>Stock actual</TableHead>
-                  <TableHead>Stock mínimo</TableHead>
+                  <TableHead>{t("reports.tables.sku")}</TableHead>
+                  <TableHead>{t("reports.tables.product")}</TableHead>
+                  <TableHead>{t("reports.tables.current_stock")}</TableHead>
+                  <TableHead>{t("reports.tables.min_stock")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {lowStockQuery.data?.length === 0 && (
                   <TableRow>
                     <TableCell colSpan={4} className="text-center text-muted-foreground">
-                      No hay productos con stock bajo. 🎉
+                      {t("reports.messages.no_low_stock")}
                     </TableCell>
                   </TableRow>
                 )}
@@ -112,16 +116,16 @@ export function Reports() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Movimientos por rango de fechas</CardTitle>
+          <CardTitle>{t("reports.tables.movements_by_date_title")}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col sm:flex-row gap-3 mb-4">
             <div className="space-y-1">
-              <Label className="text-xs">Desde</Label>
+              <Label className="text-xs">{t("reports.filters.from")}</Label>
               <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
             </div>
             <div className="space-y-1">
-              <Label className="text-xs">Hasta</Label>
+              <Label className="text-xs">{t("reports.filters.to")}</Label>
               <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} />
             </div>
           </div>
@@ -130,17 +134,17 @@ export function Reports() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Fecha</TableHead>
-                  <TableHead>Producto</TableHead>
-                  <TableHead>Tipo</TableHead>
-                  <TableHead>Cantidad</TableHead>
+                  <TableHead>{t("reports.tables.date")}</TableHead>
+                  <TableHead>{t("reports.tables.product")}</TableHead>
+                  <TableHead>{t("reports.tables.type")}</TableHead>
+                  <TableHead>{t("reports.tables.quantity")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {movementsReportQuery.isLoading && (
                   <TableRow>
                     <TableCell colSpan={4} className="text-center text-muted-foreground">
-                      Cargando...
+                      {t("common.loading")}
                     </TableCell>
                   </TableRow>
                 )}

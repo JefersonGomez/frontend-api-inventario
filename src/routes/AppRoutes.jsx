@@ -9,11 +9,22 @@ import { Login } from "@/pages/Login"
 import { ProtectedRoute } from "@/routes/ProtectedRoute"
 import { Register } from "@/pages/Register"
 import { Profile } from "@/pages/Profile"
+import { Settings } from "@/pages/Settings"
+import {Users}from "@/pages/Users"
+import { AdminRoute } from "./AdminRoute"
 const router = createBrowserRouter([
   {
     path: "/login",
     element: <Login />,
   },
+  {
+  path: "users",
+  element: (
+    <AdminRoute>
+      <Users />
+    </AdminRoute>
+  ),
+},
    { path: "/register", element: <Register /> },
   {
     path: "/",
@@ -29,6 +40,8 @@ const router = createBrowserRouter([
       { path: "movements", element: <Movements /> },
       { path: "reports", element: <Reports /> },
       { path: "profile", element: <Profile /> },
+      {path:"settings", element:<Settings/>},
+      { path: "users", element: <Users /> },
     ],
   },
 ])

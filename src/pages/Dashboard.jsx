@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
+import { useTranslation } from "react-i18next" // 1. Importar hook
 import { getProducts } from "@/api/products"
 import { getLowStockReport, getInventoryValueReport } from "@/api/reports"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -7,6 +8,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Package, AlertTriangle, DollarSign } from "lucide-react"
 
 export function Dashboard() {
+  const { t } = useTranslation() // 2. Llamar al hook
+
   const productsQuery = useQuery({
     queryKey: ["products"],
     queryFn: getProducts,
@@ -25,15 +28,16 @@ export function Dashboard() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold">Dashboard</h1>
-        <p className="text-sm text-muted-foreground">Resumen del inventario de hoy</p>
+        {/* 3. Reemplazar texto por t() */}
+        <h1 className="text-2xl font-semibold">{t("dashboard.title")}</h1>
+        <p className="text-sm text-muted-foreground">{t("dashboard.subtitle")}</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-normal text-muted-foreground">
-              Total productos
+              {t("dashboard.cards.total_products")}
             </CardTitle>
             <Package className="w-4 h-4 text-muted-foreground" />
           </CardHeader>
@@ -49,7 +53,7 @@ export function Dashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-normal text-muted-foreground">
-              Stock bajo
+              {t("dashboard.cards.low_stock")}
             </CardTitle>
             <AlertTriangle className="w-4 h-4 text-amber-400" />
           </CardHeader>
@@ -65,7 +69,7 @@ export function Dashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-normal text-muted-foreground">
-              Valor del inventario
+              {t("dashboard.cards.inventory_value")}
             </CardTitle>
             <DollarSign className="w-4 h-4 text-muted-foreground" />
           </CardHeader>
@@ -83,17 +87,17 @@ export function Dashboard() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Productos con stock bajo</CardTitle>
+          <CardTitle>{t("dashboard.low_stock_table.title")}</CardTitle>
         </CardHeader>
         <CardContent>
-          {lowStockQuery.isLoading && <p className="text-sm text-muted-foreground">Cargando...</p>}
+          {lowStockQuery.isLoading && <p className="text-sm text-muted-foreground">{t("common.loading")}</p>}
 
           {lowStockQuery.isError && (
-            <p className="text-sm text-destructive">No se pudieron cargar los datos.</p>
+            <p className="text-sm text-destructive">{t("common.error_loading")}</p>
           )}
 
           {lowStockQuery.data?.length === 0 && (
-            <p className="text-sm text-muted-foreground">No hay productos con stock bajo. 🎉</p>
+            <p className="text-sm text-muted-foreground">{t("dashboard.low_stock_table.empty")}</p>
           )}
 
           {lowStockQuery.data?.length > 0 && (
@@ -111,7 +115,7 @@ export function Dashboard() {
                     <span className="text-muted-foreground">
                       {product.stock} / {product.minStock}
                     </span>
-                    <Badge variant="destructive">Bajo</Badge>
+                    <Badge variant="destructive">{t("dashboard.badges.low")}</Badge>
                   </div>
                 </div>
               ))}

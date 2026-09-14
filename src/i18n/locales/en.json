@@ -1,0 +1,229 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "saving": "Saving...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "deleting": "Deleting...",
+    "edit": "Edit",
+    "updating": "Updating...",
+    "error_loading": "Could not load data."
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "products": "Products",
+    "categories": "Categories",
+    "movements": "Movements",
+    "reports": "Reports",
+    "settings": "Settings"
+  },
+  "topbar": {
+    "search": "Search product...",
+    "profile": "My profile",
+    "logout": "Log out"
+  },
+  "auth": {
+    "login": {
+      "title": "Sign in",
+      "subtitle": "Access your InventarioPro account",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign in",
+      "submitting": "Signing in...",
+      "error": "Invalid credentials. Try again.",
+      "noAccount": "Don't have an account?",
+      "register": "Sign up"
+    },
+    "register": {
+      "title": "Create account",
+      "subtitle": "Sign up for InventarioPro",
+      "name": "Name",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Create account",
+      "submitting": "Creating account...",
+      "hasAccount": "Already have an account?",
+      "login": "Sign in",
+      "errors": {
+        "validation": "Please check the entered data.",
+        "creation_failed": "Could not create account. Try another email."
+      }
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Today's inventory summary",
+    "cards": {
+      "total_products": "Total Products",
+      "low_stock": "Low Stock",
+      "inventory_value": "Inventory Value"
+    },
+    "low_stock_table": {
+      "title": "Low Stock Products",
+      "empty": "No low stock products. 🎉"
+    },
+    "badges": {
+      "low": "Low"
+    }
+  },
+  "products": {
+    "title": "Products",
+    "subtitle": "Manage your product catalog",
+    "new_button": "New Product",
+    "table": {
+      "sku": "SKU",
+      "name": "Name",
+      "category": "Category",
+      "price": "Price",
+      "stock": "Stock",
+      "actions": "Actions"
+    },
+    "dialog": {
+      "create_title": "New Product",
+      "edit_title": "Edit Product",
+      "label_sku": "SKU",
+      "label_name": "Name",
+      "label_description": "Description",
+      "label_price": "Price",
+      "label_initial_stock": "Initial Stock",
+      "label_min_stock": "Min Stock",
+      "label_category": "Category",
+      "placeholder_category": "Select a category"
+    },
+    "delete": {
+      "title": "Delete this product?",
+      "description": "This action cannot be undone. \"{{name}}\" will be permanently deleted."
+    }
+  },
+  "categories": {
+    "title": "Categories",
+    "subtitle": "Organize your products by category",
+    "new_button": "New Category",
+    "table": {
+      "name": "Name",
+      "actions": "Actions"
+    },
+    "dialog": {
+      "create_title": "New Category",
+      "edit_title": "Edit Category",
+      "label_name": "Name"
+    },
+    "delete": {
+      "title": "Delete this category?",
+      "description": "This action cannot be undone. \"{{name}}\" will be permanently deleted."
+    }
+  },
+  "movements": {
+    "title": "Movements",
+    "subtitle": "History of stock entries, exits, and adjustments",
+    "new_button": "New Movement",
+    "types": {
+      "in": "Entry",
+      "out": "Exit",
+      "adjustment": "Adjustment",
+      "adjustment_full": "Adjustment (final value)"
+    },
+    "table": {
+      "date": "Date",
+      "product": "Product",
+      "type": "Type",
+      "quantity": "Quantity",
+      "user": "User",
+      "reason": "Reason"
+    },
+    "dialog": {
+      "title": "New Stock Movement",
+      "label_product": "Product",
+      "placeholder_product": "Select a product",
+      "label_type": "Movement Type",
+      "label_quantity": "Quantity",
+      "label_quantity_final": "Final Quantity (physical count)",
+      "label_reason": "Reason (optional)",
+      "submit": "Register Movement"
+    },
+    "errors": {
+      "save_failed": "Could not register movement."
+    }
+  },
+  "reports": {
+    "title": "Reports",
+    "subtitle": "Overview of inventory status",
+    "cards": {
+      "total_value_title": "Total Inventory Value",
+      "products_in_catalog": "products in catalog",
+      "low_stock_title": "Low Stock Products",
+      "require_restock": "require restocking"
+    },
+    "tables": {
+      "low_stock_detail_title": "Low Stock — Details",
+      "sku": "SKU",
+      "product": "Product",
+      "current_stock": "Current Stock",
+      "min_stock": "Min Stock",
+      "movements_by_date_title": "Movements by Date Range",
+      "date": "Date",
+      "type": "Type",
+      "quantity": "Quantity"
+    },
+    "filters": {
+      "from": "From",
+      "to": "To"
+    },
+    "types": {
+      "in": "Entry",
+      "out": "Exit",
+      "adjustment": "Adjustment"
+    },
+    "messages": {
+      "no_low_stock": "No low stock products. 🎉"
+    }
+  },
+  "profile": {
+    "title": "My profile",
+    "subtitle": "Manage your information and security",
+    "changePhoto": "Change photo",
+    "uploading_image": "Uploading image...",
+    "not_specified": "Not specified",
+    "roles": {
+      "admin": "Administrator",
+      "employee": "Employee"
+    },
+    "tabs": {
+      "info": "Information",
+      "security": "Security"
+    },
+    "info_card_title": "Personal Data",
+    "security_card_title": "Change Password",
+    "labels": {
+      "name": "Name",
+      "full_name": "Full Name",
+      "email": "Email",
+      "current_password": "Current password",
+      "new_password": "New password"
+    },
+    "placeholders": {
+      "min_chars": "Minimum 6 characters"
+    },
+    "buttons": {
+      "change_password": "Change password"
+    },
+    "errors": {
+      "update_failed": "Could not update profile.",
+      "password_failed": "Could not change password."
+    },
+    "success": {
+      "updated": "Profile updated successfully",
+      "password_updated": "Password updated successfully"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Customize your InventarioPro experience",
+    "appearance": "Appearance",
+    "theme": "Theme",
+    "themeDescription": "Choose the visual theme of the application",
+    "language": "Language",
+    "languageDescription": "Choose the interface language"
+  }
+}

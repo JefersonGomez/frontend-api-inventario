@@ -1,0 +1,229 @@
+{
+  "common": {
+    "loading": "Cargando...",
+    "saving": "Guardando...",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "deleting": "Eliminando...",
+    "edit": "Editar",
+    "updating": "Actualizando...",
+    "error_loading": "No se pudieron cargar los datos."
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "products": "Productos",
+    "categories": "Categorías",
+    "movements": "Movimientos",
+    "reports": "Reportes",
+    "settings": "Configuración"
+  },
+  "topbar": {
+    "search": "Buscar producto...",
+    "profile": "Mi perfil",
+    "logout": "Cerrar sesión"
+  },
+  "auth": {
+    "login": {
+      "title": "Iniciar sesión",
+      "subtitle": "Accede a tu cuenta de InventarioPro",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "submit": "Ingresar",
+      "submitting": "Ingresando...",
+      "error": "Credenciales inválidas. Intenta de nuevo.",
+      "noAccount": "¿No tienes cuenta?",
+      "register": "Regístrate"
+    },
+    "register": {
+      "title": "Crear cuenta",
+      "subtitle": "Regístrate en InventarioPro",
+      "name": "Nombre",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "submit": "Crear cuenta",
+      "submitting": "Creando cuenta...",
+      "hasAccount": "¿Ya tienes cuenta?",
+      "login": "Inicia sesión",
+      "errors": {
+        "validation": "Revisa los datos ingresados.",
+        "creation_failed": "No se pudo crear la cuenta. Intenta con otro correo."
+      }
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Resumen del inventario de hoy",
+    "cards": {
+      "total_products": "Total productos",
+      "low_stock": "Stock bajo",
+      "inventory_value": "Valor del inventario"
+    },
+    "low_stock_table": {
+      "title": "Productos con stock bajo",
+      "empty": "No hay productos con stock bajo. 🎉"
+    },
+    "badges": {
+      "low": "Bajo"
+    }
+  },
+  "products": {
+    "title": "Productos",
+    "subtitle": "Gestiona tu catálogo de productos",
+    "new_button": "Nuevo producto",
+    "table": {
+      "sku": "SKU",
+      "name": "Nombre",
+      "category": "Categoría",
+      "price": "Precio",
+      "stock": "Stock",
+      "actions": "Acciones"
+    },
+    "dialog": {
+      "create_title": "Nuevo producto",
+      "edit_title": "Editar producto",
+      "label_sku": "SKU",
+      "label_name": "Nombre",
+      "label_description": "Descripción",
+      "label_price": "Precio",
+      "label_initial_stock": "Stock inicial",
+      "label_min_stock": "Stock mínimo",
+      "label_category": "Categoría",
+      "placeholder_category": "Selecciona una categoría"
+    },
+    "delete": {
+      "title": "¿Eliminar este producto?",
+      "description": "Esta acción no se puede deshacer. \"{{name}}\" se eliminará permanentemente."
+    }
+  },
+  "categories": {
+    "title": "Categorías",
+    "subtitle": "Organiza tus productos por categoría",
+    "new_button": "Nueva categoría",
+    "table": {
+      "name": "Nombre",
+      "actions": "Acciones"
+    },
+    "dialog": {
+      "create_title": "Nueva categoría",
+      "edit_title": "Editar categoría",
+      "label_name": "Nombre"
+    },
+    "delete": {
+      "title": "¿Eliminar esta categoría?",
+      "description": "Esta acción no se puede deshacer. \"{{name}}\" se eliminará permanentemente."
+    }
+  },
+  "movements": {
+    "title": "Movimientos",
+    "subtitle": "Historial de entradas, salidas y ajustes de stock",
+    "new_button": "Nuevo movimiento",
+    "types": {
+      "in": "Entrada",
+      "out": "Salida",
+      "adjustment": "Ajuste",
+      "adjustment_full": "Ajuste (valor final)"
+    },
+    "table": {
+      "date": "Fecha",
+      "product": "Producto",
+      "type": "Tipo",
+      "quantity": "Cantidad",
+      "user": "Usuario",
+      "reason": "Motivo"
+    },
+    "dialog": {
+      "title": "Nuevo movimiento de stock",
+      "label_product": "Producto",
+      "placeholder_product": "Selecciona un producto",
+      "label_type": "Tipo de movimiento",
+      "label_quantity": "Cantidad",
+      "label_quantity_final": "Cantidad final (conteo físico)",
+      "label_reason": "Motivo (opcional)",
+      "submit": "Registrar movimiento"
+    },
+    "errors": {
+      "save_failed": "No se pudo registrar el movimiento."
+    }
+  },
+  "reports": {
+    "title": "Reportes",
+    "subtitle": "Visión general del estado del inventario",
+    "cards": {
+      "total_value_title": "Valor total del inventario",
+      "products_in_catalog": "productos en catálogo",
+      "low_stock_title": "Productos con stock bajo",
+      "require_restock": "requieren reposición"
+    },
+    "tables": {
+      "low_stock_detail_title": "Stock bajo — detalle",
+      "sku": "SKU",
+      "product": "Producto",
+      "current_stock": "Stock actual",
+      "min_stock": "Stock mínimo",
+      "movements_by_date_title": "Movimientos por rango de fechas",
+      "date": "Fecha",
+      "type": "Tipo",
+      "quantity": "Cantidad"
+    },
+    "filters": {
+      "from": "Desde",
+      "to": "Hasta"
+    },
+    "types": {
+      "in": "Entrada",
+      "out": "Salida",
+      "adjustment": "Ajuste"
+    },
+    "messages": {
+      "no_low_stock": "No hay productos con stock bajo. 🎉"
+    }
+  },
+  "profile": {
+    "title": "Mi perfil",
+    "subtitle": "Administra tu información y seguridad",
+    "changePhoto": "Cambiar foto",
+    "uploading_image": "Subiendo imagen...",
+    "not_specified": "No especificado",
+    "roles": {
+      "admin": "Administrador",
+      "employee": "Empleado"
+    },
+    "tabs": {
+      "info": "Información",
+      "security": "Seguridad"
+    },
+    "info_card_title": "Datos Personales",
+    "security_card_title": "Cambiar Contraseña",
+    "labels": {
+      "name": "Nombre",
+      "full_name": "Nombre Completo",
+      "email": "Email",
+      "current_password": "Contraseña actual",
+      "new_password": "Nueva contraseña"
+    },
+    "placeholders": {
+      "min_chars": "Mínimo 6 caracteres"
+    },
+    "buttons": {
+      "change_password": "Cambiar contraseña"
+    },
+    "errors": {
+      "update_failed": "No se pudo actualizar el perfil.",
+      "password_failed": "No se pudo cambiar la contraseña."
+    },
+    "success": {
+      "updated": "Perfil actualizado correctamente",
+      "password_updated": "Contraseña actualizada exitosamente"
+    }
+  },
+  "settings": {
+    "title": "Configuración",
+    "subtitle": "Personaliza tu experiencia en InventarioPro",
+    "appearance": "Apariencia",
+    "theme": "Tema",
+    "themeDescription": "Elige el tema visual de la aplicación",
+    "language": "Idioma",
+    "languageDescription": "Elige el idioma de la interfaz"
+  }
+}

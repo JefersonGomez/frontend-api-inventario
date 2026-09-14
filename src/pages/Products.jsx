@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useTranslation } from "react-i18next" // 1. Importar hook
 import { getProducts, createProduct, updateProduct, deleteProduct } from "@/api/products"
 import { getCategories } from "@/api/categories"
 import { Button } from "@/components/ui/button"
@@ -24,6 +25,7 @@ import { Plus, Pencil, Trash2 } from "lucide-react"
 const emptyForm = { sku: "", name: "", description: "", price: "", stock: "", minStock: "", categoryId: "" }
 
 export function Products() {
+  const { t } = useTranslation() // 2. Llamar al hook
   const queryClient = useQueryClient()
 
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -118,12 +120,13 @@ export function Products() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-semibold">Productos</h1>
-          <p className="text-sm text-muted-foreground">Gestiona tu catálogo de productos</p>
+          {/* 3. Reemplazar texto por t() */}
+          <h1 className="text-2xl font-semibold">{t("products.title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("products.subtitle")}</p>
         </div>
         <Button onClick={openCreateDialog}>
           <Plus className="w-4 h-4 mr-2" />
-          Nuevo producto
+          {t("products.new_button")}
         </Button>
       </div>
 
@@ -131,19 +134,19 @@ export function Products() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>SKU</TableHead>
-              <TableHead>Nombre</TableHead>
-              <TableHead>Categoría</TableHead>
-              <TableHead>Precio</TableHead>
-              <TableHead>Stock</TableHead>
-              <TableHead className="text-right">Acciones</TableHead>
+              <TableHead>{t("products.table.sku")}</TableHead>
+              <TableHead>{t("products.table.name")}</TableHead>
+              <TableHead>{t("products.table.category")}</TableHead>
+              <TableHead>{t("products.table.price")}</TableHead>
+              <TableHead>{t("products.table.stock")}</TableHead>
+              <TableHead className="text-right">{t("products.table.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {productsQuery.isLoading && (
               <TableRow>
                 <TableCell colSpan={6} className="text-center text-muted-foreground">
-                  Cargando...
+                  {t("common.loading")}
                 </TableCell>
               </TableRow>
             )}
@@ -179,12 +182,12 @@ export function Products() {
         <DialogContent className="max-w-md">
           <form onSubmit={handleSubmit} className="space-y-4">
             <DialogHeader>
-              <DialogTitle>{editingProduct ? "Editar producto" : "Nuevo producto"}</DialogTitle>
+              <DialogTitle>{editingProduct ? t("products.dialog.edit_title") : t("products.dialog.create_title")}</DialogTitle>
             </DialogHeader>
 
             {!editingProduct && (
               <div className="space-y-2">
-                <Label>SKU</Label>
+                <Label>{t("products.dialog.label_sku")}</Label>
                 <Input
                   value={form.sku}
                   onChange={(e) => setForm({ ...form, sku: e.target.value })}
@@ -194,7 +197,7 @@ export function Products() {
             )}
 
             <div className="space-y-2">
-              <Label>Nombre</Label>
+              <Label>{t("products.dialog.label_name")}</Label>
               <Input
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
@@ -203,7 +206,7 @@ export function Products() {
             </div>
 
             <div className="space-y-2">
-              <Label>Descripción</Label>
+              <Label>{t("products.dialog.label_description")}</Label>
               <Input
                 value={form.description}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
@@ -212,7 +215,7 @@ export function Products() {
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <Label>Precio</Label>
+                <Label>{t("products.dialog.label_price")}</Label>
                 <Input
                   type="number"
                   step="0.01"
@@ -224,7 +227,7 @@ export function Products() {
 
               {!editingProduct && (
                 <div className="space-y-2">
-                  <Label>Stock inicial</Label>
+                  <Label>{t("products.dialog.label_initial_stock")}</Label>
                   <Input
                     type="number"
                     value={form.stock}
@@ -235,7 +238,7 @@ export function Products() {
               )}
 
               <div className="space-y-2">
-                <Label>Stock mínimo</Label>
+                <Label>{t("products.dialog.label_min_stock")}</Label>
                 <Input
                   type="number"
                   value={form.minStock}
@@ -246,31 +249,27 @@ export function Products() {
             </div>
 
            <div className="space-y-2">
-  <Label>Categoría</Label>
-  <Select
-    items={categoriesQuery.data?.map((category) => ({
-      value: category.id,
-      label: category.name,
-    })) ?? []}
-    value={form.categoryId}
-    onValueChange={(value) => setForm({ ...form, categoryId: value })}
-  >
-    <SelectTrigger>
-      <SelectValue placeholder="Selecciona una categoría" />
-    </SelectTrigger>
-    <SelectContent>
-      {categoriesQuery.data?.map((category) => (
-        <SelectItem key={category.id} value={category.id}>
-          {category.name}
-        </SelectItem>
-      ))}
-    </SelectContent>
-  </Select>
-</div>
+              <Label>{t("products.dialog.label_category")}</Label>
+              <Select
+                value={form.categoryId}
+                onValueChange={(value) => setForm({ ...form, categoryId: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={t("products.dialog.placeholder_category")} />
+                </SelectTrigger>
+                <SelectContent>
+                  {categoriesQuery.data?.map((category) => (
+                    <SelectItem key={category.id} value={category.id}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
             <DialogFooter>
               <Button type="submit" disabled={isSaving}>
-                {isSaving ? "Guardando..." : "Guardar"}
+                {isSaving ? t("common.saving") : t("common.save")}
               </Button>
             </DialogFooter>
           </form>
@@ -280,17 +279,17 @@ export function Products() {
       <AlertDialog open={!!deletingProduct} onOpenChange={(open) => !open && setDeletingProduct(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Eliminar este producto?</AlertDialogTitle>
+            <AlertDialogTitle>{t("products.delete.title")}</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta acción no se puede deshacer. "{deletingProduct?.name}" se eliminará permanentemente.
+              {t("products.delete.description", { name: deletingProduct?.name })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setDeletingProduct(null)}>
-              Cancelar
+              {t("common.cancel")}
             </AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} disabled={deleteMutation.isPending}>
-              {deleteMutation.isPending ? "Eliminando..." : "Eliminar"}
+              {deleteMutation.isPending ? t("common.deleting") : t("common.delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

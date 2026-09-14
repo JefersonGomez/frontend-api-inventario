@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useTranslation } from "react-i18next" // 1. Importar hook
 import { getProfile, updateAvatar, changePassword, updateProfile } from "@/api/profile"
 import { useAuth } from "@/context/AuthContext"
 import { Button } from "@/components/ui/button"
@@ -16,6 +17,7 @@ const API_URL = "http://localhost:3000"
 
 // --- Fila editable individual mejorada ---
 function EditableRow({ label, value, onSave, isSaving, type = "text", icon: Icon }) {
+  const { t } = useTranslation() // Hook interno para botones
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState(value)
 
@@ -52,7 +54,7 @@ function EditableRow({ label, value, onSave, isSaving, type = "text", icon: Icon
               autoFocus
             />
           ) : (
-            <p className="font-semibold text-base">{value || "No especificado"}</p>
+            <p className="font-semibold text-base">{value || t("profile.not_specified")}</p>
           )}
         </div>
 
@@ -65,7 +67,7 @@ function EditableRow({ label, value, onSave, isSaving, type = "text", icon: Icon
               className="gap-2"
             >
               <X className="w-4 h-4" />
-              Cancelar
+              {t("common.cancel")}
             </Button>
             <Button 
               size="sm" 
@@ -74,7 +76,7 @@ function EditableRow({ label, value, onSave, isSaving, type = "text", icon: Icon
               className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
             >
               <Check className="w-4 h-4" />
-              {isSaving ? "Guardando..." : "Guardar"}
+              {isSaving ? t("common.saving") : t("common.save")}
             </Button>
           </div>
         ) : (
@@ -82,7 +84,7 @@ function EditableRow({ label, value, onSave, isSaving, type = "text", icon: Icon
             onClick={() => setEditing(true)}
             className="opacity-0 group-hover:opacity-100 transition-opacity px-4 py-2 text-sm font-medium text-primary hover:text-primary/80 hover:bg-primary/5 rounded-lg shrink-0"
           >
-            Editar
+            {t("common.edit")}
           </button>
         )}
       </div>
@@ -93,6 +95,7 @@ function EditableRow({ label, value, onSave, isSaving, type = "text", icon: Icon
 
 // --- Componente de tarjeta de perfil mejorada ---
 function ProfileCard({ profile, avatarMutation, onAvatarChange }) {
+  const { t } = useTranslation()
   const initials = profile.name?.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()
   
   return (
@@ -145,11 +148,11 @@ function ProfileCard({ profile, avatarMutation, onAvatarChange }) {
               text-white border-0 px-3 py-1
             `}
           >
-            {profile.role === "ADMIN" ? "Administrador" : "Empleado"}
+            {profile.role === "ADMIN" ? t("profile.roles.admin") : t("profile.roles.employee")}
           </Badge>
           
           {avatarMutation.isPending && (
-            <p className="text-xs text-muted-foreground animate-pulse">Subiendo imagen...</p>
+            <p className="text-xs text-muted-foreground animate-pulse">{t("profile.uploading_image")}</p>
           )}
         </div>
       </CardContent>
@@ -158,6 +161,7 @@ function ProfileCard({ profile, avatarMutation, onAvatarChange }) {
 }
 
 export function Profile() {
+  const { t } = useTranslation() // 2. Llamar al hook
   const queryClient = useQueryClient()
   const { updateUser } = useAuth()
 
@@ -213,10 +217,11 @@ export function Profile() {
       {/* Header de página */}
       <div className="flex items-center justify-between">
         <div>
+          {/* 3. Reemplazar texto por t() */}
           <h1 className="text-3xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-            Mi Perfil
+            {t("profile.title")}
           </h1>
-          <p className="text-muted-foreground mt-1">Gestiona tu información personal y seguridad</p>
+          <p className="text-muted-foreground mt-1">{t("profile.subtitle")}</p>
         </div>
       </div>
 
@@ -239,14 +244,14 @@ export function Profile() {
                 className="data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-lg transition-all"
               >
                 <User className="w-4 h-4 mr-2" />
-                Información Personal
+                {t("profile.tabs.info")}
               </TabsTrigger>
               <TabsTrigger 
                 value="security"
                 className="data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-lg transition-all"
               >
                 <Lock className="w-4 h-4 mr-2" />
-                Seguridad
+                {t("profile.tabs.security")}
               </TabsTrigger>
             </TabsList>
 
@@ -255,12 +260,12 @@ export function Profile() {
                 <CardHeader className="pb-4">
                   <CardTitle className="text-lg flex items-center gap-2">
                     <User className="w-5 h-5 text-primary" />
-                    Datos Personales
+                    {t("profile.info_card_title")}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <EditableRow
-                    label="Nombre Completo"
+                    label={t("profile.labels.full_name")}
                     value={profile.name}
                     icon={User}
                     isSaving={updateProfileMutation.isPending}
@@ -272,7 +277,7 @@ export function Profile() {
                     }
                   />
                   <EditableRow
-                    label="Correo Electrónico"
+                    label={t("profile.labels.email")}
                     value={profile.email}
                     type="email"
                     icon={Mail}
@@ -291,7 +296,7 @@ export function Profile() {
                 <div className="flex items-center gap-3 p-4 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive animate-in fade-in">
                   <AlertCircle className="w-5 h-5 shrink-0" />
                   <p className="text-sm">
-                    {updateProfileMutation.error?.response?.data?.error ?? "No se pudo actualizar el perfil."}
+                    {updateProfileMutation.error?.response?.data?.error ?? t("profile.errors.update_failed")}
                   </p>
                 </div>
               )}
@@ -299,7 +304,7 @@ export function Profile() {
               {updateProfileMutation.isSuccess && (
                 <div className="flex items-center gap-3 p-4 bg-green-500/10 border border-green-500/20 rounded-lg text-green-600 animate-in fade-in">
                   <Check className="w-5 h-5 shrink-0" />
-                  <p className="text-sm font-medium">Perfil actualizado correctamente</p>
+                  <p className="text-sm font-medium">{t("profile.success.updated")}</p>
                 </div>
               )}
             </TabsContent>
@@ -309,13 +314,13 @@ export function Profile() {
                 <CardHeader className="pb-4">
                   <CardTitle className="text-lg flex items-center gap-2">
                     <Lock className="w-5 h-5 text-primary" />
-                    Cambiar Contraseña
+                    {t("profile.security_card_title")}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handlePasswordSubmit} className="space-y-6 max-w-md">
                     <div className="space-y-3">
-                      <Label className="text-sm font-medium">Contraseña Actual</Label>
+                      <Label className="text-sm font-medium">{t("profile.labels.current_password")}</Label>
                       <div className="relative">
                         <Input
                           type="password"
@@ -330,7 +335,7 @@ export function Profile() {
                     </div>
                     
                     <div className="space-y-3">
-                      <Label className="text-sm font-medium">Nueva Contraseña</Label>
+                      <Label className="text-sm font-medium">{t("profile.labels.new_password")}</Label>
                       <div className="relative">
                         <Input
                           type="password"
@@ -339,7 +344,7 @@ export function Profile() {
                           minLength={6}
                           required
                           className="pl-10 pr-4"
-                          placeholder="Mínimo 6 caracteres"
+                          placeholder={t("profile.placeholders.min_chars")}
                         />
                         <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                       </div>
@@ -350,7 +355,7 @@ export function Profile() {
                         <div className="flex items-center gap-3 p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive animate-in fade-in">
                           <AlertCircle className="w-4 h-4 shrink-0" />
                           <p className="text-sm">
-                            {passwordMutation.error?.response?.data?.error ?? "No se pudo cambiar la contraseña."}
+                            {passwordMutation.error?.response?.data?.error ?? t("profile.errors.password_failed")}
                           </p>
                         </div>
                       )}
@@ -358,7 +363,7 @@ export function Profile() {
                       {passwordMutation.isSuccess && (
                         <div className="flex items-center gap-3 p-3 bg-green-500/10 border border-green-500/20 rounded-lg text-green-600 animate-in fade-in">
                           <Check className="w-4 h-4 shrink-0" />
-                          <p className="text-sm font-medium">Contraseña actualizada exitosamente</p>
+                          <p className="text-sm font-medium">{t("profile.success.password_updated")}</p>
                         </div>
                       )}
 
@@ -370,12 +375,12 @@ export function Profile() {
                         {passwordMutation.isPending ? (
                           <>
                             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
-                            Actualizando...
+                            {t("common.updating")}
                           </>
                         ) : (
                           <>
                             <Lock className="w-4 h-4 mr-2" />
-                            Cambiar Contraseña
+                            {t("profile.buttons.change_password")}
                           </>
                         )}
                       </Button>

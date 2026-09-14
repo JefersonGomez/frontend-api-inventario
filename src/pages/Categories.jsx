@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useTranslation } from "react-i18next" // 1. Importar hook
 import {
   getCategories,
   createCategory,
@@ -37,6 +38,7 @@ import {
 import { Plus, Pencil, Trash2 } from "lucide-react"
 
 export function Categories() {
+  const { t } = useTranslation() // 2. Llamar al hook
   const queryClient = useQueryClient()
 
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -106,12 +108,13 @@ export function Categories() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-semibold">Categorías</h1>
-          <p className="text-sm text-muted-foreground">Organiza tus productos por categoría</p>
+          {/* 3. Reemplazar texto por t() */}
+          <h1 className="text-2xl font-semibold">{t("categories.title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("categories.subtitle")}</p>
         </div>
         <Button onClick={openCreateDialog}>
           <Plus className="w-4 h-4 mr-2" />
-          Nueva categoría
+          {t("categories.new_button")}
         </Button>
       </div>
 
@@ -119,15 +122,15 @@ export function Categories() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Nombre</TableHead>
-              <TableHead className="text-right">Acciones</TableHead>
+              <TableHead>{t("categories.table.name")}</TableHead>
+              <TableHead className="text-right">{t("categories.table.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {categoriesQuery.isLoading && (
               <TableRow>
                 <TableCell colSpan={2} className="text-center text-muted-foreground">
-                  Cargando...
+                  {t("common.loading")}
                 </TableCell>
               </TableRow>
             )}
@@ -159,12 +162,12 @@ export function Categories() {
           <form onSubmit={handleSubmit}>
             <DialogHeader>
               <DialogTitle>
-                {editingCategory ? "Editar categoría" : "Nueva categoría"}
+                {editingCategory ? t("categories.dialog.edit_title") : t("categories.dialog.create_title")}
               </DialogTitle>
             </DialogHeader>
 
             <div className="space-y-2 py-4">
-              <Label htmlFor="category-name">Nombre</Label>
+              <Label htmlFor="category-name">{t("categories.dialog.label_name")}</Label>
               <Input
                 id="category-name"
                 value={name}
@@ -175,7 +178,7 @@ export function Categories() {
 
             <DialogFooter>
               <Button type="submit" disabled={isSaving}>
-                {isSaving ? "Guardando..." : "Guardar"}
+                {isSaving ? t("common.saving") : t("common.save")}
               </Button>
             </DialogFooter>
           </form>
@@ -186,14 +189,14 @@ export function Categories() {
 <AlertDialog open={!!deletingCategory} onOpenChange={() => setDeletingCategory(null)}>
   <AlertDialogContent>
     <AlertDialogHeader>
-      <AlertDialogTitle>¿Eliminar esta categoría?</AlertDialogTitle>
+      <AlertDialogTitle>{t("categories.delete.title")}</AlertDialogTitle>
       <AlertDialogDescription>
-        Esta acción no se puede deshacer. "{deletingCategory?.name}" se eliminará permanentemente.
+        {t("categories.delete.description", { name: deletingCategory?.name })}
       </AlertDialogDescription>
     </AlertDialogHeader>
     <AlertDialogFooter>
       <AlertDialogCancel onClick={() => setDeletingCategory(null)}>
-        Cancelar
+        {t("common.cancel")}
       </AlertDialogCancel>
       <AlertDialogAction 
         onClick={() => {
@@ -203,7 +206,7 @@ export function Categories() {
           }
         }}
       >
-        Eliminar
+        {t("common.delete")}
       </AlertDialogAction>
     </AlertDialogFooter>
   </AlertDialogContent>

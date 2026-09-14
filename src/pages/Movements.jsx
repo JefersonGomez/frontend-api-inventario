@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useTranslation } from "react-i18next" // 1. Importar hook
 import { getMovements, createMovement } from "@/api/movements"
 import { getProducts } from "@/api/products"
 import { Button } from "@/components/ui/button"
@@ -19,13 +20,8 @@ import { Plus, ArrowDownCircle, ArrowUpCircle, RotateCcw } from "lucide-react"
 
 const emptyForm = { productId: "", type: "IN", quantity: "", reason: "" }
 
-const typeConfig = {
-  IN: { label: "Entrada", variant: "default", icon: ArrowDownCircle },
-  OUT: { label: "Salida", variant: "destructive", icon: ArrowUpCircle },
-  ADJUSTMENT: { label: "Ajuste", variant: "secondary", icon: RotateCcw },
-}
-
 export function Movements() {
+  const { t } = useTranslation() // 2. Llamar al hook
   const queryClient = useQueryClient()
   const [dialogOpen, setDialogOpen] = useState(false)
   const [form, setForm] = useState(emptyForm)
@@ -54,18 +50,24 @@ export function Movements() {
     createMutation.mutate()
   }
 
-  const productItems = productsQuery.data?.map((p) => ({ value: p.id, label: `${p.name} (${p.sku})` })) ?? []
+  // Configuración de tipos traducida
+  const typeConfig = {
+    IN: { label: t("movements.types.in"), variant: "default", icon: ArrowDownCircle },
+    OUT: { label: t("movements.types.out"), variant: "destructive", icon: ArrowUpCircle },
+    ADJUSTMENT: { label: t("movements.types.adjustment"), variant: "secondary", icon: RotateCcw },
+  }
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-semibold">Movimientos</h1>
-          <p className="text-sm text-muted-foreground">Historial de entradas, salidas y ajustes de stock</p>
+          {/* 3. Reemplazar texto por t() */}
+          <h1 className="text-2xl font-semibold">{t("movements.title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("movements.subtitle")}</p>
         </div>
         <Button onClick={() => setDialogOpen(true)}>
           <Plus className="w-4 h-4 mr-2" />
-          Nuevo movimiento
+          {t("movements.new_button")}
         </Button>
       </div>
 
@@ -73,19 +75,19 @@ export function Movements() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Fecha</TableHead>
-              <TableHead>Producto</TableHead>
-              <TableHead>Tipo</TableHead>
-              <TableHead>Cantidad</TableHead>
-              <TableHead>Usuario</TableHead>
-              <TableHead>Motivo</TableHead>
+              <TableHead>{t("movements.table.date")}</TableHead>
+              <TableHead>{t("movements.table.product")}</TableHead>
+              <TableHead>{t("movements.table.type")}</TableHead>
+              <TableHead>{t("movements.table.quantity")}</TableHead>
+              <TableHead>{t("movements.table.user")}</TableHead>
+              <TableHead>{t("movements.table.reason")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {movementsQuery.isLoading && (
               <TableRow>
                 <TableCell colSpan={6} className="text-center text-muted-foreground">
-                  Cargando...
+                  {t("common.loading")}
                 </TableCell>
               </TableRow>
             )}
@@ -119,18 +121,17 @@ export function Movements() {
         <DialogContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <DialogHeader>
-              <DialogTitle>Nuevo movimiento de stock</DialogTitle>
+              <DialogTitle>{t("movements.dialog.title")}</DialogTitle>
             </DialogHeader>
 
             <div className="space-y-2">
-              <Label>Producto</Label>
+              <Label>{t("movements.dialog.label_product")}</Label>
               <Select
-                items={productItems}
                 value={form.productId}
                 onValueChange={(value) => setForm({ ...form, productId: value })}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Selecciona un producto" />
+                  <SelectValue placeholder={t("movements.dialog.placeholder_product")} />
                 </SelectTrigger>
                 <SelectContent>
                   {productsQuery.data?.map((p) => (
@@ -143,13 +144,8 @@ export function Movements() {
             </div>
 
             <div className="space-y-2">
-              <Label>Tipo de movimiento</Label>
+              <Label>{t("movements.dialog.label_type")}</Label>
               <Select
-                items={[
-                  { value: "IN", label: "Entrada" },
-                  { value: "OUT", label: "Salida" },
-                  { value: "ADJUSTMENT", label: "Ajuste (valor final)" },
-                ]}
                 value={form.type}
                 onValueChange={(value) => setForm({ ...form, type: value })}
               >
@@ -157,16 +153,18 @@ export function Movements() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="IN">Entrada</SelectItem>
-                  <SelectItem value="OUT">Salida</SelectItem>
-                  <SelectItem value="ADJUSTMENT">Ajuste (valor final)</SelectItem>
+                  <SelectItem value="IN">{t("movements.types.in")}</SelectItem>
+                  <SelectItem value="OUT">{t("movements.types.out")}</SelectItem>
+                  <SelectItem value="ADJUSTMENT">{t("movements.types.adjustment_full")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
               <Label>
-                {form.type === "ADJUSTMENT" ? "Cantidad final (conteo físico)" : "Cantidad"}
+                {form.type === "ADJUSTMENT" 
+                  ? t("movements.dialog.label_quantity_final") 
+                  : t("movements.dialog.label_quantity")}
               </Label>
               <Input
                 type="number"
@@ -178,7 +176,7 @@ export function Movements() {
             </div>
 
             <div className="space-y-2">
-              <Label>Motivo (opcional)</Label>
+              <Label>{t("movements.dialog.label_reason")}</Label>
               <Input
                 value={form.reason}
                 onChange={(e) => setForm({ ...form, reason: e.target.value })}
@@ -187,13 +185,13 @@ export function Movements() {
 
             {createMutation.isError && (
               <p className="text-sm text-destructive">
-                {createMutation.error?.response?.data?.error ?? "No se pudo registrar el movimiento."}
+                {createMutation.error?.response?.data?.error ?? t("movements.errors.save_failed")}
               </p>
             )}
 
             <DialogFooter>
               <Button type="submit" disabled={createMutation.isPending}>
-                {createMutation.isPending ? "Registrando..." : "Registrar movimiento"}
+                {createMutation.isPending ? t("common.saving") : t("movements.dialog.submit")}
               </Button>
             </DialogFooter>
           </form>
