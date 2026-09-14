@@ -43,7 +43,11 @@ export function Categories() {
 
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingCategory, setEditingCategory] = useState(null)
+  
+  // Estados para nombre y descripción
   const [name, setName] = useState("")
+  const [description, setDescription] = useState("")
+  
   const [deletingCategory, setDeletingCategory] = useState(null)
 
   const categoriesQuery = useQuery({
@@ -51,16 +55,18 @@ export function Categories() {
     queryFn: getCategories,
   })
 
+  // Mutación crear incluyendo descripción
   const createMutation = useMutation({
-    mutationFn: () => createCategory(name),
+    mutationFn: () => createCategory(name, description),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] })
       closeDialog()
     },
   })
 
+  // Mutación actualizar incluyendo descripción
   const updateMutation = useMutation({
-    mutationFn: () => updateCategory(editingCategory.id, name),
+    mutationFn: () => updateCategory(editingCategory.id, name, description),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] })
       closeDialog()
@@ -78,12 +84,14 @@ export function Categories() {
   function openCreateDialog() {
     setEditingCategory(null)
     setName("")
+    setDescription("") // Resetear descripción
     setDialogOpen(true)
   }
 
   function openEditDialog(category) {
     setEditingCategory(category)
     setName(category.name)
+    setDescription(category.description ?? "") // Cargar descripción existente
     setDialogOpen(true)
   }
 
@@ -91,6 +99,7 @@ export function Categories() {
     setDialogOpen(false)
     setEditingCategory(null)
     setName("")
+    setDescription("") // Limpiar descripción
   }
 
   function handleSubmit(e) {
@@ -108,7 +117,6 @@ export function Categories() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          {/* 3. Reemplazar texto por t() */}
           <h1 className="text-2xl font-semibold">{t("categories.title")}</h1>
           <p className="text-sm text-muted-foreground">{t("categories.subtitle")}</p>
         </div>
@@ -123,13 +131,15 @@ export function Categories() {
           <TableHeader>
             <TableRow>
               <TableHead>{t("categories.table.name")}</TableHead>
+              {/* Nueva columna Descripción */}
+              <TableHead>{t("categories.table.description")}</TableHead>
               <TableHead className="text-right">{t("categories.table.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {categoriesQuery.isLoading && (
               <TableRow>
-                <TableCell colSpan={2} className="text-center text-muted-foreground">
+                <TableCell colSpan={3} className="text-center text-muted-foreground">
                   {t("common.loading")}
                 </TableCell>
               </TableRow>
@@ -138,6 +148,10 @@ export function Categories() {
             {categoriesQuery.data?.map((category) => (
               <TableRow key={category.id}>
                 <TableCell className="font-medium">{category.name}</TableCell>
+                {/* Mostrar descripción o guión si está vacía */}
+                <TableCell className="text-muted-foreground">
+                  {category.description || "—"}
+                </TableCell>
                 <TableCell className="text-right">
                   <Button variant="ghost" size="icon" onClick={() => openEditDialog(category)}>
                     <Pencil className="w-4 h-4" />
@@ -166,14 +180,28 @@ export function Categories() {
               </DialogTitle>
             </DialogHeader>
 
-            <div className="space-y-2 py-4">
-              <Label htmlFor="category-name">{t("categories.dialog.label_name")}</Label>
-              <Input
-                id="category-name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
+            <div className="space-y-4 py-4">
+              {/* Campo Nombre */}
+              <div className="space-y-2">
+                <Label htmlFor="category-name">{t("categories.dialog.label_name")}</Label>
+                <Input
+                  id="category-name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
+              </div>
+
+              {/* Nuevo Campo Descripción */}
+              <div className="space-y-2">
+                <Label htmlFor="category-description">{t("categories.dialog.label_description")}</Label>
+                <Input
+                  id="category-description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder={t("categories.dialog.placeholder_description")}
+                />
+              </div>
             </div>
 
             <DialogFooter>

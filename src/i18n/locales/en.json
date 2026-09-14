@@ -59,6 +59,10 @@
       "low_stock": "Low Stock",
       "inventory_value": "Inventory Value"
     },
+    "charts": {
+      "movements": "Recent movements",
+      "stock_by_category": "Stock by category"
+    },
     "low_stock_table": {
       "title": "Low Stock Products",
       "empty": "No low stock products. 🎉"
@@ -89,7 +93,8 @@
       "label_initial_stock": "Initial Stock",
       "label_min_stock": "Min Stock",
       "label_category": "Category",
-      "placeholder_category": "Select a category"
+      "placeholder_category": "Select a category",
+      "label_barcode": "Barcode"
     },
     "delete": {
       "title": "Delete this product?",
@@ -102,12 +107,15 @@
     "new_button": "New Category",
     "table": {
       "name": "Name",
+       "description": "Description",
       "actions": "Actions"
     },
     "dialog": {
       "create_title": "New Category",
       "edit_title": "Edit Category",
-      "label_name": "Name"
+      "label_name": "Name",
+      "label_description": "Description",
+      "placeholder_description": "Optional"
     },
     "delete": {
       "title": "Delete this category?",
@@ -140,7 +148,13 @@
       "label_quantity": "Quantity",
       "label_quantity_final": "Final Quantity (physical count)",
       "label_reason": "Reason (optional)",
-      "submit": "Register Movement"
+      "submit": "Register Movement",
+      "scan_button": "Scan code",
+      "scanning": "Scanning...",
+      "camera_permission": "Camera permission required",
+      "camera_denied": "Camera access denied. Please enable it in your browser settings.",
+      "no_camera": "No camera detected.",
+      "product_not_found": "Product not found with that code."
     },
     "errors": {
       "save_failed": "Could not register movement."

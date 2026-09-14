@@ -5,13 +5,13 @@ export async function getCategories() {
   return response.data
 }
 
-export async function createCategory(name) {
-  const response = await api.post("/categories/", { name })
+export async function createCategory(name,descripton) {
+  const response = await api.post("/categories/", { name, descripton})
   return response.data
 }
 
-export async function updateCategory(id, name) {
-  const response = await api.put(`/categories/${id}`, { name })
+export async function updateCategory(id, name,description) {
+  const response = await api.put(`/categories/${id}`, { name,description })
   return response.data
 }
 

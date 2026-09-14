@@ -59,6 +59,10 @@
       "low_stock": "Stock bajo",
       "inventory_value": "Valor del inventario"
     },
+    "charts": {
+      "movements": "Movimientos recientes",
+      "stock_by_category": "Stock por categoría"
+    },
     "low_stock_table": {
       "title": "Productos con stock bajo",
       "empty": "No hay productos con stock bajo. 🎉"
@@ -89,7 +93,8 @@
       "label_initial_stock": "Stock inicial",
       "label_min_stock": "Stock mínimo",
       "label_category": "Categoría",
-      "placeholder_category": "Selecciona una categoría"
+      "placeholder_category": "Selecciona una categoría",
+      "label_barcode": "Código de barras"
     },
     "delete": {
       "title": "¿Eliminar este producto?",
@@ -102,12 +107,15 @@
     "new_button": "Nueva categoría",
     "table": {
       "name": "Nombre",
+      "description": "Descripción", 
       "actions": "Acciones"
     },
     "dialog": {
       "create_title": "Nueva categoría",
       "edit_title": "Editar categoría",
-      "label_name": "Nombre"
+      "label_name": "Nombre",
+      "label_description": "Descripción",
+      "placeholder_description": "Opcional"
     },
     "delete": {
       "title": "¿Eliminar esta categoría?",
@@ -140,7 +148,13 @@
       "label_quantity": "Cantidad",
       "label_quantity_final": "Cantidad final (conteo físico)",
       "label_reason": "Motivo (opcional)",
-      "submit": "Registrar movimiento"
+      "submit": "Registrar movimiento",
+      "scan_button": "Escanear código",
+      "scanning": "Escaneando...",
+      "camera_permission": "Permiso de cámara requerido",
+      "camera_denied": "Acceso a la cámara denegado. Por favor, habilítalo en la configuración de tu navegador.",
+      "no_camera": "No se detectó ninguna cámara.",
+      "product_not_found": "Producto no encontrado con ese código."
     },
     "errors": {
       "save_failed": "No se pudo registrar el movimiento."

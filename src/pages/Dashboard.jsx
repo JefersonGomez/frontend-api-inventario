@@ -1,15 +1,19 @@
 import { useQuery } from "@tanstack/react-query"
-import { useTranslation } from "react-i18next" // 1. Importar hook
+import { useTranslation } from "react-i18next"
 import { getProducts } from "@/api/products"
-import { getLowStockReport, getInventoryValueReport } from "@/api/reports"
+import { getLowStockReport, getInventoryValueReport, getMovementsReport } from "@/api/reports" // Asegúrate de importar getMovementsReport
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Package, AlertTriangle, DollarSign } from "lucide-react"
+import { MovementsChart } from "@/components/charts/MovementsChart"
+import { CategoryStockChart } from "@/components/charts/CategoryStockChart"
+import { aggregateMovementsByDay, aggregateStockByCategory } from "@/lib/chart-utils"
 
 export function Dashboard() {
-  const { t } = useTranslation() // 2. Llamar al hook
+  const { t } = useTranslation()
 
+  // Queries existentes
   const productsQuery = useQuery({
     queryKey: ["products"],
     queryFn: getProducts,
@@ -25,14 +29,29 @@ export function Dashboard() {
     queryFn: getInventoryValueReport,
   })
 
+  // Nueva query para movimientos (para el gráfico)
+  const movementsQuery = useQuery({
+    queryKey: ["reports", "movements"],
+    queryFn: getMovementsReport,
+  })
+
+  // Procesamiento de datos para los gráficos
+  const movementsChartData = movementsQuery.data 
+    ? aggregateMovementsByDay(movementsQuery.data) 
+    : []
+  
+  const categoryChartData = productsQuery.data 
+    ? aggregateStockByCategory(productsQuery.data) 
+    : []
+
   return (
     <div>
       <div className="mb-6">
-        {/* 3. Reemplazar texto por t() */}
         <h1 className="text-2xl font-semibold">{t("dashboard.title")}</h1>
         <p className="text-sm text-muted-foreground">{t("dashboard.subtitle")}</p>
       </div>
 
+      {/* Tarjetas de Métricas Existentes */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -85,6 +104,36 @@ export function Dashboard() {
         </Card>
       </div>
 
+      {/* Sección de Gráficos Nuevos */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>{t("dashboard.charts.movements")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {movementsQuery.isLoading ? (
+              <Skeleton className="h-[300px] w-full" />
+            ) : (
+              <MovementsChart data={movementsChartData} />
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>{t("dashboard.charts.stock_by_category")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {productsQuery.isLoading ? (
+              <Skeleton className="h-[300px] w-full" />
+            ) : (
+              <CategoryStockChart data={categoryChartData} />
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Tabla de Stock Bajo Existente */}
       <Card>
         <CardHeader>
           <CardTitle>{t("dashboard.low_stock_table.title")}</CardTitle>
