@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils"
 import { Settings as SettingsIcon } from "lucide-react"
 import { Users as UsersIcon } from "lucide-react"
 import { useAuth } from "@/context/AuthContext"
+import { Truck } from "lucide-react"
 export function Sidebar({ className }) {
   const { t } = useTranslation()
   const { user } = useAuth()
@@ -18,6 +19,7 @@ export function Sidebar({ className }) {
     ? [{ to: "/users", label: t("sidebar.users", "Empleados"), icon: UsersIcon }]
     : []),
     { to: "/settings", label: t("sidebar.settings", "Configuración"), icon: SettingsIcon },
+    { to: "/suppliers", label: t("sidebar.suppliers", "Proveedores"), icon: Truck },
   ]
 
   return (
