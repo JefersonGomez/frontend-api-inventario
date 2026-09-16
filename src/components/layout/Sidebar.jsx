@@ -1,4 +1,4 @@
-import { LayoutDashboard, Package, FolderTree, ArrowLeftRight, BarChart3 } from "lucide-react"
+import { LayoutDashboard, Package, FolderTree, ArrowLeftRight, BarChart3,ClipboardList,ShoppingCart } from "lucide-react"
 import { NavLink } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { cn } from "@/lib/utils"
@@ -9,18 +9,22 @@ import { Truck } from "lucide-react"
 export function Sidebar({ className }) {
   const { t } = useTranslation()
   const { user } = useAuth()
-  const navItems = [
-    { to: "/", label: t("sidebar.dashboard"), icon: LayoutDashboard },
-    { to: "/products", label: t("sidebar.products"), icon: Package },
-    { to: "/categories", label: t("sidebar.categories"), icon: FolderTree },
-    { to: "/movements", label: t("sidebar.movements"), icon: ArrowLeftRight },
-    { to: "/reports", label: t("sidebar.reports"), icon: BarChart3 },
-    ...(user?.role === "ADMIN"
+ const navItems = [
+  { to: "/", label: t("sidebar.dashboard"), icon: LayoutDashboard },
+  { to: "/products", label: t("sidebar.products"), icon: Package },
+  { to: "/categories", label: t("sidebar.categories"), icon: FolderTree },
+  { to: "/movements", label: t("sidebar.movements"), icon: ArrowLeftRight },
+  { to: "/reports", label: t("sidebar.reports"), icon: BarChart3 },
+  ...(user?.role === "ADMIN"
     ? [{ to: "/users", label: t("sidebar.users", "Empleados"), icon: UsersIcon }]
     : []),
-    { to: "/settings", label: t("sidebar.settings", "Configuración"), icon: SettingsIcon },
-    { to: "/suppliers", label: t("sidebar.suppliers", "Proveedores"), icon: Truck },
-  ]
+  { to: "/suppliers", label: t("sidebar.suppliers", "Proveedores"), icon: Truck },
+  { to: "/purchase-requests", label: t("sidebar.purchaseRequests", "Solicitudes de compra"), icon: ClipboardList },
+  ...(user?.role === "ADMIN"
+    ? [{ to: "/purchase-orders", label: t("sidebar.purchaseOrders", "Órdenes de compra"), icon: ShoppingCart }]
+    : []),
+  { to: "/settings", label: t("sidebar.settings", "Configuración"), icon: SettingsIcon },
+]
 
   return (
     <aside className={cn("flex flex-col justify-between bg-[#100E1F] w-64 min-h-screen p-4", className)}>

@@ -239,5 +239,24 @@
     "themeDescription": "Elige el tema visual de la aplicación",
     "language": "Idioma",
     "languageDescription": "Elige el idioma de la interfaz"
-  }
+  },
+"purchaseRequests": {
+  "title": "Solicitudes de compra",
+  "newRequest": "Nueva solicitud",
+  "product": "Producto",
+  "quantity": "Cantidad",
+  "reason": "Motivo",
+  "status": "Estado",
+  "requestedBy": "Solicitado por",
+  "date": "Fecha",
+  "actions": "Acciones",
+  "approve": "Aprobar",
+  "reject": "Rechazar",
+  "statusPending": "Pendiente",
+  "statusApproved": "Aprobada",
+  "statusRejected": "Rechazada",
+  "createSuccess": "Solicitud creada correctamente",
+  "updateSuccess": "Estado actualizado"
+}
+
 }

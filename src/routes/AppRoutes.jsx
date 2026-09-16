@@ -12,6 +12,7 @@ import { Profile } from "@/pages/Profile"
 import { Settings } from "@/pages/Settings"
 import {Users}from "@/pages/Users"
 import { Suppliers } from "@/pages/Suppliers"
+import {PurchaseRequests} from "@/pages/PurchaseRequests"
 import { AdminRoute } from "./AdminRoute"
 const router = createBrowserRouter([
   {
@@ -44,6 +45,7 @@ const router = createBrowserRouter([
       {path:"settings", element:<Settings/>},
       { path: "users", element: <Users /> },
       { path: "suppliers", element: <Suppliers /> },
+      {path:"purchase-requests", element:<PurchaseRequests />}
     ],
   },
 ])

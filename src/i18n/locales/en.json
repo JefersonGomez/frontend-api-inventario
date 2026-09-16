@@ -239,5 +239,24 @@
     "themeDescription": "Choose the visual theme of the application",
     "language": "Language",
     "languageDescription": "Choose the interface language"
-  }
+  },
+
+"purchaseRequests": {
+  "title": "Purchase Requests",
+  "newRequest": "New request",
+  "product": "Product",
+  "quantity": "Quantity",
+  "reason": "Reason",
+  "status": "Status",
+  "requestedBy": "Requested by",
+  "date": "Date",
+  "actions": "Actions",
+  "approve": "Approve",
+  "reject": "Reject",
+  "statusPending": "Pending",
+  "statusApproved": "Approved",
+  "statusRejected": "Rejected",
+  "createSuccess": "Request created successfully",
+  "updateSuccess": "Status updated"
+}
 }
