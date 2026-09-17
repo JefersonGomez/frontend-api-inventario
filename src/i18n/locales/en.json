@@ -258,5 +258,29 @@
   "statusRejected": "Rejected",
   "createSuccess": "Request created successfully",
   "updateSuccess": "Status updated"
+},
+"purchaseOrders": {
+  "title": "Purchase Orders",
+  "newOrder": "New order",
+  "supplier": "Supplier",
+  "product": "Product",
+  "quantity": "Quantity",
+  "unitCost": "Unit cost",
+  "total": "Total",
+  "addLine": "Add line",
+  "removeLine": "Remove",
+  "status": "Status",
+  "date": "Date",
+  "actions": "Actions",
+  "receive": "Mark as received",
+  "confirmReceiveTitle": "Confirm receipt?",
+  "confirmReceiveDescription": "This will add stock for every product in the order and cannot be undone.",
+  "confirm": "Confirm",
+  "cancel": "Cancel",
+  "statusPending": "Pending",
+  "statusReceived": "Received",
+  "statusCancelled": "Cancelled",
+  "createSuccess": "Order created successfully",
+  "receiveSuccess": "Order received, stock updated"
 }
 }

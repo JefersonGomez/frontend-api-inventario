@@ -257,6 +257,30 @@
   "statusRejected": "Rechazada",
   "createSuccess": "Solicitud creada correctamente",
   "updateSuccess": "Estado actualizado"
+},
+"purchaseOrders": {
+  "title": "Órdenes de compra",
+  "newOrder": "Nueva orden",
+  "supplier": "Proveedor",
+  "product": "Producto",
+  "quantity": "Cantidad",
+  "unitCost": "Costo unitario",
+  "total": "Total",
+  "addLine": "Agregar línea",
+  "removeLine": "Quitar",
+  "status": "Estado",
+  "date": "Fecha",
+  "actions": "Acciones",
+  "receive": "Marcar como recibida",
+  "confirmReceiveTitle": "¿Confirmar recepción?",
+  "confirmReceiveDescription": "Esto va a sumar el stock de cada producto de la orden y no se puede deshacer.",
+  "confirm": "Confirmar",
+  "cancel": "Cancelar",
+  "statusPending": "Pendiente",
+  "statusReceived": "Recibida",
+  "statusCancelled": "Cancelada",
+  "createSuccess": "Orden creada correctamente",
+  "receiveSuccess": "Orden recibida, stock actualizado"
 }
 
 }

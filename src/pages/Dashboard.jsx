@@ -1,48 +1,96 @@
 import { useQuery } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
+import { Link } from "react-router-dom"
 import { getProducts } from "@/api/products"
-import { getLowStockReport, getInventoryValueReport, getMovementsReport } from "@/api/reports" // Asegúrate de importar getMovementsReport
+import { getLowStockReport, getInventoryValueReport, getMovementsReport } from "@/api/reports"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Package, AlertTriangle, DollarSign } from "lucide-react"
+import { Package, AlertTriangle, DollarSign, Clock } from "lucide-react"
 import { MovementsChart } from "@/components/charts/MovementsChart"
 import { CategoryStockChart } from "@/components/charts/CategoryStockChart"
 import { aggregateMovementsByDay, aggregateStockByCategory } from "@/lib/chart-utils"
+import { usePurchaseRequestAlerts } from "@/hoocks/usePurchaseRequestAlerts"
+
+function PurchaseRequestAlertsCard() {
+  const { t } = useTranslation();
+  const { data: alerts, isLoading } = usePurchaseRequestAlerts();
+
+  if (isLoading || !alerts) return null;
+
+  const { expiringSoon = [], approvedUnfulfilled = [] } = alerts;
+  if (expiringSoon.length === 0 && approvedUnfulfilled.length === 0) return null;
+
+  return (
+    <Card className="border-amber-500/20 bg-amber-500/5 mb-6">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-base font-semibold flex items-center gap-2">
+          <AlertTriangle className="w-5 h-5 text-amber-500" />
+          {t("dashboard.purchaseAlerts", "Alertas de compras")}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-2">
+        {expiringSoon.length > 0 && (
+          <Link
+            to="/purchase-requests"
+            className="flex items-center gap-2 text-sm text-foreground/90 hover:underline hover:text-amber-500 transition-colors"
+          >
+            <Clock className="w-4 h-4 text-amber-500" />
+            {t("dashboard.expiringSoon", "{{count}} solicitud(es) por vencer en menos de 3 días", {
+              count: expiringSoon.length,
+            })}
+          </Link>
+        )}
+
+        {approvedUnfulfilled.length > 0 && (
+          <Link
+            to="/purchase-orders"
+            className="flex items-center gap-2 text-sm text-foreground/90 hover:underline hover:text-orange-500 transition-colors"
+          >
+            <AlertTriangle className="w-4 h-4 text-orange-500" />
+            {t("dashboard.approvedUnfulfilled", "{{count}} solicitud(es) aprobada(s) sin orden de compra", {
+              count: approvedUnfulfilled.length,
+            })}
+          </Link>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
 
 export function Dashboard() {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   // Queries existentes
   const productsQuery = useQuery({
     queryKey: ["products"],
     queryFn: getProducts,
-  })
+  });
 
   const lowStockQuery = useQuery({
     queryKey: ["reports", "low-stock"],
     queryFn: getLowStockReport,
-  })
+  });
 
   const inventoryValueQuery = useQuery({
     queryKey: ["reports", "inventory-value"],
     queryFn: getInventoryValueReport,
-  })
+  });
 
-  // Nueva query para movimientos (para el gráfico)
+  // Query para movimientos (para el gráfico)
   const movementsQuery = useQuery({
     queryKey: ["reports", "movements"],
     queryFn: getMovementsReport,
-  })
+  });
 
   // Procesamiento de datos para los gráficos
-  const movementsChartData = movementsQuery.data 
-    ? aggregateMovementsByDay(movementsQuery.data) 
-    : []
-  
-  const categoryChartData = productsQuery.data 
-    ? aggregateStockByCategory(productsQuery.data) 
-    : []
+  const movementsChartData = movementsQuery.data
+    ? aggregateMovementsByDay(movementsQuery.data)
+    : [];
+
+  const categoryChartData = productsQuery.data
+    ? aggregateStockByCategory(productsQuery.data)
+    : [];
 
   return (
     <div>
@@ -50,6 +98,9 @@ export function Dashboard() {
         <h1 className="text-2xl font-semibold">{t("dashboard.title")}</h1>
         <p className="text-sm text-muted-foreground">{t("dashboard.subtitle")}</p>
       </div>
+
+      {/* Tarjeta de Alertas de Solicitudes y Órdenes de Compra */}
+      <PurchaseRequestAlertsCard />
 
       {/* Tarjetas de Métricas Existentes */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
@@ -104,7 +155,7 @@ export function Dashboard() {
         </Card>
       </div>
 
-      {/* Sección de Gráficos Nuevos */}
+      {/* Sección de Gráficos */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <Card>
           <CardHeader>
@@ -133,7 +184,7 @@ export function Dashboard() {
         </Card>
       </div>
 
-      {/* Tabla de Stock Bajo Existente */}
+      {/* Tabla de Stock Bajo */}
       <Card>
         <CardHeader>
           <CardTitle>{t("dashboard.low_stock_table.title")}</CardTitle>
@@ -173,5 +224,5 @@ export function Dashboard() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

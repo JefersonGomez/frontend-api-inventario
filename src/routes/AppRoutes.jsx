@@ -14,11 +14,20 @@ import {Users}from "@/pages/Users"
 import { Suppliers } from "@/pages/Suppliers"
 import {PurchaseRequests} from "@/pages/PurchaseRequests"
 import { AdminRoute } from "./AdminRoute"
+import { PurchaseOrders } from "@/pages/PurchaseOrders"
 const router = createBrowserRouter([
   {
     path: "/login",
     element: <Login />,
   },
+  {
+  path: "purchase-orders",
+  element: (
+    <AdminRoute>
+      <PurchaseOrders />
+    </AdminRoute>
+  ),
+},
   {
   path: "users",
   element: (

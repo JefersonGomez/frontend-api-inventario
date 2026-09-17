@@ -9,3 +9,7 @@ export const createPurchaseRequest = (data) =>
 
 export const updatePurchaseRequestStatus = (id, status) =>
   api.patch(`/purchase-requests/${id}/status`, { status }).then((res) => res.data);
+
+// src/api/purchaseRequests.js — agregar
+export const getPurchaseRequestAlerts = () =>
+  api.get("/purchase-requests/alerts").then((res) => res.data);

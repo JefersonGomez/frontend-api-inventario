@@ -1,14 +1,13 @@
-
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useAuth } from "../context/AuthContext"; // ajustá al hook real que uses para el user actual
+import { useAuth } from "../context/AuthContext";
 import {
   getPurchaseRequests,
   createPurchaseRequest,
   updatePurchaseRequestStatus,
 } from "../api/PurchaseRequests";
-import { getProducts } from "../api/products"; // asumo que ya existe, para el selector
+import { getProducts } from "../api/products";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
@@ -74,9 +73,9 @@ export function PurchaseRequests() {
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-semibold">{t("purchaseRequests.title")}</h1>
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button>{t("purchaseRequests.newRequest")}</Button>
-          </DialogTrigger>
+          {/* ✅ CORRECCIÓN: Usar la prop render en lugar de asChild */}
+          <DialogTrigger render={<Button>{t("purchaseRequests.newRequest")}</Button>} />
+          
           <DialogContent>
             <DialogHeader>
               <DialogTitle>{t("purchaseRequests.newRequest")}</DialogTitle>
