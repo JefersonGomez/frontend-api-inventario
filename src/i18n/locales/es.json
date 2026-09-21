@@ -281,6 +281,29 @@
   "statusCancelled": "Cancelada",
   "createSuccess": "Orden creada correctamente",
   "receiveSuccess": "Orden recibida, stock actualizado"
+},
+"auditLog": {
+  "title": "Registro de auditoría",
+  "subtitle": "Historial de acciones administrativas del sistema",
+  "totalActions": "Acciones totales",
+  "activityLast7Days": "Actividad (últimos 7 días)",
+  "actionsByType": "Acciones por tipo",
+  "entitiesAffected": "Entidades más afectadas",
+  "filterByEntity": "Filtrar por entidad",
+  "allEntities": "Todas",
+  "user": "Usuario",
+  "action": "Acción",
+  "entity": "Entidad",
+  "date": "Fecha",
+  "noLogs": "No hay registros para este filtro",
+  "action.CREATE": "Creó",
+  "action.UPDATE": "Editó",
+  "action.DELETE": "Eliminó",
+  "action.APPROVE": "Aprobó",
+  "action.REJECT": "Rechazó",
+  "action.RECEIVE": "Recibió",
+  "action.ACTIVATE": "Activó",
+  "action.DEACTIVATE": "Desactivó"
 }
 
 }

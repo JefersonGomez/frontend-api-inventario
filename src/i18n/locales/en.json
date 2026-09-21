@@ -282,5 +282,28 @@
   "statusCancelled": "Cancelled",
   "createSuccess": "Order created successfully",
   "receiveSuccess": "Order received, stock updated"
+},
+"auditLog": {
+  "title": "Audit Log",
+  "subtitle": "History of administrative actions in the system",
+  "totalActions": "Total actions",
+  "activityLast7Days": "Activity (last 7 days)",
+  "actionsByType": "Actions by type",
+  "entitiesAffected": "Most affected entities",
+  "filterByEntity": "Filter by entity",
+  "allEntities": "All",
+  "user": "User",
+  "action": "Action",
+  "entity": "Entity",
+  "date": "Date",
+  "noLogs": "No logs for this filter",
+  "action.CREATE": "Created",
+  "action.UPDATE": "Updated",
+  "action.DELETE": "Deleted",
+  "action.APPROVE": "Approved",
+  "action.REJECT": "Rejected",
+  "action.RECEIVE": "Received",
+  "action.ACTIVATE": "Activated",
+  "action.DEACTIVATE": "Deactivated"
 }
 }

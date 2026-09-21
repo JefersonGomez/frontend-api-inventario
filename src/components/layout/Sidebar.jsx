@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
 import { usePurchaseRequestAlerts } from "@/hoocks/usePurchaseRequestAlerts";
+import { ShieldCheck } from "lucide-react"
 import {
   LayoutDashboard,
   Package,
@@ -41,6 +42,9 @@ export function Sidebar({ className }) {
       label: t("sidebar.purchaseRequests", "Solicitudes de compra"),
       icon: ClipboardList,
     },
+    ...(user?.role === "ADMIN"
+  ? [{ to: "/audit-log", label: t("sidebar.auditLog", "Auditoría"), icon: ShieldCheck }]
+  : []),
     ...(user?.role === "ADMIN"
       ? [
           {

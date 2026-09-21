@@ -15,6 +15,7 @@ import { Suppliers } from "@/pages/Suppliers"
 import {PurchaseRequests} from "@/pages/PurchaseRequests"
 import { AdminRoute } from "./AdminRoute"
 import { PurchaseOrders } from "@/pages/PurchaseOrders"
+import { AuditLogPage } from "@/pages/AuditLog"
 const router = createBrowserRouter([
   {
     path: "/login",
@@ -25,6 +26,14 @@ const router = createBrowserRouter([
   element: (
     <AdminRoute>
       <PurchaseOrders />
+    </AdminRoute>
+  ),
+},
+{
+  path: "audit-log",
+  element: (
+    <AdminRoute>
+      <AuditLogPage />
     </AdminRoute>
   ),
 },
@@ -54,7 +63,8 @@ const router = createBrowserRouter([
       {path:"settings", element:<Settings/>},
       { path: "users", element: <Users /> },
       { path: "suppliers", element: <Suppliers /> },
-      {path:"purchase-requests", element:<PurchaseRequests />}
+      {path:"purchase-requests", element:<PurchaseRequests />},
+      
     ],
   },
 ])
