@@ -12,13 +12,13 @@ export function Login() {
   const { t } = useTranslation() // 2. Llamar al hook
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const { login } = useAuth()
+  const { login } = useAuth() 
   const navigate = useNavigate()
 
   const mutation = useMutation({
     mutationFn: () => loginRequest(email, password),
     onSuccess: (data) => {
-      login(data.token, data.user)
+       login(data.token, data.refreshToken, data.user)
       navigate("/")
     },
   })
