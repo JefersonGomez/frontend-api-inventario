@@ -304,6 +304,14 @@
   "action.RECEIVE": "Recibió",
   "action.ACTIVATE": "Activó",
   "action.DEACTIVATE": "Desactivó"
+},
+"assistant": {
+  "title": "Asistente de inventario",
+  "placeholder": "Preguntá algo sobre tu inventario...",
+  "welcomeMessage": "¡Hola! Puedo ayudarte a consultar productos, stock bajo, valor de inventario y movimientos. ¿Qué querés saber?",
+  "thinking": "Pensando...",
+  "errorMessage": "Hubo un problema al procesar tu pregunta. Intentá de nuevo.",
+  "send": "Enviar"
 }
 
 }

@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom"
 import { Sidebar } from "./Sidebar"
 import { Topbar } from "./Topbar"
 import { Sheet, SheetContent } from "@/components/ui/sheet"
+import { AssistantWidget } from "@/components/assistant/AssistantWidget" 
 
 export function Layout() {
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -25,6 +26,8 @@ export function Layout() {
           <Outlet />
         </main>
       </div>
+
+      <AssistantWidget /> 
     </div>
   )
 }

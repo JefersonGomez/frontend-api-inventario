@@ -305,5 +305,13 @@
   "action.RECEIVE": "Received",
   "action.ACTIVATE": "Activated",
   "action.DEACTIVATE": "Deactivated"
+},
+"assistant": {
+  "title": "Inventory Assistant",
+  "placeholder": "Ask something about your inventory...",
+  "welcomeMessage": "Hi! I can help you check products, low stock, inventory value and movements. What would you like to know?",
+  "thinking": "Thinking...",
+  "errorMessage": "There was a problem processing your question. Please try again.",
+  "send": "Send"
 }
 }
