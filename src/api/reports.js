@@ -18,3 +18,7 @@ export async function getMovementsReport(from, to) {
   })
   return response.data
 }
+
+// src/api/reports.js — agregar
+export const getInventoryValueBreakdown = (days = 60) =>
+  api.get("/reports/inventory-value-breakdown", { params: { days } }).then((res) => res.data);

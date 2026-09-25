@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
-import { useTranslation } from "react-i18next" // 1. Importar hook
+import { useTranslation } from "react-i18next"
 import { getLowStockReport, getInventoryValueReport, getMovementsReport } from "@/api/reports"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -9,9 +9,10 @@ import { Label } from "@/components/ui/label"
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table"
+import { ImmobilizedCapitalReport } from "@/components/reports/ImmobilizedCapitalReport"
 
 export function Reports() {
-  const { t } = useTranslation() // 2. Llamar al hook
+  const { t } = useTranslation()
   const [from, setFrom] = useState("")
   const [to, setTo] = useState("")
 
@@ -30,7 +31,6 @@ export function Reports() {
     queryFn: () => getMovementsReport(from || undefined, to || undefined),
   })
 
-  // Configuración de tipos traducida dinámicamente
   const typeLabels = {
     IN: { label: t("reports.types.in"), variant: "default" },
     OUT: { label: t("reports.types.out"), variant: "destructive" },
@@ -40,12 +40,12 @@ export function Reports() {
   return (
     <div className="space-y-6">
       <div>
-        {/* 3. Reemplazar texto por t() */}
         <h1 className="text-2xl font-semibold">{t("reports.title")}</h1>
         <p className="text-sm text-muted-foreground">{t("reports.subtitle")}</p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {/* Tarjetas resumen en grid de 3 columnas */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardHeader>
             <CardTitle className="text-sm font-normal text-muted-foreground">
@@ -73,8 +73,14 @@ export function Reports() {
             <p className="text-xs text-muted-foreground mt-1">{t("reports.cards.require_restock")}</p>
           </CardContent>
         </Card>
+
+        {/* Reporte de Capital Inmovilizado integrado como tarjeta métrica */}
+        <div className="rounded-xl border border-[#221F3B] bg-[#151325] p-5 flex flex-col justify-between">
+          <ImmobilizedCapitalReport />
+        </div>
       </div>
 
+      {/* Detalle de Productos con Bajo Stock */}
       <Card>
         <CardHeader>
           <CardTitle>{t("reports.tables.low_stock_detail_title")}</CardTitle>
@@ -114,6 +120,7 @@ export function Reports() {
         </CardContent>
       </Card>
 
+      {/* Historial de Movimientos */}
       <Card>
         <CardHeader>
           <CardTitle>{t("reports.tables.movements_by_date_title")}</CardTitle>
@@ -157,11 +164,11 @@ export function Reports() {
                       </TableCell>
                       <TableCell className="font-medium">{movement.product?.name}</TableCell>
                       <TableCell>
-                        <Badge variant={config.variant}>{config.label}</Badge>
+                        <Badge variant={config?.variant}>{config?.label}</Badge>
                       </TableCell>
                       <TableCell>{movement.quantity}</TableCell>
                     </TableRow>
-                  )
+                  );
                 })}
               </TableBody>
             </Table>

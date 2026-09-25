@@ -197,7 +197,19 @@
     },
     "messages": {
       "no_low_stock": "No hay productos con stock bajo. 🎉"
-    }
+    },
+     "immobilizedCapital": {
+    "title": "Capital inmovilizado",
+    "subtitle": "Productos sin movimiento en los últimos {{days}} días",
+    "activeValue": "Capital activo",
+    "immobilizedValue": "Capital inmovilizado",
+    "totalValue": "Valor total",
+    "product": "Producto",
+    "sku": "SKU",
+    "value": "Valor atrapado",
+    "noImmobilized": "No hay productos sin movimiento en este período — buena señal",
+    "daysFilter": "Días sin movimiento"
+  }
   },
   "profile": {
     "title": "Mi perfil",
