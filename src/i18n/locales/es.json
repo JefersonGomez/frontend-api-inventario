@@ -209,6 +209,17 @@
     "value": "Valor atrapado",
     "noImmobilized": "No hay productos sin movimiento en este período — buena señal",
     "daysFilter": "Días sin movimiento"
+  },
+  "stockForecast": {
+    "title": "Pronóstico de stock",
+    "subtitle": "Basado en el ritmo de ventas de los últimos {{days}} días",
+    "urgentTitle": "Por agotarse pronto",
+    "noUrgent": "Ningún producto está por agotarse según su ritmo de ventas actual",
+    "product": "Producto",
+    "currentStock": "Stock actual",
+    "dailyVelocity": "Ventas/día",
+    "daysRemaining": "Días restantes",
+    "noData": "No hay suficientes ventas recientes para calcular un pronóstico"
   }
   },
   "profile": {

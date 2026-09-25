@@ -22,3 +22,8 @@ export async function getMovementsReport(from, to) {
 // src/api/reports.js — agregar
 export const getInventoryValueBreakdown = (days = 60) =>
   api.get("/reports/inventory-value-breakdown", { params: { days } }).then((res) => res.data);
+
+export const getStockForecast = (velocityDays = 30, alertDays = 14) =>
+  api
+    .get("/reports/stock-forecast", { params: { velocityDays, alertDays } })
+    .then((res) => res.data)

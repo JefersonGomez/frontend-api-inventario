@@ -209,6 +209,17 @@
     "value": "Trapped value",
     "noImmobilized": "No products without movement in this period — good sign",
     "daysFilter": "Days without movement"
+  },
+   "stockForecast": {
+    "title": "Stock forecast",
+    "subtitle": "Based on sales pace over the last {{days}} days",
+    "urgentTitle": "Running out soon",
+    "noUrgent": "No products are about to run out based on current sales pace",
+    "product": "Product",
+    "currentStock": "Current stock",
+    "dailyVelocity": "Sales/day",
+    "daysRemaining": "Days remaining",
+    "noData": "Not enough recent sales to calculate a forecast"
   }
 
   },

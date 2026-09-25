@@ -10,6 +10,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table"
 import { ImmobilizedCapitalReport } from "@/components/reports/ImmobilizedCapitalReport"
+import { StockForecastReport } from "@/components/reports/StockForecastReport"
 
 export function Reports() {
   const { t } = useTranslation()
@@ -44,8 +45,8 @@ export function Reports() {
         <p className="text-sm text-muted-foreground">{t("reports.subtitle")}</p>
       </div>
 
-      {/* Tarjetas resumen en grid de 3 columnas */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* Tarjetas resumen y módulos de análisis en grid de 4 columnas */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardHeader>
             <CardTitle className="text-sm font-normal text-muted-foreground">
@@ -74,9 +75,14 @@ export function Reports() {
           </CardContent>
         </Card>
 
-        {/* Reporte de Capital Inmovilizado integrado como tarjeta métrica */}
+        {/* Reporte de Capital Inmovilizado */}
         <div className="rounded-xl border border-[#221F3B] bg-[#151325] p-5 flex flex-col justify-between">
           <ImmobilizedCapitalReport />
+        </div>
+
+        {/* Reporte de Pronóstico de Stock */}
+        <div className="rounded-xl border border-[#221F3B] bg-[#151325] p-5 flex flex-col justify-between">
+          <StockForecastReport />
         </div>
       </div>
 
