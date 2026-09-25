@@ -99,7 +99,13 @@
     "delete": {
       "title": "¿Eliminar este producto?",
       "description": "Esta acción no se puede deshacer. \"{{name}}\" se eliminará permanentemente."
-    }
+    },
+     "priceHistory": {
+    "title": "Historial de precios",
+    "currentPrice": "Precio actual",
+    "noHistory": "Este producto no ha tenido cambios de precio registrados",
+    "loading": "Cargando historial..."
+  }
   },
   "categories": {
     "title": "Categorías",
@@ -313,5 +319,6 @@
   "errorMessage": "Hubo un problema al procesar tu pregunta. Intentá de nuevo.",
   "send": "Enviar"
 }
+
 
 }

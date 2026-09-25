@@ -21,11 +21,12 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
 import { Plus, Pencil, Trash2 } from "lucide-react"
-import { BarcodeScanner } from "@/components/BarcodeScanner" // Importar el escáner
+import { BarcodeScanner } from "@/components/BarcodeScanner"
+import { ProductPriceHistory } from "@/components/products/ProductPriceHistory"
 
 const emptyForm = { 
   sku: "", 
-  barcode: "", // Agregado
+  barcode: "", 
   name: "", 
   description: "", 
   price: "", 
@@ -53,7 +54,6 @@ export function Products() {
         price: Number(form.price),
         stock: Number(form.stock),
         minStock: Number(form.minStock),
-        // barcode ya viene en form
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] })
@@ -65,7 +65,7 @@ export function Products() {
     mutationFn: () =>
       updateProduct(editingProduct.id, {
         name: form.name,
-        barcode: form.barcode, // Agregado
+        barcode: form.barcode,
         description: form.description,
         price: Number(form.price),
         minStock: Number(form.minStock),
@@ -95,7 +95,7 @@ export function Products() {
     setEditingProduct(product)
     setForm({
       sku: product.sku,
-      barcode: product.barcode || "", // Cargar barcode existente
+      barcode: product.barcode || "",
       name: product.name,
       description: product.description ?? "",
       price: String(product.price),
@@ -127,7 +127,6 @@ export function Products() {
     }
   }
 
-  // Función para manejar el resultado del escaneo
   const handleScan = (code) => {
     setForm((prev) => ({ ...prev, barcode: code }))
   }
@@ -199,7 +198,9 @@ export function Products() {
         <DialogContent className="max-w-md">
           <form onSubmit={handleSubmit} className="space-y-4">
             <DialogHeader>
-              <DialogTitle>{editingProduct ? t("products.dialog.edit_title") : t("products.dialog.create_title")}</DialogTitle>
+              <DialogTitle>
+                {editingProduct ? t("products.dialog.edit_title") : t("products.dialog.create_title")}
+              </DialogTitle>
             </DialogHeader>
 
             {!editingProduct && (
@@ -213,7 +214,6 @@ export function Products() {
               </div>
             )}
 
-            {/* NUEVO CAMPO: Código de Barras con Escáner */}
             <div className="space-y-2">
               <Label>{t("products.dialog.label_barcode")}</Label>
               <div className="flex gap-2">
@@ -278,7 +278,7 @@ export function Products() {
               </div>
             </div>
 
-           <div className="space-y-2">
+            <div className="space-y-2">
               <Label>{t("products.dialog.label_category")}</Label>
               <Select
                 value={form.categoryId}
@@ -296,6 +296,11 @@ export function Products() {
                 </SelectContent>
               </Select>
             </div>
+
+            {/* Historial de precios, solo al editar */}
+            {editingProduct && (
+              <ProductPriceHistory productId={editingProduct.id} />
+            )}
 
             <DialogFooter>
               <Button type="submit" disabled={isSaving}>

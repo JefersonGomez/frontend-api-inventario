@@ -99,7 +99,13 @@
     "delete": {
       "title": "Delete this product?",
       "description": "This action cannot be undone. \"{{name}}\" will be permanently deleted."
-    }
+    },
+    "priceHistory": {
+    "title": "Price history",
+    "currentPrice": "Current price",
+    "noHistory": "This product hasn't had any recorded price changes",
+    "loading": "Loading history..."
+  }
   },
   "categories": {
     "title": "Categories",

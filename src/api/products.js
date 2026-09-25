@@ -23,3 +23,6 @@ export async function getProductByBarcode(code) {
   const response = await api.get(`/products/barcode/${code}`)
   return response.data
 }
+
+export const getProductPriceHistory = (id) =>
+  api.get(`/products/${id}/price-history`).then((res) => res.data);
