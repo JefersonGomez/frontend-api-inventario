@@ -6,6 +6,7 @@ import { getCategories } from "@/api/categories"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useSearchParams } from "react-router-dom"
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table"
@@ -39,6 +40,9 @@ const emptyForm = {
 export function Products() {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
+
+  const [searchParams] = useSearchParams()
+  const highlightId = searchParams.get("highlight")
 
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingProduct, setEditingProduct] = useState(null)
@@ -174,7 +178,7 @@ export function Products() {
             )}
 
             {productsQuery.data?.map((product) => (
-              <TableRow key={product.id}>
+              <TableRow key={product.id}  className={product.id === highlightId ? "bg-primary/10" : undefined}>
                 <TableCell className="text-muted-foreground">{product.sku}</TableCell>
                 <TableCell className="font-medium">{product.name}</TableCell>
                 <TableCell className="text-muted-foreground">{product.category?.name}</TableCell>

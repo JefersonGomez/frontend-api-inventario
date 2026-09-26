@@ -2,8 +2,6 @@ import { NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
-import { usePurchaseRequestAlerts } from "@/hoocks/usePurchaseRequestAlerts";
-import { ShieldCheck } from "lucide-react"
 import {
   LayoutDashboard,
   Package,
@@ -15,18 +13,12 @@ import {
   Settings as SettingsIcon,
   Users as UsersIcon,
   Truck,
+  ShieldCheck,
 } from "lucide-react";
 
 export function Sidebar({ className }) {
   const { t } = useTranslation();
   const { user } = useAuth();
-  const { data: alerts } = usePurchaseRequestAlerts();
-
-  // Suma de alertas: solicitudes por vencer + aprobadas sin procesar
-  const alertCount =
-    (alerts?.expiringSoon?.length ?? 0) +
-    (alerts?.approvedUnfulfilled?.length ?? 0)+
-    (alerts?.expiringSoonProducts.length ?? 0);
 
   const navItems = [
     { to: "/", label: t("sidebar.dashboard"), icon: LayoutDashboard },
@@ -44,15 +36,14 @@ export function Sidebar({ className }) {
       icon: ClipboardList,
     },
     ...(user?.role === "ADMIN"
-  ? [{ to: "/audit-log", label: t("sidebar.auditLog", "Auditoría"), icon: ShieldCheck }]
-  : []),
+      ? [{ to: "/audit-log", label: t("sidebar.auditLog", "Auditoría"), icon: ShieldCheck }]
+      : []),
     ...(user?.role === "ADMIN"
       ? [
           {
             to: "/purchase-orders",
             label: t("sidebar.purchaseOrders", "Órdenes de compra"),
             icon: ShoppingCart,
-            badge: alertCount > 0 ? alertCount : undefined,
           },
         ]
       : []),
@@ -79,7 +70,7 @@ export function Sidebar({ className }) {
         </p>
 
         <nav className="flex flex-col gap-1 text-sm">
-          {navItems.map(({ to, label, icon: Icon, badge }) => (
+          {navItems.map(({ to, label, icon: Icon }) => (
             <NavLink
               key={to}
               to={to}
@@ -97,11 +88,6 @@ export function Sidebar({ className }) {
                 <Icon className="w-4 h-4" />
                 {label}
               </span>
-              {badge && (
-                <span className="bg-destructive text-white text-xs rounded-full px-2 py-0.5">
-                  {badge}
-                </span>
-              )}
             </NavLink>
           ))}
         </nav>

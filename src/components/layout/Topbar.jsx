@@ -1,7 +1,9 @@
-import { Search, Bell, Menu, LogOut, User } from "lucide-react"
+import { Search, Menu, LogOut, User } from "lucide-react"
+
 import { useNavigate } from "react-router-dom"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
+import { NotificationBell } from "./NotificationBell"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -47,9 +49,7 @@ export function Topbar({ onMenuClick }) {
         </div>
       </div>
       <div className="flex items-center gap-3">
-        <button className="w-9 h-9 rounded-lg bg-white/5 flex items-center justify-center text-muted-foreground">
-          <Bell className="w-4 h-4" />
-        </button>
+        <NotificationBell />
 
         <DropdownMenu>
           <DropdownMenuTrigger

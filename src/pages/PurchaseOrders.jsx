@@ -1,8 +1,9 @@
 // src/pages/PurchaseOrders.jsx
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, AlertCircle } from "lucide-react";
 import {
   getPurchaseOrders,
   createPurchaseOrder,
@@ -11,6 +12,7 @@ import {
 import { getSuppliers } from "@/api/suppliers";
 import { getProducts } from "@/api/products";
 import { usePurchaseRequestAlerts } from "@/hoocks/usePurchaseRequestAlerts";
+import { cn } from "@/lib/utils";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
@@ -37,10 +39,23 @@ const emptyLine = () => ({ productId: "", quantity: "", unitCost: "" });
 export function PurchaseOrders() {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
-  const [open, setOpen] = useState(false);
+  const [searchParams] = useSearchParams();
+
+  const actionParam = searchParams.get("action");
+  const requestIdParam = searchParams.get("requestId");
+  const productIdParam = searchParams.get("productId");
+
+  const [open, setOpen] = useState(() => actionParam === "create");
   const [supplierId, setSupplierId] = useState("");
-  const [lines, setLines] = useState([emptyLine()]);
-  const [selectedRequestIds, setSelectedRequestIds] = useState([]);
+  const [selectedRequestIds, setSelectedRequestIds] = useState(() => {
+    return actionParam === "create" && requestIdParam ? [requestIdParam] : [];
+  });
+  const [lines, setLines] = useState(() => {
+    if (actionParam === "create" && productIdParam) {
+      return [{ productId: productIdParam, quantity: 1, unitCost: "" }];
+    }
+    return [emptyLine()];
+  });
 
   const { data: alerts } = usePurchaseRequestAlerts();
 
@@ -58,6 +73,11 @@ export function PurchaseOrders() {
     queryKey: ["products"],
     queryFn: getProducts,
   });
+
+  const productPriceMap = products.reduce((acc, p) => {
+    if (p.id) acc[p.id] = p.price;
+    return acc;
+  }, {});
 
   const createMutation = useMutation({
     mutationFn: createPurchaseOrder,
@@ -79,10 +99,22 @@ export function PurchaseOrders() {
     },
   });
 
-  // --- helpers para las líneas repetibles ---
   const updateLine = (index, field, value) => {
     setLines((prev) =>
-      prev.map((line, i) => (i === index ? { ...line, [field]: value } : line))
+      prev.map((line, i) => {
+        if (i !== index) return line;
+
+        if (field === "productId") {
+          const autoPrice = productPriceMap[value];
+          return {
+            ...line,
+            productId: value,
+            unitCost: autoPrice !== undefined ? String(autoPrice) : line.unitCost,
+          };
+        }
+
+        return { ...line, [field]: value };
+      })
     );
   };
 
@@ -91,10 +123,18 @@ export function PurchaseOrders() {
   const removeLine = (index) =>
     setLines((prev) => (prev.length > 1 ? prev.filter((_, i) => i !== index) : prev));
 
-  const orderTotal = lines.reduce(
-    (sum, l) => sum + (Number(l.quantity) || 0) * (Number(l.unitCost) || 0),
-    0
-  );
+  const getEffectiveUnitCost = (line) => {
+    if (line.unitCost !== "") return line.unitCost;
+    if (line.productId && productPriceMap[line.productId] !== undefined) {
+      return String(productPriceMap[line.productId]);
+    }
+    return "";
+  };
+
+  const orderTotal = lines.reduce((sum, l) => {
+    const cost = getEffectiveUnitCost(l);
+    return sum + (Number(l.quantity) || 0) * (Number(cost) || 0);
+  }, 0);
 
   const handleCreate = (e) => {
     e.preventDefault();
@@ -103,7 +143,7 @@ export function PurchaseOrders() {
       items: lines.map((l) => ({
         productId: l.productId,
         quantity: Number(l.quantity),
-        unitCost: Number(l.unitCost),
+        unitCost: Number(getEffectiveUnitCost(l)),
       })),
       fulfilledRequestIds: selectedRequestIds.length ? selectedRequestIds : undefined,
     });
@@ -111,18 +151,42 @@ export function PurchaseOrders() {
 
   if (isLoading) return <div>{t("common.loading")}</div>;
 
+  const isNoticeActive = Boolean(actionParam);
+
   return (
     <div className="p-6 space-y-4">
+      {isNoticeActive && (
+        <div className="flex items-center gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-amber-600 dark:text-amber-400">
+          <AlertCircle className="h-5 w-5 shrink-0" />
+          <p className="text-sm font-medium">
+            Tienes una orden de compra pendiente de procesar. Se han precargado los datos correspondientes.
+          </p>
+        </div>
+      )}
+
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-semibold">{t("purchaseOrders.title")}</h1>
+
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger className="inline-flex shrink-0 items-center justify-center rounded-md text-sm font-medium transition-colors bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
-            {t("purchaseOrders.newOrder")}
-          </DialogTrigger>
+          <DialogTrigger
+            render={
+              <Button
+                className={cn(
+                  "transition-all duration-300",
+                  isNoticeActive && "ring-4 ring-primary/40 scale-105 shadow-lg"
+                )}
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                {t("purchaseOrders.newOrder")}
+              </Button>
+            }
+          />
+
           <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>{t("purchaseOrders.newOrder")}</DialogTitle>
             </DialogHeader>
+
             <form onSubmit={handleCreate} className="space-y-4">
               <Select value={supplierId} onValueChange={setSupplierId}>
                 <SelectTrigger>
@@ -137,7 +201,6 @@ export function PurchaseOrders() {
                 </SelectContent>
               </Select>
 
-              {/* Lista de solicitudes aprobadas para vincular */}
               {alerts?.approvedUnfulfilled?.length > 0 && (
                 <div className="space-y-2 border rounded-md p-3 bg-muted/40">
                   <p className="text-sm font-medium">
@@ -165,53 +228,57 @@ export function PurchaseOrders() {
               )}
 
               <div className="space-y-2">
-                {lines.map((line, index) => (
-                  <div key={index} className="flex gap-2 items-center">
-                    <Select
-                      value={line.productId}
-                      onValueChange={(v) => updateLine(index, "productId", v)}
-                    >
-                      <SelectTrigger className="flex-1">
-                        <SelectValue placeholder={t("purchaseOrders.product")} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {products.map((p) => (
-                          <SelectItem key={p.id} value={p.id}>
-                            {p.name} ({p.sku})
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <Input
-                      type="number"
-                      min={1}
-                      className="w-24"
-                      placeholder={t("purchaseOrders.quantity")}
-                      value={line.quantity}
-                      onChange={(e) => updateLine(index, "quantity", e.target.value)}
-                      required
-                    />
-                    <Input
-                      type="number"
-                      min={0}
-                      step="0.01"
-                      className="w-28"
-                      placeholder={t("purchaseOrders.unitCost")}
-                      value={line.unitCost}
-                      onChange={(e) => updateLine(index, "unitCost", e.target.value)}
-                      required
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => removeLine(index)}
-                      disabled={lines.length === 1}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                ))}
+                {lines.map((line, index) => {
+                  const effectiveUnitCost = getEffectiveUnitCost(line);
+
+                  return (
+                    <div key={index} className="flex gap-2 items-center">
+                      <Select
+                        value={line.productId}
+                        onValueChange={(v) => updateLine(index, "productId", v)}
+                      >
+                        <SelectTrigger className="flex-1">
+                          <SelectValue placeholder={t("purchaseOrders.product")} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {products.map((p) => (
+                            <SelectItem key={p.id} value={p.id}>
+                              {p.name} ({p.sku})
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Input
+                        type="number"
+                        min={1}
+                        className="w-24"
+                        placeholder={t("purchaseOrders.quantity")}
+                        value={line.quantity}
+                        onChange={(e) => updateLine(index, "quantity", e.target.value)}
+                        required
+                      />
+                      <Input
+                        type="number"
+                        min={0}
+                        step="0.01"
+                        className="w-28"
+                        placeholder={t("purchaseOrders.unitCost")}
+                        value={effectiveUnitCost}
+                        onChange={(e) => updateLine(index, "unitCost", e.target.value)}
+                        required
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => removeLine(index)}
+                        disabled={lines.length === 1}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  );
+                })}
                 <Button type="button" variant="outline" size="sm" onClick={addLine}>
                   <Plus className="w-4 h-4 mr-1" />
                   {t("purchaseOrders.addLine")}
@@ -253,11 +320,15 @@ export function PurchaseOrders() {
                 {o.status === "PENDING" && (
                   <AlertDialog>
                     <AlertDialogTrigger
-                      disabled={receiveMutation.isPending}
-                      className="inline-flex shrink-0 items-center justify-center rounded-md text-xs font-medium transition-colors bg-primary text-primary-foreground hover:bg-primary/90 h-8 px-3 disabled:pointer-events-none disabled:opacity-50"
-                    >
-                      {t("purchaseOrders.receive")}
-                    </AlertDialogTrigger>
+                      render={
+                        <Button
+                          size="sm"
+                          disabled={receiveMutation.isPending}
+                        >
+                          {t("purchaseOrders.receive")}
+                        </Button>
+                      }
+                    />
                     <AlertDialogContent>
                       <AlertDialogHeader>
                         <AlertDialogTitle>
