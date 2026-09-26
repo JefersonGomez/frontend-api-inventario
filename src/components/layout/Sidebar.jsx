@@ -25,7 +25,8 @@ export function Sidebar({ className }) {
   // Suma de alertas: solicitudes por vencer + aprobadas sin procesar
   const alertCount =
     (alerts?.expiringSoon?.length ?? 0) +
-    (alerts?.approvedUnfulfilled?.length ?? 0);
+    (alerts?.approvedUnfulfilled?.length ?? 0)+
+    (alerts?.expiringSoonProducts.length ?? 0);
 
   const navItems = [
     { to: "/", label: t("sidebar.dashboard"), icon: LayoutDashboard },

@@ -32,7 +32,8 @@ const emptyForm = {
   price: "", 
   stock: "", 
   minStock: "", 
-  categoryId: "" 
+  categoryId: "",
+  expirationDate: "",
 }
 
 export function Products() {
@@ -54,6 +55,7 @@ export function Products() {
         price: Number(form.price),
         stock: Number(form.stock),
         minStock: Number(form.minStock),
+        expirationDate: form.expirationDate || undefined,
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] })
@@ -70,6 +72,7 @@ export function Products() {
         price: Number(form.price),
         minStock: Number(form.minStock),
         categoryId: form.categoryId,
+        expirationDate: form.expirationDate || undefined,
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] })
@@ -102,6 +105,9 @@ export function Products() {
       stock: String(product.stock),
       minStock: String(product.minStock),
       categoryId: product.categoryId ?? "",
+      expirationDate: product.expirationDate
+        ? product.expirationDate.slice(0, 10)
+        : "",
     })
     setDialogOpen(true)
   }
@@ -274,6 +280,15 @@ export function Products() {
                   value={form.minStock}
                   onChange={(e) => setForm({ ...form, minStock: e.target.value })}
                   required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>{t("products.dialog.label_expiration_date", "Fecha de vencimiento")}</Label>
+                <Input
+                  type="date"
+                  value={form.expirationDate}
+                  onChange={(e) => setForm({ ...form, expirationDate: e.target.value })}
                 />
               </div>
             </div>

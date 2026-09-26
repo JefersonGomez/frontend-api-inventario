@@ -12,21 +12,26 @@ import { CategoryStockChart } from "@/components/charts/CategoryStockChart"
 import { aggregateMovementsByDay, aggregateStockByCategory } from "@/lib/chart-utils"
 import { usePurchaseRequestAlerts } from "@/hoocks/usePurchaseRequestAlerts"
 
-function PurchaseRequestAlertsCard() {
+// ← renombrado de PurchaseRequestAlertsCard a AlertsCard, ya que ahora
+// mezcla solicitudes de compra Y productos por vencer
+function AlertsCard() {
   const { t } = useTranslation();
   const { data: alerts, isLoading } = usePurchaseRequestAlerts();
 
   if (isLoading || !alerts) return null;
 
-  const { expiringSoon = [], approvedUnfulfilled = [] } = alerts;
-  if (expiringSoon.length === 0 && approvedUnfulfilled.length === 0) return null;
+  // ← nuevo: expiringSoonProducts, con el mismo patrón de default [] que ya usabas
+  const { expiringSoon = [], approvedUnfulfilled = [], expiringSoonProducts = [] } = alerts;
+  if (expiringSoon.length === 0 && approvedUnfulfilled.length === 0 && expiringSoonProducts.length === 0) {
+    return null;
+  }
 
   return (
     <Card className="border-amber-500/20 bg-amber-500/5 mb-6">
       <CardHeader className="pb-3">
         <CardTitle className="text-base font-semibold flex items-center gap-2">
           <AlertTriangle className="w-5 h-5 text-amber-500" />
-          {t("dashboard.purchaseAlerts", "Alertas de compras")}
+          {t("dashboard.alerts", "Alertas")}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-2">
@@ -53,6 +58,19 @@ function PurchaseRequestAlertsCard() {
             })}
           </Link>
         )}
+
+        {/* ← nuevo bloque */}
+        {expiringSoonProducts.length > 0 && (
+          <Link
+            to="/products"
+            className="flex items-center gap-2 text-sm text-foreground/90 hover:underline hover:text-red-500 transition-colors"
+          >
+            <Clock className="w-4 h-4 text-red-500" />
+            {t("dashboard.expiringSoonProducts", "{{count}} producto(s) por vencer en menos de 7 días", {
+              count: expiringSoonProducts.length,
+            })}
+          </Link>
+        )}
       </CardContent>
     </Card>
   );
@@ -61,7 +79,6 @@ function PurchaseRequestAlertsCard() {
 export function Dashboard() {
   const { t } = useTranslation();
 
-  // Queries existentes
   const productsQuery = useQuery({
     queryKey: ["products"],
     queryFn: getProducts,
@@ -77,13 +94,11 @@ export function Dashboard() {
     queryFn: getInventoryValueReport,
   });
 
-  // Query para movimientos (para el gráfico)
   const movementsQuery = useQuery({
     queryKey: ["reports", "movements"],
     queryFn: getMovementsReport,
   });
 
-  // Procesamiento de datos para los gráficos
   const movementsChartData = movementsQuery.data
     ? aggregateMovementsByDay(movementsQuery.data)
     : [];
@@ -99,10 +114,9 @@ export function Dashboard() {
         <p className="text-sm text-muted-foreground">{t("dashboard.subtitle")}</p>
       </div>
 
-      {/* Tarjeta de Alertas de Solicitudes y Órdenes de Compra */}
-      <PurchaseRequestAlertsCard />
+      {/* ← renombrado de <PurchaseRequestAlertsCard /> a <AlertsCard /> */}
+      <AlertsCard />
 
-      {/* Tarjetas de Métricas Existentes */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -155,7 +169,6 @@ export function Dashboard() {
         </Card>
       </div>
 
-      {/* Sección de Gráficos */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <Card>
           <CardHeader>
@@ -184,7 +197,6 @@ export function Dashboard() {
         </Card>
       </div>
 
-      {/* Tabla de Stock Bajo */}
       <Card>
         <CardHeader>
           <CardTitle>{t("dashboard.low_stock_table.title")}</CardTitle>

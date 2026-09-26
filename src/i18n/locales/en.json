@@ -94,7 +94,8 @@
       "label_min_stock": "Min Stock",
       "label_category": "Category",
       "placeholder_category": "Select a category",
-      "label_barcode": "Barcode"
+      "label_barcode": "Barcode",
+      "label_expiration_date": "Expiration date"
     },
     "delete": {
       "title": "Delete this product?",

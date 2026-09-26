@@ -94,7 +94,8 @@
       "label_min_stock": "Stock mínimo",
       "label_category": "Categoría",
       "placeholder_category": "Selecciona una categoría",
-      "label_barcode": "Código de barras"
+      "label_barcode": "Código de barras",
+      "label_expiration_date": "Fecha de vencimiento"
     },
     "delete": {
       "title": "¿Eliminar este producto?",
