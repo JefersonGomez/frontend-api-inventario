@@ -112,28 +112,28 @@
   background-attachment: fixed;
 }
 .stk-shell {
-  max-width: 1240px;
+  max-width: 1500px;
   margin: 0 auto;
-  padding: 18px;
+  padding: 28px;
   border-radius: 24px;
   background: var(--background);
   box-shadow: 0 40px 100px -30px rgba(0, 0, 0, 0.8), 0 12px 30px -16px rgba(0, 0, 0, 0.6);
   display: grid;
-  grid-template-columns: 210px minmax(0, 1fr);
-  gap: 18px;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 28px;
   align-items: start;
 }
 .stk-shell > * { min-width: 0; }
 .stk-card {
   background: var(--card);
   color: var(--card-foreground);
-  border-radius: 16px;
-  padding: 18px;
+  border-radius: 18px;
+  padding: 22px;
 }
 
 /* Navegación */
-.stk-side { display: flex; flex-direction: column; gap: 18px; position: sticky; top: 18px; }
-.stk-nav { display: flex; flex-direction: column; gap: 4px; }
+.stk-side { display: flex; flex-direction: column; gap: 24px; position: sticky; top: 28px; }
+.stk-nav { display: flex; flex-direction: column; gap: 6px; }
 .stk-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; text-decoration: none; color: inherit; }
 .stk-logo-mark {
   flex: none; width: 38px; height: 38px; border-radius: 10px;
@@ -168,7 +168,7 @@
 .stk-btn-lime:hover { filter: brightness(0.95); }
 
 /* Barra superior */
-.stk-top { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+.stk-top { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; }
 .stk-search {
   flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px;
   min-height: 44px; padding: 0 14px; border-radius: 12px; background: var(--card); color: var(--muted-foreground);
@@ -184,15 +184,16 @@
 .stk-app :focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
 
 @media (max-width: 1100px) {
-  .stk-shell { grid-template-columns: 200px minmax(0, 1fr); }
+  .stk-shell { grid-template-columns: 220px minmax(0, 1fr); gap: 24px; padding: 24px; }
 }
 @media (max-width: 760px) {
   .stk-app { padding: 16px; }
-  .stk-shell { grid-template-columns: minmax(0, 1fr); gap: 10px; padding: 10px; border-radius: 20px; }
+  .stk-shell { grid-template-columns: minmax(0, 1fr); gap: 12px; padding: 12px; border-radius: 20px; }
   .stk-side { position: static; gap: 10px; }
   .stk-nav { flex-direction: row; align-items: center; overflow-x: auto; scrollbar-width: none; padding: 10px; }
   .stk-logo { margin: 0 8px 0 0; }
   .stk-link { width: auto; white-space: nowrap; }
   .stk-sep, .stk-promo { display: none; }
-  .stk-top { margin-bottom: 10px; }
+  .stk-top { margin-bottom: 14px; }
+  .stk-card { padding: 18px; }
 }

@@ -45,8 +45,8 @@ export function Reports() {
         <p className="text-sm text-muted-foreground">{t("reports.subtitle")}</p>
       </div>
 
-      {/* Tarjetas resumen y módulos de análisis en grid de 4 columnas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Tarjetas resumen y módulos de análisis en grid de 2 columnas */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
             <CardTitle className="text-sm font-normal text-muted-foreground">

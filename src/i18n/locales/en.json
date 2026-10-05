@@ -27,7 +27,7 @@
     "scanButton": "Scan product"
   },
   "topbar": {
-    "search": "Search product, SKU or order",
+    "search": "Search product or SKU",
     "profile": "My profile",
     "logout": "Log out"
   },
@@ -41,7 +41,9 @@
       "submitting": "Signing in...",
       "error": "Invalid credentials. Try again.",
       "noAccount": "Don't have an account?",
-      "register": "Sign up"
+      "register": "Sign up",
+      "panelTitle": "Welcome back",
+      "panelSubtitle": "Manage your stock, warehouses and orders from a single panel."
     },
     "register": {
       "title": "Create account",
@@ -159,7 +161,8 @@
       "currentPrice": "Current price",
       "noHistory": "This product hasn't had any recorded price changes",
       "loading": "Loading history..."
-    }
+    },
+    "noResults": "No results for \"{{q}}\""
   },
   "categories": {
     "title": "Categories",

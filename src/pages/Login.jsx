@@ -1,24 +1,23 @@
 import { useState } from "react"
 import { useNavigate, Link } from "react-router-dom"
 import { useMutation } from "@tanstack/react-query"
-import { useTranslation } from "react-i18next" // 1. Importar hook
+import { useTranslation } from "react-i18next"
 import { loginRequest } from "@/api/auth"
 import { useAuth } from "@/context/AuthContext"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { BoxesIllustration } from "@/components/BoxesIllustration"
+import "./Register.css"
 
 export function Login() {
-  const { t } = useTranslation() // 2. Llamar al hook
+  const { t } = useTranslation()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const { login } = useAuth() 
+  const { login } = useAuth()
   const navigate = useNavigate()
 
   const mutation = useMutation({
-    mutationFn: () => loginRequest(email, password),
+    mutationFn: () => loginRequest(email.trim(), password),
     onSuccess: (data) => {
-       login(data.token, data.refreshToken, data.user)
+      login(data.token, data.refreshToken, data.user)
       navigate("/")
     },
   })
@@ -28,53 +27,48 @@ export function Login() {
     mutation.mutate()
   }
 
+  const apiError = mutation.error?.response?.data?.error
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-4 p-6">
-        <div>
-          {/* 3. Reemplazar texto por t() */}
-          <h1 className="text-2xl font-semibold">{t("login.title")}</h1>
-          <p className="text-sm text-muted-foreground">{t("login.subtitle")}</p>
+    <div className="stk-page">
+      <div className="stk-reg-card">
+        <aside className="stk-panel">
+          <h1 className="stk-title">{t("auth.login.panelTitle")}</h1>
+          <p className="stk-sub">{t("auth.login.panelSubtitle")}</p>
+          <BoxesIllustration t={t} />
+        </aside>
+
+        <div className="stk-form-wrap">
+          <form className="stk-form" onSubmit={handleSubmit}>
+            <h2 className="stk-form-title">{t("auth.login.title")}</h2>
+            <p className="stk-form-sub">{t("auth.login.subtitle")}</p>
+
+            <div className="stk-field">
+              <label htmlFor="email">{t("auth.login.email")}</label>
+              <input id="email" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+            </div>
+
+            <div className="stk-field">
+              <label htmlFor="password">{t("auth.login.password")}</label>
+              <input id="password" type="password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+            </div>
+
+            {mutation.isError && (
+              <p className="stk-error" role="alert">
+                {typeof apiError === "string" ? apiError : t("auth.login.error")}
+              </p>
+            )}
+
+            <button type="submit" className="stk-btn" disabled={mutation.isPending}>
+              {mutation.isPending ? t("auth.login.submitting") : t("auth.login.submit")}
+            </button>
+
+            <p className="stk-foot">
+              {t("auth.login.noAccount")} <Link to="/register">{t("auth.login.register")}</Link>
+            </p>
+          </form>
         </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="email">{t("login.labels.email")}</Label>
-          <Input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="password">{t("login.labels.password")}</Label>
-          <Input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-
-        {mutation.isError && (
-  <p className="text-sm text-destructive">
-    {mutation.error?.response?.data?.error ?? t("auth.login.error")}
-  </p>
-)}
-
-        <Button type="submit" className="w-full" disabled={mutation.isPending}>
-          {mutation.isPending ? t("login.buttons.logging_in") : t("login.buttons.login")}
-        </Button>
-   <p className="text-sm text-center text-muted-foreground">
-  {t("login.no_account")}{" "}
-  <Link to="/register" className="text-primary hover:underline">
-    {t("login.register_link")}
-  </Link>
-</p>
-      </form>
+      </div>
     </div>
   )
 }

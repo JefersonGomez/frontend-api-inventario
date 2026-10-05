@@ -27,7 +27,7 @@
     "scanButton": "Escanear producto"
   },
   "topbar": {
-    "search": "Buscar producto, SKU o pedido",
+    "search": "Buscar producto o SKU",
     "profile": "Mi perfil",
     "logout": "Cerrar sesión"
   },
@@ -41,7 +41,9 @@
       "submitting": "Ingresando...",
       "error": "Credenciales inválidas. Intenta de nuevo.",
       "noAccount": "¿No tienes cuenta?",
-      "register": "Regístrate"
+      "register": "Regístrate",
+      "panelTitle": "Bienvenido de nuevo",
+      "panelSubtitle": "Controla tu stock, almacenes y pedidos desde un solo panel."
     },
     "register": {
       "title": "Crear cuenta",
@@ -159,7 +161,8 @@
       "currentPrice": "Precio actual",
       "noHistory": "Este producto no ha tenido cambios de precio registrados",
       "loading": "Cargando historial..."
-    }
+    },
+    "noResults": "Sin resultados para \"{{q}}\""
   },
   "categories": {
     "title": "Categorías",

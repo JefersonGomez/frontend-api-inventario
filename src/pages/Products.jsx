@@ -43,6 +43,8 @@ export function Products() {
 
   const [searchParams] = useSearchParams()
   const highlightId = searchParams.get("highlight")
+  const fold = (v) => (v ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase()
+  const q = fold(searchParams.get("q")).trim()
 
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingProduct, setEditingProduct] = useState(null)
@@ -50,6 +52,9 @@ export function Products() {
   const [deletingProduct, setDeletingProduct] = useState(null)
 
   const productsQuery = useQuery({ queryKey: ["products"], queryFn: getProducts })
+  const visibleProducts = (productsQuery.data ?? []).filter(
+    (p) => !q || [p.name, p.sku, p.barcode, p.category?.name].some((v) => fold(v).includes(q))
+  )
   const categoriesQuery = useQuery({ queryKey: ["categories"], queryFn: getCategories })
 
   const createMutation = useMutation({
@@ -177,7 +182,15 @@ export function Products() {
               </TableRow>
             )}
 
-            {productsQuery.data?.map((product) => (
+            {!productsQuery.isLoading && visibleProducts.length === 0 && q && (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center text-muted-foreground">
+                  {t("products.noResults", { q: searchParams.get("q") })}
+                </TableCell>
+              </TableRow>
+            )}
+
+            {visibleProducts.map((product) => (
               <TableRow key={product.id}  className={product.id === highlightId ? "bg-primary/10" : undefined}>
                 <TableCell className="text-muted-foreground">{product.sku}</TableCell>
                 <TableCell className="font-medium">{product.name}</TableCell>

@@ -219,3 +219,9 @@
   .stk-float,
   .stk-scan { animation: none; }
 }
+
+.stk-form-sub {
+  margin: -0.5rem 0 0.25rem;
+  font-size: 0.9rem;
+  color: var(--stk-muted);
+}
