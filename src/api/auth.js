@@ -5,7 +5,7 @@ export async function loginRequest(email,password){
     return response.data
 }
 
-export async function registerRequest(name, email, password) {
-  const response = await api.post("/auth/register", { name, email, password })
+export async function registerRequest({ name, email, password, phone, company }) {
+  const response = await api.post("/auth/register", { name, email, password, phone, company })
   return response.data
 }

@@ -47,8 +47,22 @@
       "login": "Sign in",
       "errors": {
         "validation": "Please check the entered data.",
-        "creation_failed": "Could not create account. Try another email."
-      }
+        "creation_failed": "Could not create account. Try another email.",
+        "passwordMismatch": "Passwords don't match."
+      },
+      "panelTitle": "Create your account",
+      "panelSubtitle": "Manage your stock, warehouses and orders from a single panel.",
+      "phone": "Phone",
+      "company": "Company",
+      "optional": "(optional)",
+      "confirmPassword": "Confirm password",
+      "success": {
+        "title": "All set, {{name}}!",
+        "text": "Your account was created. You can sign in now."
+      },
+      "artLabel": "Inventory boxes with a barcode",
+      "inStock": "In stock",
+      "units": "{{count}} units"
     }
   },
   "dashboard": {
@@ -102,11 +116,11 @@
       "description": "This action cannot be undone. \"{{name}}\" will be permanently deleted."
     },
     "priceHistory": {
-    "title": "Price history",
-    "currentPrice": "Current price",
-    "noHistory": "This product hasn't had any recorded price changes",
-    "loading": "Loading history..."
-  }
+      "title": "Price history",
+      "currentPrice": "Current price",
+      "noHistory": "This product hasn't had any recorded price changes",
+      "loading": "Loading history..."
+    }
   },
   "categories": {
     "title": "Categories",
@@ -114,7 +128,7 @@
     "new_button": "New Category",
     "table": {
       "name": "Name",
-       "description": "Description",
+      "description": "Description",
       "actions": "Actions"
     },
     "dialog": {
@@ -200,29 +214,28 @@
       "no_low_stock": "No low stock products. 🎉"
     },
     "immobilizedCapital": {
-    "title": "Immobilized capital",
-    "subtitle": "Products with no movement in the last {{days}} days",
-    "activeValue": "Active capital",
-    "immobilizedValue": "Immobilized capital",
-    "totalValue": "Total value",
-    "product": "Product",
-    "sku": "SKU",
-    "value": "Trapped value",
-    "noImmobilized": "No products without movement in this period — good sign",
-    "daysFilter": "Days without movement"
-  },
-   "stockForecast": {
-    "title": "Stock forecast",
-    "subtitle": "Based on sales pace over the last {{days}} days",
-    "urgentTitle": "Running out soon",
-    "noUrgent": "No products are about to run out based on current sales pace",
-    "product": "Product",
-    "currentStock": "Current stock",
-    "dailyVelocity": "Sales/day",
-    "daysRemaining": "Days remaining",
-    "noData": "Not enough recent sales to calculate a forecast"
-  }
-
+      "title": "Immobilized capital",
+      "subtitle": "Products with no movement in the last {{days}} days",
+      "activeValue": "Active capital",
+      "immobilizedValue": "Immobilized capital",
+      "totalValue": "Total value",
+      "product": "Product",
+      "sku": "SKU",
+      "value": "Trapped value",
+      "noImmobilized": "No products without movement in this period — good sign",
+      "daysFilter": "Days without movement"
+    },
+    "stockForecast": {
+      "title": "Stock forecast",
+      "subtitle": "Based on sales pace over the last {{days}} days",
+      "urgentTitle": "Running out soon",
+      "noUrgent": "No products are about to run out based on current sales pace",
+      "product": "Product",
+      "currentStock": "Current stock",
+      "dailyVelocity": "Sales/day",
+      "daysRemaining": "Days remaining",
+      "noData": "Not enough recent sales to calculate a forecast"
+    }
   },
   "profile": {
     "title": "My profile",
@@ -271,78 +284,77 @@
     "language": "Language",
     "languageDescription": "Choose the interface language"
   },
-
-"purchaseRequests": {
-  "title": "Purchase Requests",
-  "newRequest": "New request",
-  "product": "Product",
-  "quantity": "Quantity",
-  "reason": "Reason",
-  "status": "Status",
-  "requestedBy": "Requested by",
-  "date": "Date",
-  "actions": "Actions",
-  "approve": "Approve",
-  "reject": "Reject",
-  "statusPending": "Pending",
-  "statusApproved": "Approved",
-  "statusRejected": "Rejected",
-  "createSuccess": "Request created successfully",
-  "updateSuccess": "Status updated"
-},
-"purchaseOrders": {
-  "title": "Purchase Orders",
-  "newOrder": "New order",
-  "supplier": "Supplier",
-  "product": "Product",
-  "quantity": "Quantity",
-  "unitCost": "Unit cost",
-  "total": "Total",
-  "addLine": "Add line",
-  "removeLine": "Remove",
-  "status": "Status",
-  "date": "Date",
-  "actions": "Actions",
-  "receive": "Mark as received",
-  "confirmReceiveTitle": "Confirm receipt?",
-  "confirmReceiveDescription": "This will add stock for every product in the order and cannot be undone.",
-  "confirm": "Confirm",
-  "cancel": "Cancel",
-  "statusPending": "Pending",
-  "statusReceived": "Received",
-  "statusCancelled": "Cancelled",
-  "createSuccess": "Order created successfully",
-  "receiveSuccess": "Order received, stock updated"
-},
-"auditLog": {
-  "title": "Audit Log",
-  "subtitle": "History of administrative actions in the system",
-  "totalActions": "Total actions",
-  "activityLast7Days": "Activity (last 7 days)",
-  "actionsByType": "Actions by type",
-  "entitiesAffected": "Most affected entities",
-  "filterByEntity": "Filter by entity",
-  "allEntities": "All",
-  "user": "User",
-  "action": "Action",
-  "entity": "Entity",
-  "date": "Date",
-  "noLogs": "No logs for this filter",
-  "action.CREATE": "Created",
-  "action.UPDATE": "Updated",
-  "action.DELETE": "Deleted",
-  "action.APPROVE": "Approved",
-  "action.REJECT": "Rejected",
-  "action.RECEIVE": "Received",
-  "action.ACTIVATE": "Activated",
-  "action.DEACTIVATE": "Deactivated"
-},
-"assistant": {
-  "title": "Inventory Assistant",
-  "placeholder": "Ask something about your inventory...",
-  "welcomeMessage": "Hi! I can help you check products, low stock, inventory value and movements. What would you like to know?",
-  "thinking": "Thinking...",
-  "errorMessage": "There was a problem processing your question. Please try again.",
-  "send": "Send"
-}
+  "purchaseRequests": {
+    "title": "Purchase Requests",
+    "newRequest": "New request",
+    "product": "Product",
+    "quantity": "Quantity",
+    "reason": "Reason",
+    "status": "Status",
+    "requestedBy": "Requested by",
+    "date": "Date",
+    "actions": "Actions",
+    "approve": "Approve",
+    "reject": "Reject",
+    "statusPending": "Pending",
+    "statusApproved": "Approved",
+    "statusRejected": "Rejected",
+    "createSuccess": "Request created successfully",
+    "updateSuccess": "Status updated"
+  },
+  "purchaseOrders": {
+    "title": "Purchase Orders",
+    "newOrder": "New order",
+    "supplier": "Supplier",
+    "product": "Product",
+    "quantity": "Quantity",
+    "unitCost": "Unit cost",
+    "total": "Total",
+    "addLine": "Add line",
+    "removeLine": "Remove",
+    "status": "Status",
+    "date": "Date",
+    "actions": "Actions",
+    "receive": "Mark as received",
+    "confirmReceiveTitle": "Confirm receipt?",
+    "confirmReceiveDescription": "This will add stock for every product in the order and cannot be undone.",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "statusPending": "Pending",
+    "statusReceived": "Received",
+    "statusCancelled": "Cancelled",
+    "createSuccess": "Order created successfully",
+    "receiveSuccess": "Order received, stock updated"
+  },
+  "auditLog": {
+    "title": "Audit Log",
+    "subtitle": "History of administrative actions in the system",
+    "totalActions": "Total actions",
+    "activityLast7Days": "Activity (last 7 days)",
+    "actionsByType": "Actions by type",
+    "entitiesAffected": "Most affected entities",
+    "filterByEntity": "Filter by entity",
+    "allEntities": "All",
+    "user": "User",
+    "action": "Action",
+    "entity": "Entity",
+    "date": "Date",
+    "noLogs": "No logs for this filter",
+    "action.CREATE": "Created",
+    "action.UPDATE": "Updated",
+    "action.DELETE": "Deleted",
+    "action.APPROVE": "Approved",
+    "action.REJECT": "Rejected",
+    "action.RECEIVE": "Received",
+    "action.ACTIVATE": "Activated",
+    "action.DEACTIVATE": "Deactivated"
+  },
+  "assistant": {
+    "title": "Inventory Assistant",
+    "placeholder": "Ask something about your inventory...",
+    "welcomeMessage": "Hi! I can help you check products, low stock, inventory value and movements. What would you like to know?",
+    "thinking": "Thinking...",
+    "errorMessage": "There was a problem processing your question. Please try again.",
+    "send": "Send"
+  }
 }

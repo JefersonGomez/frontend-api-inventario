@@ -47,8 +47,22 @@
       "login": "Inicia sesión",
       "errors": {
         "validation": "Revisa los datos ingresados.",
-        "creation_failed": "No se pudo crear la cuenta. Intenta con otro correo."
-      }
+        "creation_failed": "No se pudo crear la cuenta. Intenta con otro correo.",
+        "passwordMismatch": "Las contraseñas no coinciden."
+      },
+      "panelTitle": "Crea tu cuenta",
+      "panelSubtitle": "Controla tu stock, almacenes y pedidos desde un solo panel.",
+      "phone": "Teléfono",
+      "company": "Empresa",
+      "optional": "(opcional)",
+      "confirmPassword": "Confirmar contraseña",
+      "success": {
+        "title": "¡Listo, {{name}}!",
+        "text": "Tu cuenta fue creada. Ya puedes iniciar sesión."
+      },
+      "artLabel": "Cajas de inventario con código de barras",
+      "inStock": "En stock",
+      "units": "{{count}} uds"
     }
   },
   "dashboard": {
@@ -101,12 +115,12 @@
       "title": "¿Eliminar este producto?",
       "description": "Esta acción no se puede deshacer. \"{{name}}\" se eliminará permanentemente."
     },
-     "priceHistory": {
-    "title": "Historial de precios",
-    "currentPrice": "Precio actual",
-    "noHistory": "Este producto no ha tenido cambios de precio registrados",
-    "loading": "Cargando historial..."
-  }
+    "priceHistory": {
+      "title": "Historial de precios",
+      "currentPrice": "Precio actual",
+      "noHistory": "Este producto no ha tenido cambios de precio registrados",
+      "loading": "Cargando historial..."
+    }
   },
   "categories": {
     "title": "Categorías",
@@ -114,7 +128,7 @@
     "new_button": "Nueva categoría",
     "table": {
       "name": "Nombre",
-      "description": "Descripción", 
+      "description": "Descripción",
       "actions": "Acciones"
     },
     "dialog": {
@@ -199,29 +213,29 @@
     "messages": {
       "no_low_stock": "No hay productos con stock bajo. 🎉"
     },
-     "immobilizedCapital": {
-    "title": "Capital inmovilizado",
-    "subtitle": "Productos sin movimiento en los últimos {{days}} días",
-    "activeValue": "Capital activo",
-    "immobilizedValue": "Capital inmovilizado",
-    "totalValue": "Valor total",
-    "product": "Producto",
-    "sku": "SKU",
-    "value": "Valor atrapado",
-    "noImmobilized": "No hay productos sin movimiento en este período — buena señal",
-    "daysFilter": "Días sin movimiento"
-  },
-  "stockForecast": {
-    "title": "Pronóstico de stock",
-    "subtitle": "Basado en el ritmo de ventas de los últimos {{days}} días",
-    "urgentTitle": "Por agotarse pronto",
-    "noUrgent": "Ningún producto está por agotarse según su ritmo de ventas actual",
-    "product": "Producto",
-    "currentStock": "Stock actual",
-    "dailyVelocity": "Ventas/día",
-    "daysRemaining": "Días restantes",
-    "noData": "No hay suficientes ventas recientes para calcular un pronóstico"
-  }
+    "immobilizedCapital": {
+      "title": "Capital inmovilizado",
+      "subtitle": "Productos sin movimiento en los últimos {{days}} días",
+      "activeValue": "Capital activo",
+      "immobilizedValue": "Capital inmovilizado",
+      "totalValue": "Valor total",
+      "product": "Producto",
+      "sku": "SKU",
+      "value": "Valor atrapado",
+      "noImmobilized": "No hay productos sin movimiento en este período — buena señal",
+      "daysFilter": "Días sin movimiento"
+    },
+    "stockForecast": {
+      "title": "Pronóstico de stock",
+      "subtitle": "Basado en el ritmo de ventas de los últimos {{days}} días",
+      "urgentTitle": "Por agotarse pronto",
+      "noUrgent": "Ningún producto está por agotarse según su ritmo de ventas actual",
+      "product": "Producto",
+      "currentStock": "Stock actual",
+      "dailyVelocity": "Ventas/día",
+      "daysRemaining": "Días restantes",
+      "noData": "No hay suficientes ventas recientes para calcular un pronóstico"
+    }
   },
   "profile": {
     "title": "Mi perfil",
@@ -270,79 +284,77 @@
     "language": "Idioma",
     "languageDescription": "Elige el idioma de la interfaz"
   },
-"purchaseRequests": {
-  "title": "Solicitudes de compra",
-  "newRequest": "Nueva solicitud",
-  "product": "Producto",
-  "quantity": "Cantidad",
-  "reason": "Motivo",
-  "status": "Estado",
-  "requestedBy": "Solicitado por",
-  "date": "Fecha",
-  "actions": "Acciones",
-  "approve": "Aprobar",
-  "reject": "Rechazar",
-  "statusPending": "Pendiente",
-  "statusApproved": "Aprobada",
-  "statusRejected": "Rechazada",
-  "createSuccess": "Solicitud creada correctamente",
-  "updateSuccess": "Estado actualizado"
-},
-"purchaseOrders": {
-  "title": "Órdenes de compra",
-  "newOrder": "Nueva orden",
-  "supplier": "Proveedor",
-  "product": "Producto",
-  "quantity": "Cantidad",
-  "unitCost": "Costo unitario",
-  "total": "Total",
-  "addLine": "Agregar línea",
-  "removeLine": "Quitar",
-  "status": "Estado",
-  "date": "Fecha",
-  "actions": "Acciones",
-  "receive": "Marcar como recibida",
-  "confirmReceiveTitle": "¿Confirmar recepción?",
-  "confirmReceiveDescription": "Esto va a sumar el stock de cada producto de la orden y no se puede deshacer.",
-  "confirm": "Confirmar",
-  "cancel": "Cancelar",
-  "statusPending": "Pendiente",
-  "statusReceived": "Recibida",
-  "statusCancelled": "Cancelada",
-  "createSuccess": "Orden creada correctamente",
-  "receiveSuccess": "Orden recibida, stock actualizado"
-},
-"auditLog": {
-  "title": "Registro de auditoría",
-  "subtitle": "Historial de acciones administrativas del sistema",
-  "totalActions": "Acciones totales",
-  "activityLast7Days": "Actividad (últimos 7 días)",
-  "actionsByType": "Acciones por tipo",
-  "entitiesAffected": "Entidades más afectadas",
-  "filterByEntity": "Filtrar por entidad",
-  "allEntities": "Todas",
-  "user": "Usuario",
-  "action": "Acción",
-  "entity": "Entidad",
-  "date": "Fecha",
-  "noLogs": "No hay registros para este filtro",
-  "action.CREATE": "Creó",
-  "action.UPDATE": "Editó",
-  "action.DELETE": "Eliminó",
-  "action.APPROVE": "Aprobó",
-  "action.REJECT": "Rechazó",
-  "action.RECEIVE": "Recibió",
-  "action.ACTIVATE": "Activó",
-  "action.DEACTIVATE": "Desactivó"
-},
-"assistant": {
-  "title": "Asistente de inventario",
-  "placeholder": "Preguntá algo sobre tu inventario...",
-  "welcomeMessage": "¡Hola! Puedo ayudarte a consultar productos, stock bajo, valor de inventario y movimientos. ¿Qué querés saber?",
-  "thinking": "Pensando...",
-  "errorMessage": "Hubo un problema al procesar tu pregunta. Intentá de nuevo.",
-  "send": "Enviar"
-}
-
-
+  "purchaseRequests": {
+    "title": "Solicitudes de compra",
+    "newRequest": "Nueva solicitud",
+    "product": "Producto",
+    "quantity": "Cantidad",
+    "reason": "Motivo",
+    "status": "Estado",
+    "requestedBy": "Solicitado por",
+    "date": "Fecha",
+    "actions": "Acciones",
+    "approve": "Aprobar",
+    "reject": "Rechazar",
+    "statusPending": "Pendiente",
+    "statusApproved": "Aprobada",
+    "statusRejected": "Rechazada",
+    "createSuccess": "Solicitud creada correctamente",
+    "updateSuccess": "Estado actualizado"
+  },
+  "purchaseOrders": {
+    "title": "Órdenes de compra",
+    "newOrder": "Nueva orden",
+    "supplier": "Proveedor",
+    "product": "Producto",
+    "quantity": "Cantidad",
+    "unitCost": "Costo unitario",
+    "total": "Total",
+    "addLine": "Agregar línea",
+    "removeLine": "Quitar",
+    "status": "Estado",
+    "date": "Fecha",
+    "actions": "Acciones",
+    "receive": "Marcar como recibida",
+    "confirmReceiveTitle": "¿Confirmar recepción?",
+    "confirmReceiveDescription": "Esto va a sumar el stock de cada producto de la orden y no se puede deshacer.",
+    "confirm": "Confirmar",
+    "cancel": "Cancelar",
+    "statusPending": "Pendiente",
+    "statusReceived": "Recibida",
+    "statusCancelled": "Cancelada",
+    "createSuccess": "Orden creada correctamente",
+    "receiveSuccess": "Orden recibida, stock actualizado"
+  },
+  "auditLog": {
+    "title": "Registro de auditoría",
+    "subtitle": "Historial de acciones administrativas del sistema",
+    "totalActions": "Acciones totales",
+    "activityLast7Days": "Actividad (últimos 7 días)",
+    "actionsByType": "Acciones por tipo",
+    "entitiesAffected": "Entidades más afectadas",
+    "filterByEntity": "Filtrar por entidad",
+    "allEntities": "Todas",
+    "user": "Usuario",
+    "action": "Acción",
+    "entity": "Entidad",
+    "date": "Fecha",
+    "noLogs": "No hay registros para este filtro",
+    "action.CREATE": "Creó",
+    "action.UPDATE": "Editó",
+    "action.DELETE": "Eliminó",
+    "action.APPROVE": "Aprobó",
+    "action.REJECT": "Rechazó",
+    "action.RECEIVE": "Recibió",
+    "action.ACTIVATE": "Activó",
+    "action.DEACTIVATE": "Desactivó"
+  },
+  "assistant": {
+    "title": "Asistente de inventario",
+    "placeholder": "Preguntá algo sobre tu inventario...",
+    "welcomeMessage": "¡Hola! Puedo ayudarte a consultar productos, stock bajo, valor de inventario y movimientos. ¿Qué querés saber?",
+    "thinking": "Pensando...",
+    "errorMessage": "Hubo un problema al procesar tu pregunta. Intentá de nuevo.",
+    "send": "Enviar"
+  }
 }
