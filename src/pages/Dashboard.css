@@ -31,6 +31,7 @@
 .dash-mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
 .dash-right { text-align: right; }
 .dash-empty { margin: 0; padding: 2rem 0; text-align: center; color: var(--muted-foreground); font-size: 0.9rem; }
+.dash-card-head h2 { white-space: nowrap; }
 .dash-card-head {
   display: flex;
   align-items: center;
@@ -94,7 +95,6 @@
 .dash-ring-text { font-size: 0.95rem; font-weight: 600; font-variant-numeric: tabular-nums; }
 
 /* Gráficas */
-.dash-charts { display: grid; grid-template-columns: 1.25fr 1fr; gap: 24px; }
 .dash-bars { position: relative; }
 .dash-bars svg { display: block; width: 100%; height: auto; overflow: visible; }
 .dash-grid { stroke: var(--border); stroke-width: 1; }
@@ -117,27 +117,22 @@
   box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.5);
 }
 
-.dash-donut { display: flex; flex-direction: column; align-items: center; gap: 16px; }
-.dash-donut-value { font-size: 1.8rem; font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
-.dash-legend { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; width: 100%; }
-.dash-legend li { display: flex; align-items: baseline; gap: 8px; font-size: 0.85rem; color: var(--muted-foreground); }
-.dash-legend strong { color: var(--foreground); font-weight: 600; margin-right: 6px; }
-
-/* Tabla */
-.dash-table-wrap { overflow-x: auto; margin: 0 -6px; }
-.dash-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
-.dash-table th {
-  text-align: left;
-  font-weight: 500;
-  font-size: 0.8rem;
-  color: var(--muted-foreground);
-  padding: 0 6px 10px;
+/* Movimientos recientes (lista corta) */
+.dash-moves { list-style: none; margin: 0; padding: 0; }
+.dash-moves li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 0;
   border-bottom: 1px solid var(--border);
 }
-.dash-table td { padding: 13px 6px; border-bottom: 1px solid var(--border); white-space: nowrap; }
-.dash-table tr:last-child td { border-bottom: 0; }
-.dash-table th.dash-right { text-align: right; }
-.dash-prod { display: inline-flex; align-items: center; gap: 10px; font-weight: 500; }
+.dash-moves li:last-child { border-bottom: 0; padding-bottom: 0; }
+.dash-moves li:first-child { padding-top: 0; }
+.dash-move-name { display: flex; flex-direction: column; min-width: 0; font-weight: 500; font-size: 0.9rem; }
+.dash-move-name > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dash-move-name .dash-muted { font-weight: 400; font-size: 0.78rem; }
+.dash-move-qty { font-weight: 600; font-size: 0.95rem; text-align: right; }
 .dash-thumb {
   flex: none;
   width: 34px;
@@ -167,45 +162,32 @@
 .dash-pill--neutral { color: var(--muted-foreground); }
 
 /* Columna derecha */
-.dash-profile { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.dash-role { display: flex; align-items: center; gap: 14px; padding: 16px 22px; }
 .dash-avatar {
   flex: none;
-  width: 36px;
-  height: 36px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   background: #161615;
   color: var(--stk-lime);
   display: grid;
   place-items: center;
-  font-size: 0.8rem;
+  font-size: 1.05rem;
   font-weight: 600;
   overflow: hidden;
+  box-shadow: 0 0 0 2px var(--card), 0 0 0 4px var(--stk-lime);
 }
 .dash-avatar img { width: 100%; height: 100%; object-fit: cover; }
-.dash-avatar--lg {
-  width: 84px;
-  height: 84px;
-  font-size: 1.6rem;
-  box-shadow: 0 0 0 3px var(--card), 0 0 0 5px var(--stk-lime);
-  margin: 6px 0 12px;
-}
-.dash-profile-name { margin: 0 0 2px; font-weight: 600; font-size: 1.05rem; }
-.dash-actions { display: flex; gap: 10px; margin: 14px 0 4px; }
-.dash-action {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: #161615;
-  color: var(--stk-lime);
-  display: grid;
-  place-items: center;
-}
-.dash-action:hover { filter: brightness(1.3); }
-.dash-team { width: 100%; text-align: left; border-top: 1px solid var(--border); margin-top: 14px; padding-top: 14px; }
-.dash-team ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
-.dash-team li { display: flex; align-items: center; gap: 10px; }
-.dash-team-text { display: flex; flex-direction: column; min-width: 0; font-size: 0.875rem; font-weight: 500; }
-.dash-team-text .dash-muted { font-size: 0.8rem; font-weight: 400; }
+.dash-role-text { font-weight: 600; font-size: 1rem; letter-spacing: -0.01em; }
+
+/* Solicitudes de compra: conteos reales */
+.dash-req { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.dash-req li { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 14px; border-radius: 12px; background: var(--muted); }
+.dash-req-num { font-size: 1.35rem; font-weight: 600; line-height: 1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.dash-req-label { display: flex; align-items: center; gap: 8px; font-size: 0.875rem; font-weight: 500; }
+.dash-tone--ok { color: var(--stk-ok); }
+.dash-tone--warn { color: var(--stk-warn); }
+.dash-tone--crit { color: var(--stk-crit); }
 
 .dash-low { display: flex; flex-direction: column; gap: 14px; }
 .dash-low .dash-card-head { margin-bottom: 0; }
@@ -227,10 +209,11 @@
 /* Tablet: la columna derecha baja y sus tarjetas van lado a lado */
 @media (max-width: 1100px) {
   .dash { grid-template-columns: minmax(0, 1fr); }
-  .dash-side { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+  .dash-side { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; align-items: start; }
 }
 @media (max-width: 760px) {
-  .dash, .dash-main, .dash-side, .dash-kpis, .dash-charts { gap: 12px; }
-  .dash-kpis, .dash-charts, .dash-side { grid-template-columns: minmax(0, 1fr); }
-  .dash-table { min-width: 600px; }
+  .dash, .dash-main, .dash-side, .dash-kpis { gap: 12px; }
+  .dash-kpis, .dash-side { grid-template-columns: minmax(0, 1fr); }
+  .dash-moves li { grid-template-columns: auto minmax(0, 1fr) auto; }
+  .dash-moves .dash-pill { display: none; }
 }

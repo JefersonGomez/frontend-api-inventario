@@ -103,21 +103,18 @@
 /* ---------- Marco Stockly (Layout) ---------- */
 .stk-app {
   min-height: 100dvh;
-  padding: 24px 16px;
   overflow-x: hidden;
   background:
-    radial-gradient(50rem 36rem at 0% 100%, rgba(150, 170, 0, 0.5), transparent 60%),
-    radial-gradient(40rem 30rem at 100% 0%, rgba(220, 242, 10, 0.12), transparent 60%),
-    var(--stk-page);
+    radial-gradient(46rem 34rem at 100% 0%, rgba(220, 242, 10, 0.16), transparent 62%),
+    radial-gradient(52rem 38rem at 0% 100%, rgba(150, 170, 0, 0.16), transparent 62%),
+    var(--background);
   background-attachment: fixed;
 }
+/* Sin contenedor: las tarjetas se apoyan directo sobre el fondo de la app */
 .stk-shell {
-  max-width: 1500px;
+  max-width: 1680px;
   margin: 0 auto;
-  padding: 28px;
-  border-radius: 24px;
-  background: var(--background);
-  box-shadow: 0 40px 100px -30px rgba(0, 0, 0, 0.8), 0 12px 30px -16px rgba(0, 0, 0, 0.6);
+  padding: 28px 32px;
   display: grid;
   grid-template-columns: 240px minmax(0, 1fr);
   gap: 28px;
@@ -187,8 +184,7 @@
   .stk-shell { grid-template-columns: 220px minmax(0, 1fr); gap: 24px; padding: 24px; }
 }
 @media (max-width: 760px) {
-  .stk-app { padding: 16px; }
-  .stk-shell { grid-template-columns: minmax(0, 1fr); gap: 12px; padding: 12px; border-radius: 20px; }
+  .stk-shell { grid-template-columns: minmax(0, 1fr); gap: 12px; padding: 16px; }
   .stk-side { position: static; gap: 10px; }
   .stk-nav { flex-direction: row; align-items: center; overflow-x: auto; scrollbar-width: none; padding: 10px; }
   .stk-logo { margin: 0 8px 0 0; }

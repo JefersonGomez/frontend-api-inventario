@@ -88,22 +88,10 @@
     "barsLabel": "Stock por categoría: {{values}}",
     "tooltip": "{{name}} · {{value}} uds",
     "noData": "Aún no hay productos",
-    "requestsTitle": "Solicitudes atendidas",
-    "requestsDone": "Atendidas,",
-    "requestsDoneDetail": "{{done}} de {{total}} solicitudes",
-    "requestsPending": "Pendientes,",
-    "requestsPendingDetail": "{{count}} solicitudes",
-    "requestsEmpty": "Sin solicitudes este mes",
+    "requestsTitle": "Solicitudes de compra",
     "recent": "Movimientos recientes",
     "seeAll": "Ver todos",
     "noMovements": "Aún no hay movimientos",
-    "table": {
-      "product": "Producto",
-      "sku": "SKU",
-      "quantity": "Cantidad",
-      "user": "Usuario",
-      "status": "Estado"
-    },
     "status": {
       "IN": "Entrada",
       "OUT": "Salida",
@@ -114,17 +102,17 @@
       "ADMIN": "Administrador",
       "EMPLOYE": "Empleado"
     },
-    "actions": {
-      "profile": "Mi perfil",
-      "movements": "Movimientos",
-      "reports": "Reportes"
-    },
-    "team": "Equipo",
     "lowStock": "Stock bajo mínimo",
     "lowStockCoverage": "Cobertura del mínimo: {{pct}}%",
     "lowStockHint": "Genera una solicitud de compra para reponerlos.",
     "lowStockCta": "Crear solicitud",
-    "lowStockNone": "Todo el stock está sobre el mínimo."
+    "lowStockNone": "Todo el stock está sobre el mínimo.",
+    "requestsSee": "Ver todas",
+    "requests": {
+      "PENDING": "Pendientes",
+      "APPROVED": "Aprobadas",
+      "REJECTED": "Rechazadas"
+    }
   },
   "products": {
     "title": "Productos",

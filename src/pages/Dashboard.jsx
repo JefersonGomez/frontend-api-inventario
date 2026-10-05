@@ -1,12 +1,11 @@
-import { useId, useState } from "react"
+import { useEffect, useId, useRef, useState } from "react"
 import { Link } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
-import { Box, UserRound, ArrowLeftRight, BarChart3 } from "lucide-react"
+import { Box } from "lucide-react"
 import { api } from "@/api/client"
 import { getProducts } from "@/api/products"
 import { getMovements } from "@/api/movements"
-import { getUsers } from "@/api/users"
 import { getPurchaseRequests } from "@/api/PurchaseRequests"
 import { getLowStockReport, getInventoryValueBreakdown } from "@/api/reports"
 import { aggregateStockByCategory } from "@/lib/chart-utils"
@@ -20,9 +19,8 @@ const initials = (name = "") =>
   name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase() || "?"
 
 export function Dashboard() {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const { user } = useAuth()
-  const isAdmin = user?.role === "ADMIN"
   const [avatarBroken, setAvatarBroken] = useState(false)
 
   const products = useQuery({ queryKey: ["products"], queryFn: getProducts })
@@ -33,39 +31,38 @@ export function Dashboard() {
     queryFn: () => getInventoryValueBreakdown(60),
   })
   const requests = useQuery({ queryKey: ["purchase-requests"], queryFn: getPurchaseRequests })
-  const users = useQuery({ queryKey: ["users"], queryFn: getUsers, enabled: isAdmin })
 
   const now = new Date()
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
-  const monthName = now.toLocaleDateString(i18n.language, { month: "long" })
-  const inMonth = (d) => new Date(d) >= monthStart
 
   // ponytail: agregados calculados en el cliente sobre todos los movimientos; pasar a un endpoint de resumen si el volumen crece
   const units = (products.data ?? []).reduce((s, p) => s + (p.stock || 0), 0)
   const dispatched = (movements.data ?? [])
-    .filter((m) => m.type === "OUT" && inMonth(m.createdAt))
+    .filter((m) => m.type === "OUT" && new Date(m.createdAt) >= monthStart)
     .reduce((s, m) => s + m.quantity, 0)
   const sellThrough = pct(dispatched, dispatched + units)
   const activePct = pct(value.data?.activeValue ?? 0, value.data?.totalValue ?? 0)
 
-  const monthRequests = (requests.data ?? []).filter((r) => inMonth(r.createdAt))
-  const attended = monthRequests.filter((r) => r.status !== "PENDING").length
+  const count = (status) => (requests.data ?? []).filter((r) => r.status === status).length
+  const requestStats = [
+    { key: "PENDING", tone: "warn" },
+    { key: "APPROVED", tone: "ok" },
+    { key: "REJECTED", tone: "crit" },
+  ]
 
   const categories = aggregateStockByCategory(products.data)
     .sort((a, b) => b.value - a.value)
-    .slice(0, 6)
+    .slice(0, 8)
 
   const recent = [...(movements.data ?? [])]
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-    .slice(0, 5)
+    .slice(0, 4)
 
   const low = lowStock.data ?? []
   const lowCoverage = pct(
     low.reduce((s, p) => s + p.stock, 0),
     low.reduce((s, p) => s + p.minStock, 0)
   )
-
-  const team = (users.data ?? []).filter((u) => u.isActive && u.id !== user?.id).slice(0, 3)
 
   return (
     <div className="dash">
@@ -110,59 +107,17 @@ export function Dashboard() {
           </article>
         </section>
 
-        <section className="dash-charts">
-          <article className="stk-card">
-            <header className="dash-card-head">
-              <h2>{t("dashboard.stockByCategory")}</h2>
-              <span className="dash-muted">{t("dashboard.unitsShort")}</span>
-            </header>
-            {categories.length ? (
-              <BarChart data={categories} t={t} />
-            ) : (
-              <p className="dash-empty">{products.isLoading ? "…" : t("dashboard.noData")}</p>
-            )}
-          </article>
-
-          <article className="stk-card">
-            <header className="dash-card-head">
-              <h2>{t("dashboard.requestsTitle")}</h2>
-              <span className="dash-muted dash-cap">{monthName}</span>
-            </header>
-            {monthRequests.length ? (
-              <div className="dash-donut">
-                <Ring
-                  value={pct(attended, monthRequests.length)}
-                  size={150}
-                  stroke={16}
-                  track="var(--border)"
-                  color="var(--foreground)"
-                  overlay="var(--stk-lime)"
-                  label={`${t("dashboard.requestsTitle")}: ${pct(attended, monthRequests.length)}%`}
-                >
-                  <span className="dash-donut-value">{pct(attended, monthRequests.length)}%</span>
-                </Ring>
-                <ul className="dash-legend">
-                  <li>
-                    <span className="dash-dot" style={{ background: "var(--foreground)" }} />
-                    <span>
-                      <strong>{t("dashboard.requestsDone")}</strong>
-                      {t("dashboard.requestsDoneDetail", { done: attended, total: monthRequests.length })}
-                    </span>
-                  </li>
-                  <li>
-                    <span className="dash-dot" style={{ background: "var(--border)" }} />
-                    <span>
-                      <strong>{t("dashboard.requestsPending")}</strong>
-                      {t("dashboard.requestsPendingDetail", { count: monthRequests.length - attended })}
-                    </span>
-                  </li>
-                </ul>
-              </div>
-            ) : (
-              <p className="dash-empty">{requests.isLoading ? "…" : t("dashboard.requestsEmpty")}</p>
-            )}
-          </article>
-        </section>
+        <article className="stk-card">
+          <header className="dash-card-head">
+            <h2>{t("dashboard.stockByCategory")}</h2>
+            <span className="dash-muted">{t("dashboard.unitsShort")}</span>
+          </header>
+          {categories.length ? (
+            <BarChart data={categories} t={t} />
+          ) : (
+            <p className="dash-empty">{products.isLoading ? "…" : t("dashboard.noData")}</p>
+          )}
+        </article>
 
         <article className="stk-card">
           <header className="dash-card-head">
@@ -172,42 +127,24 @@ export function Dashboard() {
             </Link>
           </header>
           {recent.length ? (
-            <div className="dash-table-wrap">
-              <table className="dash-table">
-                <thead>
-                  <tr>
-                    <th>{t("dashboard.table.product")}</th>
-                    <th>{t("dashboard.table.sku")}</th>
-                    <th className="dash-right">{t("dashboard.table.quantity")}</th>
-                    <th>{t("dashboard.table.user")}</th>
-                    <th>{t("dashboard.table.status")}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {recent.map((m) => (
-                    <tr key={m.id}>
-                      <td>
-                        <span className="dash-prod">
-                          <span className="dash-thumb">
-                            <Box className="w-4 h-4" strokeWidth={1.7} aria-hidden />
-                          </span>
-                          {m.product?.name}
-                        </span>
-                      </td>
-                      <td className="dash-mono">{m.product?.sku}</td>
-                      <td className="dash-mono dash-right">
-                        {m.type === "OUT" ? "−" : "+"}
-                        {num.format(m.quantity)}
-                      </td>
-                      <td>{m.user?.name ?? "—"}</td>
-                      <td>
-                        <MovementStatus movement={m} t={t} />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <ul className="dash-moves">
+              {recent.map((m) => (
+                <li key={m.id}>
+                  <span className="dash-thumb">
+                    <Box className="w-4 h-4" strokeWidth={1.7} aria-hidden />
+                  </span>
+                  <span className="dash-move-name">
+                    <span>{m.product?.name}</span>
+                    <span className="dash-mono dash-muted">{m.product?.sku}</span>
+                  </span>
+                  <span className="dash-mono dash-move-qty">
+                    {m.type === "OUT" ? "−" : "+"}
+                    {num.format(m.quantity)}
+                  </span>
+                  <MovementStatus movement={m} t={t} />
+                </li>
+              ))}
+            </ul>
           ) : (
             <p className="dash-empty">{movements.isLoading ? "…" : t("dashboard.noMovements")}</p>
           )}
@@ -215,49 +152,35 @@ export function Dashboard() {
       </div>
 
       <aside className="dash-side">
-        <article className="stk-card dash-profile">
-          <span className="dash-avatar dash-avatar--lg">
+        <article className="stk-card dash-role">
+          <span className="dash-avatar" title={user?.name} role="img" aria-label={user?.name}>
             {user?.avatarUrl && !avatarBroken ? (
               <img src={`${api.defaults.baseURL}${user.avatarUrl}`} alt="" onError={() => setAvatarBroken(true)} />
             ) : (
               initials(user?.name)
             )}
           </span>
-          <p className="dash-profile-name">{user?.name}</p>
-          <p className="dash-muted">{t(`dashboard.roles.${user?.role}`)}</p>
-          <div className="dash-actions">
-            <Link to="/profile" className="dash-action" aria-label={t("dashboard.actions.profile")} title={t("dashboard.actions.profile")}>
-              <UserRound className="w-[18px] h-[18px]" strokeWidth={1.7} aria-hidden />
-            </Link>
-            <Link to="/movements" className="dash-action" aria-label={t("dashboard.actions.movements")} title={t("dashboard.actions.movements")}>
-              <ArrowLeftRight className="w-[18px] h-[18px]" strokeWidth={1.7} aria-hidden />
-            </Link>
-            <Link to="/reports" className="dash-action" aria-label={t("dashboard.actions.reports")} title={t("dashboard.actions.reports")}>
-              <BarChart3 className="w-[18px] h-[18px]" strokeWidth={1.7} aria-hidden />
-            </Link>
-          </div>
+          <span className="dash-role-text">{t(`dashboard.roles.${user?.role}`)}</span>
+        </article>
 
-          {isAdmin && team.length > 0 && (
-            <div className="dash-team">
-              <header className="dash-card-head">
-                <h3>{t("dashboard.team")}</h3>
-                <Link to="/users" className="dash-link">
-                  {t("dashboard.seeAll")}
-                </Link>
-              </header>
-              <ul>
-                {team.map((u) => (
-                  <li key={u.id}>
-                    <span className="dash-avatar">{initials(u.name)}</span>
-                    <span className="dash-team-text">
-                      <span>{u.name}</span>
-                      <span className="dash-muted">{t(`dashboard.roles.${u.role}`)}</span>
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+        <article className="stk-card">
+          <header className="dash-card-head">
+            <h2>{t("dashboard.requestsTitle")}</h2>
+            <Link to="/purchase-requests" className="dash-link">
+              {t("dashboard.requestsSee")}
+            </Link>
+          </header>
+          <ul className="dash-req">
+            {requestStats.map(({ key, tone }) => (
+              <li key={key}>
+                <span className="dash-req-label">
+                  <span className={`dash-dot dash-tone--${tone}`} aria-hidden />
+                  {t(`dashboard.requests.${key}`)}
+                </span>
+                <span className={`dash-req-num dash-tone--${tone}`}>{requests.isLoading ? "…" : count(key)}</span>
+              </li>
+            ))}
+          </ul>
         </article>
 
         <article className="stk-card dash-low">
@@ -320,8 +243,8 @@ function MovementStatus({ movement, t }) {
   )
 }
 
-/** Anillo de progreso. `overlay` dibuja una línea fina encima del arco (dona del prompt). */
-function Ring({ value, size, stroke, track, color, overlay, label, children }) {
+/** Anillo de progreso con el valor al centro. */
+function Ring({ value, size, stroke, track, color, label, children }) {
   const r = (size - stroke) / 2
   const c = 2 * Math.PI * r
   const dash = `${(Math.min(100, Math.max(0, value)) / 100) * c} ${c}`
@@ -334,7 +257,6 @@ function Ring({ value, size, stroke, track, color, overlay, label, children }) {
         <g transform={`rotate(-90 ${size / 2} ${size / 2})`}>
           {circle({ stroke: track, strokeWidth: stroke, strokeLinecap: "butt" })}
           {value > 0 && circle({ stroke: color, strokeWidth: stroke, strokeDasharray: dash })}
-          {value > 0 && overlay && circle({ stroke: overlay, strokeWidth: 6, strokeDasharray: dash })}
         </g>
       </svg>
       <div className="dash-ring-center">{children}</div>
@@ -347,20 +269,35 @@ function niceStep(raw) {
   return [1, 2, 2.5, 5, 10].map((m) => m * p).find((s) => s >= raw)
 }
 
+/** Barras SVG a todo el ancho: el viewBox sigue el ancho del contenedor para que el texto no se escale. */
 function BarChart({ data, t }) {
   const id = useId()
+  const box = useRef(null)
   const [hover, setHover] = useState(null)
-  const W = 360, H = 210, L = 36, R = 6, T = 10, B = 26
+  const [W, setW] = useState(640)
+  const H = 250, L = 40, R = 8, T = 10, B = 28
+
+  useEffect(() => {
+    const el = box.current
+    if (!el) return
+    const ro = new ResizeObserver(([e]) => setW(Math.max(280, Math.round(e.contentRect.width))))
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+
   const plotW = W - L - R, plotH = H - T - B
   const step = niceStep(Math.max(...data.map((d) => d.value), 1) / 5)
   const max = step * 5
   const y = (v) => T + plotH - (v / max) * plotH
   const colW = plotW / data.length
-  const barW = Math.min(30, colW * 0.46)
+  const barW = Math.min(44, colW * 0.5)
+  const maxChars = Math.max(6, Math.floor(colW / 7))
 
   return (
-    <div className="dash-bars">
+    <div className="dash-bars" ref={box}>
       <svg
+        width={W}
+        height={H}
         viewBox={`0 0 ${W} ${H}`}
         role="img"
         aria-label={t("dashboard.barsLabel", {
@@ -395,7 +332,7 @@ function BarChart({ data, t }) {
                 fill={`url(#${id}g)`}
               />
               <text x={cx} y={H - 8} textAnchor="middle" className="dash-axis">
-                {d.name.length > 10 ? `${d.name.slice(0, 9)}…` : d.name}
+                {d.name.length > maxChars ? `${d.name.slice(0, maxChars - 1)}…` : d.name}
               </text>
               <rect x={L + colW * i} y={0} width={colW} height={H} fill="transparent" />
             </g>
@@ -403,13 +340,7 @@ function BarChart({ data, t }) {
         })}
       </svg>
       {hover !== null && (
-        <div
-          className="dash-tip"
-          style={{
-            left: `${((L + colW * hover + colW / 2) / W) * 100}%`,
-            top: `${(y(data[hover].value) / H) * 100}%`,
-          }}
-        >
+        <div className="dash-tip" style={{ left: L + colW * hover + colW / 2, top: y(data[hover].value) }}>
           {t("dashboard.tooltip", { name: data[hover].name, value: num.format(data[hover].value) })}
         </div>
       )}

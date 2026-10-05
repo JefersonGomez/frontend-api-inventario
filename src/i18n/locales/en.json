@@ -88,22 +88,10 @@
     "barsLabel": "Stock by category: {{values}}",
     "tooltip": "{{name}} · {{value}} units",
     "noData": "No products yet",
-    "requestsTitle": "Requests handled",
-    "requestsDone": "Handled,",
-    "requestsDoneDetail": "{{done}} of {{total}} requests",
-    "requestsPending": "Pending,",
-    "requestsPendingDetail": "{{count}} requests",
-    "requestsEmpty": "No requests this month",
+    "requestsTitle": "Purchase requests",
     "recent": "Recent movements",
     "seeAll": "See all",
     "noMovements": "No movements yet",
-    "table": {
-      "product": "Product",
-      "sku": "SKU",
-      "quantity": "Quantity",
-      "user": "User",
-      "status": "Status"
-    },
     "status": {
       "IN": "Stock in",
       "OUT": "Stock out",
@@ -114,17 +102,17 @@
       "ADMIN": "Administrator",
       "EMPLOYE": "Employee"
     },
-    "actions": {
-      "profile": "My profile",
-      "movements": "Movements",
-      "reports": "Reports"
-    },
-    "team": "Team",
     "lowStock": "Below minimum stock",
     "lowStockCoverage": "Minimum coverage: {{pct}}%",
     "lowStockHint": "Create a purchase request to restock them.",
     "lowStockCta": "Create request",
-    "lowStockNone": "All stock is above the minimum."
+    "lowStockNone": "All stock is above the minimum.",
+    "requestsSee": "See all",
+    "requests": {
+      "PENDING": "Pending",
+      "APPROVED": "Approved",
+      "REJECTED": "Rejected"
+    }
   },
   "products": {
     "title": "Products",
