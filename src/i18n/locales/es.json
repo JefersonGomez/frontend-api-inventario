@@ -11,22 +11,30 @@
     "error_loading": "No se pudieron cargar los datos."
   },
   "sidebar": {
-    "dashboard": "Dashboard",
+    "dashboard": "Panel",
     "products": "Productos",
     "categories": "Categorías",
     "movements": "Movimientos",
     "reports": "Reportes",
-    "settings": "Configuración"
+    "settings": "Configuración",
+    "mainMenu": "Menú principal",
+    "purchaseRequests": "Solicitudes de compra",
+    "purchaseOrders": "Órdenes de compra",
+    "suppliers": "Proveedores",
+    "users": "Empleados",
+    "auditLog": "Auditoría",
+    "scanText": "Registra entradas y salidas escaneando el código de barras con la cámara.",
+    "scanButton": "Escanear producto"
   },
   "topbar": {
-    "search": "Buscar producto...",
+    "search": "Buscar producto, SKU o pedido",
     "profile": "Mi perfil",
     "logout": "Cerrar sesión"
   },
   "auth": {
     "login": {
       "title": "Iniciar sesión",
-      "subtitle": "Accede a tu cuenta de InventarioPro",
+      "subtitle": "Accede a tu cuenta de Stockly",
       "email": "Correo electrónico",
       "password": "Contraseña",
       "submit": "Ingresar",
@@ -37,7 +45,7 @@
     },
     "register": {
       "title": "Crear cuenta",
-      "subtitle": "Regístrate en InventarioPro",
+      "subtitle": "Regístrate en Stockly",
       "name": "Nombre",
       "email": "Correo electrónico",
       "password": "Contraseña",
@@ -66,24 +74,55 @@
     }
   },
   "dashboard": {
-    "title": "Dashboard",
-    "subtitle": "Resumen del inventario de hoy",
-    "cards": {
-      "total_products": "Total productos",
-      "low_stock": "Stock bajo",
-      "inventory_value": "Valor del inventario"
+    "title": "Panel",
+    "inventoryValue": "Valor del inventario",
+    "inventoryUnits": "COP · {{units}} unidades",
+    "activeRing": "{{pct}}% del capital tuvo movimiento en los últimos 60 días",
+    "dispatched": "Unidades despachadas",
+    "dispatchedSub": "Este mes · rotación {{pct}}%",
+    "dispatchedRing": "Rotación del mes: se despachó el {{pct}}% de las unidades disponibles",
+    "stockByCategory": "Stock por categoría",
+    "unitsShort": "unidades",
+    "barsLabel": "Stock por categoría: {{values}}",
+    "tooltip": "{{name}} · {{value}} uds",
+    "noData": "Aún no hay productos",
+    "requestsTitle": "Solicitudes atendidas",
+    "requestsDone": "Atendidas,",
+    "requestsDoneDetail": "{{done}} de {{total}} solicitudes",
+    "requestsPending": "Pendientes,",
+    "requestsPendingDetail": "{{count}} solicitudes",
+    "requestsEmpty": "Sin solicitudes este mes",
+    "recent": "Movimientos recientes",
+    "seeAll": "Ver todos",
+    "noMovements": "Aún no hay movimientos",
+    "table": {
+      "product": "Producto",
+      "sku": "SKU",
+      "quantity": "Cantidad",
+      "user": "Usuario",
+      "status": "Estado"
     },
-    "charts": {
-      "movements": "Movimientos recientes",
-      "stock_by_category": "Stock por categoría"
+    "status": {
+      "IN": "Entrada",
+      "OUT": "Salida",
+      "ADJUSTMENT": "Ajuste",
+      "low": "Stock bajo"
     },
-    "low_stock_table": {
-      "title": "Productos con stock bajo",
-      "empty": "No hay productos con stock bajo. 🎉"
+    "roles": {
+      "ADMIN": "Administrador",
+      "EMPLOYE": "Empleado"
     },
-    "badges": {
-      "low": "Bajo"
-    }
+    "actions": {
+      "profile": "Mi perfil",
+      "movements": "Movimientos",
+      "reports": "Reportes"
+    },
+    "team": "Equipo",
+    "lowStock": "Stock bajo mínimo",
+    "lowStockCoverage": "Cobertura del mínimo: {{pct}}%",
+    "lowStockHint": "Genera una solicitud de compra para reponerlos.",
+    "lowStockCta": "Crear solicitud",
+    "lowStockNone": "Todo el stock está sobre el mínimo."
   },
   "products": {
     "title": "Productos",
@@ -277,7 +316,7 @@
   },
   "settings": {
     "title": "Configuración",
-    "subtitle": "Personaliza tu experiencia en InventarioPro",
+    "subtitle": "Personaliza tu experiencia en Stockly",
     "appearance": "Apariencia",
     "theme": "Tema",
     "themeDescription": "Elige el tema visual de la aplicación",

@@ -16,17 +16,25 @@
     "categories": "Categories",
     "movements": "Movements",
     "reports": "Reports",
-    "settings": "Settings"
+    "settings": "Settings",
+    "mainMenu": "Main menu",
+    "purchaseRequests": "Purchase requests",
+    "purchaseOrders": "Purchase orders",
+    "suppliers": "Suppliers",
+    "users": "Employees",
+    "auditLog": "Audit log",
+    "scanText": "Log stock in and out by scanning the barcode with your camera.",
+    "scanButton": "Scan product"
   },
   "topbar": {
-    "search": "Search product...",
+    "search": "Search product, SKU or order",
     "profile": "My profile",
     "logout": "Log out"
   },
   "auth": {
     "login": {
       "title": "Sign in",
-      "subtitle": "Access your InventarioPro account",
+      "subtitle": "Access your Stockly account",
       "email": "Email",
       "password": "Password",
       "submit": "Sign in",
@@ -37,7 +45,7 @@
     },
     "register": {
       "title": "Create account",
-      "subtitle": "Sign up for InventarioPro",
+      "subtitle": "Sign up for Stockly",
       "name": "Name",
       "email": "Email",
       "password": "Password",
@@ -67,23 +75,54 @@
   },
   "dashboard": {
     "title": "Dashboard",
-    "subtitle": "Today's inventory summary",
-    "cards": {
-      "total_products": "Total Products",
-      "low_stock": "Low Stock",
-      "inventory_value": "Inventory Value"
+    "inventoryValue": "Inventory value",
+    "inventoryUnits": "COP · {{units}} units",
+    "activeRing": "{{pct}}% of capital moved in the last 60 days",
+    "dispatched": "Units dispatched",
+    "dispatchedSub": "This month · turnover {{pct}}%",
+    "dispatchedRing": "Monthly turnover: {{pct}}% of available units were dispatched",
+    "stockByCategory": "Stock by category",
+    "unitsShort": "units",
+    "barsLabel": "Stock by category: {{values}}",
+    "tooltip": "{{name}} · {{value}} units",
+    "noData": "No products yet",
+    "requestsTitle": "Requests handled",
+    "requestsDone": "Handled,",
+    "requestsDoneDetail": "{{done}} of {{total}} requests",
+    "requestsPending": "Pending,",
+    "requestsPendingDetail": "{{count}} requests",
+    "requestsEmpty": "No requests this month",
+    "recent": "Recent movements",
+    "seeAll": "See all",
+    "noMovements": "No movements yet",
+    "table": {
+      "product": "Product",
+      "sku": "SKU",
+      "quantity": "Quantity",
+      "user": "User",
+      "status": "Status"
     },
-    "charts": {
-      "movements": "Recent movements",
-      "stock_by_category": "Stock by category"
+    "status": {
+      "IN": "Stock in",
+      "OUT": "Stock out",
+      "ADJUSTMENT": "Adjustment",
+      "low": "Low stock"
     },
-    "low_stock_table": {
-      "title": "Low Stock Products",
-      "empty": "No low stock products. 🎉"
+    "roles": {
+      "ADMIN": "Administrator",
+      "EMPLOYE": "Employee"
     },
-    "badges": {
-      "low": "Low"
-    }
+    "actions": {
+      "profile": "My profile",
+      "movements": "Movements",
+      "reports": "Reports"
+    },
+    "team": "Team",
+    "lowStock": "Below minimum stock",
+    "lowStockCoverage": "Minimum coverage: {{pct}}%",
+    "lowStockHint": "Create a purchase request to restock them.",
+    "lowStockCta": "Create request",
+    "lowStockNone": "All stock is above the minimum."
   },
   "products": {
     "title": "Products",
@@ -277,7 +316,7 @@
   },
   "settings": {
     "title": "Settings",
-    "subtitle": "Customize your InventarioPro experience",
+    "subtitle": "Customize your Stockly experience",
     "appearance": "Appearance",
     "theme": "Theme",
     "themeDescription": "Choose the visual theme of the application",

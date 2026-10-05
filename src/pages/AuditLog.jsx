@@ -25,7 +25,7 @@ const actionVariant = {
 
 function MetricCard({ icon: Icon, label, value }) {
   return (
-    <div className="rounded-xl border border-[#221F3B] bg-[#151325] p-5 flex items-center gap-4">
+    <div className="rounded-xl border border-border bg-card p-5 flex items-center gap-4">
       <div className="w-11 h-11 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
         <Icon className="w-5 h-5 text-primary" />
       </div>
@@ -87,29 +87,29 @@ export function AuditLogPage() {
       </div>
 
       {/* Gráfico de tendencia */}
-      <div className="rounded-xl border border-[#221F3B] bg-[#151325] p-5">
+      <div className="rounded-xl border border-border bg-card p-5">
         <h3 className="font-semibold mb-4">{t("auditLog.activityLast7Days")}</h3>
         <ResponsiveContainer width="100%" height={240}>
           <LineChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#221F3B" />
-            <XAxis dataKey="date" stroke="#8B7CF6" fontSize={12} />
-            <YAxis stroke="#8B7CF6" fontSize={12} allowDecimals={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+            <XAxis dataKey="date" stroke="var(--muted-foreground)" fontSize={12} />
+            <YAxis stroke="var(--muted-foreground)" fontSize={12} allowDecimals={false} />
             <Tooltip
-              contentStyle={{ background: "#151325", border: "1px solid #221F3B", borderRadius: 8 }}
+              contentStyle={{ background: "var(--popover)", border: "1px solid var(--border)", borderRadius: 8 }}
             />
             <Line
               type="monotone"
               dataKey="count"
-              stroke="#8B7CF6"
+              stroke="var(--foreground)"
               strokeWidth={2}
-              dot={{ fill: "#8B7CF6", r: 3 }}
+              dot={{ fill: "var(--foreground)", r: 3 }}
             />
           </LineChart>
         </ResponsiveContainer>
       </div>
 
       {/* Tabla filtrable */}
-      <div className="rounded-xl border border-[#221F3B] bg-[#151325] p-5 space-y-4">
+      <div className="rounded-xl border border-border bg-card p-5 space-y-4">
         <div className="flex justify-between items-center">
           <h3 className="font-semibold">{t("auditLog.title")}</h3>
           <Select value={entityFilter} onValueChange={setEntityFilter}>
@@ -133,7 +133,7 @@ export function AuditLogPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left border-b border-[#221F3B]">
+                <tr className="text-left border-b border-border">
                   <th className="py-2">{t("auditLog.user")}</th>
                   <th>{t("auditLog.action")}</th>
                   <th>{t("auditLog.entity")}</th>
@@ -142,7 +142,7 @@ export function AuditLogPage() {
               </thead>
               <tbody>
                 {logs.map((log) => (
-                  <tr key={log.id} className="border-b border-[#221F3B]/50">
+                  <tr key={log.id} className="border-b border-border/50">
                     <td className="py-2">{log.user.name}</td>
                     <td>
                       <Badge variant={actionVariant[log.action] ?? "secondary"}>

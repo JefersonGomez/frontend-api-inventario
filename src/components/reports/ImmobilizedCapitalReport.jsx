@@ -54,7 +54,7 @@ export function ImmobilizedCapitalReport() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="rounded-xl border border-[#221F3B] bg-[#151325] p-5">
+        <div className="rounded-xl border border-border bg-card p-5">
           <div className="flex items-center gap-2 mb-2">
             <TrendingUp className="w-4 h-4 text-primary" />
             <span className="text-xs text-muted-foreground uppercase tracking-wide">
@@ -65,7 +65,7 @@ export function ImmobilizedCapitalReport() {
           <p className="text-sm text-muted-foreground">{activePercent}%</p>
         </div>
 
-        <div className="rounded-xl border border-[#221F3B] bg-[#151325] p-5">
+        <div className="rounded-xl border border-border bg-card p-5">
           <div className="flex items-center gap-2 mb-2">
             <AlertTriangle className="w-4 h-4 text-amber-500" />
             <span className="text-xs text-muted-foreground uppercase tracking-wide">
@@ -82,7 +82,7 @@ export function ImmobilizedCapitalReport() {
           {t("reports.immobilizedCapital.noImmobilized")}
         </p>
       ) : (
-        <div className="border border-[#221F3B] rounded-xl overflow-hidden overflow-x-auto">
+        <div className="border border-border rounded-xl overflow-hidden overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>

@@ -1,7 +1,6 @@
-import { NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/context/AuthContext";
-import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
   Package,
@@ -14,83 +13,83 @@ import {
   Users as UsersIcon,
   Truck,
   ShieldCheck,
+  UserRound,
+  LogOut,
+  Box,
+  ScanBarcode,
 } from "lucide-react";
 
-export function Sidebar({ className }) {
+const ICON = { className: "w-[18px] h-[18px]", strokeWidth: 1.7, "aria-hidden": true };
+
+export function Sidebar() {
   const { t } = useTranslation();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const isAdmin = user?.role === "ADMIN";
 
   const navItems = [
     { to: "/", label: t("sidebar.dashboard"), icon: LayoutDashboard },
     { to: "/products", label: t("sidebar.products"), icon: Package },
     { to: "/categories", label: t("sidebar.categories"), icon: FolderTree },
     { to: "/movements", label: t("sidebar.movements"), icon: ArrowLeftRight },
+    { to: "/purchase-requests", label: t("sidebar.purchaseRequests"), icon: ClipboardList },
+    ...(isAdmin ? [{ to: "/purchase-orders", label: t("sidebar.purchaseOrders"), icon: ShoppingCart }] : []),
+    { to: "/suppliers", label: t("sidebar.suppliers"), icon: Truck },
     { to: "/reports", label: t("sidebar.reports"), icon: BarChart3 },
-    ...(user?.role === "ADMIN"
-      ? [{ to: "/users", label: t("sidebar.users", "Empleados"), icon: UsersIcon }]
-      : []),
-    { to: "/suppliers", label: t("sidebar.suppliers", "Proveedores"), icon: Truck },
-    {
-      to: "/purchase-requests",
-      label: t("sidebar.purchaseRequests", "Solicitudes de compra"),
-      icon: ClipboardList,
-    },
-    ...(user?.role === "ADMIN"
-      ? [{ to: "/audit-log", label: t("sidebar.auditLog", "Auditoría"), icon: ShieldCheck }]
-      : []),
-    ...(user?.role === "ADMIN"
+    ...(isAdmin
       ? [
-          {
-            to: "/purchase-orders",
-            label: t("sidebar.purchaseOrders", "Órdenes de compra"),
-            icon: ShoppingCart,
-          },
+          { to: "/users", label: t("sidebar.users"), icon: UsersIcon },
+          { to: "/audit-log", label: t("sidebar.auditLog"), icon: ShieldCheck },
         ]
       : []),
-    { to: "/settings", label: t("sidebar.settings", "Configuración"), icon: SettingsIcon },
   ];
 
+  async function handleLogout() {
+    await logout();
+    navigate("/login");
+  }
+
   return (
-    <aside
-      className={cn(
-        "flex flex-col justify-between bg-[#100E1F] w-64 min-h-screen p-4",
-        className
-      )}
-    >
-      <div>
-        <div className="flex items-center gap-2 px-2 mb-8">
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center font-bold text-sm text-white">
-            IP
-          </div>
-          <span className="font-semibold text-lg">InventarioPro</span>
-        </div>
+    <aside className="stk-side">
+      <nav className="stk-card stk-nav" aria-label={t("sidebar.mainMenu")}>
+        <Link to="/" className="stk-logo">
+          <span className="stk-logo-mark">
+            <Box className="w-5 h-5" strokeWidth={1.7} aria-hidden />
+          </span>
+          <span className="stk-logo-text">Stockly</span>
+        </Link>
 
-        <p className="text-xs uppercase tracking-wide text-muted-foreground px-2 mb-2">
-          {t("sidebar.mainMenu", "Menú principal")}
-        </p>
+        {navItems.map(({ to, label, icon: Icon }) => (
+          <NavLink key={to} to={to} end={to === "/"} className="stk-link">
+            <Icon {...ICON} />
+            {label}
+          </NavLink>
+        ))}
 
-        <nav className="flex flex-col gap-1 text-sm">
-          {navItems.map(({ to, label, icon: Icon }) => (
-            <NavLink
-              key={to}
-              to={to}
-              end={to === "/"}
-              className={({ isActive }) =>
-                cn(
-                  "flex items-center justify-between gap-3 px-3 py-2 rounded-lg font-medium transition-colors",
-                  isActive
-                    ? "bg-primary/10 text-primary"
-                    : "text-muted-foreground hover:bg-white/5"
-                )
-              }
-            >
-              <span className="flex items-center gap-3">
-                <Icon className="w-4 h-4" />
-                {label}
-              </span>
-            </NavLink>
-          ))}
-        </nav>
+        <div className="stk-sep" role="separator" />
+
+        <NavLink to="/settings" className="stk-link">
+          <SettingsIcon {...ICON} />
+          {t("sidebar.settings")}
+        </NavLink>
+        <NavLink to="/profile" className="stk-link">
+          <UserRound {...ICON} />
+          {t("topbar.profile")}
+        </NavLink>
+        <button type="button" className="stk-link" onClick={handleLogout}>
+          <LogOut {...ICON} />
+          {t("topbar.logout")}
+        </button>
+      </nav>
+
+      <div className="stk-card stk-promo">
+        <span className="stk-promo-icon">
+          <ScanBarcode className="w-[22px] h-[22px]" strokeWidth={1.7} aria-hidden />
+        </span>
+        <p>{t("sidebar.scanText")}</p>
+        <Link to="/movements" className="stk-btn-lime">
+          {t("sidebar.scanButton")}
+        </Link>
       </div>
     </aside>
   );

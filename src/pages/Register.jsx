@@ -41,7 +41,7 @@ export function Register() {
 
   return (
     <div className="stk-page">
-      <div className="stk-card">
+      <div className="stk-reg-card">
         <aside className="stk-panel">
           <h1 className="stk-title">{t("auth.register.panelTitle")}</h1>
           <p className="stk-sub">{t("auth.register.panelSubtitle")}</p>

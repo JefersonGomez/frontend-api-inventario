@@ -76,12 +76,12 @@ export function Reports() {
         </Card>
 
         {/* Reporte de Capital Inmovilizado */}
-        <div className="rounded-xl border border-[#221F3B] bg-[#151325] p-5 flex flex-col justify-between">
+        <div className="rounded-xl border border-border bg-card p-5 flex flex-col justify-between">
           <ImmobilizedCapitalReport />
         </div>
 
         {/* Reporte de Pronóstico de Stock */}
-        <div className="rounded-xl border border-[#221F3B] bg-[#151325] p-5 flex flex-col justify-between">
+        <div className="rounded-xl border border-border bg-card p-5 flex flex-col justify-between">
           <StockForecastReport />
         </div>
       </div>

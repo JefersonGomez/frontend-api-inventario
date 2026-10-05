@@ -30,7 +30,7 @@
   font-family: "JetBrains Mono", ui-monospace, monospace;
 }
 
-.stk-card {
+.stk-reg-card {
   width: 100%;
   max-width: 940px;
   display: grid;
@@ -203,7 +203,7 @@
 
 /* Tablet y móvil: una columna, panel arriba */
 @media (max-width: 760px) {
-  .stk-card { grid-template-columns: 1fr; }
+  .stk-reg-card { grid-template-columns: 1fr; }
   .stk-panel {
     margin: 0 14px;
     border-radius: 20px 20px 0 0;

@@ -42,19 +42,19 @@ export function ProductPriceHistory({ productId }) {
       </div>
       <ResponsiveContainer width="100%" height={160}>
         <LineChart data={chartData}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#221F3B" />
-          <XAxis dataKey="date" stroke="#8B7CF6" fontSize={11} />
-          <YAxis stroke="#8B7CF6" fontSize={11} width={50} />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+          <XAxis dataKey="date" stroke="var(--muted-foreground)" fontSize={11} />
+          <YAxis stroke="var(--muted-foreground)" fontSize={11} width={50} />
           <Tooltip
-            contentStyle={{ background: "#151325", border: "1px solid #221F3B", borderRadius: 8 }}
+            contentStyle={{ background: "var(--popover)", border: "1px solid var(--border)", borderRadius: 8 }}
             formatter={(value) => [`$${value}`, t("products.priceHistory.currentPrice")]}
           />
           <Line
             type="monotone"
             dataKey="price"
-            stroke="#8B7CF6"
+            stroke="var(--foreground)"
             strokeWidth={2}
-            dot={{ fill: "#8B7CF6", r: 3 }}
+            dot={{ fill: "var(--foreground)", r: 3 }}
           />
         </LineChart>
       </ResponsiveContainer>

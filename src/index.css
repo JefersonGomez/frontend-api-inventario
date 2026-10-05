@@ -2,47 +2,64 @@
 
 :root {
   --radius: 0.625rem;
-  --background: #ffffff;
-  --foreground: #0B0A14;
-  --card: #ffffff;
-  --card-foreground: #0B0A14;
-  --popover: #ffffff;
-  --popover-foreground: #0B0A14;
-  --primary: #8B7CF6;
-  --primary-foreground: #ffffff;
-  --secondary: #F3F4F6;
-  --secondary-foreground: #0B0A14;
-  --muted: #F3F4F6;
-  --muted-foreground: #6B7280;
-  --accent: #F3F4F6;
-  --accent-foreground: #0B0A14;
-  --destructive: #EF4444;
+  /* Identidad Stockly (claro): contenedor #efefea, tarjetas #fbfbf8, acento lima */
+  --background: #efefea;
+  --foreground: #161615;
+  --card: #fbfbf8;
+  --card-foreground: #161615;
+  --popover: #fbfbf8;
+  --popover-foreground: #161615;
+  --primary: #161615;
+  --primary-foreground: #dcf20a;
+  --secondary: #e6e6e0;
+  --secondary-foreground: #161615;
+  --muted: #e8e8e2;
+  --muted-foreground: #74746d;
+  --accent: #eef7b4;
+  --accent-foreground: #161615;
+  --destructive: #b8322a;
   --destructive-foreground: #ffffff;
-  --border: #E5E7EB;
-  --input: #E5E7EB;
-  --ring: #8B7CF6;
+  --border: #e2e2dc;
+  --input: #e2e2dc;
+  --ring: #6f7c00;
+
+  --stk-page: #0b0b0a;
+  --stk-ink: #161615;
+  --stk-lime: #dcf20a;
+  --stk-lime-soft: #eef7b4;
+  --stk-lime-dark: #6f7c00;
+  --stk-ok: #2f7d4a;
+  --stk-warn: #a8690f;
+  --stk-crit: #b8322a;
+  --stk-kpi-dark: #161615;
 }
 
 .dark {
-  --background: #0B0A14;
-  --foreground: #F3F4F6;
-  --card: #151325;
-  --card-foreground: #F3F4F6;
-  --popover: #151325;
-  --popover-foreground: #F3F4F6;
-  --primary: #8B7CF6;
-  --primary-foreground: #ffffff;
-  --secondary: #1E1B33;
-  --secondary-foreground: #F3F4F6;
-  --muted: #1E1B33;
-  --muted-foreground: #9CA3AF;
-  --accent: #1E1B33;
-  --accent-foreground: #F3F4F6;
-  --destructive: #F87171;
+  --background: #141413;
+  --foreground: #f2f2ee;
+  --card: #1c1c1a;
+  --card-foreground: #f2f2ee;
+  --popover: #1c1c1a;
+  --popover-foreground: #f2f2ee;
+  --primary: #dcf20a;
+  --primary-foreground: #161615;
+  --secondary: #262624;
+  --secondary-foreground: #f2f2ee;
+  --muted: #262624;
+  --muted-foreground: #9a9a92;
+  --accent: #2a2f0a;
+  --accent-foreground: #eef7b4;
+  --destructive: #e0584f;
   --destructive-foreground: #ffffff;
-  --border: #221F3B;
-  --input: #221F3B;
-  --ring: #8B7CF6;
+  --border: #2b2b28;
+  --input: #2b2b28;
+  --ring: #dcf20a;
+
+  --stk-lime-soft: #2a2f0a;
+  --stk-ok: #5cbf7e;
+  --stk-warn: #e0a040;
+  --stk-crit: #e0584f;
+  --stk-kpi-dark: #0b0b0a;
 }
 
 @theme inline {
@@ -69,6 +86,8 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --font-sans: "Onest", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
 @layer base {
@@ -77,5 +96,103 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-variant-numeric: tabular-nums;
   }
+}
+
+/* ---------- Marco Stockly (Layout) ---------- */
+.stk-app {
+  min-height: 100dvh;
+  padding: 24px 16px;
+  overflow-x: hidden;
+  background:
+    radial-gradient(50rem 36rem at 0% 100%, rgba(150, 170, 0, 0.5), transparent 60%),
+    radial-gradient(40rem 30rem at 100% 0%, rgba(220, 242, 10, 0.12), transparent 60%),
+    var(--stk-page);
+  background-attachment: fixed;
+}
+.stk-shell {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 18px;
+  border-radius: 24px;
+  background: var(--background);
+  box-shadow: 0 40px 100px -30px rgba(0, 0, 0, 0.8), 0 12px 30px -16px rgba(0, 0, 0, 0.6);
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+.stk-shell > * { min-width: 0; }
+.stk-card {
+  background: var(--card);
+  color: var(--card-foreground);
+  border-radius: 16px;
+  padding: 18px;
+}
+
+/* Navegación */
+.stk-side { display: flex; flex-direction: column; gap: 18px; position: sticky; top: 18px; }
+.stk-nav { display: flex; flex-direction: column; gap: 4px; }
+.stk-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; text-decoration: none; color: inherit; }
+.stk-logo-mark {
+  flex: none; width: 38px; height: 38px; border-radius: 10px;
+  background: var(--stk-ink); color: var(--stk-lime);
+  display: grid; place-items: center;
+}
+.stk-logo-text { font-weight: 600; font-size: 1.35rem; letter-spacing: -0.02em; }
+.stk-link {
+  display: flex; align-items: center; gap: 10px;
+  min-height: 44px; padding: 0 12px; border-radius: 12px;
+  font-size: 0.9rem; font-weight: 500; color: var(--muted-foreground);
+  text-decoration: none; line-height: 1.2; background: none; border: 0; cursor: pointer; width: 100%;
+  font-family: inherit; text-align: left;
+}
+.stk-link:hover { color: var(--foreground); background: var(--muted); }
+.stk-link[aria-current="page"] { background: var(--stk-lime-soft); color: var(--foreground); }
+.stk-link svg { flex: none; }
+.stk-sep { height: 1px; background: var(--border); margin: 10px 4px; }
+
+.stk-promo { display: flex; flex-direction: column; gap: 12px; }
+.stk-promo-icon {
+  width: 46px; height: 46px; border-radius: 50%;
+  background: var(--stk-ink); color: var(--stk-lime); display: grid; place-items: center;
+}
+.stk-promo p { margin: 0; font-size: 0.85rem; line-height: 1.45; color: var(--muted-foreground); }
+.stk-btn-lime {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 44px; padding: 0 16px; border-radius: 12px; border: 0;
+  background: var(--stk-lime); color: #161615; font-weight: 600; font-size: 0.9rem;
+  text-decoration: none; cursor: pointer; font-family: inherit;
+}
+.stk-btn-lime:hover { filter: brightness(0.95); }
+
+/* Barra superior */
+.stk-top { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+.stk-search {
+  flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px;
+  min-height: 44px; padding: 0 14px; border-radius: 12px; background: var(--card); color: var(--muted-foreground);
+}
+.stk-search input { flex: 1; min-width: 0; border: 0; background: none; outline: none; font: inherit; font-size: 0.9rem; color: var(--foreground); }
+.stk-search:focus-within { outline: 2px solid var(--ring); outline-offset: 2px; }
+.stk-icon-btn {
+  position: relative; flex: none; width: 44px; height: 44px; border-radius: 12px; border: 0;
+  background: var(--card); color: var(--foreground); display: grid; place-items: center; cursor: pointer;
+}
+.stk-icon-btn:hover { background: var(--muted); }
+
+.stk-app :focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+
+@media (max-width: 1100px) {
+  .stk-shell { grid-template-columns: 200px minmax(0, 1fr); }
+}
+@media (max-width: 760px) {
+  .stk-app { padding: 16px; }
+  .stk-shell { grid-template-columns: minmax(0, 1fr); gap: 10px; padding: 10px; border-radius: 20px; }
+  .stk-side { position: static; gap: 10px; }
+  .stk-nav { flex-direction: row; align-items: center; overflow-x: auto; scrollbar-width: none; padding: 10px; }
+  .stk-logo { margin: 0 8px 0 0; }
+  .stk-link { width: auto; white-space: nowrap; }
+  .stk-sep, .stk-promo { display: none; }
+  .stk-top { margin-bottom: 10px; }
 }

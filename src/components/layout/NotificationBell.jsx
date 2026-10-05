@@ -19,10 +19,10 @@ export function NotificationBell() {
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <button className="relative w-9 h-9 rounded-lg bg-white/5 flex items-center justify-center text-muted-foreground">
-            <Bell className="w-4 h-4" />
+          <button className="stk-icon-btn" aria-label={`Notificaciones (${notifications.length})`}>
+            <Bell className="w-[18px] h-[18px]" strokeWidth={1.7} aria-hidden />
             {notifications.length > 0 && (
-              <span className="absolute -top-1 -right-1 bg-destructive text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center">
+              <span className="absolute top-1.5 right-1.5 bg-destructive text-white text-[10px] font-semibold rounded-full min-w-4 h-4 px-1 flex items-center justify-center">
                 {notifications.length}
               </span>
             )}

@@ -54,8 +54,8 @@ export function AssistantWidget() {
       </button>
 
       {open && (
-        <div className="fixed bottom-24 right-6 z-50 w-[360px] max-w-[calc(100vw-2rem)] h-[480px] rounded-xl border border-[#221F3B] bg-[#151325] shadow-2xl flex flex-col overflow-hidden">
-          <div className="px-4 py-3 border-b border-[#221F3B] flex items-center gap-2">
+        <div className="fixed bottom-24 right-6 z-50 w-[360px] max-w-[calc(100vw-2rem)] h-[480px] rounded-xl border border-border bg-card shadow-2xl flex flex-col overflow-hidden">
+          <div className="px-4 py-3 border-b border-border flex items-center gap-2">
             <Bot className="w-5 h-5 text-primary" />
             <h3 className="font-semibold text-sm">{t("assistant.title")}</h3>
           </div>
@@ -75,13 +75,13 @@ export function AssistantWidget() {
                       ? "bg-primary text-white"
                       : msg.isError
                       ? "bg-destructive/10 text-destructive"
-                      : "bg-[#221F3B] text-foreground"
+                      : "bg-muted text-foreground"
                   )}
                 >
                   {msg.text}
                 </div>
                 {msg.role === "user" && (
-                  <div className="w-6 h-6 rounded-full bg-[#221F3B] flex items-center justify-center shrink-0">
+                  <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center shrink-0">
                     <User className="w-3.5 h-3.5" />
                   </div>
                 )}
@@ -93,14 +93,14 @@ export function AssistantWidget() {
                 <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                   <Bot className="w-3.5 h-3.5 text-primary" />
                 </div>
-                <div className="rounded-lg px-3 py-2 bg-[#221F3B] text-muted-foreground italic">
+                <div className="rounded-lg px-3 py-2 bg-muted text-muted-foreground italic">
                   {t("assistant.thinking")}
                 </div>
               </div>
             )}
           </div>
 
-          <form onSubmit={handleSend} className="p-3 border-t border-[#221F3B] flex gap-2">
+          <form onSubmit={handleSend} className="p-3 border-t border-border flex gap-2">
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
