@@ -21,30 +21,6 @@ const router = createBrowserRouter([
     path: "/login",
     element: <Login />,
   },
-  {
-  path: "purchase-orders",
-  element: (
-    <AdminRoute>
-      <PurchaseOrders />
-    </AdminRoute>
-  ),
-},
-{
-  path: "audit-log",
-  element: (
-    <AdminRoute>
-      <AuditLogPage />
-    </AdminRoute>
-  ),
-},
-  {
-  path: "users",
-  element: (
-    <AdminRoute>
-      <Users />
-    </AdminRoute>
-  ),
-},
    { path: "/register", element: <Register /> },
   {
     path: "/",
@@ -61,10 +37,11 @@ const router = createBrowserRouter([
       { path: "reports", element: <Reports /> },
       { path: "profile", element: <Profile /> },
       {path:"settings", element:<Settings/>},
-      { path: "users", element: <Users /> },
+      { path: "users", element: <AdminRoute><Users /></AdminRoute> },
       { path: "suppliers", element: <Suppliers /> },
       {path:"purchase-requests", element:<PurchaseRequests />},
-      
+      { path: "purchase-orders", element: <AdminRoute><PurchaseOrders /></AdminRoute> },
+      { path: "audit-log", element: <AdminRoute><AuditLogPage /></AdminRoute> },
     ],
   },
 ])
