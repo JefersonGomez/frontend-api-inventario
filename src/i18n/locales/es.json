@@ -399,5 +399,36 @@
     "thinking": "Pensando...",
     "errorMessage": "Hubo un problema al procesar tu pregunta. Intentá de nuevo.",
     "send": "Enviar"
+  },
+  "notifications": {
+    "title": "Notificaciones",
+    "bellLabel": "Notificaciones ({{count}})",
+    "empty": "Todo en orden",
+    "emptyHint": "No hay nada pendiente por revisar.",
+    "error": "No se pudieron cargar las notificaciones.",
+    "showMore": "Ver {{count}} más",
+    "showLess": "Ver menos",
+    "sections": {
+      "requestExpiring": "Solicitudes por vencer",
+      "lowStock": "Stock bajo",
+      "productExpiring": "Productos por vencer",
+      "pending": "Solicitudes pendientes",
+      "approved": "Listas para ordenar"
+    },
+    "detail": {
+      "requestExpiring": "{{requester}} · {{quantity}} uds · vence {{when}}",
+      "lowStock": "Stock {{stock}} · mínimo {{minStock}}",
+      "lowStockOut": "Agotado · mínimo {{minStock}}",
+      "productExpiring": "Vence {{when}}",
+      "pending": "{{requester}} pidió {{quantity}} uds",
+      "approved": "{{quantity}} uds aprobadas · falta la orden"
+    },
+    "when": {
+      "today": "hoy",
+      "tomorrow": "mañana",
+      "in_days_one": "en {{count}} día",
+      "in_days_other": "en {{count}} días",
+      "past": "ya venció"
+    }
   }
 }

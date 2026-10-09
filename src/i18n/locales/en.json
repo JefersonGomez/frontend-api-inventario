@@ -399,5 +399,36 @@
     "thinking": "Thinking...",
     "errorMessage": "There was a problem processing your question. Please try again.",
     "send": "Send"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "bellLabel": "Notifications ({{count}})",
+    "empty": "All clear",
+    "emptyHint": "There is nothing waiting for you.",
+    "error": "Could not load notifications.",
+    "showMore": "Show {{count}} more",
+    "showLess": "Show less",
+    "sections": {
+      "requestExpiring": "Requests about to expire",
+      "lowStock": "Low stock",
+      "productExpiring": "Products about to expire",
+      "pending": "Pending requests",
+      "approved": "Ready to order"
+    },
+    "detail": {
+      "requestExpiring": "{{requester}} · {{quantity}} units · expires {{when}}",
+      "lowStock": "Stock {{stock}} · minimum {{minStock}}",
+      "lowStockOut": "Out of stock · minimum {{minStock}}",
+      "productExpiring": "Expires {{when}}",
+      "pending": "{{requester}} asked for {{quantity}} units",
+      "approved": "{{quantity}} units approved · order missing"
+    },
+    "when": {
+      "today": "today",
+      "tomorrow": "tomorrow",
+      "in_days_one": "in {{count}} day",
+      "in_days_other": "in {{count}} days",
+      "past": "already expired"
+    }
   }
 }
