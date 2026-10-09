@@ -330,7 +330,11 @@
     "statusApproved": "Approved",
     "statusRejected": "Rejected",
     "createSuccess": "Request created successfully",
-    "updateSuccess": "Status updated"
+    "updateSuccess": "Status updated",
+    "detailTitle": "Request details",
+    "expiresAt": "Expires",
+    "linkedOrder": "Purchase order",
+    "hasOrder": "Linked to an order"
   },
   "purchaseOrders": {
     "title": "Purchase Orders",
@@ -354,7 +358,10 @@
     "statusReceived": "Received",
     "statusCancelled": "Cancelled",
     "createSuccess": "Order created successfully",
-    "receiveSuccess": "Order received, stock updated"
+    "receiveSuccess": "Order received, stock updated",
+    "detailTitle": "Order details",
+    "createdBy": "Created by",
+    "receivedAt": "Received"
   },
   "auditLog": {
     "title": "Audit Log",

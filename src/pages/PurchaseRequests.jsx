@@ -31,6 +31,7 @@ export function PurchaseRequests() {
   const queryClient = useQueryClient();
   const highlightId = useSearchParams()[0].get("highlight");
   const [open, setOpen] = useState(false);
+  const [detail, setDetail] = useState(null);
   const [form, setForm] = useState({ productId: "", quantity: "", reason: "" });
 
   const { data: requests = [], isLoading } = useQuery({
@@ -132,7 +133,11 @@ export function PurchaseRequests() {
         </thead>
         <tbody>
           {requests.map((r) => (
-            <tr key={r.id} className={r.id === highlightId ? "border-b bg-primary/10" : "border-b"}>
+            <tr
+              key={r.id}
+              onClick={() => setDetail(r)}
+              className={`cursor-pointer hover:bg-muted/50 border-b ${r.id === highlightId ? "bg-primary/10" : ""}`}
+            >
               <td className="py-2">{r.product.name}</td>
               <td>{r.quantity}</td>
               <td>{r.reason || "—"}</td>
@@ -143,7 +148,7 @@ export function PurchaseRequests() {
                 </Badge>
               </td>
               {user.role === "ADMIN" && r.status === "PENDING" && (
-                <td className="space-x-2">
+                <td className="space-x-2" onClick={(e) => e.stopPropagation()}>
                   <Button
                     size="sm"
                     onClick={() => statusMutation.mutate({ id: r.id, status: "APPROVED" })}
@@ -163,6 +168,42 @@ export function PurchaseRequests() {
           ))}
         </tbody>
       </table>
+
+      <Dialog open={!!detail} onOpenChange={(o) => !o && setDetail(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("purchaseRequests.detailTitle")}</DialogTitle>
+          </DialogHeader>
+          {detail && (
+            <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
+              <dt className="text-muted-foreground">{t("purchaseRequests.product")}</dt>
+              <dd>{detail.product.name} ({detail.product.sku})</dd>
+              <dt className="text-muted-foreground">{t("purchaseRequests.quantity")}</dt>
+              <dd>{detail.quantity}</dd>
+              <dt className="text-muted-foreground">{t("purchaseRequests.reason")}</dt>
+              <dd>{detail.reason || "—"}</dd>
+              <dt className="text-muted-foreground">{t("purchaseRequests.status")}</dt>
+              <dd>
+                <Badge variant={statusVariant[detail.status]}>
+                  {t(`purchaseRequests.status${detail.status.charAt(0) + detail.status.slice(1).toLowerCase()}`)}
+                </Badge>
+              </dd>
+              <dt className="text-muted-foreground">{t("purchaseRequests.requestedBy")}</dt>
+              <dd>{detail.requestedBy.name} ({detail.requestedBy.email})</dd>
+              <dt className="text-muted-foreground">{t("purchaseRequests.date")}</dt>
+              <dd>{new Date(detail.createdAt).toLocaleString()}</dd>
+              {detail.expiresAt && (
+                <>
+                  <dt className="text-muted-foreground">{t("purchaseRequests.expiresAt")}</dt>
+                  <dd>{new Date(detail.expiresAt).toLocaleDateString()}</dd>
+                </>
+              )}
+              <dt className="text-muted-foreground">{t("purchaseRequests.linkedOrder")}</dt>
+              <dd>{detail.purchaseOrderId ? t("purchaseRequests.hasOrder") : "—"}</dd>
+            </dl>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -46,6 +46,7 @@ export function PurchaseOrders() {
   const productIdParam = searchParams.get("productId");
 
   const [open, setOpen] = useState(() => actionParam === "create");
+  const [detail, setDetail] = useState(null);
   const [supplierId, setSupplierId] = useState("");
   const [selectedRequestIds, setSelectedRequestIds] = useState(() => {
     return actionParam === "create" && requestIdParam ? [requestIdParam] : [];
@@ -308,7 +309,11 @@ export function PurchaseOrders() {
         </thead>
         <tbody>
           {orders.map((o) => (
-            <tr key={o.id} className="border-b">
+            <tr
+              key={o.id}
+              onClick={() => setDetail(o)}
+              className="cursor-pointer hover:bg-muted/50 border-b"
+            >
               <td className="py-2">{o.supplier.name}</td>
               <td>{new Date(o.createdAt).toLocaleDateString()}</td>
               <td>
@@ -316,7 +321,7 @@ export function PurchaseOrders() {
                   {t(`purchaseOrders.status${o.status.charAt(0)}${o.status.slice(1).toLowerCase()}`)}
                 </Badge>
               </td>
-              <td>
+              <td onClick={(e) => e.stopPropagation()}>
                 {o.status === "PENDING" && (
                   <AlertDialog>
                     <AlertDialogTrigger
@@ -354,6 +359,60 @@ export function PurchaseOrders() {
           ))}
         </tbody>
       </table>
+
+      <Dialog open={!!detail} onOpenChange={(o) => !o && setDetail(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("purchaseOrders.detailTitle")}</DialogTitle>
+          </DialogHeader>
+          {detail && (
+            <div className="space-y-3 text-sm">
+              <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2">
+                <dt className="text-muted-foreground">{t("purchaseOrders.supplier")}</dt>
+                <dd>{detail.supplier.name}</dd>
+                <dt className="text-muted-foreground">{t("purchaseOrders.status")}</dt>
+                <dd>
+                  <Badge variant={statusVariant[detail.status]}>
+                    {t(`purchaseOrders.status${detail.status.charAt(0)}${detail.status.slice(1).toLowerCase()}`)}
+                  </Badge>
+                </dd>
+                <dt className="text-muted-foreground">{t("purchaseOrders.createdBy")}</dt>
+                <dd>{detail.createdBy?.name ?? "—"}</dd>
+                <dt className="text-muted-foreground">{t("purchaseOrders.date")}</dt>
+                <dd>{new Date(detail.createdAt).toLocaleString()}</dd>
+                {detail.receivedAt && (
+                  <>
+                    <dt className="text-muted-foreground">{t("purchaseOrders.receivedAt")}</dt>
+                    <dd>{new Date(detail.receivedAt).toLocaleString()}</dd>
+                  </>
+                )}
+              </dl>
+              <table className="w-full">
+                <thead>
+                  <tr className="text-left border-b">
+                    <th className="py-1">{t("purchaseOrders.product")}</th>
+                    <th>{t("purchaseOrders.quantity")}</th>
+                    <th>{t("purchaseOrders.unitCost")}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {detail.items.map((i) => (
+                    <tr key={i.id} className="border-b">
+                      <td className="py-1">{i.product.name}</td>
+                      <td>{i.quantity}</td>
+                      <td>{Number(i.unitCost).toFixed(2)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <p className="text-right font-medium">
+                {t("purchaseOrders.total")}:{" "}
+                {detail.items.reduce((sum, i) => sum + i.quantity * Number(i.unitCost), 0).toFixed(2)}
+              </p>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

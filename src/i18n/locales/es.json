@@ -330,7 +330,11 @@
     "statusApproved": "Aprobada",
     "statusRejected": "Rechazada",
     "createSuccess": "Solicitud creada correctamente",
-    "updateSuccess": "Estado actualizado"
+    "updateSuccess": "Estado actualizado",
+    "detailTitle": "Detalle de la solicitud",
+    "expiresAt": "Vence",
+    "linkedOrder": "Orden de compra",
+    "hasOrder": "Vinculada a una orden"
   },
   "purchaseOrders": {
     "title": "Órdenes de compra",
@@ -354,7 +358,10 @@
     "statusReceived": "Recibida",
     "statusCancelled": "Cancelada",
     "createSuccess": "Orden creada correctamente",
-    "receiveSuccess": "Orden recibida, stock actualizado"
+    "receiveSuccess": "Orden recibida, stock actualizado",
+    "detailTitle": "Detalle de la orden",
+    "createdBy": "Creada por",
+    "receivedAt": "Recibida"
   },
   "auditLog": {
     "title": "Registro de auditoría",
