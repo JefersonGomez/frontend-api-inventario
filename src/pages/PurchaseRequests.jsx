@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../context/AuthContext";
@@ -28,6 +29,7 @@ export function PurchaseRequests() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const highlightId = useSearchParams()[0].get("highlight");
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ productId: "", quantity: "", reason: "" });
 
@@ -130,7 +132,7 @@ export function PurchaseRequests() {
         </thead>
         <tbody>
           {requests.map((r) => (
-            <tr key={r.id} className="border-b">
+            <tr key={r.id} className={r.id === highlightId ? "border-b bg-primary/10" : "border-b"}>
               <td className="py-2">{r.product.name}</td>
               <td>{r.quantity}</td>
               <td>{r.reason || "—"}</td>
