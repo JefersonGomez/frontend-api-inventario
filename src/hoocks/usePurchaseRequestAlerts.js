@@ -9,6 +9,6 @@ export function usePurchaseRequestAlerts() {
     queryKey: ["purchase-request-alerts"],
     queryFn: getPurchaseRequestAlerts,
     enabled: user?.role === "ADMIN",
-    refetchInterval: 60_000,
+    refetchInterval: 300_000, // respaldo: los cambios llegan por socket (useRealtime)
   });
 }

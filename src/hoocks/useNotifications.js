@@ -10,6 +10,6 @@ export function useNotifications() {
     queryKey: ["notifications"],
     queryFn: getNotifications,
     enabled: user?.role === "ADMIN",
-    refetchInterval: 60_000,
+    refetchInterval: 300_000, // respaldo: los cambios llegan por socket (useRealtime)
   })
 }
