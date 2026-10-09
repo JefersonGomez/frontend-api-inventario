@@ -361,7 +361,10 @@
     "receiveSuccess": "Orden recibida, stock actualizado",
     "detailTitle": "Detalle de la orden",
     "createdBy": "Creada por",
-    "receivedAt": "Recibida"
+    "receivedAt": "Recibida",
+    "noSuppliers": "No hay proveedores registrados.",
+    "createSupplier": "Crear un proveedor",
+    "linkRequests": "Solicitudes aprobadas (marca para agregarlas a la orden)"
   },
   "auditLog": {
     "title": "Registro de auditoría",

@@ -361,7 +361,10 @@
     "receiveSuccess": "Order received, stock updated",
     "detailTitle": "Order details",
     "createdBy": "Created by",
-    "receivedAt": "Received"
+    "receivedAt": "Received",
+    "noSuppliers": "There are no suppliers yet.",
+    "createSupplier": "Create a supplier",
+    "linkRequests": "Approved requests (check to add them to the order)"
   },
   "auditLog": {
     "title": "Audit Log",

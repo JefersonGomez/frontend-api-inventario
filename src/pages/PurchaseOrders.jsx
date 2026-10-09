@@ -1,6 +1,6 @@
 // src/pages/PurchaseOrders.jsx
 import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus, Trash2, AlertCircle } from "lucide-react";
@@ -34,7 +34,7 @@ const statusVariant = {
   CANCELLED: "destructive",
 };
 
-const emptyLine = () => ({ productId: "", quantity: "", unitCost: "" });
+const emptyLine = () => ({ productId: "", quantity: "", unitCost: "", requestIds: [] });
 
 export function PurchaseOrders() {
   const { t } = useTranslation();
@@ -48,15 +48,14 @@ export function PurchaseOrders() {
   const [open, setOpen] = useState(() => actionParam === "create");
   const [detail, setDetail] = useState(null);
   const [supplierId, setSupplierId] = useState("");
-  const [selectedRequestIds, setSelectedRequestIds] = useState(() => {
-    return actionParam === "create" && requestIdParam ? [requestIdParam] : [];
-  });
   const [lines, setLines] = useState(() => {
     if (actionParam === "create" && productIdParam) {
-      return [{ productId: productIdParam, quantity: 1, unitCost: "" }];
+      return [{ ...emptyLine(), productId: productIdParam, quantity: 1 }];
     }
     return [emptyLine()];
   });
+  // las solicitudes vinculadas salen de las líneas: una sola fuente de verdad
+  const selectedRequestIds = lines.flatMap((l) => l.requestIds);
 
   const { data: alerts } = usePurchaseRequestAlerts();
 
@@ -88,7 +87,6 @@ export function PurchaseOrders() {
       setOpen(false);
       setSupplierId("");
       setLines([emptyLine()]);
-      setSelectedRequestIds([]);
     },
   });
 
@@ -121,8 +119,48 @@ export function PurchaseOrders() {
 
   const addLine = () => setLines((prev) => [...prev, emptyLine()]);
 
+  // quitar una línea vinculada también desvincula sus solicitudes
   const removeLine = (index) =>
-    setLines((prev) => (prev.length > 1 ? prev.filter((_, i) => i !== index) : prev));
+    setLines((prev) => {
+      const next = prev.filter((_, i) => i !== index);
+      return next.length ? next : [emptyLine()];
+    });
+
+  // marcar una solicitud crea/suma su línea (producto + cantidad); el costo sale del precio del producto
+  const toggleRequest = (r, checked) =>
+    setLines((prev) => {
+      if (checked) {
+        const idx = prev.findIndex((l) => l.productId === r.productId);
+        if (idx >= 0) {
+          return prev.map((l, i) =>
+            i === idx
+              ? { ...l, quantity: String((Number(l.quantity) || 0) + r.quantity), requestIds: [...l.requestIds, r.id] }
+              : l
+          );
+        }
+        const used = prev.filter((l) => l.productId || l.quantity || l.unitCost);
+        return [...used, { ...emptyLine(), productId: r.productId, quantity: String(r.quantity), requestIds: [r.id] }];
+      }
+      const next = prev.flatMap((l) => {
+        if (!l.requestIds.includes(r.id)) return [l];
+        const quantity = Math.max(0, (Number(l.quantity) || 0) - r.quantity);
+        const requestIds = l.requestIds.filter((id) => id !== r.id);
+        // la línea que se queda sin solicitudes ni cantidad desaparece; las demás no se tocan
+        return requestIds.length === 0 && quantity === 0 ? [] : [{ ...l, quantity: String(quantity), requestIds }];
+      });
+      return next.length ? next : [emptyLine()];
+    });
+
+  // llegada desde una notificación (?requestId=): marcar esa solicitud una sola vez, cuando `alerts` llegue
+  const [urlRequestApplied, setUrlRequestApplied] = useState(false);
+  const urlRequest =
+    !urlRequestApplied && actionParam === "create" && requestIdParam
+      ? alerts?.approvedUnfulfilled?.find((x) => x.id === requestIdParam)
+      : undefined;
+  if (urlRequest) {
+    setUrlRequestApplied(true);
+    toggleRequest(urlRequest, true);
+  }
 
   const getEffectiveUnitCost = (line) => {
     if (line.unitCost !== "") return line.unitCost;
@@ -131,6 +169,10 @@ export function PurchaseOrders() {
     }
     return "";
   };
+
+  // el backend rechaza el mismo producto en dos líneas: no ofrecerlo dos veces
+  const availableProducts = (index) =>
+    products.filter((p) => !lines.some((l, i) => i !== index && l.productId === p.id));
 
   const orderTotal = lines.reduce((sum, l) => {
     const cost = getEffectiveUnitCost(l);
@@ -189,7 +231,11 @@ export function PurchaseOrders() {
             </DialogHeader>
 
             <form onSubmit={handleCreate} className="space-y-4">
-              <Select value={supplierId} onValueChange={setSupplierId}>
+              <Select
+                value={supplierId}
+                onValueChange={setSupplierId}
+                items={suppliers.map((s) => ({ value: s.id, label: s.name }))}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder={t("purchaseOrders.supplier")} />
                 </SelectTrigger>
@@ -201,11 +247,17 @@ export function PurchaseOrders() {
                   ))}
                 </SelectContent>
               </Select>
+              {suppliers.length === 0 && (
+                <p className="text-sm text-muted-foreground">
+                  {t("purchaseOrders.noSuppliers")}{" "}
+                  <Link to="/suppliers" className="underline">{t("purchaseOrders.createSupplier")}</Link>
+                </p>
+              )}
 
               {alerts?.approvedUnfulfilled?.length > 0 && (
                 <div className="space-y-2 border rounded-md p-3 bg-muted/40">
                   <p className="text-sm font-medium">
-                    {t("purchaseOrders.linkRequests", "Vincular solicitudes aprobadas (opcional)")}
+                    {t("purchaseOrders.linkRequests")}
                   </p>
                   <div className="max-h-36 overflow-y-auto space-y-1">
                     {alerts.approvedUnfulfilled.map((r) => (
@@ -213,11 +265,7 @@ export function PurchaseOrders() {
                         <input
                           type="checkbox"
                           checked={selectedRequestIds.includes(r.id)}
-                          onChange={(e) =>
-                            setSelectedRequestIds((prev) =>
-                              e.target.checked ? [...prev, r.id] : prev.filter((id) => id !== r.id)
-                            )
-                          }
+                          onChange={(e) => toggleRequest(r, e.target.checked)}
                         />
                         <span>
                           {r.product.name} — {r.quantity} unidades ({r.requestedBy?.name ?? "Usuario"})
@@ -237,12 +285,14 @@ export function PurchaseOrders() {
                       <Select
                         value={line.productId}
                         onValueChange={(v) => updateLine(index, "productId", v)}
+                        disabled={line.requestIds.length > 0}
+                        items={products.map((p) => ({ value: p.id, label: `${p.name} (${p.sku})` }))}
                       >
                         <SelectTrigger className="flex-1">
                           <SelectValue placeholder={t("purchaseOrders.product")} />
                         </SelectTrigger>
                         <SelectContent>
-                          {products.map((p) => (
+                          {availableProducts(index).map((p) => (
                             <SelectItem key={p.id} value={p.id}>
                               {p.name} ({p.sku})
                             </SelectItem>
@@ -273,7 +323,6 @@ export function PurchaseOrders() {
                         variant="ghost"
                         size="icon"
                         onClick={() => removeLine(index)}
-                        disabled={lines.length === 1}
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>
