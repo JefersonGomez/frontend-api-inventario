@@ -79,6 +79,11 @@ export function PurchaseOrders() {
     return acc;
   }, {});
 
+  const productSupplierMap = products.reduce((acc, p) => {
+    if (p.supplierId) acc[p.id] = p.supplierId;
+    return acc;
+  }, {});
+
   const createMutation = useMutation({
     mutationFn: createPurchaseOrder,
     onSuccess: () => {
@@ -99,6 +104,10 @@ export function PurchaseOrders() {
   });
 
   const updateLine = (index, field, value) => {
+    // el proveedor del producto rellena el de la orden si todavía está vacío
+    if (field === "productId" && productSupplierMap[value]) {
+      setSupplierId((cur) => cur || productSupplierMap[value]);
+    }
     setLines((prev) =>
       prev.map((line, i) => {
         if (i !== index) return line;
@@ -127,7 +136,10 @@ export function PurchaseOrders() {
     });
 
   // marcar una solicitud crea/suma su línea (producto + cantidad); el costo sale del precio del producto
-  const toggleRequest = (r, checked) =>
+  const toggleRequest = (r, checked) => {
+    if (checked && r.product?.supplierId) {
+      setSupplierId((cur) => cur || r.product.supplierId);
+    }
     setLines((prev) => {
       if (checked) {
         const idx = prev.findIndex((l) => l.productId === r.productId);
@@ -150,6 +162,7 @@ export function PurchaseOrders() {
       });
       return next.length ? next : [emptyLine()];
     });
+  };
 
   // llegada desde una notificación (?requestId=): marcar esa solicitud una sola vez, cuando `alerts` llegue
   const [urlRequestApplied, setUrlRequestApplied] = useState(false);
@@ -225,7 +238,7 @@ export function PurchaseOrders() {
             }
           />
 
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{t("purchaseOrders.newOrder")}</DialogTitle>
             </DialogHeader>
@@ -236,7 +249,7 @@ export function PurchaseOrders() {
                 onValueChange={setSupplierId}
                 items={suppliers.map((s) => ({ value: s.id, label: s.name }))}
               >
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder={t("purchaseOrders.supplier")} />
                 </SelectTrigger>
                 <SelectContent>
@@ -260,18 +273,32 @@ export function PurchaseOrders() {
                     {t("purchaseOrders.linkRequests")}
                   </p>
                   <div className="max-h-36 overflow-y-auto space-y-1">
-                    {alerts.approvedUnfulfilled.map((r) => (
-                      <label key={r.id} className="flex items-center gap-2 text-sm cursor-pointer hover:bg-muted/60 p-1 rounded">
+                    {alerts.approvedUnfulfilled.map((r) => {
+                      const checked = selectedRequestIds.includes(r.id);
+                      // una orden = un proveedor: las solicitudes de otro proveedor esperan a su propia orden
+                      const otherSupplier =
+                        !checked && !!supplierId && !!r.product.supplierId && r.product.supplierId !== supplierId;
+                      return (
+                      <label
+                        key={r.id}
+                        className={cn(
+                          "flex items-center gap-2 text-sm p-1 rounded",
+                          otherSupplier ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-muted/60"
+                        )}
+                      >
                         <input
                           type="checkbox"
-                          checked={selectedRequestIds.includes(r.id)}
+                          disabled={otherSupplier}
+                          checked={checked}
                           onChange={(e) => toggleRequest(r, e.target.checked)}
                         />
                         <span>
                           {r.product.name} — {r.quantity} unidades ({r.requestedBy?.name ?? "Usuario"})
+                          {otherSupplier && ` · ${t("purchaseOrders.otherSupplier")}`}
                         </span>
                       </label>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -288,7 +315,7 @@ export function PurchaseOrders() {
                         disabled={line.requestIds.length > 0}
                         items={products.map((p) => ({ value: p.id, label: `${p.name} (${p.sku})` }))}
                       >
-                        <SelectTrigger className="flex-1">
+                        <SelectTrigger className="flex-1 min-w-0">
                           <SelectValue placeholder={t("purchaseOrders.product")} />
                         </SelectTrigger>
                         <SelectContent>
@@ -302,7 +329,7 @@ export function PurchaseOrders() {
                       <Input
                         type="number"
                         min={1}
-                        className="w-24"
+                        className="w-24 shrink-0"
                         placeholder={t("purchaseOrders.quantity")}
                         value={line.quantity}
                         onChange={(e) => updateLine(index, "quantity", e.target.value)}
@@ -312,7 +339,7 @@ export function PurchaseOrders() {
                         type="number"
                         min={0}
                         step="0.01"
-                        className="w-28"
+                        className="w-28 shrink-0"
                         placeholder={t("purchaseOrders.unitCost")}
                         value={effectiveUnitCost}
                         onChange={(e) => updateLine(index, "unitCost", e.target.value)}

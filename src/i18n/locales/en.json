@@ -138,7 +138,9 @@
       "label_category": "Category",
       "placeholder_category": "Select a category",
       "label_barcode": "Barcode",
-      "label_expiration_date": "Expiration date"
+      "label_expiration_date": "Expiration date",
+      "label_supplier": "Supplier (optional)",
+      "supplier_none": "No supplier"
     },
     "delete": {
       "title": "Delete this product?",
@@ -364,7 +366,8 @@
     "receivedAt": "Received",
     "noSuppliers": "There are no suppliers yet.",
     "createSupplier": "Create a supplier",
-    "linkRequests": "Approved requests (check to add them to the order)"
+    "linkRequests": "Approved requests (check to add them to the order)",
+    "otherSupplier": "different supplier"
   },
   "auditLog": {
     "title": "Audit Log",

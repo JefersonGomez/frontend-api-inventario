@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { getProducts, createProduct, updateProduct, deleteProduct } from "@/api/products"
 import { getCategories } from "@/api/categories"
+import { getSuppliers } from "@/api/suppliers"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -34,6 +35,7 @@ const emptyForm = {
   stock: "", 
   minStock: "", 
   categoryId: "",
+  supplierId: "",
   expirationDate: "",
 }
 
@@ -56,6 +58,12 @@ export function Products() {
     (p) => !q || [p.name, p.sku, p.barcode, p.category?.name].some((v) => fold(v).includes(q))
   )
   const categoriesQuery = useQuery({ queryKey: ["categories"], queryFn: getCategories })
+  const suppliersQuery = useQuery({ queryKey: ["suppliers"], queryFn: getSuppliers })
+  // "none" es el valor del ítem "Sin proveedor" del Select; en el form vacío = sin proveedor
+  const supplierItems = [
+    { value: "none", label: t("products.dialog.supplier_none") },
+    ...(suppliersQuery.data ?? []).map((s) => ({ value: s.id, label: s.name })),
+  ]
 
   const createMutation = useMutation({
     mutationFn: () =>
@@ -64,6 +72,7 @@ export function Products() {
         price: Number(form.price),
         stock: Number(form.stock),
         minStock: Number(form.minStock),
+        supplierId: form.supplierId || null,
         expirationDate: form.expirationDate || undefined,
       }),
     onSuccess: () => {
@@ -81,6 +90,7 @@ export function Products() {
         price: Number(form.price),
         minStock: Number(form.minStock),
         categoryId: form.categoryId,
+        supplierId: form.supplierId || null,
         expirationDate: form.expirationDate || undefined,
       }),
     onSuccess: () => {
@@ -114,6 +124,7 @@ export function Products() {
       stock: String(product.stock),
       minStock: String(product.minStock),
       categoryId: product.categoryId ?? "",
+      supplierId: product.supplierId ?? "",
       expirationDate: product.expirationDate
         ? product.expirationDate.slice(0, 10)
         : "",
@@ -323,6 +334,26 @@ export function Products() {
                   {categoriesQuery.data?.map((category) => (
                     <SelectItem key={category.id} value={category.id}>
                       {category.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>{t("products.dialog.label_supplier")}</Label>
+              <Select
+                value={form.supplierId || "none"}
+                onValueChange={(value) => setForm({ ...form, supplierId: value === "none" ? "" : value })}
+                items={supplierItems}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {supplierItems.map((s) => (
+                    <SelectItem key={s.value} value={s.value}>
+                      {s.label}
                     </SelectItem>
                   ))}
                 </SelectContent>

@@ -138,7 +138,9 @@
       "label_category": "Categoría",
       "placeholder_category": "Selecciona una categoría",
       "label_barcode": "Código de barras",
-      "label_expiration_date": "Fecha de vencimiento"
+      "label_expiration_date": "Fecha de vencimiento",
+      "label_supplier": "Proveedor (opcional)",
+      "supplier_none": "Sin proveedor"
     },
     "delete": {
       "title": "¿Eliminar este producto?",
@@ -364,7 +366,8 @@
     "receivedAt": "Recibida",
     "noSuppliers": "No hay proveedores registrados.",
     "createSupplier": "Crear un proveedor",
-    "linkRequests": "Solicitudes aprobadas (marca para agregarlas a la orden)"
+    "linkRequests": "Solicitudes aprobadas (marca para agregarlas a la orden)",
+    "otherSupplier": "otro proveedor"
   },
   "auditLog": {
     "title": "Registro de auditoría",
