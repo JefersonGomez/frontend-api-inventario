@@ -61,6 +61,10 @@ function useDetail() {
         return t("notifications.detail.requestExpiring", { ...m, when: when(daysUntil(m.expiresAt)) });
       case "productExpiring":
         return t("notifications.detail.productExpiring", { when: when(daysUntil(m.expirationDate, true)) });
+      case "requestRejected":
+        return m.reason
+          ? t("notifications.detail.requestRejectedReason", m)
+          : t("notifications.detail.requestRejected", m);
       case "lowStock":
         return m.stock <= 0
           ? t("notifications.detail.lowStockOut", m)

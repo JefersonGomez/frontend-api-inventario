@@ -7,8 +7,10 @@ export const getPurchaseRequests = () =>
 export const createPurchaseRequest = (data) =>
   api.post("/purchase-requests", data).then((res) => res.data);
 
-export const updatePurchaseRequestStatus = (id, status) =>
-  api.patch(`/purchase-requests/${id}/status`, { status }).then((res) => res.data);
+export const updatePurchaseRequestStatus = (id, status, rejectionReason) =>
+  api
+    .patch(`/purchase-requests/${id}/status`, { status, ...(rejectionReason && { rejectionReason }) })
+    .then((res) => res.data);
 
 // src/api/purchaseRequests.js — agregar
 export const getPurchaseRequestAlerts = () =>

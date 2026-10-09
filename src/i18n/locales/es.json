@@ -336,7 +336,12 @@
     "detailTitle": "Detalle de la solicitud",
     "expiresAt": "Vence",
     "linkedOrder": "Orden de compra",
-    "hasOrder": "Vinculada a una orden"
+    "hasOrder": "Vinculada a una orden",
+    "rejectTitle": "Rechazar solicitud",
+    "rejectIntro": "{{name}} pidió {{quantity}} uds de {{product}}. El motivo lo verá quien hizo la solicitud.",
+    "rejectionReason": "Motivo del rechazo",
+    "rejectionReasonPlaceholder": "Ej.: ya hay stock suficiente",
+    "rejectError": "No se pudo rechazar la solicitud. Inténtalo de nuevo."
   },
   "purchaseOrders": {
     "title": "Órdenes de compra",
@@ -427,7 +432,8 @@
       "approved": "{{quantity}} uds aprobadas · falta la orden",
       "requestApproved": "Tu solicitud de {{quantity}} uds fue aprobada",
       "requestRejected": "Tu solicitud de {{quantity}} uds fue rechazada",
-      "orderReceived": "Ya llegó tu pedido · {{quantity}} uds"
+      "orderReceived": "Ya llegó tu pedido · {{quantity}} uds",
+      "requestRejectedReason": "Rechazada · {{reason}}"
     },
     "when": {
       "today": "hoy",

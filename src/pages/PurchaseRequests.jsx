@@ -15,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
@@ -32,6 +33,8 @@ export function PurchaseRequests() {
   const highlightId = useSearchParams()[0].get("highlight");
   const [open, setOpen] = useState(false);
   const [detail, setDetail] = useState(null);
+  const [rejecting, setRejecting] = useState(null);
+  const [rejectionReason, setRejectionReason] = useState("");
   const [form, setForm] = useState({ productId: "", quantity: "", reason: "" });
 
   const { data: requests = [], isLoading } = useQuery({
@@ -55,12 +58,23 @@ export function PurchaseRequests() {
   });
 
   const statusMutation = useMutation({
-    mutationFn: ({ id, status }) => updatePurchaseRequestStatus(id, status),
+    mutationFn: ({ id, status, rejectionReason }) => updatePurchaseRequestStatus(id, status, rejectionReason),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["purchase-requests"] });
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      closeReject();
     },
   });
+
+  const closeReject = () => {
+    setRejecting(null);
+    setRejectionReason("");
+  };
+
+  const handleReject = (e) => {
+    e.preventDefault();
+    statusMutation.mutate({ id: rejecting.id, status: "REJECTED", rejectionReason: rejectionReason.trim() });
+  };
 
   const handleCreate = (e) => {
     e.preventDefault();
@@ -148,6 +162,11 @@ export function PurchaseRequests() {
                 <Badge variant={statusVariant[r.status]}>
                   {t(`purchaseRequests.status${r.status.charAt(0) + r.status.slice(1).toLowerCase()}`)}
                 </Badge>
+                {r.status === "REJECTED" && r.rejectionReason && (
+                  <p className="mt-1 max-w-[16rem] truncate text-xs text-muted-foreground" title={r.rejectionReason}>
+                    {r.rejectionReason}
+                  </p>
+                )}
               </td>
               {user.role === "ADMIN" && r.status === "PENDING" && (
                 <td className="space-x-2" onClick={(e) => e.stopPropagation()}>
@@ -160,7 +179,7 @@ export function PurchaseRequests() {
                   <Button
                     size="sm"
                     variant="destructive"
-                    onClick={() => statusMutation.mutate({ id: r.id, status: "REJECTED" })}
+                    onClick={() => setRejecting(r)}
                   >
                     {t("purchaseRequests.reject")}
                   </Button>
@@ -170,6 +189,52 @@ export function PurchaseRequests() {
           ))}
         </tbody>
       </table>
+
+      <Dialog open={!!rejecting} onOpenChange={(o) => !o && closeReject()}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("purchaseRequests.rejectTitle")}</DialogTitle>
+          </DialogHeader>
+          {rejecting && (
+            <form onSubmit={handleReject} className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                {t("purchaseRequests.rejectIntro", {
+                  name: rejecting.requestedBy.name,
+                  quantity: rejecting.quantity,
+                  product: rejecting.product.name,
+                })}
+              </p>
+              <div className="space-y-2">
+                <Label htmlFor="rejection-reason">{t("purchaseRequests.rejectionReason")}</Label>
+                <Input
+                  id="rejection-reason"
+                  value={rejectionReason}
+                  onChange={(e) => setRejectionReason(e.target.value)}
+                  placeholder={t("purchaseRequests.rejectionReasonPlaceholder")}
+                  maxLength={300}
+                  autoFocus
+                  required
+                />
+              </div>
+              {statusMutation.isError && (
+                <p role="alert" className="text-sm text-destructive">{t("purchaseRequests.rejectError")}</p>
+              )}
+              <div className="flex justify-end gap-2">
+                <Button type="button" variant="outline" onClick={closeReject}>
+                  {t("common.cancel")}
+                </Button>
+                <Button
+                  type="submit"
+                  variant="destructive"
+                  disabled={statusMutation.isPending || !rejectionReason.trim()}
+                >
+                  {t("purchaseRequests.reject")}
+                </Button>
+              </div>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={!!detail} onOpenChange={(o) => !o && setDetail(null)}>
         <DialogContent>
@@ -190,6 +255,12 @@ export function PurchaseRequests() {
                   {t(`purchaseRequests.status${detail.status.charAt(0) + detail.status.slice(1).toLowerCase()}`)}
                 </Badge>
               </dd>
+              {detail.status === "REJECTED" && detail.rejectionReason && (
+                <>
+                  <dt className="text-muted-foreground">{t("purchaseRequests.rejectionReason")}</dt>
+                  <dd className="break-words">{detail.rejectionReason}</dd>
+                </>
+              )}
               <dt className="text-muted-foreground">{t("purchaseRequests.requestedBy")}</dt>
               <dd>{detail.requestedBy.name} ({detail.requestedBy.email})</dd>
               <dt className="text-muted-foreground">{t("purchaseRequests.date")}</dt>

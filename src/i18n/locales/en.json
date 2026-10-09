@@ -336,7 +336,12 @@
     "detailTitle": "Request details",
     "expiresAt": "Expires",
     "linkedOrder": "Purchase order",
-    "hasOrder": "Linked to an order"
+    "hasOrder": "Linked to an order",
+    "rejectTitle": "Reject request",
+    "rejectIntro": "{{name}} asked for {{quantity}} units of {{product}}. The requester will see the reason.",
+    "rejectionReason": "Rejection reason",
+    "rejectionReasonPlaceholder": "E.g.: there is already enough stock",
+    "rejectError": "Could not reject the request. Please try again."
   },
   "purchaseOrders": {
     "title": "Purchase Orders",
@@ -427,7 +432,8 @@
       "approved": "{{quantity}} units approved · order missing",
       "requestApproved": "Your request for {{quantity}} units was approved",
       "requestRejected": "Your request for {{quantity}} units was rejected",
-      "orderReceived": "Your order arrived · {{quantity}} units"
+      "orderReceived": "Your order arrived · {{quantity}} units",
+      "requestRejectedReason": "Rejected · {{reason}}"
     },
     "when": {
       "today": "today",
