@@ -413,7 +413,10 @@
       "lowStock": "Stock bajo",
       "productExpiring": "Productos por vencer",
       "pending": "Solicitudes pendientes",
-      "approved": "Listas para ordenar"
+      "approved": "Listas para ordenar",
+      "requestApproved": "Solicitudes aprobadas",
+      "requestRejected": "Solicitudes rechazadas",
+      "orderReceived": "Pedidos recibidos"
     },
     "detail": {
       "requestExpiring": "{{requester}} · {{quantity}} uds · vence {{when}}",
@@ -421,7 +424,10 @@
       "lowStockOut": "Agotado · mínimo {{minStock}}",
       "productExpiring": "Vence {{when}}",
       "pending": "{{requester}} pidió {{quantity}} uds",
-      "approved": "{{quantity}} uds aprobadas · falta la orden"
+      "approved": "{{quantity}} uds aprobadas · falta la orden",
+      "requestApproved": "Tu solicitud de {{quantity}} uds fue aprobada",
+      "requestRejected": "Tu solicitud de {{quantity}} uds fue rechazada",
+      "orderReceived": "Ya llegó tu pedido · {{quantity}} uds"
     },
     "when": {
       "today": "hoy",
@@ -429,6 +435,8 @@
       "in_days_one": "en {{count}} día",
       "in_days_other": "en {{count}} días",
       "past": "ya venció"
-    }
+    },
+    "unread": "Sin leer",
+    "markAllRead": "Marcar todo como leído"
   }
 }

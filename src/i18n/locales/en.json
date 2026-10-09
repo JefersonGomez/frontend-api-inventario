@@ -413,7 +413,10 @@
       "lowStock": "Low stock",
       "productExpiring": "Products about to expire",
       "pending": "Pending requests",
-      "approved": "Ready to order"
+      "approved": "Ready to order",
+      "requestApproved": "Approved requests",
+      "requestRejected": "Rejected requests",
+      "orderReceived": "Orders received"
     },
     "detail": {
       "requestExpiring": "{{requester}} · {{quantity}} units · expires {{when}}",
@@ -421,7 +424,10 @@
       "lowStockOut": "Out of stock · minimum {{minStock}}",
       "productExpiring": "Expires {{when}}",
       "pending": "{{requester}} asked for {{quantity}} units",
-      "approved": "{{quantity}} units approved · order missing"
+      "approved": "{{quantity}} units approved · order missing",
+      "requestApproved": "Your request for {{quantity}} units was approved",
+      "requestRejected": "Your request for {{quantity}} units was rejected",
+      "orderReceived": "Your order arrived · {{quantity}} units"
     },
     "when": {
       "today": "today",
@@ -429,6 +435,8 @@
       "in_days_one": "in {{count}} day",
       "in_days_other": "in {{count}} days",
       "past": "already expired"
-    }
+    },
+    "unread": "Unread",
+    "markAllRead": "Mark all as read"
   }
 }
