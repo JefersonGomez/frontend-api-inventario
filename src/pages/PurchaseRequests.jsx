@@ -48,6 +48,7 @@ export function PurchaseRequests() {
     mutationFn: createPurchaseRequest,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["purchase-requests"] });
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
       setOpen(false);
       setForm({ productId: "", quantity: "", reason: "" });
     },
@@ -57,6 +58,7 @@ export function PurchaseRequests() {
     mutationFn: ({ id, status }) => updatePurchaseRequestStatus(id, status),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["purchase-requests"] });
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
     },
   });
 
