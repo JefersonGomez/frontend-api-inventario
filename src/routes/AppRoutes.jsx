@@ -16,12 +16,15 @@ import {PurchaseRequests} from "@/pages/PurchaseRequests"
 import { AdminRoute } from "./AdminRoute"
 import { PurchaseOrders } from "@/pages/PurchaseOrders"
 import { AuditLogPage } from "@/pages/AuditLog"
+import { AcceptInvite } from "@/pages/AcceptInvite"
 const router = createBrowserRouter([
   {
     path: "/login",
     element: <Login />,
   },
    { path: "/register", element: <Register /> },
+  // link de invitación: público (quien lo abre todavía no tiene sesión)
+  { path: "/invite/:token", element: <AcceptInvite /> },
   {
     path: "/",
     element: (

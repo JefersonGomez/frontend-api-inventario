@@ -467,7 +467,8 @@
       "requestRejected": "Solicitudes rechazadas",
       "orderReceived": "Pedidos recibidos",
       "requestComment": "Comentarios en solicitudes",
-      "orderComment": "Comentarios en órdenes"
+      "orderComment": "Comentarios en órdenes",
+      "memberJoined": "Nuevos miembros"
     },
     "detail": {
       "requestExpiring": "{{requester}} · {{quantity}} uds · vence {{when}}",
@@ -481,7 +482,8 @@
       "orderReceived": "Ya llegó tu pedido · {{quantity}} uds",
       "requestRejectedReason": "Rechazada · {{reason}}",
       "requestComment": "{{author}}: {{excerpt}}",
-      "orderComment": "{{author}}: {{excerpt}}"
+      "orderComment": "{{author}}: {{excerpt}}",
+      "memberJoined": "Se unió a {{company}}"
     },
     "when": {
       "today": "hoy",
@@ -528,6 +530,68 @@
       "unlimitedUsers": "usuarios ilimitados",
       "unlimitedProducts": "productos ilimitados",
       "limits": "Incluye: {{items}}"
+    }
+  },
+  "users": {
+    "title": "Usuarios",
+    "subtitle": "Administra quién tiene acceso a esta empresa",
+    "name": "Nombre",
+    "email": "Email",
+    "role": "Rol",
+    "registeredOn": "Registrado",
+    "active": "Activo",
+    "you": "tú",
+    "toggleError": "No se pudo actualizar el usuario.",
+    "invite": "Invitar",
+    "inviteTitle": "Invitar a la empresa",
+    "inviteHint": "Se genera un link para que esa persona cree su cuenta (o entre con la que ya tiene) y quede en esta empresa con el rol elegido.",
+    "createLink": "Crear link",
+    "inviteError": "No se pudo crear la invitación",
+    "linkReady": "Listo. Envíale este link a {{email}} por WhatsApp, correo o donde prefieras:",
+    "link": "Link de invitación",
+    "copy": "Copiar",
+    "copied": "Copiado",
+    "linkHint": "Vence el {{date}}. Solo se muestra ahora: si lo pierdes, usa \"Nuevo link\".",
+    "done": "Listo",
+    "pendingTitle": "Invitaciones pendientes",
+    "expires": "vence el {{date}}",
+    "renew": "Nuevo link",
+    "revoke": "Anular",
+    "usage": "{{used}} de {{max}} usuarios",
+    "usageHint": "Usuarios activos más invitaciones pendientes, según tu plan",
+    "full": "Llegaste al límite de usuarios de tu plan"
+  },
+  "invite": {
+    "panelTitle": "Te invitaron a Stockly",
+    "panelSubtitle": "Únete al inventario de tu equipo.",
+    "title": "Únete a {{company}}",
+    "subtitle": "{{inviter}} te invitó como {{role}}.",
+    "name": "Tu nombre",
+    "confirm": "Confirmar contraseña",
+    "mismatch": "Las contraseñas no coinciden",
+    "existingHint": "Ya tienes una cuenta con este email: entra con tu contraseña y la empresa se sumará a las tuyas.",
+    "join": "Crear cuenta y unirme",
+    "joinExisting": "Entrar y unirme",
+    "joining": "Uniéndote…",
+    "error": "No se pudo aceptar la invitación",
+    "goLogin": "Ir a iniciar sesión",
+    "invalid": {
+      "notFound": {
+        "title": "Invitación no encontrada",
+        "text": "El link no es válido. Revisa que esté completo o pide uno nuevo."
+      },
+      "expired": {
+        "title": "La invitación venció",
+        "text": "Pide a quien te invitó que te envíe un link nuevo."
+      },
+      "revoked": {
+        "title": "Invitación anulada",
+        "text": "Este link ya no es válido. Pide uno nuevo si lo necesitas."
+      },
+      "accepted": {
+        "title": "Invitación ya usada",
+        "text": "Este link ya se usó. Inicia sesión con tu cuenta."
+      }
     }
   }
 }

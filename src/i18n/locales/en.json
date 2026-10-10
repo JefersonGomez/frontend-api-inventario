@@ -467,7 +467,8 @@
       "requestRejected": "Rejected requests",
       "orderReceived": "Orders received",
       "requestComment": "Request comments",
-      "orderComment": "Order comments"
+      "orderComment": "Order comments",
+      "memberJoined": "New members"
     },
     "detail": {
       "requestExpiring": "{{requester}} · {{quantity}} units · expires {{when}}",
@@ -481,7 +482,8 @@
       "orderReceived": "Your order arrived · {{quantity}} units",
       "requestRejectedReason": "Rejected · {{reason}}",
       "requestComment": "{{author}}: {{excerpt}}",
-      "orderComment": "{{author}}: {{excerpt}}"
+      "orderComment": "{{author}}: {{excerpt}}",
+      "memberJoined": "Joined {{company}}"
     },
     "when": {
       "today": "today",
@@ -528,6 +530,68 @@
       "unlimitedUsers": "unlimited users",
       "unlimitedProducts": "unlimited products",
       "limits": "Includes: {{items}}"
+    }
+  },
+  "users": {
+    "title": "Users",
+    "subtitle": "Manage who has access to this company",
+    "name": "Name",
+    "email": "Email",
+    "role": "Role",
+    "registeredOn": "Joined",
+    "active": "Active",
+    "you": "you",
+    "toggleError": "Could not update the user.",
+    "invite": "Invite",
+    "inviteTitle": "Invite to the company",
+    "inviteHint": "A link is generated so that person can create an account (or use an existing one) and join this company with the chosen role.",
+    "createLink": "Create link",
+    "inviteError": "Could not create the invitation",
+    "linkReady": "Done. Send this link to {{email}} by WhatsApp, email or however you prefer:",
+    "link": "Invitation link",
+    "copy": "Copy",
+    "copied": "Copied",
+    "linkHint": "Expires on {{date}}. It is only shown now: if you lose it, use \"New link\".",
+    "done": "Done",
+    "pendingTitle": "Pending invitations",
+    "expires": "expires on {{date}}",
+    "renew": "New link",
+    "revoke": "Revoke",
+    "usage": "{{used}} of {{max}} users",
+    "usageHint": "Active users plus pending invitations, per your plan",
+    "full": "You reached your plan user limit"
+  },
+  "invite": {
+    "panelTitle": "You were invited to Stockly",
+    "panelSubtitle": "Join your team's inventory.",
+    "title": "Join {{company}}",
+    "subtitle": "{{inviter}} invited you as {{role}}.",
+    "name": "Your name",
+    "confirm": "Confirm password",
+    "mismatch": "Passwords do not match",
+    "existingHint": "You already have an account with this email: sign in with your password and the company will be added to yours.",
+    "join": "Create account and join",
+    "joinExisting": "Sign in and join",
+    "joining": "Joining…",
+    "error": "Could not accept the invitation",
+    "goLogin": "Go to sign in",
+    "invalid": {
+      "notFound": {
+        "title": "Invitation not found",
+        "text": "The link is not valid. Check it is complete or ask for a new one."
+      },
+      "expired": {
+        "title": "The invitation expired",
+        "text": "Ask whoever invited you to send a new link."
+      },
+      "revoked": {
+        "title": "Invitation revoked",
+        "text": "This link is no longer valid. Ask for a new one if you need it."
+      },
+      "accepted": {
+        "title": "Invitation already used",
+        "text": "This link was already used. Sign in with your account."
+      }
     }
   }
 }
