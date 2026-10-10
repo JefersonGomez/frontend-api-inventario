@@ -411,7 +411,15 @@
     "action.RECEIVE": "Recibió",
     "action.ACTIVATE": "Activó",
     "action.DEACTIVATE": "Desactivó",
-    "action.EMAIL": "Envió correo"
+    "action.EMAIL": "Envió correo",
+    "emailsSent": "Correos a proveedores",
+    "lastEmail": "Último: {{to}} · {{date}}",
+    "noEmails": "Todavía no se envió ninguno",
+    "selectHint": "Toca un registro para ubicarlo en el gráfico",
+    "selectedDay": "{{day}}: {{count}} acciones ese día",
+    "selectedOutOfRange": "Ese registro es anterior a los últimos 7 días",
+    "emailsTest": "{{count}} de prueba",
+    "emailsFilter": "Correos enviados"
   },
   "assistant": {
     "title": "Asistente de inventario",

@@ -411,7 +411,15 @@
     "action.RECEIVE": "Received",
     "action.ACTIVATE": "Activated",
     "action.DEACTIVATE": "Deactivated",
-    "action.EMAIL": "Sent email"
+    "action.EMAIL": "Sent email",
+    "emailsSent": "Supplier emails",
+    "lastEmail": "Last: {{to}} · {{date}}",
+    "noEmails": "None sent yet",
+    "selectHint": "Tap a record to find it on the chart",
+    "selectedDay": "{{day}}: {{count}} actions that day",
+    "selectedOutOfRange": "That record is older than the last 7 days",
+    "emailsTest": "{{count}} test",
+    "emailsFilter": "Emails sent"
   },
   "assistant": {
     "title": "Inventory Assistant",
