@@ -421,7 +421,9 @@
       "approved": "Ready to order",
       "requestApproved": "Approved requests",
       "requestRejected": "Rejected requests",
-      "orderReceived": "Orders received"
+      "orderReceived": "Orders received",
+      "requestComment": "Request comments",
+      "orderComment": "Order comments"
     },
     "detail": {
       "requestExpiring": "{{requester}} · {{quantity}} units · expires {{when}}",
@@ -433,7 +435,9 @@
       "requestApproved": "Your request for {{quantity}} units was approved",
       "requestRejected": "Your request for {{quantity}} units was rejected",
       "orderReceived": "Your order arrived · {{quantity}} units",
-      "requestRejectedReason": "Rejected · {{reason}}"
+      "requestRejectedReason": "Rejected · {{reason}}",
+      "requestComment": "{{author}}: {{excerpt}}",
+      "orderComment": "{{author}}: {{excerpt}}"
     },
     "when": {
       "today": "today",
@@ -444,5 +448,14 @@
     },
     "unread": "Unread",
     "markAllRead": "Mark all as read"
+  },
+  "comments": {
+    "title": "Comments",
+    "empty": "No comments yet.",
+    "placeholder": "Write a comment…",
+    "send": "Send",
+    "error": "Could not send the comment.",
+    "loadError": "Could not load the comments.",
+    "you": "You"
   }
 }

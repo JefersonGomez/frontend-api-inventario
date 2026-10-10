@@ -421,7 +421,9 @@
       "approved": "Listas para ordenar",
       "requestApproved": "Solicitudes aprobadas",
       "requestRejected": "Solicitudes rechazadas",
-      "orderReceived": "Pedidos recibidos"
+      "orderReceived": "Pedidos recibidos",
+      "requestComment": "Comentarios en solicitudes",
+      "orderComment": "Comentarios en órdenes"
     },
     "detail": {
       "requestExpiring": "{{requester}} · {{quantity}} uds · vence {{when}}",
@@ -433,7 +435,9 @@
       "requestApproved": "Tu solicitud de {{quantity}} uds fue aprobada",
       "requestRejected": "Tu solicitud de {{quantity}} uds fue rechazada",
       "orderReceived": "Ya llegó tu pedido · {{quantity}} uds",
-      "requestRejectedReason": "Rechazada · {{reason}}"
+      "requestRejectedReason": "Rechazada · {{reason}}",
+      "requestComment": "{{author}}: {{excerpt}}",
+      "orderComment": "{{author}}: {{excerpt}}"
     },
     "when": {
       "today": "hoy",
@@ -444,5 +448,14 @@
     },
     "unread": "Sin leer",
     "markAllRead": "Marcar todo como leído"
+  },
+  "comments": {
+    "title": "Comentarios",
+    "empty": "Todavía no hay comentarios.",
+    "placeholder": "Escribe un comentario…",
+    "send": "Enviar",
+    "error": "No se pudo enviar el comentario.",
+    "loadError": "No se pudieron cargar los comentarios.",
+    "you": "Tú"
   }
 }

@@ -9,6 +9,7 @@ import {
   updatePurchaseRequestStatus,
 } from "../api/PurchaseRequests";
 import { getProducts } from "../api/products";
+import { CommentThread } from "@/components/CommentThread";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
@@ -30,9 +31,10 @@ export function PurchaseRequests() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const highlightId = useSearchParams()[0].get("highlight");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const highlightId = searchParams.get("highlight");
   const [open, setOpen] = useState(false);
-  const [detail, setDetail] = useState(null);
+  const [detailId, setDetailId] = useState(null);
   const [rejecting, setRejecting] = useState(null);
   const [rejectionReason, setRejectionReason] = useState("");
   const [form, setForm] = useState({ productId: "", quantity: "", reason: "" });
@@ -41,6 +43,14 @@ export function PurchaseRequests() {
     queryKey: ["purchase-requests"],
     queryFn: getPurchaseRequests,
   });
+
+  // ?comments=1 (aviso de comentario en la campanita) abre el detalle de ?highlight= con su hilo
+  const openId = detailId ?? (searchParams.get("comments") === "1" ? highlightId : null);
+  const detail = requests.find((r) => r.id === openId) ?? null;
+  const closeDetail = () => {
+    setDetailId(null);
+    if (searchParams.has("comments")) setSearchParams({ highlight: highlightId }, { replace: true });
+  };
 
   const { data: products = [] } = useQuery({
     queryKey: ["products"],
@@ -151,7 +161,7 @@ export function PurchaseRequests() {
           {requests.map((r) => (
             <tr
               key={r.id}
-              onClick={() => setDetail(r)}
+              onClick={() => setDetailId(r.id)}
               className={`cursor-pointer hover:bg-muted/50 border-b ${r.id === highlightId ? "bg-primary/10" : ""}`}
             >
               <td className="py-2">{r.product.name}</td>
@@ -236,12 +246,13 @@ export function PurchaseRequests() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={!!detail} onOpenChange={(o) => !o && setDetail(null)}>
-        <DialogContent>
+      <Dialog open={!!detail} onOpenChange={(o) => !o && closeDetail()}>
+        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{t("purchaseRequests.detailTitle")}</DialogTitle>
           </DialogHeader>
           {detail && (
+            <>
             <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
               <dt className="text-muted-foreground">{t("purchaseRequests.product")}</dt>
               <dd>{detail.product.name} ({detail.product.sku})</dd>
@@ -274,6 +285,8 @@ export function PurchaseRequests() {
               <dt className="text-muted-foreground">{t("purchaseRequests.linkedOrder")}</dt>
               <dd>{detail.purchaseOrderId ? t("purchaseRequests.hasOrder") : "—"}</dd>
             </dl>
+            <CommentThread kind="request" id={detail.id} />
+            </>
           )}
         </DialogContent>
       </Dialog>

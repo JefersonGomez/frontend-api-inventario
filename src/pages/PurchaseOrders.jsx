@@ -13,6 +13,7 @@ import { getSuppliers } from "@/api/suppliers";
 import { getProducts } from "@/api/products";
 import { usePurchaseRequestAlerts } from "@/hoocks/usePurchaseRequestAlerts";
 import { cn } from "@/lib/utils";
+import { CommentThread } from "@/components/CommentThread";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
@@ -39,14 +40,15 @@ const emptyLine = () => ({ productId: "", quantity: "", unitCost: "", requestIds
 export function PurchaseOrders() {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const highlightId = searchParams.get("highlight");
 
   const actionParam = searchParams.get("action");
   const requestIdParam = searchParams.get("requestId");
   const productIdParam = searchParams.get("productId");
 
   const [open, setOpen] = useState(() => actionParam === "create");
-  const [detail, setDetail] = useState(null);
+  const [detailId, setDetailId] = useState(null);
   const [supplierId, setSupplierId] = useState("");
   const [lines, setLines] = useState(() => {
     if (actionParam === "create" && productIdParam) {
@@ -63,6 +65,14 @@ export function PurchaseOrders() {
     queryKey: ["purchase-orders"],
     queryFn: getPurchaseOrders,
   });
+
+  // ?comments=1 (aviso de comentario en la campanita) abre el detalle de ?highlight= con su hilo
+  const openId = detailId ?? (searchParams.get("comments") === "1" ? highlightId : null);
+  const detail = orders.find((o) => o.id === openId) ?? null;
+  const closeDetail = () => {
+    setDetailId(null);
+    if (searchParams.has("comments")) setSearchParams({ highlight: highlightId }, { replace: true });
+  };
 
   const { data: suppliers = [] } = useQuery({
     queryKey: ["suppliers"],
@@ -387,8 +397,8 @@ export function PurchaseOrders() {
           {orders.map((o) => (
             <tr
               key={o.id}
-              onClick={() => setDetail(o)}
-              className="cursor-pointer hover:bg-muted/50 border-b"
+              onClick={() => setDetailId(o.id)}
+              className={cn("cursor-pointer hover:bg-muted/50 border-b", o.id === highlightId && "bg-primary/10")}
             >
               <td className="py-2">{o.supplier.name}</td>
               <td>{new Date(o.createdAt).toLocaleDateString()}</td>
@@ -436,8 +446,8 @@ export function PurchaseOrders() {
         </tbody>
       </table>
 
-      <Dialog open={!!detail} onOpenChange={(o) => !o && setDetail(null)}>
-        <DialogContent>
+      <Dialog open={!!detail} onOpenChange={(o) => !o && closeDetail()}>
+        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{t("purchaseOrders.detailTitle")}</DialogTitle>
           </DialogHeader>
@@ -485,6 +495,7 @@ export function PurchaseOrders() {
                 {t("purchaseOrders.total")}:{" "}
                 {detail.items.reduce((sum, i) => sum + i.quantity * Number(i.unitCost), 0).toFixed(2)}
               </p>
+              <CommentThread kind="order" id={detail.id} />
             </div>
           )}
         </DialogContent>

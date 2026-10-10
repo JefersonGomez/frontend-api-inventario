@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Popover } from "@base-ui/react/popover";
 import {
-  Bell, CalendarClock, CheckCheck, CheckCircle2, ChevronRight, Hourglass, Inbox, PackageCheck, PackageMinus,
+  Bell, CalendarClock, CheckCheck, CheckCircle2, ChevronRight, Hourglass, Inbox, MessageSquare, PackageCheck, PackageMinus,
   ShoppingCart, XCircle,
 } from "lucide-react";
 import { useNotifications } from "@/hoocks/useNotifications";
@@ -15,6 +15,8 @@ import { cn } from "@/lib/utils";
 
 // Orden = urgencia. Para reordenar los grupos basta con mover una línea.
 const SECTIONS = [
+  { type: "requestComment", icon: MessageSquare, tone: "info" },
+  { type: "orderComment", icon: MessageSquare, tone: "info" },
   { type: "requestRejected", icon: XCircle, tone: "crit" },
   { type: "requestApproved", icon: CheckCircle2, tone: "ok" },
   { type: "orderReceived", icon: PackageCheck, tone: "ok" },

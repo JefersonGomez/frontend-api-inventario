@@ -15,3 +15,9 @@ export const updatePurchaseRequestStatus = (id, status, rejectionReason) =>
 // src/api/purchaseRequests.js — agregar
 export const getPurchaseRequestAlerts = () =>
   api.get("/purchase-requests/alerts").then((res) => res.data);
+
+export const getComments = (kind, id) =>
+  api.get(`/${kind === "order" ? "purchase-orders" : "purchase-requests"}/${id}/comments`).then((res) => res.data);
+
+export const addComment = (kind, id, body) =>
+  api.post(`/${kind === "order" ? "purchase-orders" : "purchase-requests"}/${id}/comments`, { body }).then((res) => res.data);
