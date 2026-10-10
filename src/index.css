@@ -177,6 +177,13 @@
   background: var(--card); color: var(--foreground); display: grid; place-items: center; cursor: pointer;
 }
 .stk-icon-btn:hover { background: var(--muted); }
+/* selector de empresa (barra superior) */
+.stk-company-btn {
+  flex: none; display: flex; align-items: center; gap: 8px; height: 44px; max-width: 240px; padding: 0 12px;
+  border-radius: 12px; border: 0; background: var(--card); color: var(--foreground); cursor: pointer; font: inherit; font-size: 0.875rem;
+}
+.stk-company-btn:hover { background: var(--muted); }
+.stk-company-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
 
 .stk-app :focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
 
@@ -190,6 +197,7 @@
   .stk-logo { margin: 0 8px 0 0; }
   .stk-link { width: auto; white-space: nowrap; }
   .stk-sep, .stk-promo { display: none; }
+  .stk-company-btn { max-width: 140px; }
   .stk-top { margin-bottom: 14px; }
   .stk-card { padding: 18px; }
 }

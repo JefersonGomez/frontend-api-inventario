@@ -501,5 +501,33 @@
     "error": "No se pudo enviar el comentario.",
     "loadError": "No se pudieron cargar los comentarios.",
     "you": "Tú"
+  },
+  "companies": {
+    "label": "Empresa activa",
+    "yours": "Tus empresas",
+    "create": "Crear empresa",
+    "createTitle": "Nueva empresa",
+    "createHint": "Tendrá su propio inventario, usuarios y datos, totalmente aparte. Tú quedas como administrador.",
+    "name": "Nombre de la empresa",
+    "createSubmit": "Crear y entrar",
+    "createError": "No se pudo crear la empresa",
+    "switchError": "No se pudo cambiar de empresa",
+    "roles": {
+      "ADMIN": "Administrador",
+      "EMPLOYE": "Empleado"
+    },
+    "plan": {
+      "title": "Plan",
+      "BASIC": "Básico",
+      "PRO": "Pro",
+      "BUSINESS": "Empresarial",
+      "companies_one": "{{count}} empresa",
+      "companies_other": "{{count}} empresas",
+      "users": "{{count}} usuarios por empresa",
+      "products": "{{count}} productos",
+      "unlimitedUsers": "usuarios ilimitados",
+      "unlimitedProducts": "productos ilimitados",
+      "limits": "Incluye: {{items}}"
+    }
   }
 }

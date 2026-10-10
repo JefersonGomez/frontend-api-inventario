@@ -27,8 +27,9 @@ function CompanyCard() {
 
   const mutation = useMutation({
     mutationFn: updateCompany,
-    onSuccess: (company) => {
-      queryClient.setQueryData(["company"], company)
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["company"] })
+      queryClient.invalidateQueries({ queryKey: ["companies"] })
       setDraft(null)
     },
   })
@@ -66,6 +67,26 @@ function CompanyCard() {
             <p role="alert" className="text-xs text-destructive">{t("settings.companyError")}</p>
           )}
         </form>
+        {data?.plan && (
+          <div className="mt-4 border-t border-border pt-4">
+            <p className="text-sm">
+              {t("companies.plan.title")}: <span className="font-semibold">{t(`companies.plan.${data.plan}`)}</span>
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              {t("companies.plan.limits", {
+                items: [
+                  t("companies.plan.companies", { count: data.limits.maxCompanies }),
+                  data.limits.maxUsersPerCompany === null
+                    ? t("companies.plan.unlimitedUsers")
+                    : t("companies.plan.users", { count: data.limits.maxUsersPerCompany }),
+                  data.limits.maxProducts === null
+                    ? t("companies.plan.unlimitedProducts")
+                    : t("companies.plan.products", { count: data.limits.maxProducts }),
+                ].join(" · "),
+              })}
+            </p>
+          </div>
+        )}
       </CardContent>
     </Card>
   )

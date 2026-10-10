@@ -501,5 +501,33 @@
     "error": "Could not send the comment.",
     "loadError": "Could not load the comments.",
     "you": "You"
+  },
+  "companies": {
+    "label": "Active company",
+    "yours": "Your companies",
+    "create": "Create company",
+    "createTitle": "New company",
+    "createHint": "It will have its own inventory, users and data, fully separate. You will be its admin.",
+    "name": "Company name",
+    "createSubmit": "Create and open",
+    "createError": "Could not create the company",
+    "switchError": "Could not switch company",
+    "roles": {
+      "ADMIN": "Admin",
+      "EMPLOYE": "Employee"
+    },
+    "plan": {
+      "title": "Plan",
+      "BASIC": "Basic",
+      "PRO": "Pro",
+      "BUSINESS": "Business",
+      "companies_one": "{{count}} company",
+      "companies_other": "{{count}} companies",
+      "users": "{{count}} users per company",
+      "products": "{{count}} products",
+      "unlimitedUsers": "unlimited users",
+      "unlimitedProducts": "unlimited products",
+      "limits": "Includes: {{items}}"
+    }
   }
 }

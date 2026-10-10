@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react"
 import { api } from "@/api/client" // ajustá el path si el archivo se llama distinto
+import { switchCompanyRequest } from "@/api/company"
 
 const AuthContext = createContext(null)
 
@@ -25,6 +26,7 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     function onStorage(e) {
       if (e.key === "token") setToken(e.newValue) // refresh hecho en otra pestaña
+      if (e.key === "companyId") return window.location.reload() // otra pestaña cambió de empresa
       if (e.key !== "user" && e.key !== null) return // key null = localStorage.clear()
       let next
       try {
@@ -39,13 +41,22 @@ export function AuthProvider({ children }) {
     return () => window.removeEventListener("storage", onStorage)
   }, [userId])
 
-  // ← nuevo parámetro newRefreshToken
-  function login(newToken, newRefreshToken, newUser) {
+  // companyId = empresa activa de la sesión (las otras pestañas recargan si cambia)
+  function login(newToken, newRefreshToken, newUser, companyId) {
     localStorage.setItem("token", newToken)
-    localStorage.setItem("refreshToken", newRefreshToken) // ← nuevo
+    localStorage.setItem("refreshToken", newRefreshToken)
     localStorage.setItem("user", JSON.stringify(newUser))
+    if (companyId) localStorage.setItem("companyId", companyId)
     setToken(newToken)
     setUser(newUser)
+  }
+
+  // Cambiar de empresa = sesión nueva en esa empresa. Se recarga en el panel: así no queda
+  // caché ni pantallas con datos de la empresa anterior.
+  async function switchCompany(companyId) {
+    const data = await switchCompanyRequest(companyId)
+    login(data.token, data.refreshToken, data.user, data.company.id)
+    window.location.assign("/")
   }
 
   // ← ahora es async, y avisa al backend para revocar el refresh token
@@ -61,6 +72,7 @@ export function AuthProvider({ children }) {
       localStorage.removeItem("token")
       localStorage.removeItem("refreshToken") // ← nuevo
       localStorage.removeItem("user")
+      localStorage.removeItem("companyId")
       setToken(null)
       setUser(null)
     }
@@ -75,7 +87,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ token, user, login, logout, updateUser }}>
+    <AuthContext.Provider value={{ token, user, login, logout, updateUser, switchCompany }}>
       {children}
     </AuthContext.Provider>
   )

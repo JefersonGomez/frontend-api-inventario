@@ -17,7 +17,7 @@ export function Login() {
   const mutation = useMutation({
     mutationFn: () => loginRequest(email.trim(), password),
     onSuccess: (data) => {
-      login(data.token, data.refreshToken, data.user)
+      login(data.token, data.refreshToken, data.user, data.company?.id)
       navigate("/")
     },
   })
