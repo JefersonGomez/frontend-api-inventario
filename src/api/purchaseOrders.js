@@ -11,3 +11,5 @@ export const receivePurchaseOrder = (id) =>
   api.patch(`/purchase-orders/${id}/receive`).then((res) => res.data);
 
 
+export const sendPurchaseOrderEmail = (id) =>
+  api.post(`/purchase-orders/${id}/send-email`).then((res) => res.data);

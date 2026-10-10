@@ -314,7 +314,12 @@
     "theme": "Theme",
     "themeDescription": "Choose the visual theme of the application",
     "language": "Language",
-    "languageDescription": "Choose the interface language"
+    "languageDescription": "Choose the interface language",
+    "company": "Company",
+    "companyName": "Company name",
+    "companyNameDescription": "Shown in the emails sent to suppliers",
+    "companySaved": "Saved",
+    "companyError": "Could not save"
   },
   "purchaseRequests": {
     "title": "Purchase Requests",
@@ -372,7 +377,17 @@
     "noSuppliers": "There are no suppliers yet.",
     "createSupplier": "Create a supplier",
     "linkRequests": "Approved requests (check to add them to the order)",
-    "otherSupplier": "different supplier"
+    "otherSupplier": "different supplier",
+    "sendEmail": "Send to supplier",
+    "resendEmail": "Resend to supplier",
+    "emailedAt": "Sent to supplier",
+    "noSupplierEmail": "The supplier has no email",
+    "emailSent": "Order sent to {{supplier}}",
+    "emailSentTest": "Test mode: the order for {{supplier}} went to the Resend account, not the supplier",
+    "emailError": "Could not send the email",
+    "sendShort": "Send",
+    "resendShort": "Resend",
+    "receiveShort": "Receive"
   },
   "auditLog": {
     "title": "Audit Log",
@@ -395,7 +410,8 @@
     "action.REJECT": "Rejected",
     "action.RECEIVE": "Received",
     "action.ACTIVATE": "Activated",
-    "action.DEACTIVATE": "Deactivated"
+    "action.DEACTIVATE": "Deactivated",
+    "action.EMAIL": "Sent email"
   },
   "assistant": {
     "title": "Inventory Assistant",

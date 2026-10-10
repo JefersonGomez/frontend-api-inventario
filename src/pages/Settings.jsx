@@ -7,12 +7,72 @@ import {
 import { useTheme } from "@/context/ThemeContext"
 import { Sun, Moon } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { useState } from "react"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useAuth } from "@/context/AuthContext"
+import { getCompany, updateCompany } from "@/api/company"
 const languageItems = [
   { value: "es", label: "Español" },
   { value: "en", label: "English" },
 ]
 
+// Nombre de la empresa de esta instalación (solo ADMIN). Se usa en los correos a proveedores.
+function CompanyCard() {
+  const { t } = useTranslation()
+  const queryClient = useQueryClient()
+  const { data } = useQuery({ queryKey: ["company"], queryFn: getCompany })
+  const [draft, setDraft] = useState(null)
+  const name = draft ?? data?.name ?? ""
+
+  const mutation = useMutation({
+    mutationFn: updateCompany,
+    onSuccess: (company) => {
+      queryClient.setQueryData(["company"], company)
+      setDraft(null)
+    },
+  })
+
+  const submit = (e) => {
+    e.preventDefault()
+    mutation.mutate(name.trim())
+  }
+
+  return (
+    <Card className="mt-6">
+      <CardHeader>
+        <CardTitle>{t("settings.company")}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={submit} className="space-y-2">
+          <Label htmlFor="company-name">{t("settings.companyName")}</Label>
+          <p className="text-xs text-muted-foreground">{t("settings.companyNameDescription")}</p>
+          <div className="flex gap-2">
+            <Input
+              id="company-name"
+              value={name}
+              onChange={(e) => setDraft(e.target.value)}
+              maxLength={120}
+              required
+            />
+            <Button type="submit" disabled={mutation.isPending || !name.trim() || name.trim() === data?.name}>
+              {t("common.save")}
+            </Button>
+          </div>
+          {mutation.isSuccess && draft === null && (
+            <p role="status" className="text-xs text-muted-foreground">{t("settings.companySaved")}</p>
+          )}
+          {mutation.isError && (
+            <p role="alert" className="text-xs text-destructive">{t("settings.companyError")}</p>
+          )}
+        </form>
+      </CardContent>
+    </Card>
+  )
+}
+
 export function Settings() {
+  const { user } = useAuth()
   const { theme, toggleTheme } = useTheme()
   const { t, i18n } = useTranslation()
 
@@ -73,6 +133,8 @@ export function Settings() {
 </div>
         </CardContent>
       </Card>
+
+      {user?.role === "ADMIN" && <CompanyCard />}
     </div>
   )
 }

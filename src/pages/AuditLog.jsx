@@ -21,6 +21,7 @@ const actionVariant = {
   RECEIVE: "default",
   ACTIVATE: "default",
   DEACTIVATE: "destructive",
+  EMAIL: "secondary",
 };
 
 function MetricCard({ icon: Icon, label, value }) {

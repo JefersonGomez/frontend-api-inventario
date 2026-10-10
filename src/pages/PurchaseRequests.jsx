@@ -10,6 +10,7 @@ import {
 } from "../api/PurchaseRequests";
 import { getProducts } from "../api/products";
 import { CommentThread } from "@/components/CommentThread";
+import { Check, X } from "lucide-react";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
@@ -146,15 +147,16 @@ export function PurchaseRequests() {
         </Dialog>
       </div>
 
-      <table className="w-full text-sm">
+      <div className="overflow-x-auto">
+      <table className="w-full text-sm [&_th]:pr-3 [&_td]:pr-3 [&_th:last-child]:pr-0 [&_td:last-child]:pr-0">
         <thead>
           <tr className="text-left border-b">
             <th className="py-2">{t("purchaseRequests.product")}</th>
-            <th>{t("purchaseRequests.quantity")}</th>
-            <th>{t("purchaseRequests.reason")}</th>
-            {user.role === "ADMIN" && <th>{t("purchaseRequests.requestedBy")}</th>}
+            <th className="hidden sm:table-cell">{t("purchaseRequests.quantity")}</th>
+            <th className="hidden md:table-cell">{t("purchaseRequests.reason")}</th>
+            {user.role === "ADMIN" && <th className="hidden sm:table-cell">{t("purchaseRequests.requestedBy")}</th>}
             <th>{t("purchaseRequests.status")}</th>
-            {user.role === "ADMIN" && <th>{t("purchaseRequests.actions")}</th>}
+            {user.role === "ADMIN" && <th className="text-right"><span className="sr-only sm:not-sr-only">{t("purchaseRequests.actions")}</span></th>}
           </tr>
         </thead>
         <tbody>
@@ -164,10 +166,15 @@ export function PurchaseRequests() {
               onClick={() => setDetailId(r.id)}
               className={`cursor-pointer hover:bg-muted/50 border-b ${r.id === highlightId ? "bg-primary/10" : ""}`}
             >
-              <td className="py-2">{r.product.name}</td>
-              <td>{r.quantity}</td>
-              <td>{r.reason || "—"}</td>
-              {user.role === "ADMIN" && <td>{r.requestedBy.name}</td>}
+              <td className="py-2">
+                {r.product.name}
+                <span className="block text-xs text-muted-foreground sm:hidden">
+                  ×{r.quantity}{user.role === "ADMIN" && ` · ${r.requestedBy.name}`}
+                </span>
+              </td>
+              <td className="hidden sm:table-cell">{r.quantity}</td>
+              <td className="hidden md:table-cell">{r.reason || "—"}</td>
+              {user.role === "ADMIN" && <td className="hidden sm:table-cell">{r.requestedBy.name}</td>}
               <td>
                 <Badge variant={statusVariant[r.status]}>
                   {t(`purchaseRequests.status${r.status.charAt(0) + r.status.slice(1).toLowerCase()}`)}
@@ -178,27 +185,39 @@ export function PurchaseRequests() {
                   </p>
                 )}
               </td>
-              {user.role === "ADMIN" && r.status === "PENDING" && (
-                <td className="space-x-2" onClick={(e) => e.stopPropagation()}>
-                  <Button
-                    size="sm"
-                    onClick={() => statusMutation.mutate({ id: r.id, status: "APPROVED" })}
-                  >
-                    {t("purchaseRequests.approve")}
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    onClick={() => setRejecting(r)}
-                  >
-                    {t("purchaseRequests.reject")}
-                  </Button>
+              {user.role === "ADMIN" && (
+                <td className="py-1.5" onClick={(e) => e.stopPropagation()}>
+                  {r.status === "PENDING" && (
+                    <div className="flex items-center justify-end gap-1.5">
+                      <Button
+                        size="sm"
+                        aria-label={t("purchaseRequests.approve")}
+                        title={t("purchaseRequests.approve")}
+                        disabled={statusMutation.isPending}
+                        onClick={() => statusMutation.mutate({ id: r.id, status: "APPROVED" })}
+                      >
+                        <Check />
+                        <span className="hidden sm:inline">{t("purchaseRequests.approve")}</span>
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        aria-label={t("purchaseRequests.reject")}
+                        title={t("purchaseRequests.reject")}
+                        onClick={() => setRejecting(r)}
+                      >
+                        <X />
+                        <span className="hidden sm:inline">{t("purchaseRequests.reject")}</span>
+                      </Button>
+                    </div>
+                  )}
                 </td>
               )}
             </tr>
           ))}
         </tbody>
       </table>
+      </div>
 
       <Dialog open={!!rejecting} onOpenChange={(o) => !o && closeReject()}>
         <DialogContent>

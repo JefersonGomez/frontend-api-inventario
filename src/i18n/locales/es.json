@@ -314,7 +314,12 @@
     "theme": "Tema",
     "themeDescription": "Elige el tema visual de la aplicación",
     "language": "Idioma",
-    "languageDescription": "Elige el idioma de la interfaz"
+    "languageDescription": "Elige el idioma de la interfaz",
+    "company": "Empresa",
+    "companyName": "Nombre de la empresa",
+    "companyNameDescription": "Aparece en los correos que se envían a los proveedores",
+    "companySaved": "Guardado",
+    "companyError": "No se pudo guardar"
   },
   "purchaseRequests": {
     "title": "Solicitudes de compra",
@@ -372,7 +377,17 @@
     "noSuppliers": "No hay proveedores registrados.",
     "createSupplier": "Crear un proveedor",
     "linkRequests": "Solicitudes aprobadas (marca para agregarlas a la orden)",
-    "otherSupplier": "otro proveedor"
+    "otherSupplier": "otro proveedor",
+    "sendEmail": "Enviar al proveedor",
+    "resendEmail": "Reenviar al proveedor",
+    "emailedAt": "Enviada al proveedor",
+    "noSupplierEmail": "El proveedor no tiene email cargado",
+    "emailSent": "Orden enviada a {{supplier}}",
+    "emailSentTest": "Modo prueba: la orden para {{supplier}} llegó a la cuenta de Resend, no al proveedor",
+    "emailError": "No se pudo enviar el correo",
+    "sendShort": "Enviar",
+    "resendShort": "Reenviar",
+    "receiveShort": "Recibir"
   },
   "auditLog": {
     "title": "Registro de auditoría",
@@ -395,7 +410,8 @@
     "action.REJECT": "Rechazó",
     "action.RECEIVE": "Recibió",
     "action.ACTIVATE": "Activó",
-    "action.DEACTIVATE": "Desactivó"
+    "action.DEACTIVATE": "Desactivó",
+    "action.EMAIL": "Envió correo"
   },
   "assistant": {
     "title": "Asistente de inventario",

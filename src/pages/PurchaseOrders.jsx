@@ -3,11 +3,12 @@ import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Trash2, AlertCircle } from "lucide-react";
+import { Plus, Trash2, AlertCircle, Mail, MailCheck, PackageCheck } from "lucide-react";
 import {
   getPurchaseOrders,
   createPurchaseOrder,
   receivePurchaseOrder,
+  sendPurchaseOrderEmail,
 } from "@/api/purchaseOrders";
 import { getSuppliers } from "@/api/suppliers";
 import { getProducts } from "@/api/products";
@@ -111,6 +112,11 @@ export function PurchaseOrders() {
       queryClient.invalidateQueries({ queryKey: ["purchase-orders"] });
       queryClient.invalidateQueries({ queryKey: ["products"] });
     },
+  });
+
+  const emailMutation = useMutation({
+    mutationFn: sendPurchaseOrderEmail,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["purchase-orders"] }),
   });
 
   const updateLine = (index, field, value) => {
@@ -384,13 +390,27 @@ export function PurchaseOrders() {
         </Dialog>
       </div>
 
-      <table className="w-full text-sm">
+      {emailMutation.isSuccess && (
+        <p role="status" className="rounded-md border border-border bg-card px-3 py-2 text-sm">
+          {t(emailMutation.data.testMode ? "purchaseOrders.emailSentTest" : "purchaseOrders.emailSent", {
+            supplier: emailMutation.data.order.supplier.name,
+          })}
+        </p>
+      )}
+      {emailMutation.isError && (
+        <p role="alert" className="rounded-md border border-destructive/40 px-3 py-2 text-sm text-destructive">
+          {emailMutation.error.response?.data?.error ?? t("purchaseOrders.emailError")}
+        </p>
+      )}
+
+      <div className="overflow-x-auto">
+      <table className="w-full text-sm [&_th]:pr-3 [&_td]:pr-3 [&_th:last-child]:pr-0 [&_td:last-child]:pr-0">
         <thead>
           <tr className="text-left border-b">
             <th className="py-2">{t("purchaseOrders.supplier")}</th>
-            <th>{t("purchaseOrders.date")}</th>
+            <th className="hidden sm:table-cell">{t("purchaseOrders.date")}</th>
             <th>{t("purchaseOrders.status")}</th>
-            <th>{t("purchaseOrders.actions")}</th>
+            <th className="text-right"><span className="sr-only sm:not-sr-only">{t("purchaseOrders.actions")}</span></th>
           </tr>
         </thead>
         <tbody>
@@ -400,23 +420,53 @@ export function PurchaseOrders() {
               onClick={() => setDetailId(o.id)}
               className={cn("cursor-pointer hover:bg-muted/50 border-b", o.id === highlightId && "bg-primary/10")}
             >
-              <td className="py-2">{o.supplier.name}</td>
-              <td>{new Date(o.createdAt).toLocaleDateString()}</td>
+              <td className="py-2">
+                {o.supplier.name}
+                <span className="block text-xs text-muted-foreground sm:hidden">
+                  {new Date(o.createdAt).toLocaleDateString()}
+                </span>
+              </td>
+              <td className="hidden sm:table-cell">{new Date(o.createdAt).toLocaleDateString()}</td>
               <td>
                 <Badge variant={statusVariant[o.status]}>
                   {t(`purchaseOrders.status${o.status.charAt(0)}${o.status.slice(1).toLowerCase()}`)}
                 </Badge>
               </td>
-              <td onClick={(e) => e.stopPropagation()}>
+              <td className="py-1.5" onClick={(e) => e.stopPropagation()}>
+                <div className="flex items-center justify-end gap-1.5">
+                {o.status === "PENDING" && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    aria-label={t(o.emailedAt ? "purchaseOrders.resendEmail" : "purchaseOrders.sendEmail")}
+                    title={
+                      !o.supplier.email
+                        ? t("purchaseOrders.noSupplierEmail")
+                        : o.emailedAt
+                          ? `${t("purchaseOrders.emailedAt")}: ${new Date(o.emailedAt).toLocaleString()}`
+                          : t("purchaseOrders.sendEmail")
+                    }
+                    disabled={!o.supplier.email || (emailMutation.isPending && emailMutation.variables === o.id)}
+                    onClick={() => emailMutation.mutate(o.id)}
+                  >
+                    {o.emailedAt ? <MailCheck /> : <Mail />}
+                    <span className="hidden sm:inline">
+                      {t(o.emailedAt ? "purchaseOrders.resendShort" : "purchaseOrders.sendShort")}
+                    </span>
+                  </Button>
+                )}
                 {o.status === "PENDING" && (
                   <AlertDialog>
                     <AlertDialogTrigger
                       render={
                         <Button
                           size="sm"
+                          aria-label={t("purchaseOrders.receive")}
+                          title={t("purchaseOrders.receive")}
                           disabled={receiveMutation.isPending}
                         >
-                          {t("purchaseOrders.receive")}
+                          <PackageCheck />
+                          <span className="hidden sm:inline">{t("purchaseOrders.receiveShort")}</span>
                         </Button>
                       }
                     />
@@ -440,11 +490,13 @@ export function PurchaseOrders() {
                     </AlertDialogContent>
                   </AlertDialog>
                 )}
+                </div>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+      </div>
 
       <Dialog open={!!detail} onOpenChange={(o) => !o && closeDetail()}>
         <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
@@ -472,6 +524,12 @@ export function PurchaseOrders() {
                     <dd>{new Date(detail.receivedAt).toLocaleString()}</dd>
                   </>
                 )}
+                <dt className="text-muted-foreground">{t("purchaseOrders.emailedAt")}</dt>
+                <dd>
+                  {detail.emailedAt
+                    ? new Date(detail.emailedAt).toLocaleString()
+                    : detail.supplier.email ? "—" : t("purchaseOrders.noSupplierEmail")}
+                </dd>
               </dl>
               <table className="w-full">
                 <thead>
