@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react"
+import { createContext, useContext, useEffect, useState } from "react"
 import { api } from "@/api/client" // ajustá el path si el archivo se llama distinto
 
 const AuthContext = createContext(null)
@@ -17,6 +17,27 @@ export function AuthProvider({ children }) {
     }
     return null;
   });
+
+  // Las pestañas comparten localStorage: si otra pestaña cierra sesión o entra con otro usuario,
+  // esta recarga (así también se descarta la caché de react-query con datos del usuario anterior).
+  // El evento "storage" solo llega a las OTRAS pestañas, nunca a la que hizo el cambio.
+  const userId = user?.id
+  useEffect(() => {
+    function onStorage(e) {
+      if (e.key === "token") setToken(e.newValue) // refresh hecho en otra pestaña
+      if (e.key !== "user" && e.key !== null) return // key null = localStorage.clear()
+      let next
+      try {
+        next = e.newValue ? JSON.parse(e.newValue) : null
+      } catch {
+        next = null
+      }
+      if (next?.id !== userId) window.location.reload()
+      else if (next) setUser(next) // mismo usuario, cambió su perfil
+    }
+    window.addEventListener("storage", onStorage)
+    return () => window.removeEventListener("storage", onStorage)
+  }, [userId])
 
   // ← nuevo parámetro newRefreshToken
   function login(newToken, newRefreshToken, newUser) {

@@ -18,7 +18,9 @@ export function Layout() {
         </div>
       </div>
 
-      <AssistantWidget />
+      <div className="print:hidden">
+        <AssistantWidget />
+      </div>
     </div>
   )
 }

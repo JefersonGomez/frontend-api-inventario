@@ -267,6 +267,26 @@
       "dailyVelocity": "Ventas/día",
       "daysRemaining": "Días restantes",
       "noData": "No hay suficientes ventas recientes para calcular un pronóstico"
+    },
+    "export": {
+      "excel": "Descargar Excel",
+      "pdf": "Imprimir / PDF",
+      "exporting": "Generando…",
+      "error": "No se pudo generar el Excel. Intenta de nuevo.",
+      "fileName": "reporte-inventario",
+      "summary": "Resumen",
+      "lowStock": "Stock bajo",
+      "movements": "Movimientos",
+      "immobilized": "Capital inmovilizado",
+      "forecast": "Pronóstico",
+      "field": "Dato",
+      "value": "Valor",
+      "company": "Empresa",
+      "generatedAt": "Generado",
+      "productsInCatalog": "Productos en catálogo",
+      "movementsPeriod": "Período de movimientos",
+      "allDates": "Todas las fechas",
+      "days": "días"
     }
   },
   "profile": {

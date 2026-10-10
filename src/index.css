@@ -193,3 +193,10 @@
   .stk-top { margin-bottom: 14px; }
   .stk-card { padding: 18px; }
 }
+/* Impresión / "Guardar como PDF": solo el contenido de la página, sin menú, barra ni brillos */
+@media print {
+  .stk-app { background: #fff; min-height: 0; overflow: visible; }
+  .stk-shell { display: block; padding: 0; max-width: none; }
+  .stk-side, .stk-top { display: none !important; }
+  .rounded-xl, [data-slot="card"] { break-inside: avoid; }
+}

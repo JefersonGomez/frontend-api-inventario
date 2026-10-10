@@ -267,6 +267,26 @@
       "dailyVelocity": "Sales/day",
       "daysRemaining": "Days remaining",
       "noData": "Not enough recent sales to calculate a forecast"
+    },
+    "export": {
+      "excel": "Download Excel",
+      "pdf": "Print / PDF",
+      "exporting": "Generating…",
+      "error": "Could not generate the Excel file. Try again.",
+      "fileName": "inventory-report",
+      "summary": "Summary",
+      "lowStock": "Low stock",
+      "movements": "Movements",
+      "immobilized": "Immobilized capital",
+      "forecast": "Forecast",
+      "field": "Field",
+      "value": "Value",
+      "company": "Company",
+      "generatedAt": "Generated",
+      "productsInCatalog": "Products in catalog",
+      "movementsPeriod": "Movements period",
+      "allDates": "All dates",
+      "days": "days"
     }
   },
   "profile": {

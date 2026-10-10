@@ -1,5 +1,4 @@
 // src/components/reports/ImmobilizedCapitalReport.jsx
-import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useQuery } from "@tanstack/react-query"
 import { AlertTriangle, TrendingUp } from "lucide-react"
@@ -11,9 +10,9 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
 
-export function ImmobilizedCapitalReport() {
+// `days` vive en Reports para que el Excel exporte el mismo período que se ve
+export function ImmobilizedCapitalReport({ days, onDaysChange }) {
   const { t } = useTranslation()
-  const [days, setDays] = useState("60")
 
   const { data, isLoading } = useQuery({
     queryKey: ["inventory-value-breakdown", days],
@@ -40,7 +39,7 @@ export function ImmobilizedCapitalReport() {
             {t("reports.immobilizedCapital.subtitle", { days: data.daysThreshold })}
           </p>
         </div>
-        <Select value={days} onValueChange={setDays}>
+        <Select value={days} onValueChange={onDaysChange}>
           <SelectTrigger className="w-40">
             <SelectValue placeholder={t("reports.immobilizedCapital.daysFilter")} />
           </SelectTrigger>

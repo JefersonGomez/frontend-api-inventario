@@ -1,7 +1,13 @@
 import { useState } from "react"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { FileSpreadsheet, Printer } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import { getLowStockReport, getInventoryValueReport, getMovementsReport } from "@/api/reports"
+import {
+  getLowStockReport, getInventoryValueReport, getMovementsReport, getInventoryValueBreakdown, getStockForecast,
+} from "@/api/reports"
+import { getCompany } from "@/api/company"
+import { downloadXlsx } from "@/lib/xlsx"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
@@ -16,6 +22,12 @@ export function Reports() {
   const { t } = useTranslation()
   const [from, setFrom] = useState("")
   const [to, setTo] = useState("")
+  const [immobilizedDays, setImmobilizedDays] = useState("60")
+  const [exporting, setExporting] = useState(false)
+  const [exportError, setExportError] = useState(false)
+  const queryClient = useQueryClient()
+
+  const { data: company } = useQuery({ queryKey: ["company"], queryFn: getCompany })
 
   const lowStockQuery = useQuery({
     queryKey: ["reports", "low-stock"],
@@ -38,15 +50,128 @@ export function Reports() {
     ADJUSTMENT: { label: t("reports.types.adjustment"), variant: "secondary" },
   }
 
+  // Mismas queryKey que la pantalla: reutiliza la caché y exporta exactamente lo que se ve
+  async function handleExcel() {
+    setExporting(true)
+    setExportError(false)
+    try {
+      const [lowStock, value, movements, breakdown, forecast] = await Promise.all([
+        queryClient.fetchQuery({ queryKey: ["reports", "low-stock"], queryFn: getLowStockReport }),
+        queryClient.fetchQuery({ queryKey: ["reports", "inventory-value"], queryFn: getInventoryValueReport }),
+        queryClient.fetchQuery({
+          queryKey: ["reports", "movements", from, to],
+          queryFn: () => getMovementsReport(from || undefined, to || undefined),
+        }),
+        queryClient.fetchQuery({
+          queryKey: ["inventory-value-breakdown", immobilizedDays],
+          queryFn: () => getInventoryValueBreakdown(Number(immobilizedDays)),
+        }),
+        queryClient.fetchQuery({ queryKey: ["stock-forecast"], queryFn: () => getStockForecast() }),
+      ])
+      const x = (key) => t(`reports.export.${key}`)
+      const period = from || to ? `${from || "…"} → ${to || "…"}` : x("allDates")
+      downloadXlsx(`${x("fileName")}-${new Date().toLocaleDateString("sv")}.xlsx`, [
+        {
+          name: x("summary"),
+          rows: [
+            [x("field"), x("value")],
+            [x("company"), company?.name ?? "—"],
+            [x("generatedAt"), new Date().toLocaleString()],
+            [t("reports.cards.total_value_title"), value.totalValue],
+            [x("productsInCatalog"), value.totalProducts],
+            [t("reports.cards.low_stock_title"), lowStock.length],
+            [t("reports.immobilizedCapital.activeValue"), breakdown.activeValue],
+            [`${t("reports.immobilizedCapital.immobilizedValue")} (${breakdown.daysThreshold} ${x("days")})`, breakdown.immobilizedValue],
+            [x("movementsPeriod"), period],
+          ],
+        },
+        {
+          name: x("lowStock"),
+          rows: [
+            [t("reports.tables.sku"), t("reports.tables.product"), t("reports.tables.current_stock"), t("reports.tables.min_stock")],
+            ...lowStock.map((p) => [p.sku, p.name, p.stock, p.minStock]),
+          ],
+        },
+        {
+          name: x("movements"),
+          rows: [
+            [t("reports.tables.date"), t("reports.tables.product"), t("reports.tables.type"), t("reports.tables.quantity")],
+            ...movements.map((m) => [
+              new Date(m.createdAt).toLocaleString(),
+              m.product?.name ?? "",
+              typeLabels[m.type]?.label ?? m.type,
+              m.quantity,
+            ]),
+          ],
+        },
+        {
+          name: x("immobilized"),
+          rows: [
+            [t("reports.immobilizedCapital.sku"), t("reports.immobilizedCapital.product"), t("reports.immobilizedCapital.value")],
+            ...breakdown.immobilizedProducts.map((p) => [p.sku, p.name, p.value]),
+          ],
+        },
+        {
+          name: x("forecast"),
+          rows: [
+            [
+              t("reports.stockForecast.product"), t("reports.stockForecast.currentStock"),
+              t("reports.stockForecast.dailyVelocity"), t("reports.stockForecast.daysRemaining"),
+            ],
+            ...forecast.forecast.map((f) => [f.productName, f.currentStock, f.dailyVelocity, f.daysRemaining]),
+          ],
+        },
+      ])
+    } catch {
+      setExportError(true)
+    } finally {
+      setExporting(false)
+    }
+  }
+
+  // Imprimir siempre en tema claro: el tema oscuro sale ilegible en papel (sin fondos)
+  function handlePrint() {
+    const root = document.documentElement
+    const wasDark = root.classList.contains("dark")
+    if (wasDark) {
+      root.classList.replace("dark", "light")
+      window.addEventListener("afterprint", () => root.classList.replace("light", "dark"), { once: true })
+    }
+    window.print()
+  }
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold">{t("reports.title")}</h1>
-        <p className="text-sm text-muted-foreground">{t("reports.subtitle")}</p>
+      {/* encabezado que solo aparece en el PDF / papel */}
+      <div className="hidden print:block border-b border-border pb-3">
+        <p className="text-lg font-semibold">{company?.name ?? ""}</p>
+        <p className="text-sm text-muted-foreground">
+          {t("reports.title")} · {new Date().toLocaleString()}
+        </p>
       </div>
 
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold print:hidden">{t("reports.title")}</h1>
+          <p className="text-sm text-muted-foreground print:hidden">{t("reports.subtitle")}</p>
+        </div>
+        <div className="flex gap-2 print:hidden">
+          <Button variant="outline" size="sm" onClick={handleExcel} disabled={exporting}>
+            <FileSpreadsheet />
+            {exporting ? t("reports.export.exporting") : t("reports.export.excel")}
+          </Button>
+          <Button variant="outline" size="sm" onClick={handlePrint}>
+            <Printer />
+            {t("reports.export.pdf")}
+          </Button>
+        </div>
+      </div>
+      {exportError && (
+        <p role="alert" className="text-sm text-destructive print:hidden">{t("reports.export.error")}</p>
+      )}
+
       {/* Tarjetas resumen y módulos de análisis en grid de 2 columnas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 print:grid-cols-1 gap-6">
         <Card>
           <CardHeader>
             <CardTitle className="text-sm font-normal text-muted-foreground">
@@ -77,7 +202,7 @@ export function Reports() {
 
         {/* Reporte de Capital Inmovilizado */}
         <div className="rounded-xl border border-border bg-card p-5 flex flex-col justify-between">
-          <ImmobilizedCapitalReport />
+          <ImmobilizedCapitalReport days={immobilizedDays} onDaysChange={setImmobilizedDays} />
         </div>
 
         {/* Reporte de Pronóstico de Stock */}
@@ -132,7 +257,7 @@ export function Reports() {
           <CardTitle>{t("reports.tables.movements_by_date_title")}</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col sm:flex-row gap-3 mb-4">
+          <div className="flex flex-col sm:flex-row gap-3 mb-4 print:hidden">
             <div className="space-y-1">
               <Label className="text-xs">{t("reports.filters.from")}</Label>
               <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
