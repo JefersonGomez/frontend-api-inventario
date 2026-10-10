@@ -8,8 +8,8 @@ import { Switch } from "@/components/ui/switch"
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table"
+import { API_URL } from "@/api/client"
 
-const API_URL = "http://localhost:3000"
 
 export function Users() {
   const { t } = useTranslation()

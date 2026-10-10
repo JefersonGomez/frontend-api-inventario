@@ -1,7 +1,10 @@
 import axios from 'axios'
 
+// URL del backend: VITE_API_URL en .env (ver .env.example); en desarrollo, localhost:3000
+export const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000"
+
 export const api = axios.create({
-  baseURL: "http://localhost:3000",
+  baseURL: API_URL,
 })
 
 api.interceptors.request.use((config) => {
@@ -23,7 +26,7 @@ async function refreshAccessToken() {
   }
 
   // axios "pelado", no la instancia "api" — evita pasar de nuevo por este interceptor
-  const response = await axios.post("http://localhost:3000/auth/refresh", {
+  const response = await axios.post(`${API_URL}/auth/refresh`, {
     refreshToken,
   })
 

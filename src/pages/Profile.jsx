@@ -12,8 +12,8 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { User, Mail, Lock, Camera, Check, X, AlertCircle } from "lucide-react"
+import { API_URL } from "@/api/client"
 
-const API_URL = "http://localhost:3000"
 
 // --- Fila editable individual mejorada ---
 function EditableRow({ label, value, onSave, isSaving, type = "text", icon: Icon }) {

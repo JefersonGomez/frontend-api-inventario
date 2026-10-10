@@ -3,6 +3,7 @@ import { io } from "socket.io-client"
 import { useQueryClient } from "@tanstack/react-query"
 import { useAuth } from "@/context/AuthContext"
 import { getProfile } from "@/api/profile"
+import { API_URL } from "@/api/client"
 
 // El servidor solo avisa "esto cambió" (topics = raíces de queryKey); los datos se vuelven a pedir por la API.
 export function useRealtime() {
@@ -14,7 +15,7 @@ export function useRealtime() {
     if (!userId) return
 
     // función: cada (re)conexión lee el token más reciente (el interceptor de axios lo renueva)
-    const socket = io("http://localhost:3000", {
+    const socket = io(API_URL, {
       auth: (cb) => cb({ token: localStorage.getItem("token") }),
     })
 
