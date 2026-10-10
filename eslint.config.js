@@ -18,4 +18,10 @@ export default defineConfig([
       parserOptions: { ecmaFeatures: { jsx: true } },
     },
   },
+  // shadcn exporta variantes (buttonVariants) y los contextos exportan su hook (useAuth):
+  // patrones intencionales; editar estos archivos solo recarga la página completa en desarrollo.
+  {
+    files: ['src/components/ui/**/*.{js,jsx}', 'src/context/**/*.{js,jsx}'],
+    rules: { 'react-refresh/only-export-components': 'off' },
+  },
 ])
