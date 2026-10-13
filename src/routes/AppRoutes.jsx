@@ -18,6 +18,7 @@ import { PurchaseOrders } from "@/pages/PurchaseOrders"
 import { AuditLogPage } from "@/pages/AuditLog"
 import { AcceptInvite } from "@/pages/AcceptInvite"
 import { Platform } from "@/pages/Platform"
+import { Legal } from "@/pages/Legal"
 import { PlatformRoute } from "./PlatformRoute"
 const router = createBrowserRouter([
   {
@@ -27,6 +28,9 @@ const router = createBrowserRouter([
    { path: "/register", element: <Register /> },
   // link de invitación: público (quien lo abre todavía no tiene sesión)
   { path: "/invite/:token", element: <AcceptInvite /> },
+  // documentos legales: públicos (se leen antes de crear la cuenta)
+  { path: "/terms", element: <Legal doc="terms" /> },
+  { path: "/privacy", element: <Legal doc="privacy" /> },
   {
     path: "/",
     element: (

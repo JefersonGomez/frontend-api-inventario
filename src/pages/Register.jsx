@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { registerRequest } from "@/api/auth"
 import { BoxesIllustration } from "@/components/BoxesIllustration"
+import { TermsCheck } from "@/components/auth/TermsCheck"
 import "./Register.css"
 import { apiErrorMessage } from "@/lib/api-error"
 
@@ -13,6 +14,8 @@ export function Register() {
   const { t } = useTranslation()
   const [form, setForm] = useState(EMPTY)
   const [mismatch, setMismatch] = useState(false)
+  const [accepted, setAccepted] = useState(false)
+  const [needsTerms, setNeedsTerms] = useState(false)
 
   const mutation = useMutation({
     mutationFn: () =>
@@ -22,6 +25,7 @@ export function Register() {
         password: form.password,
         ...(form.phone.trim() && { phone: form.phone.trim() }),
         ...(form.company.trim() && { company: form.company.trim() }),
+        acceptTerms: true,
       }),
   })
 
@@ -32,11 +36,15 @@ export function Register() {
     if (!e.currentTarget.reportValidity()) return
     if (form.password !== form.confirm) return setMismatch(true)
     setMismatch(false)
+    if (!accepted) return setNeedsTerms(true)
+    setNeedsTerms(false)
     mutation.mutate()
   }
 
   const errorText = mismatch
     ? t("auth.register.errors.passwordMismatch")
+    : needsTerms && !accepted
+    ? t("legal.mustAccept")
     : mutation.isError && apiErrorMessage(mutation.error, t("auth.register.errors.creation_failed"))
 
   return (
@@ -76,7 +84,7 @@ export function Register() {
                   <label htmlFor="phone">
                     {t("auth.register.phone")} <span className="stk-opt">{t("auth.register.optional")}</span>
                   </label>
-                  <input id="phone" type="tel" autoComplete="tel" placeholder="+57" maxLength={30} value={form.phone} onChange={set("phone")} />
+                  <input id="phone" type="tel" autoComplete="tel" placeholder="+506" maxLength={30} value={form.phone} onChange={set("phone")} />
                 </div>
               </div>
 
@@ -97,6 +105,15 @@ export function Register() {
                   <input id="confirm" type="password" autoComplete="new-password" required minLength={8} maxLength={72} value={form.confirm} onChange={set("confirm")} aria-invalid={mismatch || undefined} />
                 </div>
               </div>
+
+              <TermsCheck
+                checked={accepted}
+                onChange={(v) => {
+                  setAccepted(v)
+                  if (v) setNeedsTerms(false)
+                }}
+                invalid={needsTerms && !accepted}
+              />
 
               {errorText && (
                 <p className="stk-error" role="alert">

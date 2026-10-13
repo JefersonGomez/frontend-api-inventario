@@ -669,5 +669,19 @@
     "reasonLabel": "Motivo (lo verá la empresa)",
     "reasonPlaceholder": "Ej.: pago pendiente",
     "planNote": "El plan es de la cuenta del dueño: cambiarlo aplica a todas sus empresas."
+  },
+  "legal": {
+    "acceptPrefix": "He leído y acepto los",
+    "acceptAnd": "y la",
+    "terms": "Términos y condiciones",
+    "privacy": "Política de privacidad",
+    "termsShort": "Términos",
+    "privacyShort": "Privacidad",
+    "mustAccept": "Debes aceptar los términos y la política de privacidad para continuar.",
+    "back": "Volver",
+    "updated": "Última actualización: {{date}}",
+    "other": "Otros documentos",
+    "draft": "Borrador pendiente de revisión legal. Los datos marcados como [PENDIENTE] deben completarse antes de publicar.",
+    "spanishOnly": "Este documento está disponible solo en español, que es el idioma con valor legal en Costa Rica."
   }
 }

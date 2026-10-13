@@ -669,5 +669,19 @@
     "reasonLabel": "Reason (the company will see it)",
     "reasonPlaceholder": "E.g.: payment pending",
     "planNote": "The plan belongs to the owner's account: changing it applies to all their companies."
+  },
+  "legal": {
+    "acceptPrefix": "I have read and accept the",
+    "acceptAnd": "and the",
+    "terms": "Terms and conditions",
+    "privacy": "Privacy policy",
+    "termsShort": "Terms",
+    "privacyShort": "Privacy",
+    "mustAccept": "You must accept the terms and the privacy policy to continue.",
+    "back": "Back",
+    "updated": "Last updated: {{date}}",
+    "other": "Other documents",
+    "draft": "Draft pending legal review. Items marked [PENDIENTE] must be completed before publishing.",
+    "spanishOnly": "This document is only available in Spanish, which is the legally binding language in Costa Rica."
   }
 }

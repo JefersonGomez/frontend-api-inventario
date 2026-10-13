@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next"
 import { getInvitationByToken, acceptInvitation } from "@/api/invitations"
 import { useAuth } from "@/context/AuthContext"
 import { BoxesIllustration } from "@/components/BoxesIllustration"
+import { TermsCheck } from "@/components/auth/TermsCheck"
 import "./Register.css"
 import { apiErrorMessage } from "@/lib/api-error"
 
@@ -17,6 +18,7 @@ export function AcceptInvite() {
   const [name, setName] = useState("")
   const [password, setPassword] = useState("")
   const [confirm, setConfirm] = useState("")
+  const [accepted, setAccepted] = useState(false)
 
   const { data: inv, isLoading, isError } = useQuery({
     queryKey: ["invitation", token],
@@ -25,7 +27,7 @@ export function AcceptInvite() {
   })
 
   const mutation = useMutation({
-    mutationFn: () => acceptInvitation(token, inv.userExists ? { password } : { name: name.trim(), password }),
+    mutationFn: () => acceptInvitation(token, inv.userExists ? { password } : { name: name.trim(), password, acceptTerms: accepted }),
     onSuccess: (session) => {
       login(session.token, session.refreshToken, session.user, session.company.id)
       navigate("/")
@@ -106,13 +108,15 @@ export function AcceptInvite() {
           </div>
         )}
 
+        {!inv.userExists && <TermsCheck checked={accepted} onChange={setAccepted} />}
+
         {(mismatch || mutation.isError) && (
           <p className="stk-error" role="alert">
             {mismatch ? t("invite.mismatch") : apiErrorMessage(mutation.error, t("invite.error"))}
           </p>
         )}
 
-        <button type="submit" className="stk-btn" disabled={mutation.isPending || mismatch}>
+        <button type="submit" className="stk-btn" disabled={mutation.isPending || mismatch || (!inv.userExists && !accepted)}>
           {mutation.isPending ? t("invite.joining") : t(inv.userExists ? "invite.joinExisting" : "invite.join")}
         </button>
       </form>

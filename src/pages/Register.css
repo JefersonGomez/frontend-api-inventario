@@ -165,6 +165,20 @@
   font-size: 0.875rem;
   color: #c2410c;
 }
+.stk-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--stk-muted);
+  cursor: pointer;
+}
+.stk-check input { margin-top: 3px; width: 16px; height: 16px; flex: none; accent-color: var(--stk-ink); cursor: pointer; }
+.stk-check input[aria-invalid="true"] { outline: 2px solid #c2410c; outline-offset: 2px; }
+.stk-check a { color: var(--stk-ink); font-weight: 600; text-decoration: underline; text-decoration-color: var(--stk-lime-dark); text-underline-offset: 3px; }
+.stk-legal { margin: 0; text-align: center; font-size: 0.78rem; color: var(--stk-muted); }
+.stk-legal a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
 .stk-foot {
   margin: 0;
   text-align: center;

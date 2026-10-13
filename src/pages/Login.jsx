@@ -67,6 +67,9 @@ export function Login() {
             <p className="stk-foot">
               {t("auth.login.noAccount")} <Link to="/register">{t("auth.login.register")}</Link>
             </p>
+            <p className="stk-legal">
+              <Link to="/terms">{t("legal.termsShort")}</Link> · <Link to="/privacy">{t("legal.privacyShort")}</Link>
+            </p>
           </form>
         </div>
       </div>
