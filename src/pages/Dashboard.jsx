@@ -75,6 +75,11 @@ export function Dashboard() {
               <p className="dash-kpi-label">{t("dashboard.inventoryValue")}</p>
               <p className="dash-kpi-value">${money.format(value.data?.totalValue ?? 0)}</p>
               <p className="dash-kpi-sub">{t("dashboard.inventoryUnits", { units: num.format(units) })}</p>
+              {value.data?.productsWithoutCost > 0 && (
+                <p className="dash-kpi-sub">
+                  <Link to="/products">{t("dashboard.withoutCost", { count: value.data.productsWithoutCost })}</Link>
+                </p>
+              )}
             </div>
             <Ring
               value={activePct}

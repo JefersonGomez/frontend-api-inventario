@@ -79,6 +79,8 @@ export function Reports() {
             [x("generatedAt"), new Date().toLocaleString()],
             [t("reports.cards.total_value_title"), value.totalValue],
             [x("productsInCatalog"), value.totalProducts],
+            [x("retailValue"), value.retailValue],
+            [x("withoutCost"), value.productsWithoutCost],
             [t("reports.cards.low_stock_title"), lowStock.length],
             [t("reports.immobilizedCapital.activeValue"), breakdown.activeValue],
             [`${t("reports.immobilizedCapital.immobilizedValue")} (${breakdown.daysThreshold} ${x("days")})`, breakdown.immobilizedValue],
@@ -108,7 +110,7 @@ export function Reports() {
           name: x("immobilized"),
           rows: [
             [t("reports.immobilizedCapital.sku"), t("reports.immobilizedCapital.product"), t("reports.immobilizedCapital.value")],
-            ...breakdown.immobilizedProducts.map((p) => [p.sku, p.name, p.value]),
+            ...breakdown.immobilizedProducts.map((p) => [p.sku, p.name, p.hasCost ? p.value : ""]),
           ],
         },
         {
@@ -184,7 +186,15 @@ export function Reports() {
             </p>
             <p className="text-xs text-muted-foreground mt-1">
               {inventoryValueQuery.data?.totalProducts ?? 0} {t("reports.cards.products_in_catalog")}
+              {inventoryValueQuery.data && (
+                <> · {t("reports.cards.retail_value", { value: inventoryValueQuery.data.retailValue.toLocaleString() })}</>
+              )}
             </p>
+            {inventoryValueQuery.data?.productsWithoutCost > 0 && (
+              <p className="text-xs text-[var(--stk-warn)] mt-1">
+                {t("reports.cards.without_cost", { count: inventoryValueQuery.data.productsWithoutCost })}
+              </p>
+            )}
           </CardContent>
         </Card>
 

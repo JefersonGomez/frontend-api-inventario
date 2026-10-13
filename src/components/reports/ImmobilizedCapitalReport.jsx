@@ -76,6 +76,12 @@ export function ImmobilizedCapitalReport({ days, onDaysChange }) {
         </div>
       </div>
 
+      {data.productsWithoutCost > 0 && (
+        <p className="text-xs text-[var(--stk-warn)]">
+          {t("reports.immobilizedCapital.withoutCost", { count: data.productsWithoutCost })}
+        </p>
+      )}
+
       {data.immobilizedProducts.length === 0 ? (
         <p className="text-sm text-muted-foreground py-4 text-center">
           {t("reports.immobilizedCapital.noImmobilized")}
@@ -95,7 +101,9 @@ export function ImmobilizedCapitalReport({ days, onDaysChange }) {
                 <TableRow key={p.id}>
                   <TableCell className="text-muted-foreground">{p.sku}</TableCell>
                   <TableCell className="font-medium">{p.name}</TableCell>
-                  <TableCell className="text-right">${p.value.toLocaleString()}</TableCell>
+                  <TableCell className="text-right">
+                    {p.hasCost ? `$${p.value.toLocaleString()}` : <span className="text-muted-foreground">—</span>}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

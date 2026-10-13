@@ -32,6 +32,7 @@ const emptyForm = {
   name: "", 
   description: "", 
   price: "", 
+  cost: "",
   stock: "", 
   minStock: "", 
   categoryId: "",
@@ -70,6 +71,7 @@ export function Products() {
       createProduct({
         ...form,
         price: Number(form.price),
+        cost: form.cost === "" ? null : Number(form.cost),
         stock: Number(form.stock),
         minStock: Number(form.minStock),
         supplierId: form.supplierId || null,
@@ -88,6 +90,8 @@ export function Products() {
         barcode: form.barcode,
         description: form.description,
         price: Number(form.price),
+        // vacío = sin costo (null); en la recepción de órdenes se vuelve a calcular solo
+        cost: form.cost === "" ? null : Number(form.cost),
         minStock: Number(form.minStock),
         categoryId: form.categoryId,
         supplierId: form.supplierId || null,
@@ -121,6 +125,7 @@ export function Products() {
       name: product.name,
       description: product.description ?? "",
       price: String(product.price),
+      cost: product.cost == null ? "" : String(Number(product.cost)),
       stock: String(product.stock),
       minStock: String(product.minStock),
       categoryId: product.categoryId ?? "",
@@ -180,6 +185,7 @@ export function Products() {
               <TableHead>{t("products.table.name")}</TableHead>
               <TableHead>{t("products.table.category")}</TableHead>
               <TableHead>{t("products.table.price")}</TableHead>
+              <TableHead className="hidden md:table-cell">{t("products.table.cost")}</TableHead>
               <TableHead>{t("products.table.stock")}</TableHead>
               <TableHead className="text-right">{t("products.table.actions")}</TableHead>
             </TableRow>
@@ -187,7 +193,7 @@ export function Products() {
           <TableBody>
             {productsQuery.isLoading && (
               <TableRow>
-                <TableCell colSpan={6} className="text-center text-muted-foreground">
+                <TableCell colSpan={7} className="text-center text-muted-foreground">
                   {t("common.loading")}
                 </TableCell>
               </TableRow>
@@ -195,7 +201,7 @@ export function Products() {
 
             {!productsQuery.isLoading && visibleProducts.length === 0 && q && (
               <TableRow>
-                <TableCell colSpan={6} className="text-center text-muted-foreground">
+                <TableCell colSpan={7} className="text-center text-muted-foreground">
                   {t("products.noResults", { q: searchParams.get("q") })}
                 </TableCell>
               </TableRow>
@@ -207,6 +213,9 @@ export function Products() {
                 <TableCell className="font-medium">{product.name}</TableCell>
                 <TableCell className="text-muted-foreground">{product.category?.name}</TableCell>
                 <TableCell>${Number(product.price).toFixed(2)}</TableCell>
+                <TableCell className="hidden md:table-cell text-muted-foreground">
+                  {product.cost == null ? "—" : `$${Number(product.cost).toFixed(2)}`}
+                </TableCell>
                 <TableCell>
                   {product.stock <= product.minStock ? (
                     <Badge variant="destructive">{product.stock}</Badge>
@@ -287,6 +296,19 @@ export function Products() {
                   onChange={(e) => setForm({ ...form, price: e.target.value })}
                   required
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label>{t("products.dialog.label_cost")}</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={form.cost}
+                  onChange={(e) => setForm({ ...form, cost: e.target.value })}
+                  aria-describedby="cost-hint"
+                />
+                <p id="cost-hint" className="text-xs text-muted-foreground">{t("products.dialog.cost_hint")}</p>
               </div>
 
               {!editingProduct && (

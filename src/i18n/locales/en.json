@@ -77,7 +77,7 @@
   },
   "dashboard": {
     "title": "Dashboard",
-    "inventoryValue": "Inventory value",
+    "inventoryValue": "Inventory at cost",
     "inventoryUnits": "COP · {{units}} units",
     "activeRing": "{{pct}}% of capital moved in the last 60 days",
     "dispatched": "Units dispatched",
@@ -112,7 +112,9 @@
       "PENDING": "Pending",
       "APPROVED": "Approved",
       "REJECTED": "Rejected"
-    }
+    },
+    "withoutCost_one": "{{count}} product without cost not included",
+    "withoutCost_other": "{{count}} products without cost not included"
   },
   "products": {
     "title": "Products",
@@ -124,7 +126,8 @@
       "category": "Category",
       "price": "Price",
       "stock": "Stock",
-      "actions": "Actions"
+      "actions": "Actions",
+      "cost": "Cost"
     },
     "dialog": {
       "create_title": "New Product",
@@ -140,7 +143,9 @@
       "label_barcode": "Barcode",
       "label_expiration_date": "Expiration date",
       "label_supplier": "Supplier (optional)",
-      "supplier_none": "No supplier"
+      "supplier_none": "No supplier",
+      "label_cost": "Cost (optional)",
+      "cost_hint": "What it costs you. It is recalculated automatically (weighted average) when a purchase order is received."
     },
     "delete": {
       "title": "Delete this product?",
@@ -217,10 +222,13 @@
     "title": "Reports",
     "subtitle": "Overview of inventory status",
     "cards": {
-      "total_value_title": "Total Inventory Value",
+      "total_value_title": "Inventory value (at cost)",
       "products_in_catalog": "products in catalog",
       "low_stock_title": "Low Stock Products",
-      "require_restock": "require restocking"
+      "require_restock": "require restocking",
+      "retail_value": "at retail price: ${{value}}",
+      "without_cost_one": "{{count}} product with stock has no cost and is not included. Set it in Products.",
+      "without_cost_other": "{{count}} products with stock have no cost and are not included. Set them in Products."
     },
     "tables": {
       "low_stock_detail_title": "Low Stock — Details",
@@ -255,7 +263,9 @@
       "sku": "SKU",
       "value": "Trapped value",
       "noImmobilized": "No products without movement in this period — good sign",
-      "daysFilter": "Days without movement"
+      "daysFilter": "Days without movement",
+      "withoutCost_one": "{{count}} product with stock has no cost: its value is not included.",
+      "withoutCost_other": "{{count}} products with stock have no cost: their value is not included."
     },
     "stockForecast": {
       "title": "Stock forecast",
@@ -286,7 +296,9 @@
       "productsInCatalog": "Products in catalog",
       "movementsPeriod": "Movements period",
       "allDates": "All dates",
-      "days": "days"
+      "days": "days",
+      "retailValue": "Value at retail price",
+      "withoutCost": "Products with stock and no cost"
     }
   },
   "profile": {
