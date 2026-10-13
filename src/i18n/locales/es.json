@@ -24,12 +24,14 @@
     "users": "Empleados",
     "auditLog": "Auditoría",
     "scanText": "Registra entradas y salidas escaneando el código de barras con la cámara.",
-    "scanButton": "Escanear producto"
+    "scanButton": "Escanear producto",
+    "platform": "Plataforma"
   },
   "topbar": {
     "search": "Buscar producto o SKU",
     "profile": "Mi perfil",
-    "logout": "Cerrar sesión"
+    "logout": "Cerrar sesión",
+    "platformMode": "Dueño de la plataforma"
   },
   "auth": {
     "login": {
@@ -632,5 +634,40 @@
         "text": "Este link ya se usó. Inicia sesión con tu cuenta."
       }
     }
+  },
+  "suspended": {
+    "title": "Cuenta suspendida",
+    "text": "El acceso a los datos de esta empresa está pausado. Tu información está segura y no se pierde nada.",
+    "reason": "Motivo",
+    "hint": "Contacta a soporte para reactivarla. Si perteneces a otra empresa, puedes cambiarte desde el selector de arriba."
+  },
+  "platform": {
+    "title": "Plataforma",
+    "subtitle": "Todas las empresas de Stockly: plan, uso y estado. No ves sus datos de inventario.",
+    "kpi": {
+      "companies": "Empresas",
+      "suspended": "Suspendidas",
+      "users": "Usuarios activos"
+    },
+    "search": "Buscar por empresa, dueño o correo",
+    "empty": "No hay empresas que coincidan",
+    "error": "No se pudo completar la acción",
+    "table": {
+      "company": "Empresa",
+      "owner": "Dueño",
+      "plan": "Plan",
+      "users": "Usuarios",
+      "products": "Productos",
+      "created": "Creada",
+      "status": "Estado"
+    },
+    "suspended": "Suspendida",
+    "suspend": "Suspender",
+    "reactivate": "Reactivar",
+    "suspendTitle": "Suspender {{name}}",
+    "suspendHint": "Sus usuarios podrán iniciar sesión pero solo verán un aviso, sin acceso a los datos. No se borra nada y se reactiva en un clic.",
+    "reasonLabel": "Motivo (lo verá la empresa)",
+    "reasonPlaceholder": "Ej.: pago pendiente",
+    "planNote": "El plan es de la cuenta del dueño: cambiarlo aplica a todas sus empresas."
   }
 }

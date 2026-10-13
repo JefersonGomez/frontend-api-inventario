@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input"
 import { useState } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useAuth } from "@/context/AuthContext"
+import { usePlatformOwner } from "@/hoocks/usePlatformOwner"
 import { getCompany, updateCompany } from "@/api/company"
 const languageItems = [
   { value: "es", label: "Español" },
@@ -120,6 +121,7 @@ function CompanyCard() {
 
 export function Settings() {
   const { user } = useAuth()
+  const { isPlatformOwner } = usePlatformOwner()
   const { theme, toggleTheme } = useTheme()
   const { t, i18n } = useTranslation()
 
@@ -181,7 +183,7 @@ export function Settings() {
         </CardContent>
       </Card>
 
-      {user?.role === "ADMIN" && <CompanyCard />}
+      {user?.role === "ADMIN" && !isPlatformOwner && <CompanyCard />}
     </div>
   )
 }

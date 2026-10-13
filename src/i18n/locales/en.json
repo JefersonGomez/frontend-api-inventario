@@ -24,12 +24,14 @@
     "users": "Employees",
     "auditLog": "Audit log",
     "scanText": "Log stock in and out by scanning the barcode with your camera.",
-    "scanButton": "Scan product"
+    "scanButton": "Scan product",
+    "platform": "Platform"
   },
   "topbar": {
     "search": "Search product or SKU",
     "profile": "My profile",
-    "logout": "Log out"
+    "logout": "Log out",
+    "platformMode": "Platform owner"
   },
   "auth": {
     "login": {
@@ -632,5 +634,40 @@
         "text": "This link was already used. Sign in with your account."
       }
     }
+  },
+  "suspended": {
+    "title": "Account suspended",
+    "text": "Access to this company's data is paused. Your information is safe and nothing is lost.",
+    "reason": "Reason",
+    "hint": "Contact support to reactivate it. If you belong to another company, switch from the selector above."
+  },
+  "platform": {
+    "title": "Platform",
+    "subtitle": "All Stockly companies: plan, usage and status. You can't see their inventory data.",
+    "kpi": {
+      "companies": "Companies",
+      "suspended": "Suspended",
+      "users": "Active users"
+    },
+    "search": "Search by company, owner or email",
+    "empty": "No matching companies",
+    "error": "The action could not be completed",
+    "table": {
+      "company": "Company",
+      "owner": "Owner",
+      "plan": "Plan",
+      "users": "Users",
+      "products": "Products",
+      "created": "Created",
+      "status": "Status"
+    },
+    "suspended": "Suspended",
+    "suspend": "Suspend",
+    "reactivate": "Reactivate",
+    "suspendTitle": "Suspend {{name}}",
+    "suspendHint": "Its users will be able to sign in but will only see a notice, with no access to data. Nothing is deleted and it can be reactivated in one click.",
+    "reasonLabel": "Reason (the company will see it)",
+    "reasonPlaceholder": "E.g.: payment pending",
+    "planNote": "The plan belongs to the owner's account: changing it applies to all their companies."
   }
 }

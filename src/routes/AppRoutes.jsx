@@ -17,6 +17,8 @@ import { AdminRoute } from "./AdminRoute"
 import { PurchaseOrders } from "@/pages/PurchaseOrders"
 import { AuditLogPage } from "@/pages/AuditLog"
 import { AcceptInvite } from "@/pages/AcceptInvite"
+import { Platform } from "@/pages/Platform"
+import { PlatformRoute } from "./PlatformRoute"
 const router = createBrowserRouter([
   {
     path: "/login",
@@ -45,6 +47,7 @@ const router = createBrowserRouter([
       {path:"purchase-requests", element:<PurchaseRequests />},
       { path: "purchase-orders", element: <AdminRoute><PurchaseOrders /></AdminRoute> },
       { path: "audit-log", element: <AdminRoute><AuditLogPage /></AdminRoute> },
+      { path: "platform", element: <PlatformRoute><Platform /></PlatformRoute> },
     ],
   },
 ])

@@ -219,8 +219,10 @@ export function Profile() {
           <h2 className="prof-name">{profile.name}</h2>
           <p className="prof-email">{profile.email}</p>
           <div className="prof-chips">
-            <span className="prof-chip prof-chip--lime">{t(`companies.roles.${profile.role}`)}</span>
-            {company?.name && (
+            <span className="prof-chip prof-chip--lime">
+              {profile.isPlatformOwner ? t("topbar.platformMode") : t(`companies.roles.${profile.role}`)}
+            </span>
+            {company?.name && !profile.isPlatformOwner && (
               <span className="prof-chip">
                 <Building2 className="w-3.5 h-3.5" aria-hidden="true" />
                 {company.name}
@@ -329,7 +331,7 @@ export function Profile() {
       </div>
 
       {/* Empresas en las que participa (multi-empresa) */}
-      {companies.length > 0 && (
+      {companies.length > 0 && !profile.isPlatformOwner && (
         <section className="stk-card prof-card">
           <div className="prof-card-head">
             <span className="prof-card-icon"><Building2 className="w-[18px] h-[18px]" aria-hidden="true" /></span>

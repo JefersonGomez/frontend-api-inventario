@@ -1,6 +1,7 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/context/AuthContext";
+import { usePlatformOwner } from "@/hoocks/usePlatformOwner";
 import {
   LayoutDashboard,
   Package,
@@ -17,6 +18,7 @@ import {
   LogOut,
   Box,
   ScanBarcode,
+  Building2,
 } from "lucide-react";
 
 const ICON = { className: "w-[18px] h-[18px]", strokeWidth: 1.7, "aria-hidden": true };
@@ -26,8 +28,10 @@ export function Sidebar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const isAdmin = user?.role === "ADMIN";
+  const { isPlatformOwner } = usePlatformOwner();
 
-  const navItems = [
+  // el dueño de la plataforma no usa el inventario de un cliente: solo ve la plataforma
+  const navItems = isPlatformOwner ? [{ to: "/platform", label: t("sidebar.platform"), icon: Building2 }] : [
     { to: "/", label: t("sidebar.dashboard"), icon: LayoutDashboard },
     { to: "/products", label: t("sidebar.products"), icon: Package },
     { to: "/categories", label: t("sidebar.categories"), icon: FolderTree },
@@ -52,7 +56,7 @@ export function Sidebar() {
   return (
     <aside className="stk-side">
       <nav className="stk-card stk-nav" aria-label={t("sidebar.mainMenu")}>
-        <Link to="/" className="stk-logo">
+        <Link to={isPlatformOwner ? "/platform" : "/"} className="stk-logo">
           <span className="stk-logo-mark">
             <Box className="w-5 h-5" strokeWidth={1.7} aria-hidden />
           </span>
@@ -82,6 +86,7 @@ export function Sidebar() {
         </button>
       </nav>
 
+      {!isPlatformOwner && (
       <div className="stk-card stk-promo">
         <span className="stk-promo-icon">
           <ScanBarcode className="w-[22px] h-[22px]" strokeWidth={1.7} aria-hidden />
@@ -91,6 +96,7 @@ export function Sidebar() {
           {t("sidebar.scanButton")}
         </Link>
       </div>
+      )}
     </aside>
   );
 }
