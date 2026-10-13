@@ -304,7 +304,7 @@
   },
   "profile": {
     "title": "My profile",
-    "subtitle": "Manage your information and security",
+    "subtitle": "Your personal info, security and companies",
     "changePhoto": "Change photo",
     "uploading_image": "Uploading image...",
     "not_specified": "Not specified",
@@ -316,14 +316,15 @@
       "info": "Information",
       "security": "Security"
     },
-    "info_card_title": "Personal Data",
-    "security_card_title": "Change Password",
+    "info_card_title": "Personal details",
+    "security_card_title": "Password",
     "labels": {
       "name": "Name",
       "full_name": "Full Name",
       "email": "Email",
       "current_password": "Current password",
-      "new_password": "New password"
+      "new_password": "New password",
+      "phone": "Phone"
     },
     "placeholders": {
       "min_chars": "At least 8 characters"
@@ -333,12 +334,31 @@
     },
     "errors": {
       "update_failed": "Could not update profile.",
-      "password_failed": "Could not change password."
+      "password_failed": "Could not change password.",
+      "load_failed": "Could not load your profile.",
+      "photo_failed": "Could not upload the photo."
     },
     "success": {
       "updated": "Profile updated successfully",
       "password_updated": "Password updated successfully"
-    }
+    },
+    "info_card_hint": "How your teammates see you in the system",
+    "security_card_hint": "Use one you don't use on other sites",
+    "member_since": "Member since {{date}}",
+    "photo_hint": "Tap the camera to change your photo · JPG, PNG or WEBP, max. 5 MB",
+    "show_password": "Show password",
+    "hide_password": "Hide password",
+    "password_hint": "At least 8 characters; avoid common passwords",
+    "strength": {
+      "weak": "Weak: add more characters",
+      "fair": "Fair: add numbers or symbols",
+      "good": "Good",
+      "strong": "Very strong"
+    },
+    "companies_title": "Your companies",
+    "companies_hint": "Switch company from the selector in the top bar",
+    "owner": "Owner",
+    "active_company": "Active"
   },
   "settings": {
     "title": "Settings",

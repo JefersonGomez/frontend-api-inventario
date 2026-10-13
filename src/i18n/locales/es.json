@@ -304,7 +304,7 @@
   },
   "profile": {
     "title": "Mi perfil",
-    "subtitle": "Administra tu información y seguridad",
+    "subtitle": "Tu información personal, tu seguridad y tus empresas",
     "changePhoto": "Cambiar foto",
     "uploading_image": "Subiendo imagen...",
     "not_specified": "No especificado",
@@ -316,14 +316,15 @@
       "info": "Información",
       "security": "Seguridad"
     },
-    "info_card_title": "Datos Personales",
-    "security_card_title": "Cambiar Contraseña",
+    "info_card_title": "Datos personales",
+    "security_card_title": "Contraseña",
     "labels": {
       "name": "Nombre",
       "full_name": "Nombre Completo",
       "email": "Email",
       "current_password": "Contraseña actual",
-      "new_password": "Nueva contraseña"
+      "new_password": "Nueva contraseña",
+      "phone": "Teléfono"
     },
     "placeholders": {
       "min_chars": "Mínimo 8 caracteres"
@@ -333,12 +334,31 @@
     },
     "errors": {
       "update_failed": "No se pudo actualizar el perfil.",
-      "password_failed": "No se pudo cambiar la contraseña."
+      "password_failed": "No se pudo cambiar la contraseña.",
+      "load_failed": "No se pudo cargar tu perfil.",
+      "photo_failed": "No se pudo subir la foto."
     },
     "success": {
       "updated": "Perfil actualizado correctamente",
       "password_updated": "Contraseña actualizada exitosamente"
-    }
+    },
+    "info_card_hint": "Así te ven tus compañeros en el sistema",
+    "security_card_hint": "Usa una que no uses en otros sitios",
+    "member_since": "Miembro desde {{date}}",
+    "photo_hint": "Toca la cámara para cambiar tu foto · JPG, PNG o WEBP, máx. 5 MB",
+    "show_password": "Mostrar contraseña",
+    "hide_password": "Ocultar contraseña",
+    "password_hint": "Mínimo 8 caracteres; evita contraseñas comunes",
+    "strength": {
+      "weak": "Débil: agrega más caracteres",
+      "fair": "Aceptable: suma números o símbolos",
+      "good": "Buena",
+      "strong": "Muy segura"
+    },
+    "companies_title": "Tus empresas",
+    "companies_hint": "Cambia de empresa desde el selector de la barra superior",
+    "owner": "Dueño",
+    "active_company": "Activa"
   },
   "settings": {
     "title": "Configuración",

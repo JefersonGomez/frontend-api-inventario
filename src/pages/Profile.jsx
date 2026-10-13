@@ -1,183 +1,142 @@
 import { useState } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { useTranslation } from "react-i18next" // 1. Importar hook
+import { useTranslation } from "react-i18next"
+import {
+  Building2, CalendarDays, Camera, Check, CircleAlert, Crown, Eye, EyeOff, KeyRound, Loader2, Pencil, UserRound, X,
+} from "lucide-react"
 import { getProfile, updateAvatar, changePassword, updateProfile } from "@/api/profile"
+import { getCompany, getMyCompanies } from "@/api/company"
 import { useAuth } from "@/context/AuthContext"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import { User, Mail, Lock, Camera, Check, X, AlertCircle } from "lucide-react"
 import { API_URL } from "@/api/client"
 import { apiErrorMessage } from "@/lib/api-error"
+import "./Profile.css"
 
+const initialsOf = (name = "") =>
+  name.split(/\s+/).map((w) => w.replace(/[^\p{L}\p{N}]/gu, "")).filter(Boolean).slice(0, 2)
+    .map((w) => w[0]).join("").toUpperCase() || "?"
 
-// --- Fila editable individual mejorada ---
-function EditableRow({ label, value, onSave, isSaving, type = "text", icon: Icon }) {
-  const { t } = useTranslation() // Hook interno para botones
+// 0–4 según largo y variedad. Solo orienta: la regla real (8+ y no común) la valida el backend.
+function strengthOf(pw) {
+  if (!pw) return 0
+  let score = 0
+  if (pw.length >= 8) score++
+  if (pw.length >= 12) score++
+  if ((/[a-z]/.test(pw) && /[A-Z]/.test(pw)) || /\d/.test(pw)) score++
+  if (/[^A-Za-z0-9]/.test(pw)) score++
+  return pw.length < 8 ? 1 : Math.max(score, 1)
+}
+const STRENGTH = ["", "weak", "fair", "good", "strong"]
+
+// Dato editable en línea: Enter guarda, Escape cancela. El botón "Editar" siempre visible (también en celular).
+function EditableRow({ label, value, type = "text", onSave, saving }) {
+  const { t } = useTranslation()
   const [editing, setEditing] = useState(false)
-  const [draft, setDraft] = useState(value)
+  const [draft, setDraft] = useState(value ?? "")
 
-  function handleSave() {
-    if (draft !== value) {
-      onSave(draft, () => setEditing(false))
-    } else {
-      setEditing(false)
-    }
-  }
-
-  function handleCancel() {
-    setDraft(value)
+  const cancel = () => {
+    setDraft(value ?? "")
     setEditing(false)
+  }
+  const save = () => {
+    const next = draft.trim()
+    if (!next || next === value) return cancel()
+    onSave(next, () => setEditing(false))
   }
 
   return (
-    <div className="group relative">
-      <div className="flex items-center gap-4 py-4">
-        {Icon && (
-          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center shrink-0">
-            <Icon className="w-5 h-5 text-primary" />
-          </div>
-        )}
-        
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-muted-foreground mb-1">{label}</p>
-          {editing ? (
-            <Input
-              type={type}
-              value={draft}
-              onChange={(e) => setDraft(e.target.value)}
-              className="max-w-md transition-all focus:ring-2 focus:ring-primary/20"
-              autoFocus
-            />
-          ) : (
-            <p className="font-semibold text-base">{value || t("profile.not_specified")}</p>
-          )}
-        </div>
-
+    <div className="prof-row">
+      <div className="prof-row-main">
+        <span className="prof-label">{label}</span>
         {editing ? (
-          <div className="flex gap-2 shrink-0 animate-in fade-in slide-in-from-right-2">
-            <Button 
-              size="sm" 
-              variant="outline" 
-              onClick={handleCancel}
-              className="gap-2"
-            >
-              <X className="w-4 h-4" />
-              {t("common.cancel")}
-            </Button>
-            <Button 
-              size="sm" 
-              onClick={handleSave} 
-              disabled={isSaving || draft === value}
-              className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
-            >
-              <Check className="w-4 h-4" />
-              {isSaving ? t("common.saving") : t("common.save")}
-            </Button>
-          </div>
+          <Input
+            type={type}
+            value={draft}
+            autoFocus
+            aria-label={label}
+            onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") save()
+              if (e.key === "Escape") cancel()
+            }}
+          />
         ) : (
-          <button
-            onClick={() => setEditing(true)}
-            className="opacity-0 group-hover:opacity-100 transition-opacity px-4 py-2 text-sm font-medium text-primary hover:text-primary/80 hover:bg-primary/5 rounded-lg shrink-0"
-          >
-            {t("common.edit")}
-          </button>
+          <p className={`prof-value ${value ? "" : "prof-value--empty"}`}>{value || t("profile.not_specified")}</p>
         )}
       </div>
-      <Separator className="absolute bottom-0 left-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity" />
+      <div className="prof-row-actions">
+        {editing ? (
+          <>
+            <Button size="icon-sm" variant="outline" onClick={cancel} aria-label={t("common.cancel")} title={t("common.cancel")}>
+              <X />
+            </Button>
+            <Button size="icon-sm" onClick={save} disabled={saving} aria-label={t("common.save")} title={t("common.save")}>
+              {saving ? <Loader2 className="animate-spin" /> : <Check />}
+            </Button>
+          </>
+        ) : (
+          <Button size="sm" variant="outline" onClick={() => setEditing(true)}>
+            <Pencil />
+            {t("common.edit")}
+          </Button>
+        )}
+      </div>
     </div>
   )
 }
 
-// --- Componente de tarjeta de perfil mejorada ---
-function ProfileCard({ profile, avatarMutation, onAvatarChange }) {
+function PasswordInput({ id, value, onChange, autoComplete, minLength, placeholder }) {
   const { t } = useTranslation()
-  const initials = profile.name?.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()
-  
+  const [visible, setVisible] = useState(false)
   return (
-    <Card className="overflow-hidden border-0 shadow-lg bg-gradient-to-br from-card to-muted/20">
-      {/* Header con gradiente */}
-      <div className="relative h-32 bg-gradient-to-r from-primary via-primary/80 to-accent">
-        <div className="absolute inset-0 bg-grid-white/[0.02]" />
-      </div>
-      
-      <CardContent className="relative pt-0 pb-6 px-6">
-        {/* Avatar superpuesto */}
-        <div className="flex justify-center -mt-16 mb-4">
-          <div className="relative group">
-            <Avatar className="w-24 h-24 ring-4 ring-background shadow-xl">
-              {profile.avatarUrl && (
-                <AvatarImage src={`${API_URL}${profile.avatarUrl}`} alt={profile.name} />
-              )}
-              <AvatarFallback className="bg-gradient-to-br from-primary to-primary/60 text-primary-foreground text-2xl font-bold">
-                {initials || "US"}
-              </AvatarFallback>
-            </Avatar>
-            
-            {/* Overlay para cambiar foto */}
-            <label 
-              htmlFor="avatar-upload" 
-              className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-all duration-200"
-            >
-              <Camera className="w-8 h-8 text-white" />
-            </label>
-            <input
-              id="avatar-upload"
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              className="hidden"
-              onChange={onAvatarChange}
-            />
-          </div>
-        </div>
-
-        {/* Info del usuario */}
-        <div className="text-center space-y-2">
-          <h2 className="text-xl font-bold text-foreground">{profile.name}</h2>
-          <Badge 
-            variant={profile.role === "ADMIN" ? "default" : "secondary"}
-            className={`
-              ${profile.role === "ADMIN" 
-                ? "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600" 
-                : "bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600"
-              }
-              text-white border-0 px-3 py-1
-            `}
-          >
-            {profile.role === "ADMIN" ? t("profile.roles.admin") : t("profile.roles.employee")}
-          </Badge>
-          
-          {avatarMutation.isPending && (
-            <p className="text-xs text-muted-foreground animate-pulse">{t("profile.uploading_image")}</p>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+    <div className="prof-pass">
+      <Input
+        id={id}
+        type={visible ? "text" : "password"}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        autoComplete={autoComplete}
+        minLength={minLength}
+        maxLength={72}
+        placeholder={placeholder}
+        required
+      />
+      <button
+        type="button"
+        className="prof-eye"
+        onClick={() => setVisible((v) => !v)}
+        aria-label={visible ? t("profile.hide_password") : t("profile.show_password")}
+        title={visible ? t("profile.hide_password") : t("profile.show_password")}
+      >
+        {visible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+      </button>
+    </div>
   )
 }
 
 export function Profile() {
-  const { t } = useTranslation() // 2. Llamar al hook
+  const { t, i18n } = useTranslation()
   const queryClient = useQueryClient()
   const { updateUser } = useAuth()
+  const [avatarBroken, setAvatarBroken] = useState(false)
+  const [currentPassword, setCurrentPassword] = useState("")
+  const [newPassword, setNewPassword] = useState("")
 
-  const profileQuery = useQuery({ queryKey: ["profile"], queryFn: getProfile })
-  const profile = profileQuery.data
+  const { data: profile, isError } = useQuery({ queryKey: ["profile"], queryFn: getProfile })
+  const { data: company } = useQuery({ queryKey: ["company"], queryFn: getCompany })
+  const { data: companies = [] } = useQuery({ queryKey: ["companies"], queryFn: getMyCompanies })
 
   const avatarMutation = useMutation({
     mutationFn: (file) => updateAvatar(file),
     onSuccess: (data) => {
+      setAvatarBroken(false)
       queryClient.invalidateQueries({ queryKey: ["profile"] })
       updateUser({ avatarUrl: data.avatarUrl })
     },
   })
 
-  const updateProfileMutation = useMutation({
+  const profileMutation = useMutation({
     mutationFn: ({ name, email }) => updateProfile(name, email),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["profile"] })
@@ -185,8 +144,6 @@ export function Profile() {
     },
   })
 
-  const [currentPassword, setCurrentPassword] = useState("")
-  const [newPassword, setNewPassword] = useState("")
   const passwordMutation = useMutation({
     mutationFn: () => changePassword(currentPassword, newPassword),
     onSuccess: () => {
@@ -195,205 +152,212 @@ export function Profile() {
     },
   })
 
-  function handleAvatarChange(e) {
-    const file = e.target.files?.[0]
-    if (file) avatarMutation.mutate(file)
+  if (isError) {
+    return <p role="alert" className="prof-msg prof-msg--err"><CircleAlert className="w-4 h-4" />{t("profile.errors.load_failed")}</p>
   }
-
-  function handlePasswordSubmit(e) {
-    e.preventDefault()
-    passwordMutation.mutate()
-  }
-
   if (!profile) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      <div className="prof" aria-busy="true">
+        <div className="prof-skeleton" />
       </div>
     )
   }
 
+  const saveField = (field) => (next, done) =>
+    profileMutation.mutate(
+      { name: profile.name, email: profile.email, [field]: next },
+      { onSuccess: done }
+    )
+
+  const level = strengthOf(newPassword)
+  const memberSince = new Date(profile.createdAt).toLocaleDateString(i18n.language, { month: "long", year: "numeric" })
+  const showPhoto = profile.avatarUrl && !avatarBroken
+
   return (
-    <div className="space-y-6 max-w-6xl mx-auto p-6">
-      {/* Header de página */}
-      <div className="flex items-center justify-between">
-        <div>
-          {/* 3. Reemplazar texto por t() */}
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-            {t("profile.title")}
-          </h1>
-          <p className="text-muted-foreground mt-1">{t("profile.subtitle")}</p>
-        </div>
+    <div className="prof">
+      <div>
+        <h1>{t("profile.title")}</h1>
+        <p className="prof-sub">{t("profile.subtitle")}</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-8">
-        {/* Sidebar con tarjeta de perfil */}
-        <div className="lg:sticky lg:top-6">
-          <ProfileCard 
-            profile={profile} 
-            avatarMutation={avatarMutation}
-            onAvatarChange={handleAvatarChange}
-          />
+      {/* Tarjeta principal: quién eres y dónde estás */}
+      <section className="prof-hero" aria-label={t("profile.title")}>
+        <div className="prof-avatar">
+          {showPhoto ? (
+            <img
+              className="prof-avatar-img"
+              src={`${API_URL}${profile.avatarUrl}`}
+              alt={profile.name}
+              onError={() => setAvatarBroken(true)}
+            />
+          ) : (
+            <div className="prof-avatar-img" aria-hidden="true">{initialsOf(profile.name)}</div>
+          )}
+          {avatarMutation.isPending && (
+            <div className="prof-avatar-busy">
+              <Loader2 className="w-7 h-7 animate-spin" aria-label={t("profile.uploading_image")} />
+            </div>
+          )}
+          <label className="prof-avatar-btn" title={t("profile.changePhoto")}>
+            <Camera className="w-4 h-4" aria-hidden="true" />
+            <span className="sr-only">{t("profile.changePhoto")}</span>
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="sr-only"
+              disabled={avatarMutation.isPending}
+              onChange={(e) => {
+                const file = e.target.files?.[0]
+                if (file) avatarMutation.mutate(file)
+                e.target.value = ""
+              }}
+            />
+          </label>
         </div>
 
-        {/* Contenido principal con tabs */}
-        <div>
-          <Tabs defaultValue="info" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-2 p-1 bg-muted/50 rounded-xl">
-              <TabsTrigger 
-                value="info" 
-                className="data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-lg transition-all"
-              >
-                <User className="w-4 h-4 mr-2" />
-                {t("profile.tabs.info")}
-              </TabsTrigger>
-              <TabsTrigger 
-                value="security"
-                className="data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-lg transition-all"
-              >
-                <Lock className="w-4 h-4 mr-2" />
-                {t("profile.tabs.security")}
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="info" className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
-              <Card className="border-0 shadow-md">
-                <CardHeader className="pb-4">
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <User className="w-5 h-5 text-primary" />
-                    {t("profile.info_card_title")}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <EditableRow
-                    label={t("profile.labels.full_name")}
-                    value={profile.name}
-                    icon={User}
-                    isSaving={updateProfileMutation.isPending}
-                    onSave={(newName, done) =>
-                      updateProfileMutation.mutate(
-                        { name: newName, email: profile.email },
-                        { onSuccess: done }
-                      )
-                    }
-                  />
-                  <EditableRow
-                    label={t("profile.labels.email")}
-                    value={profile.email}
-                    type="email"
-                    icon={Mail}
-                    isSaving={updateProfileMutation.isPending}
-                    onSave={(newEmail, done) =>
-                      updateProfileMutation.mutate(
-                        { name: profile.name, email: newEmail },
-                        { onSuccess: done }
-                      )
-                    }
-                  />
-                </CardContent>
-              </Card>
-
-              {updateProfileMutation.isError && (
-                <div className="flex items-center gap-3 p-4 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive animate-in fade-in">
-                  <AlertCircle className="w-5 h-5 shrink-0" />
-                  <p className="text-sm">
-                    {apiErrorMessage(updateProfileMutation.error, t("profile.errors.update_failed"))}
-                  </p>
-                </div>
-              )}
-              
-              {updateProfileMutation.isSuccess && (
-                <div className="flex items-center gap-3 p-4 bg-green-500/10 border border-green-500/20 rounded-lg text-green-600 animate-in fade-in">
-                  <Check className="w-5 h-5 shrink-0" />
-                  <p className="text-sm font-medium">{t("profile.success.updated")}</p>
-                </div>
-              )}
-            </TabsContent>
-
-            <TabsContent value="security" className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
-              <Card className="border-0 shadow-md">
-                <CardHeader className="pb-4">
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <Lock className="w-5 h-5 text-primary" />
-                    {t("profile.security_card_title")}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <form onSubmit={handlePasswordSubmit} className="space-y-6 max-w-md">
-                    <div className="space-y-3">
-                      <Label className="text-sm font-medium">{t("profile.labels.current_password")}</Label>
-                      <div className="relative">
-                        <Input
-                          type="password"
-                          value={currentPassword}
-                          onChange={(e) => setCurrentPassword(e.target.value)}
-                          required
-                          className="pl-10 pr-4"
-                          placeholder="••••••••"
-                        />
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-3">
-                      <Label className="text-sm font-medium">{t("profile.labels.new_password")}</Label>
-                      <div className="relative">
-                        <Input
-                          type="password"
-                          value={newPassword}
-                          onChange={(e) => setNewPassword(e.target.value)}
-                          minLength={8}
-                          maxLength={72}
-                          required
-                          className="pl-10 pr-4"
-                          placeholder={t("profile.placeholders.min_chars")}
-                        />
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col gap-3">
-                      {passwordMutation.isError && (
-                        <div className="flex items-center gap-3 p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive animate-in fade-in">
-                          <AlertCircle className="w-4 h-4 shrink-0" />
-                          <p className="text-sm">
-                            {apiErrorMessage(passwordMutation.error, t("profile.errors.password_failed"))}
-                          </p>
-                        </div>
-                      )}
-                      
-                      {passwordMutation.isSuccess && (
-                        <div className="flex items-center gap-3 p-3 bg-green-500/10 border border-green-500/20 rounded-lg text-green-600 animate-in fade-in">
-                          <Check className="w-4 h-4 shrink-0" />
-                          <p className="text-sm font-medium">{t("profile.success.password_updated")}</p>
-                        </div>
-                      )}
-
-                      <Button 
-                        type="submit" 
-                        disabled={passwordMutation.isPending}
-                        className="w-full sm:w-auto bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
-                      >
-                        {passwordMutation.isPending ? (
-                          <>
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
-                            {t("common.updating")}
-                          </>
-                        ) : (
-                          <>
-                            <Lock className="w-4 h-4 mr-2" />
-                            {t("profile.buttons.change_password")}
-                          </>
-                        )}
-                      </Button>
-                    </div>
-                  </form>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
+        <div className="prof-hero-body">
+          <h2 className="prof-name">{profile.name}</h2>
+          <p className="prof-email">{profile.email}</p>
+          <div className="prof-chips">
+            <span className="prof-chip prof-chip--lime">{t(`companies.roles.${profile.role}`)}</span>
+            {company?.name && (
+              <span className="prof-chip">
+                <Building2 className="w-3.5 h-3.5" aria-hidden="true" />
+                {company.name}
+              </span>
+            )}
+            <span className="prof-chip">
+              <CalendarDays className="w-3.5 h-3.5" aria-hidden="true" />
+              {t("profile.member_since", { date: memberSince })}
+            </span>
+          </div>
+          {avatarMutation.isError ? (
+            <p role="alert" className="prof-photo-error">{apiErrorMessage(avatarMutation.error, t("profile.errors.photo_failed"))}</p>
+          ) : (
+            <p className="prof-photo-hint">{t("profile.photo_hint")}</p>
+          )}
         </div>
+      </section>
+
+      <div className="prof-grid">
+        {/* Datos personales */}
+        <section className="stk-card prof-card">
+          <div className="prof-card-head">
+            <span className="prof-card-icon"><UserRound className="w-[18px] h-[18px]" aria-hidden="true" /></span>
+            <div>
+              <h2>{t("profile.info_card_title")}</h2>
+              <p>{t("profile.info_card_hint")}</p>
+            </div>
+          </div>
+          <div className="prof-rows">
+            <EditableRow label={t("profile.labels.full_name")} value={profile.name} saving={profileMutation.isPending} onSave={saveField("name")} />
+            <EditableRow label={t("profile.labels.email")} value={profile.email} type="email" saving={profileMutation.isPending} onSave={saveField("email")} />
+            {profile.phone && (
+              <div className="prof-row">
+                <div className="prof-row-main">
+                  <span className="prof-label">{t("profile.labels.phone")}</span>
+                  <p className="prof-value">{profile.phone}</p>
+                </div>
+              </div>
+            )}
+          </div>
+          {profileMutation.isError && (
+            <p role="alert" className="prof-msg prof-msg--err">
+              <CircleAlert className="w-4 h-4 shrink-0" />
+              {apiErrorMessage(profileMutation.error, t("profile.errors.update_failed"))}
+            </p>
+          )}
+          {profileMutation.isSuccess && (
+            <p role="status" className="prof-msg prof-msg--ok"><Check className="w-4 h-4 shrink-0" />{t("profile.success.updated")}</p>
+          )}
+        </section>
+
+        {/* Seguridad */}
+        <section className="stk-card prof-card">
+          <div className="prof-card-head">
+            <span className="prof-card-icon"><KeyRound className="w-[18px] h-[18px]" aria-hidden="true" /></span>
+            <div>
+              <h2>{t("profile.security_card_title")}</h2>
+              <p>{t("profile.security_card_hint")}</p>
+            </div>
+          </div>
+          <form
+            className="prof-form"
+            onSubmit={(e) => {
+              e.preventDefault()
+              passwordMutation.mutate()
+            }}
+          >
+            <div className="prof-field">
+              <label htmlFor="current-password">{t("profile.labels.current_password")}</label>
+              <PasswordInput id="current-password" value={currentPassword} onChange={setCurrentPassword} autoComplete="current-password" />
+            </div>
+            <div className="prof-field">
+              <label htmlFor="new-password">{t("profile.labels.new_password")}</label>
+              <PasswordInput
+                id="new-password"
+                value={newPassword}
+                onChange={setNewPassword}
+                autoComplete="new-password"
+                minLength={8}
+                placeholder={t("profile.placeholders.min_chars")}
+              />
+              <div className="prof-meter" data-level={level} aria-hidden="true">
+                <span /><span /><span /><span />
+              </div>
+              <p className="prof-hint" aria-live="polite">
+                {level ? t(`profile.strength.${STRENGTH[level]}`) : t("profile.password_hint")}
+              </p>
+            </div>
+            {passwordMutation.isError && (
+              <p role="alert" className="prof-msg prof-msg--err">
+                <CircleAlert className="w-4 h-4 shrink-0" />
+                {apiErrorMessage(passwordMutation.error, t("profile.errors.password_failed"))}
+              </p>
+            )}
+            {passwordMutation.isSuccess && (
+              <p role="status" className="prof-msg prof-msg--ok"><Check className="w-4 h-4 shrink-0" />{t("profile.success.password_updated")}</p>
+            )}
+            <div>
+              <Button type="submit" disabled={passwordMutation.isPending || !currentPassword || newPassword.length < 8}>
+                {passwordMutation.isPending ? <Loader2 className="animate-spin" /> : <KeyRound />}
+                {passwordMutation.isPending ? t("common.updating") : t("profile.buttons.change_password")}
+              </Button>
+            </div>
+          </form>
+        </section>
       </div>
+
+      {/* Empresas en las que participa (multi-empresa) */}
+      {companies.length > 0 && (
+        <section className="stk-card prof-card">
+          <div className="prof-card-head">
+            <span className="prof-card-icon"><Building2 className="w-[18px] h-[18px]" aria-hidden="true" /></span>
+            <div>
+              <h2>{t("profile.companies_title")}</h2>
+              <p>{t("profile.companies_hint")}</p>
+            </div>
+          </div>
+          <ul className="prof-companies">
+            {companies.map((c) => {
+              const active = c.id === company?.id
+              return (
+                <li key={c.id} className={`prof-company ${active ? "prof-company--active" : ""}`}>
+                  <span className="prof-company-mark" aria-hidden="true">{initialsOf(c.name)}</span>
+                  <div className="prof-company-body">
+                    <p className="prof-company-name" title={c.name}>{c.name}</p>
+                    <p className="prof-company-meta">
+                      {t(`companies.roles.${c.role}`)}
+                      {c.isOwner && <> · <Crown className="inline w-3 h-3 -mt-0.5" aria-hidden="true" /> {t("profile.owner")}</>}
+                      {active && <> · {t("profile.active_company")}</>}
+                    </p>
+                  </div>
+                </li>
+              )
+            })}
+          </ul>
+        </section>
+      )}
     </div>
   )
 }
