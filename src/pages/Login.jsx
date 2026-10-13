@@ -6,6 +6,7 @@ import { loginRequest } from "@/api/auth"
 import { useAuth } from "@/context/AuthContext"
 import { BoxesIllustration } from "@/components/BoxesIllustration"
 import "./Register.css"
+import { apiErrorMessage } from "@/lib/api-error"
 
 export function Login() {
   const { t } = useTranslation()
@@ -27,7 +28,7 @@ export function Login() {
     mutation.mutate()
   }
 
-  const apiError = mutation.error?.response?.data?.error
+  const errorText = mutation.isError && apiErrorMessage(mutation.error, t("auth.login.error"))
 
   return (
     <div className="stk-page">
@@ -55,7 +56,7 @@ export function Login() {
 
             {mutation.isError && (
               <p className="stk-error" role="alert">
-                {typeof apiError === "string" ? apiError : t("auth.login.error")}
+                {errorText}
               </p>
             )}
 

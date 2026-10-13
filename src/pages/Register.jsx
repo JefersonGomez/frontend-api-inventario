@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next"
 import { registerRequest } from "@/api/auth"
 import { BoxesIllustration } from "@/components/BoxesIllustration"
 import "./Register.css"
+import { apiErrorMessage } from "@/lib/api-error"
 
 const EMPTY = { name: "", email: "", phone: "", company: "", password: "", confirm: "" }
 
@@ -34,11 +35,9 @@ export function Register() {
     mutation.mutate()
   }
 
-  const apiError = mutation.error?.response?.data?.error
   const errorText = mismatch
     ? t("auth.register.errors.passwordMismatch")
-    : mutation.isError &&
-      (apiError?.fieldErrors ? t("auth.register.errors.validation") : t("auth.register.errors.creation_failed"))
+    : mutation.isError && apiErrorMessage(mutation.error, t("auth.register.errors.creation_failed"))
 
   return (
     <div className="stk-page">
@@ -91,11 +90,11 @@ export function Register() {
               <div className="stk-row">
                 <div className="stk-field">
                   <label htmlFor="password">{t("auth.register.password")}</label>
-                  <input id="password" type="password" autoComplete="new-password" required minLength={6} value={form.password} onChange={set("password")} />
+                  <input id="password" type="password" autoComplete="new-password" required minLength={8} maxLength={72} value={form.password} onChange={set("password")} />
                 </div>
                 <div className="stk-field">
                   <label htmlFor="confirm">{t("auth.register.confirmPassword")}</label>
-                  <input id="confirm" type="password" autoComplete="new-password" required minLength={6} value={form.confirm} onChange={set("confirm")} aria-invalid={mismatch || undefined} />
+                  <input id="confirm" type="password" autoComplete="new-password" required minLength={8} maxLength={72} value={form.confirm} onChange={set("confirm")} aria-invalid={mismatch || undefined} />
                 </div>
               </div>
 

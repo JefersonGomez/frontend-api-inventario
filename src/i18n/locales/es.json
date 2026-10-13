@@ -326,7 +326,7 @@
       "new_password": "Nueva contraseña"
     },
     "placeholders": {
-      "min_chars": "Mínimo 6 caracteres"
+      "min_chars": "Mínimo 8 caracteres"
     },
     "buttons": {
       "change_password": "Cambiar contraseña"

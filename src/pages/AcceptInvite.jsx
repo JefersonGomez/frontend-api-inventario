@@ -6,6 +6,7 @@ import { getInvitationByToken, acceptInvitation } from "@/api/invitations"
 import { useAuth } from "@/context/AuthContext"
 import { BoxesIllustration } from "@/components/BoxesIllustration"
 import "./Register.css"
+import { apiErrorMessage } from "@/lib/api-error"
 
 // Página pública del link de invitación: cuenta nueva (nombre + contraseña) o existente (contraseña)
 export function AcceptInvite() {
@@ -32,7 +33,6 @@ export function AcceptInvite() {
   })
 
   const mismatch = !inv?.userExists && confirm.length > 0 && confirm !== password
-  const apiError = mutation.error?.response?.data?.error
 
   let body
   if (isLoading) {
@@ -82,7 +82,8 @@ export function AcceptInvite() {
             id="inv-password"
             type="password"
             autoComplete={inv.userExists ? "current-password" : "new-password"}
-            minLength={6}
+            minLength={inv.userExists ? undefined : 8}
+            maxLength={72}
             required
             autoFocus={inv.userExists}
             value={password}
@@ -107,7 +108,7 @@ export function AcceptInvite() {
 
         {(mismatch || mutation.isError) && (
           <p className="stk-error" role="alert">
-            {mismatch ? t("invite.mismatch") : typeof apiError === "string" ? apiError : t("invite.error")}
+            {mismatch ? t("invite.mismatch") : apiErrorMessage(mutation.error, t("invite.error"))}
           </p>
         )}
 

@@ -13,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { User, Mail, Lock, Camera, Check, X, AlertCircle } from "lucide-react"
 import { API_URL } from "@/api/client"
+import { apiErrorMessage } from "@/lib/api-error"
 
 
 // --- Fila editable individual mejorada ---
@@ -296,7 +297,7 @@ export function Profile() {
                 <div className="flex items-center gap-3 p-4 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive animate-in fade-in">
                   <AlertCircle className="w-5 h-5 shrink-0" />
                   <p className="text-sm">
-                    {updateProfileMutation.error?.response?.data?.error ?? t("profile.errors.update_failed")}
+                    {apiErrorMessage(updateProfileMutation.error, t("profile.errors.update_failed"))}
                   </p>
                 </div>
               )}
@@ -341,7 +342,8 @@ export function Profile() {
                           type="password"
                           value={newPassword}
                           onChange={(e) => setNewPassword(e.target.value)}
-                          minLength={6}
+                          minLength={8}
+                          maxLength={72}
                           required
                           className="pl-10 pr-4"
                           placeholder={t("profile.placeholders.min_chars")}
@@ -355,7 +357,7 @@ export function Profile() {
                         <div className="flex items-center gap-3 p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive animate-in fade-in">
                           <AlertCircle className="w-4 h-4 shrink-0" />
                           <p className="text-sm">
-                            {passwordMutation.error?.response?.data?.error ?? t("profile.errors.password_failed")}
+                            {apiErrorMessage(passwordMutation.error, t("profile.errors.password_failed"))}
                           </p>
                         </div>
                       )}
