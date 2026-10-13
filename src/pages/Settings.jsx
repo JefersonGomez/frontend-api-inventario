@@ -23,7 +23,14 @@ function CompanyCard() {
   const queryClient = useQueryClient()
   const { data } = useQuery({ queryKey: ["company"], queryFn: getCompany })
   const [draft, setDraft] = useState(null)
+  const [currencyDraft, setCurrencyDraft] = useState(null)
   const name = draft ?? data?.name ?? ""
+  const currency = currencyDraft ?? data?.currency ?? "CRC"
+  const currencyItems = [
+    { value: "CRC", label: t("settings.currencies.CRC") },
+    { value: "USD", label: t("settings.currencies.USD") },
+  ]
+  const dirty = (name.trim() !== "" && name.trim() !== data?.name) || currency !== data?.currency
 
   const mutation = useMutation({
     mutationFn: updateCompany,
@@ -31,12 +38,13 @@ function CompanyCard() {
       queryClient.invalidateQueries({ queryKey: ["company"] })
       queryClient.invalidateQueries({ queryKey: ["companies"] })
       setDraft(null)
+      setCurrencyDraft(null)
     },
   })
 
   const submit = (e) => {
     e.preventDefault()
-    mutation.mutate(name.trim())
+    mutation.mutate({ name: name.trim(), currency })
   }
 
   return (
@@ -56,11 +64,29 @@ function CompanyCard() {
               maxLength={120}
               required
             />
-            <Button type="submit" disabled={mutation.isPending || !name.trim() || name.trim() === data?.name}>
+          </div>
+
+          <div className="pt-3 space-y-2">
+            <Label>{t("settings.currency")}</Label>
+            <p className="text-xs text-muted-foreground">{t("settings.currencyDescription")}</p>
+            <Select items={currencyItems} value={currency} onValueChange={setCurrencyDraft}>
+              <SelectTrigger className="w-full sm:w-64">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {currencyItems.map((c) => (
+                  <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="pt-3">
+            <Button type="submit" disabled={mutation.isPending || !name.trim() || !dirty}>
               {t("common.save")}
             </Button>
           </div>
-          {mutation.isSuccess && draft === null && (
+          {mutation.isSuccess && draft === null && currencyDraft === null && (
             <p role="status" className="text-xs text-muted-foreground">{t("settings.companySaved")}</p>
           )}
           {mutation.isError && (

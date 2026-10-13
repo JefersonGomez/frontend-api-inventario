@@ -15,6 +15,7 @@ import { getProducts } from "@/api/products";
 import { usePurchaseRequestAlerts } from "@/hoocks/usePurchaseRequestAlerts";
 import { cn } from "@/lib/utils";
 import { CommentThread } from "@/components/CommentThread";
+import { useMoney } from "@/hoocks/useMoney";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
@@ -40,6 +41,7 @@ const emptyLine = () => ({ productId: "", quantity: "", unitCost: "", requestIds
 
 export function PurchaseOrders() {
   const { t } = useTranslation();
+  const money = useMoney();
   const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
   const highlightId = searchParams.get("highlight");
@@ -379,7 +381,7 @@ export function PurchaseOrders() {
               </div>
 
               <div className="text-right font-medium">
-                {t("purchaseOrders.total")}: ${orderTotal.toFixed(2)}
+                {t("purchaseOrders.total")}: {money.format(orderTotal)}
               </div>
 
               <Button type="submit" disabled={createMutation.isPending}>
@@ -544,14 +546,14 @@ export function PurchaseOrders() {
                     <tr key={i.id} className="border-b">
                       <td className="py-1">{i.product.name}</td>
                       <td>{i.quantity}</td>
-                      <td>{Number(i.unitCost).toFixed(2)}</td>
+                      <td>{money.format(i.unitCost)}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
               <p className="text-right font-medium">
                 {t("purchaseOrders.total")}:{" "}
-                {detail.items.reduce((sum, i) => sum + i.quantity * Number(i.unitCost), 0).toFixed(2)}
+                {money.format(detail.items.reduce((sum, i) => sum + i.quantity * Number(i.unitCost), 0))}
               </p>
               <CommentThread kind="order" id={detail.id} />
             </div>

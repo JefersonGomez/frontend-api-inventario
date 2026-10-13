@@ -5,9 +5,11 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts"
 import { getProductPriceHistory } from "@/api/products"
+import { useMoney } from "@/hoocks/useMoney"
 
 export function ProductPriceHistory({ productId }) {
   const { t } = useTranslation()
+  const money = useMoney()
 
   const { data, isLoading } = useQuery({
     queryKey: ["product-price-history", productId],
@@ -37,7 +39,7 @@ export function ProductPriceHistory({ productId }) {
       <div className="flex items-center justify-between">
         <h4 className="text-sm font-medium">{t("products.priceHistory.title")}</h4>
         <span className="text-sm text-muted-foreground">
-          {t("products.priceHistory.currentPrice")}: ${data.currentPrice.toFixed(2)}
+          {t("products.priceHistory.currentPrice")}: {money.format(data.currentPrice)}
         </span>
       </div>
       <ResponsiveContainer width="100%" height={160}>
@@ -47,7 +49,7 @@ export function ProductPriceHistory({ productId }) {
           <YAxis stroke="var(--muted-foreground)" fontSize={11} width={50} />
           <Tooltip
             contentStyle={{ background: "var(--popover)", border: "1px solid var(--border)", borderRadius: 8 }}
-            formatter={(value) => [`$${value}`, t("products.priceHistory.currentPrice")]}
+            formatter={(value) => [money.format(value), t("products.priceHistory.currentPrice")]}
           />
           <Line
             type="monotone"

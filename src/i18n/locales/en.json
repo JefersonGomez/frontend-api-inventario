@@ -78,7 +78,7 @@
   "dashboard": {
     "title": "Dashboard",
     "inventoryValue": "Inventory at cost",
-    "inventoryUnits": "COP · {{units}} units",
+    "inventoryUnits": "{{currency}} · {{units}} units",
     "activeRing": "{{pct}}% of capital moved in the last 60 days",
     "dispatched": "Units dispatched",
     "dispatchedSub": "This month · turnover {{pct}}%",
@@ -226,7 +226,7 @@
       "products_in_catalog": "products in catalog",
       "low_stock_title": "Low Stock Products",
       "require_restock": "require restocking",
-      "retail_value": "at retail price: ${{value}}",
+      "retail_value": "at retail price: {{value}}",
       "without_cost_one": "{{count}} product with stock has no cost and is not included. Set it in Products.",
       "without_cost_other": "{{count}} products with stock have no cost and are not included. Set them in Products."
     },
@@ -298,7 +298,8 @@
       "allDates": "All dates",
       "days": "days",
       "retailValue": "Value at retail price",
-      "withoutCost": "Products with stock and no cost"
+      "withoutCost": "Products with stock and no cost",
+      "currency": "Currency"
     }
   },
   "profile": {
@@ -351,7 +352,13 @@
     "companyName": "Company name",
     "companyNameDescription": "Shown in the emails sent to suppliers",
     "companySaved": "Saved",
-    "companyError": "Could not save"
+    "companyError": "Could not save",
+    "currency": "Currency",
+    "currencyDescription": "Currency used to show prices, costs and values. Changing it does not convert amounts already entered.",
+    "currencies": {
+      "CRC": "Colones (₡)",
+      "USD": "US dollars ($)"
+    }
   },
   "purchaseRequests": {
     "title": "Purchase Requests",

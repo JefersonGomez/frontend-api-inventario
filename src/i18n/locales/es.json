@@ -78,7 +78,7 @@
   "dashboard": {
     "title": "Panel",
     "inventoryValue": "Inventario a costo",
-    "inventoryUnits": "COP · {{units}} unidades",
+    "inventoryUnits": "{{currency}} · {{units}} unidades",
     "activeRing": "{{pct}}% del capital tuvo movimiento en los últimos 60 días",
     "dispatched": "Unidades despachadas",
     "dispatchedSub": "Este mes · rotación {{pct}}%",
@@ -226,7 +226,7 @@
       "products_in_catalog": "productos en catálogo",
       "low_stock_title": "Productos con stock bajo",
       "require_restock": "requieren reposición",
-      "retail_value": "a precio de venta: ${{value}}",
+      "retail_value": "a precio de venta: {{value}}",
       "without_cost_one": "{{count}} producto con stock no tiene costo y no se suma. Cárgalo en Productos.",
       "without_cost_other": "{{count}} productos con stock no tienen costo y no se suman. Cárgalos en Productos."
     },
@@ -298,7 +298,8 @@
       "allDates": "Todas las fechas",
       "days": "días",
       "retailValue": "Valor a precio de venta",
-      "withoutCost": "Productos con stock sin costo"
+      "withoutCost": "Productos con stock sin costo",
+      "currency": "Moneda"
     }
   },
   "profile": {
@@ -351,7 +352,13 @@
     "companyName": "Nombre de la empresa",
     "companyNameDescription": "Aparece en los correos que se envían a los proveedores",
     "companySaved": "Guardado",
-    "companyError": "No se pudo guardar"
+    "companyError": "No se pudo guardar",
+    "currency": "Moneda",
+    "currencyDescription": "En qué moneda se muestran los precios, costos y valores. Cambiarla no convierte los montos ya cargados.",
+    "currencies": {
+      "CRC": "Colones (₡)",
+      "USD": "Dólares ($)"
+    }
   },
   "purchaseRequests": {
     "title": "Solicitudes de compra",

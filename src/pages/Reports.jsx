@@ -8,6 +8,7 @@ import {
 import { getCompany } from "@/api/company"
 import { downloadXlsx } from "@/lib/xlsx"
 import { Button } from "@/components/ui/button"
+import { useMoney } from "@/hoocks/useMoney"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
@@ -20,6 +21,7 @@ import { StockForecastReport } from "@/components/reports/StockForecastReport"
 
 export function Reports() {
   const { t } = useTranslation()
+  const money = useMoney()
   const [from, setFrom] = useState("")
   const [to, setTo] = useState("")
   const [immobilizedDays, setImmobilizedDays] = useState("60")
@@ -77,6 +79,7 @@ export function Reports() {
             [x("field"), x("value")],
             [x("company"), company?.name ?? "—"],
             [x("generatedAt"), new Date().toLocaleString()],
+            [x("currency"), company?.currency ?? "CRC"],
             [t("reports.cards.total_value_title"), value.totalValue],
             [x("productsInCatalog"), value.totalProducts],
             [x("retailValue"), value.retailValue],
@@ -182,12 +185,12 @@ export function Reports() {
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-semibold">
-              ${inventoryValueQuery.data?.totalValue?.toLocaleString() ?? "..."}
+              {inventoryValueQuery.data ? money.format(inventoryValueQuery.data.totalValue) : "..."}
             </p>
             <p className="text-xs text-muted-foreground mt-1">
               {inventoryValueQuery.data?.totalProducts ?? 0} {t("reports.cards.products_in_catalog")}
               {inventoryValueQuery.data && (
-                <> · {t("reports.cards.retail_value", { value: inventoryValueQuery.data.retailValue.toLocaleString() })}</>
+                <> · {t("reports.cards.retail_value", { value: money.format(inventoryValueQuery.data.retailValue) })}</>
               )}
             </p>
             {inventoryValueQuery.data?.productsWithoutCost > 0 && (

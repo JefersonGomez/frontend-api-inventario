@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/select"
 import { Plus, Pencil, Trash2 } from "lucide-react"
 import { BarcodeScanner } from "@/components/BarcodeScanner"
+import { useMoney } from "@/hoocks/useMoney"
 import { ProductPriceHistory } from "@/components/products/ProductPriceHistory"
 
 const emptyForm = { 
@@ -42,6 +43,7 @@ const emptyForm = {
 
 export function Products() {
   const { t } = useTranslation()
+  const money = useMoney()
   const queryClient = useQueryClient()
 
   const [searchParams] = useSearchParams()
@@ -212,9 +214,9 @@ export function Products() {
                 <TableCell className="text-muted-foreground">{product.sku}</TableCell>
                 <TableCell className="font-medium">{product.name}</TableCell>
                 <TableCell className="text-muted-foreground">{product.category?.name}</TableCell>
-                <TableCell>${Number(product.price).toFixed(2)}</TableCell>
+                <TableCell>{money.format(product.price)}</TableCell>
                 <TableCell className="hidden md:table-cell text-muted-foreground">
-                  {product.cost == null ? "—" : `$${Number(product.cost).toFixed(2)}`}
+                  {product.cost == null ? "—" : money.format(product.cost)}
                 </TableCell>
                 <TableCell>
                   {product.stock <= product.minStock ? (

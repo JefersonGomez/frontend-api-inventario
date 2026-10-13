@@ -10,10 +10,10 @@ import { getPurchaseRequests } from "@/api/PurchaseRequests"
 import { getLowStockReport, getInventoryValueBreakdown } from "@/api/reports"
 import { aggregateStockByCategory } from "@/lib/chart-utils"
 import { useAuth } from "@/context/AuthContext"
+import { useMoney } from "@/hoocks/useMoney"
 import "./Dashboard.css"
 
 const num = new Intl.NumberFormat("es-CO")
-const money = new Intl.NumberFormat("es-CO", { notation: "compact", maximumFractionDigits: 1 })
 const pct = (part, total) => (total > 0 ? Math.round((part / total) * 100) : 0)
 const initials = (name = "") =>
   name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase() || "?"
@@ -21,6 +21,7 @@ const initials = (name = "") =>
 export function Dashboard() {
   const { t } = useTranslation()
   const { user } = useAuth()
+  const money = useMoney()
   const [avatarBroken, setAvatarBroken] = useState(false)
 
   const products = useQuery({ queryKey: ["products"], queryFn: getProducts })
@@ -73,8 +74,8 @@ export function Dashboard() {
           <article className="dash-kpi dash-kpi--dark">
             <div>
               <p className="dash-kpi-label">{t("dashboard.inventoryValue")}</p>
-              <p className="dash-kpi-value">${money.format(value.data?.totalValue ?? 0)}</p>
-              <p className="dash-kpi-sub">{t("dashboard.inventoryUnits", { units: num.format(units) })}</p>
+              <p className="dash-kpi-value">{money.compact(value.data?.totalValue ?? 0)}</p>
+              <p className="dash-kpi-sub">{t("dashboard.inventoryUnits", { currency: money.currency, units: num.format(units) })}</p>
               {value.data?.productsWithoutCost > 0 && (
                 <p className="dash-kpi-sub">
                   <Link to="/products">{t("dashboard.withoutCost", { count: value.data.productsWithoutCost })}</Link>

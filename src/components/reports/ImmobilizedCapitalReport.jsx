@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next"
 import { useQuery } from "@tanstack/react-query"
 import { AlertTriangle, TrendingUp } from "lucide-react"
 import { getInventoryValueBreakdown } from "@/api/reports"
+import { useMoney } from "@/hoocks/useMoney"
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table"
@@ -13,6 +14,7 @@ import {
 // `days` vive en Reports para que el Excel exporte el mismo período que se ve
 export function ImmobilizedCapitalReport({ days, onDaysChange }) {
   const { t } = useTranslation()
+  const money = useMoney()
 
   const { data, isLoading } = useQuery({
     queryKey: ["inventory-value-breakdown", days],
@@ -60,7 +62,7 @@ export function ImmobilizedCapitalReport({ days, onDaysChange }) {
               {t("reports.immobilizedCapital.activeValue")}
             </span>
           </div>
-          <p className="text-2xl font-semibold">${data.activeValue.toLocaleString()}</p>
+          <p className="text-2xl font-semibold">{money.format(data.activeValue)}</p>
           <p className="text-sm text-muted-foreground">{activePercent}%</p>
         </div>
 
@@ -71,7 +73,7 @@ export function ImmobilizedCapitalReport({ days, onDaysChange }) {
               {t("reports.immobilizedCapital.immobilizedValue")}
             </span>
           </div>
-          <p className="text-2xl font-semibold">${data.immobilizedValue.toLocaleString()}</p>
+          <p className="text-2xl font-semibold">{money.format(data.immobilizedValue)}</p>
           <p className="text-sm text-muted-foreground">{immobilizedPercent}%</p>
         </div>
       </div>
@@ -102,7 +104,7 @@ export function ImmobilizedCapitalReport({ days, onDaysChange }) {
                   <TableCell className="text-muted-foreground">{p.sku}</TableCell>
                   <TableCell className="font-medium">{p.name}</TableCell>
                   <TableCell className="text-right">
-                    {p.hasCost ? `$${p.value.toLocaleString()}` : <span className="text-muted-foreground">—</span>}
+                    {p.hasCost ? money.format(p.value) : <span className="text-muted-foreground">—</span>}
                   </TableCell>
                 </TableRow>
               ))}
