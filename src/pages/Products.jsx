@@ -22,9 +22,11 @@ import {
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
-import { Plus, Pencil, Trash2 } from "lucide-react"
+import { Plus, Pencil, Trash2, FileUp } from "lucide-react"
 import { BarcodeScanner } from "@/components/BarcodeScanner"
 import { useMoney } from "@/hoocks/useMoney"
+import { useAuth } from "@/context/AuthContext"
+import { ImportProductsDialog } from "@/components/products/ImportProductsDialog"
 import { ProductPriceHistory } from "@/components/products/ProductPriceHistory"
 
 const emptyForm = { 
@@ -44,6 +46,8 @@ const emptyForm = {
 export function Products() {
   const { t } = useTranslation()
   const money = useMoney()
+  const { user } = useAuth()
+  const [importing, setImporting] = useState(false)
   const queryClient = useQueryClient()
 
   const [searchParams] = useSearchParams()
@@ -57,8 +61,12 @@ export function Products() {
   const [deletingProduct, setDeletingProduct] = useState(null)
 
   const productsQuery = useQuery({ queryKey: ["products"], queryFn: getProducts })
+  // importados sin precio: quedan "Por completar" hasta que se editan con su precio
+  const [onlyPending, setOnlyPending] = useState(false)
+  const pendingCount = (productsQuery.data ?? []).filter((p) => p.pendingReview).length
   const visibleProducts = (productsQuery.data ?? []).filter(
-    (p) => !q || [p.name, p.sku, p.barcode, p.category?.name].some((v) => fold(v).includes(q))
+    (p) => (!onlyPending || p.pendingReview) &&
+      (!q || [p.name, p.sku, p.barcode, p.category?.name].some((v) => fold(v).includes(q)))
   )
   const categoriesQuery = useQuery({ queryKey: ["categories"], queryFn: getCategories })
   const suppliersQuery = useQuery({ queryKey: ["suppliers"], queryFn: getSuppliers })
@@ -126,7 +134,7 @@ export function Products() {
       barcode: product.barcode || "",
       name: product.name,
       description: product.description ?? "",
-      price: String(product.price),
+      price: product.pendingReview ? "" : String(product.price),
       cost: product.cost == null ? "" : String(Number(product.cost)),
       stock: String(product.stock),
       minStock: String(product.minStock),
@@ -173,11 +181,29 @@ export function Products() {
           <h1 className="text-2xl font-semibold">{t("products.title")}</h1>
           <p className="text-sm text-muted-foreground">{t("products.subtitle")}</p>
         </div>
-        <Button onClick={openCreateDialog}>
-          <Plus className="w-4 h-4 mr-2" />
-          {t("products.new_button")}
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          {user?.role === "ADMIN" && (
+            <Button variant="outline" onClick={() => setImporting(true)}>
+              <FileUp className="w-4 h-4 mr-2" />
+              {t("products.import.button")}
+            </Button>
+          )}
+          <Button onClick={openCreateDialog}>
+            <Plus className="w-4 h-4 mr-2" />
+            {t("products.new_button")}
+          </Button>
+        </div>
       </div>
+      <ImportProductsDialog open={importing} onOpenChange={setImporting} />
+
+      {(pendingCount > 0 || onlyPending) && (
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border bg-muted/50 px-4 py-3 text-sm">
+          <span>{t("products.pending.banner", { count: pendingCount })}</span>
+          <Button variant="outline" size="sm" onClick={() => setOnlyPending((v) => !v)}>
+            {t(onlyPending ? "products.pending.hide" : "products.pending.show")}
+          </Button>
+        </div>
+      )}
 
       <div className="border border-border rounded-xl overflow-hidden overflow-x-auto">
         <Table>
@@ -214,7 +240,9 @@ export function Products() {
                 <TableCell className="text-muted-foreground">{product.sku}</TableCell>
                 <TableCell className="font-medium">{product.name}</TableCell>
                 <TableCell className="text-muted-foreground">{product.category?.name}</TableCell>
-                <TableCell>{money.format(product.price)}</TableCell>
+                <TableCell>
+                  {product.pendingReview ? <Badge variant="outline">{t("products.pending.badge")}</Badge> : money.format(product.price)}
+                </TableCell>
                 <TableCell className="hidden md:table-cell text-muted-foreground">
                   {product.cost == null ? "—" : money.format(product.cost)}
                 </TableCell>

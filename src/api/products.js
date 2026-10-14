@@ -26,3 +26,7 @@ export async function getProductByBarcode(code) {
 
 export const getProductPriceHistory = (id) =>
   api.get(`/products/${id}/price-history`).then((res) => res.data);
+
+// Importación desde Excel: dryRun = true solo valida y devuelve la vista previa
+export const importProducts = (rows, dryRun, options) =>
+  api.post("/products/import", { rows, dryRun, options }).then((res) => res.data);

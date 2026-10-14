@@ -1,6 +1,8 @@
 @import "tailwindcss";
 
 :root {
+  /* le dice al navegador el tema: listas desplegables, fechas y barras nativas se dibujan acorde */
+  color-scheme: light;
   --radius: 0.625rem;
   /* Identidad Stockly (claro): contenedor #efefea, tarjetas #fbfbf8, acento lima */
   --background: #efefea;
@@ -35,6 +37,7 @@
 }
 
 .dark {
+  color-scheme: dark;
   --background: #141413;
   --foreground: #f2f2ee;
   --card: #1c1c1a;
