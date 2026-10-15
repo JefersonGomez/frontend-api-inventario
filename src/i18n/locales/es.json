@@ -147,7 +147,14 @@
       "label_supplier": "Proveedor (opcional)",
       "supplier_none": "Sin proveedor",
       "label_cost": "Costo (opcional)",
-      "cost_hint": "Lo que te cuesta a ti. Al recibir una orden de compra se recalcula solo (promedio ponderado)."
+      "cost_hint": "Lo que te cuesta a ti. Al recibir una orden de compra se recalcula solo (promedio ponderado).",
+      "label_unit": "Unidad de medida",
+      "unit_hint": "Por unidad solo admite cantidades enteras; kg, litros o metros admiten decimales.",
+      "label_tax": "IVA",
+      "tax_hint": "El precio de venta incluye este IVA.",
+      "label_cabys": "Código CABYS (opcional)",
+      "cabys_hint": "13 dígitos. Lo exige la factura electrónica; puedes completarlo después.",
+      "save_error": "No se pudo guardar el producto."
     },
     "delete": {
       "title": "¿Eliminar este producto?",
@@ -175,7 +182,8 @@
         "No es obligatorio usar esta plantilla: puedes subir el Excel que ya tienes. Si no reconocemos alguna columna, te preguntaremos cuál es.",
         "Si la categoría o el proveedor no existen, se crean solos.",
         "Si un SKU ya existe en tu empresa, eliges si saltarlo o actualizar sus datos (el stock nunca se cambia desde aquí).",
-        "Costo: lo que te cuesta a ti el producto (opcional). Stock inicial y Stock mínimo: números enteros.",
+        "Costo: lo que te cuesta a ti el producto (opcional). Stock inicial y Stock mínimo: enteros si el producto es por unidad; con kg, litros o metros admiten hasta 3 decimales.",
+        "Unidad (unidad, kg, g, L, mL, m, cm, m²), IVA (13, 4, 2, 1 o Exento) y CABYS (13 dígitos) son opcionales: sin ellos el producto queda por unidad, con IVA 13 % y sin CABYS. El precio de venta incluye el IVA.",
         "Vencimiento: fecha en formato AAAA-MM-DD o una celda con formato de fecha.",
         "Hasta 2000 filas por archivo. Se lee solo la primera hoja."
       ],
@@ -229,7 +237,10 @@
         "barcode": "Código de barras",
         "description": "Descripción",
         "supplier": "Proveedor",
-        "expirationDate": "Vencimiento"
+        "expirationDate": "Vencimiento",
+        "unit": "Unidad de medida",
+        "taxRate": "IVA",
+        "cabys": "CABYS"
       },
       "choose": "Elige una columna…",
       "notUsed": "No usar",
@@ -258,9 +269,9 @@
         "missingPrice_one": "{{count}} fila sin precio válido",
         "missingPrice_other": "{{count}} filas sin precio válido",
         "missingPriceAction": "Importarlas con precio 0 y marcarlas “Por completar”",
-        "badNumbers_one": "{{count}} fila con números raros (decimales o negativos)",
-        "badNumbers_other": "{{count}} filas con números raros (decimales o negativos)",
-        "badNumbersAction": "Corregirlos: redondear el stock, negativos a 0 y quitar el costo inválido",
+        "badNumbers_one": "{{count}} fila con cantidades raras (decimales donde no van o negativos)",
+        "badNumbers_other": "{{count}} filas con cantidades raras (decimales donde no van o negativos)",
+        "badNumbersAction": "Corregirlas: redondear el stock, negativos a 0 y quitar el costo inválido",
         "invalidDate_one": "{{count}} fila con fecha de vencimiento ilegible",
         "invalidDate_other": "{{count}} filas con fecha de vencimiento ilegible",
         "invalidDateAction": "Importarlas sin fecha de vencimiento",
@@ -273,7 +284,10 @@
         "existing_one": "{{count}} producto ya existe en tu inventario",
         "existing_other": "{{count}} productos ya existen en tu inventario",
         "existingSkip": "Saltarlos (no tocar nada)",
-        "existingUpdate": "Actualizar sus datos con los del archivo (el stock nunca se cambia)"
+        "existingUpdate": "Actualizar sus datos con los del archivo (el stock nunca se cambia)",
+        "badFiscal_one": "{{count}} fila con unidad, IVA o CABYS que no reconocemos",
+        "badFiscal_other": "{{count}} filas con unidad, IVA o CABYS que no reconocemos",
+        "badFiscalAction": "Importarlas igual: por unidad, con IVA 13 % y sin CABYS (lo puedes cambiar después)"
       }
     },
     "pending": {
@@ -338,10 +352,20 @@
       "camera_permission": "Permiso de cámara requerido",
       "camera_denied": "Acceso a la cámara denegado. Por favor, habilítalo en la configuración de tu navegador.",
       "no_camera": "No se detectó ninguna cámara.",
-      "product_not_found": "Producto no encontrado con ese código."
+      "product_not_found": "Producto no encontrado con ese código.",
+      "current_stock": "Stock actual: {{stock}}"
     },
     "errors": {
       "save_failed": "No se pudo registrar el movimiento."
+    },
+    "sources": {
+      "MANUAL": "Manual",
+      "INITIAL": "Stock inicial",
+      "PURCHASE_RECEIPT": "Compra",
+      "SALE": "Venta",
+      "RETURN": "Devolución",
+      "COUNT": "Conteo",
+      "TRANSFER": "Traslado"
     }
   },
   "reports": {
@@ -528,7 +552,7 @@
     "linkedOrder": "Orden de compra",
     "hasOrder": "Vinculada a una orden",
     "rejectTitle": "Rechazar solicitud",
-    "rejectIntro": "{{name}} pidió {{quantity}} uds de {{product}}. El motivo lo verá quien hizo la solicitud.",
+    "rejectIntro": "{{name}} pidió {{quantity}} de {{product}}. El motivo lo verá quien hizo la solicitud.",
     "rejectionReason": "Motivo del rechazo",
     "rejectionReasonPlaceholder": "Ej.: ya hay stock suficiente",
     "rejectError": "No se pudo rechazar la solicitud. Inténtalo de nuevo."
@@ -636,15 +660,15 @@
       "memberJoined": "Nuevos miembros"
     },
     "detail": {
-      "requestExpiring": "{{requester}} · {{quantity}} uds · vence {{when}}",
+      "requestExpiring": "{{requester}} · {{quantity}} · vence {{when}}",
       "lowStock": "Stock {{stock}} · mínimo {{minStock}}",
       "lowStockOut": "Agotado · mínimo {{minStock}}",
       "productExpiring": "Vence {{when}}",
-      "pending": "{{requester}} pidió {{quantity}} uds",
-      "approved": "{{quantity}} uds aprobadas · falta la orden",
-      "requestApproved": "Tu solicitud de {{quantity}} uds fue aprobada",
-      "requestRejected": "Tu solicitud de {{quantity}} uds fue rechazada",
-      "orderReceived": "Ya llegó tu pedido · {{quantity}} uds",
+      "pending": "{{requester}} pidió {{quantity}}",
+      "approved": "{{quantity}} aprobadas · falta la orden",
+      "requestApproved": "Tu solicitud de {{quantity}} fue aprobada",
+      "requestRejected": "Tu solicitud de {{quantity}} fue rechazada",
+      "orderReceived": "Ya llegó tu pedido · {{quantity}}",
       "requestRejectedReason": "Rechazada · {{reason}}",
       "requestComment": "{{author}}: {{excerpt}}",
       "orderComment": "{{author}}: {{excerpt}}",
@@ -807,5 +831,34 @@
     "other": "Otros documentos",
     "draft": "Borrador pendiente de revisión legal. Los datos marcados como [PENDIENTE] deben completarse antes de publicar.",
     "spanishOnly": "Este documento está disponible solo en español, que es el idioma con valor legal en Costa Rica."
+  },
+  "units": {
+    "short": {
+      "UNIT": "unid.",
+      "KG": "kg",
+      "G": "g",
+      "L": "L",
+      "ML": "mL",
+      "M": "m",
+      "CM": "cm",
+      "M2": "m²"
+    },
+    "long": {
+      "UNIT": "Unidad",
+      "KG": "Kilogramo (kg)",
+      "G": "Gramo (g)",
+      "L": "Litro (L)",
+      "ML": "Mililitro (mL)",
+      "M": "Metro (m)",
+      "CM": "Centímetro (cm)",
+      "M2": "Metro cuadrado (m²)"
+    }
+  },
+  "taxRates": {
+    "RATE_13": "13 % (general)",
+    "RATE_4": "4 %",
+    "RATE_2": "2 %",
+    "RATE_1": "1 %",
+    "EXEMPT": "Exento"
   }
 }

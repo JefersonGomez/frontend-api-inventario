@@ -9,6 +9,7 @@ import {
   updatePurchaseRequestStatus,
 } from "../api/PurchaseRequests";
 import { getProducts } from "../api/products";
+import { qtyStep, formatQty } from "@/lib/units";
 import { CommentThread } from "@/components/CommentThread";
 import { Check, X } from "lucide-react";
 import {
@@ -114,6 +115,7 @@ export function PurchaseRequests() {
               <Select
                 value={form.productId}
                 onValueChange={(v) => setForm({ ...form, productId: v })}
+                items={products.map((p) => ({ value: p.id, label: `${p.name} (${p.sku})` }))}
               >
                 <SelectTrigger>
                   <SelectValue placeholder={t("purchaseRequests.product")} />
@@ -128,7 +130,8 @@ export function PurchaseRequests() {
               </Select>
               <Input
                 type="number"
-                min={1}
+                min={qtyStep(products.find((p) => p.id === form.productId)?.unit)}
+                step={qtyStep(products.find((p) => p.id === form.productId)?.unit)}
                 placeholder={t("purchaseRequests.quantity")}
                 value={form.quantity}
                 onChange={(e) => setForm({ ...form, quantity: e.target.value })}
@@ -169,10 +172,10 @@ export function PurchaseRequests() {
               <td className="py-2">
                 {r.product.name}
                 <span className="block text-xs text-muted-foreground sm:hidden">
-                  ×{r.quantity}{user.role === "ADMIN" && ` · ${r.requestedBy.name}`}
+                  ×{formatQty(r.quantity, r.product.unit, t)}{user.role === "ADMIN" && ` · ${r.requestedBy.name}`}
                 </span>
               </td>
-              <td className="hidden sm:table-cell">{r.quantity}</td>
+              <td className="hidden sm:table-cell whitespace-nowrap">{formatQty(r.quantity, r.product.unit, t)}</td>
               <td className="hidden md:table-cell">{r.reason || "—"}</td>
               {user.role === "ADMIN" && <td className="hidden sm:table-cell">{r.requestedBy.name}</td>}
               <td>
@@ -229,7 +232,7 @@ export function PurchaseRequests() {
               <p className="text-sm text-muted-foreground">
                 {t("purchaseRequests.rejectIntro", {
                   name: rejecting.requestedBy.name,
-                  quantity: rejecting.quantity,
+                  quantity: formatQty(rejecting.quantity, rejecting.product.unit, t),
                   product: rejecting.product.name,
                 })}
               </p>
@@ -276,7 +279,7 @@ export function PurchaseRequests() {
               <dt className="text-muted-foreground">{t("purchaseRequests.product")}</dt>
               <dd>{detail.product.name} ({detail.product.sku})</dd>
               <dt className="text-muted-foreground">{t("purchaseRequests.quantity")}</dt>
-              <dd>{detail.quantity}</dd>
+              <dd>{formatQty(detail.quantity, detail.product.unit, t)}</dd>
               <dt className="text-muted-foreground">{t("purchaseRequests.reason")}</dt>
               <dd>{detail.reason || "—"}</dd>
               <dt className="text-muted-foreground">{t("purchaseRequests.status")}</dt>

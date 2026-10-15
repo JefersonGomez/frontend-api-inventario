@@ -27,6 +27,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { qtyStep, formatQty, roundQty } from "@/lib/units";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
@@ -164,7 +165,7 @@ export function PurchaseOrders() {
         if (idx >= 0) {
           return prev.map((l, i) =>
             i === idx
-              ? { ...l, quantity: String((Number(l.quantity) || 0) + r.quantity), requestIds: [...l.requestIds, r.id] }
+              ? { ...l, quantity: String(roundQty((Number(l.quantity) || 0) + r.quantity)), requestIds: [...l.requestIds, r.id] }
               : l
           );
         }
@@ -173,7 +174,7 @@ export function PurchaseOrders() {
       }
       const next = prev.flatMap((l) => {
         if (!l.requestIds.includes(r.id)) return [l];
-        const quantity = Math.max(0, (Number(l.quantity) || 0) - r.quantity);
+        const quantity = Math.max(0, roundQty((Number(l.quantity) || 0) - r.quantity));
         const requestIds = l.requestIds.filter((id) => id !== r.id);
         // la línea que se queda sin solicitudes ni cantidad desaparece; las demás no se tocan
         return requestIds.length === 0 && quantity === 0 ? [] : [{ ...l, quantity: String(quantity), requestIds }];
@@ -311,7 +312,7 @@ export function PurchaseOrders() {
                           onChange={(e) => toggleRequest(r, e.target.checked)}
                         />
                         <span>
-                          {r.product.name} — {r.quantity} unidades ({r.requestedBy?.name ?? "Usuario"})
+                          {r.product.name} — {formatQty(r.quantity, r.product.unit, t)} ({r.requestedBy?.name ?? "Usuario"})
                           {otherSupplier && ` · ${t("purchaseOrders.otherSupplier")}`}
                         </span>
                       </label>
@@ -346,7 +347,8 @@ export function PurchaseOrders() {
                       </Select>
                       <Input
                         type="number"
-                        min={1}
+                        min={qtyStep(products.find((p) => p.id === line.productId)?.unit)}
+                        step={qtyStep(products.find((p) => p.id === line.productId)?.unit)}
                         className="w-24 shrink-0"
                         placeholder={t("purchaseOrders.quantity")}
                         value={line.quantity}
@@ -545,7 +547,7 @@ export function PurchaseOrders() {
                   {detail.items.map((i) => (
                     <tr key={i.id} className="border-b">
                       <td className="py-1">{i.product.name}</td>
-                      <td>{i.quantity}</td>
+                      <td className="whitespace-nowrap">{formatQty(i.quantity, i.product?.unit, t)}</td>
                       <td>{money.format(i.unitCost)}</td>
                     </tr>
                   ))}

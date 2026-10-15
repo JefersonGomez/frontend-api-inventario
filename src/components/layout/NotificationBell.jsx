@@ -12,6 +12,7 @@ import { useNotifications } from "@/hoocks/useNotifications";
 import { markNotificationRead, markAllNotificationsRead } from "@/api/notifications";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
+import { formatQty } from "@/lib/units";
 
 // Orden = urgencia. Para reordenar los grupos basta con mover una línea.
 const SECTIONS = [
@@ -58,7 +59,10 @@ function useDetail() {
   };
 
   return (n) => {
-    const m = n.meta ?? {};
+    const raw = n.meta ?? {};
+    // cantidades con su unidad ("2,5 kg"); los avisos viejos no traen unidad → "unid."
+    const m = { ...raw };
+    for (const k of ["quantity", "stock", "minStock"]) if (raw[k] != null) m[k] = formatQty(raw[k], raw.unit, t);
     switch (n.type) {
       case "requestExpiring":
         return t("notifications.detail.requestExpiring", { ...m, when: when(daysUntil(m.expiresAt)) });
@@ -69,7 +73,7 @@ function useDetail() {
           ? t("notifications.detail.requestRejectedReason", m)
           : t("notifications.detail.requestRejected", m);
       case "lowStock":
-        return m.stock <= 0
+        return raw.stock <= 0
           ? t("notifications.detail.lowStockOut", m)
           : t("notifications.detail.lowStock", m);
       default:

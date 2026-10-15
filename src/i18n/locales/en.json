@@ -147,7 +147,14 @@
       "label_supplier": "Supplier (optional)",
       "supplier_none": "No supplier",
       "label_cost": "Cost (optional)",
-      "cost_hint": "What it costs you. It is recalculated automatically (weighted average) when a purchase order is received."
+      "cost_hint": "What it costs you. It is recalculated automatically (weighted average) when a purchase order is received.",
+      "label_unit": "Unit of measure",
+      "unit_hint": "Units only allow whole quantities; kg, liters or meters allow decimals.",
+      "label_tax": "VAT",
+      "tax_hint": "The sale price includes this VAT.",
+      "label_cabys": "CABYS code (optional)",
+      "cabys_hint": "13 digits. Required for electronic invoicing; you can fill it in later.",
+      "save_error": "The product could not be saved."
     },
     "delete": {
       "title": "Delete this product?",
@@ -175,7 +182,8 @@
         "You don't have to use this template: you can upload the Excel file you already have. If we don't recognize a column, we'll ask you which one it is.",
         "Categories and suppliers that don't exist are created automatically.",
         "If a SKU already exists in your company, you choose whether to skip it or update its data (stock is never changed from here).",
-        "Cost: what the product costs you (optional). Initial stock and Minimum stock: whole numbers.",
+        "Cost: what the product costs you (optional). Initial and minimum stock: whole numbers for per-unit products; kg, liters or meters allow up to 3 decimals.",
+        "Unit (unit, kg, g, L, mL, m, cm, m²), VAT (13, 4, 2, 1 or Exempt) and CABYS (13 digits) are optional: without them the product is per unit, 13% VAT and no CABYS. The sale price includes VAT.",
         "Expiration: date in YYYY-MM-DD format or a date-formatted cell.",
         "Up to 2000 rows per file. Only the first sheet is read."
       ],
@@ -229,7 +237,10 @@
         "barcode": "Barcode",
         "description": "Description",
         "supplier": "Supplier",
-        "expirationDate": "Expiration"
+        "expirationDate": "Expiration",
+        "unit": "Unit of measure",
+        "taxRate": "VAT",
+        "cabys": "CABYS"
       },
       "choose": "Choose a column…",
       "notUsed": "Don't use",
@@ -258,9 +269,9 @@
         "missingPrice_one": "{{count}} row without a valid price",
         "missingPrice_other": "{{count}} rows without a valid price",
         "missingPriceAction": "Import them with price 0 and mark them “To complete”",
-        "badNumbers_one": "{{count}} row with odd numbers (decimals or negatives)",
-        "badNumbers_other": "{{count}} rows with odd numbers (decimals or negatives)",
-        "badNumbersAction": "Fix them: round stock, negatives to 0 and drop invalid cost",
+        "badNumbers_one": "{{count}} row with odd quantities (decimals where not allowed or negatives)",
+        "badNumbers_other": "{{count}} rows with odd quantities (decimals where not allowed or negatives)",
+        "badNumbersAction": "Fix them: round the stock, negatives to 0 and drop the invalid cost",
         "invalidDate_one": "{{count}} row with an unreadable expiration date",
         "invalidDate_other": "{{count}} rows with an unreadable expiration date",
         "invalidDateAction": "Import them without expiration date",
@@ -273,7 +284,10 @@
         "existing_one": "{{count}} product already exists in your inventory",
         "existing_other": "{{count}} products already exist in your inventory",
         "existingSkip": "Skip them (change nothing)",
-        "existingUpdate": "Update their data with the file (stock is never changed)"
+        "existingUpdate": "Update their data with the file (stock is never changed)",
+        "badFiscal_one": "{{count}} row with an unknown unit, VAT or CABYS",
+        "badFiscal_other": "{{count}} rows with an unknown unit, VAT or CABYS",
+        "badFiscalAction": "Import them anyway: per unit, 13% VAT and no CABYS (you can change it later)"
       }
     },
     "pending": {
@@ -338,10 +352,20 @@
       "camera_permission": "Camera permission required",
       "camera_denied": "Camera access denied. Please enable it in your browser settings.",
       "no_camera": "No camera detected.",
-      "product_not_found": "Product not found with that code."
+      "product_not_found": "Product not found with that code.",
+      "current_stock": "Current stock: {{stock}}"
     },
     "errors": {
       "save_failed": "Could not register movement."
+    },
+    "sources": {
+      "MANUAL": "Manual",
+      "INITIAL": "Initial stock",
+      "PURCHASE_RECEIPT": "Purchase",
+      "SALE": "Sale",
+      "RETURN": "Return",
+      "COUNT": "Count",
+      "TRANSFER": "Transfer"
     }
   },
   "reports": {
@@ -528,7 +552,7 @@
     "linkedOrder": "Purchase order",
     "hasOrder": "Linked to an order",
     "rejectTitle": "Reject request",
-    "rejectIntro": "{{name}} asked for {{quantity}} units of {{product}}. The requester will see the reason.",
+    "rejectIntro": "{{name}} asked for {{quantity}} of {{product}}. The requester will see the reason.",
     "rejectionReason": "Rejection reason",
     "rejectionReasonPlaceholder": "E.g.: there is already enough stock",
     "rejectError": "Could not reject the request. Please try again."
@@ -636,15 +660,15 @@
       "memberJoined": "New members"
     },
     "detail": {
-      "requestExpiring": "{{requester}} · {{quantity}} units · expires {{when}}",
+      "requestExpiring": "{{requester}} · {{quantity}} · expires {{when}}",
       "lowStock": "Stock {{stock}} · minimum {{minStock}}",
       "lowStockOut": "Out of stock · minimum {{minStock}}",
       "productExpiring": "Expires {{when}}",
-      "pending": "{{requester}} asked for {{quantity}} units",
-      "approved": "{{quantity}} units approved · order missing",
-      "requestApproved": "Your request for {{quantity}} units was approved",
-      "requestRejected": "Your request for {{quantity}} units was rejected",
-      "orderReceived": "Your order arrived · {{quantity}} units",
+      "pending": "{{requester}} asked for {{quantity}}",
+      "approved": "{{quantity}} approved · order missing",
+      "requestApproved": "Your request for {{quantity}} was approved",
+      "requestRejected": "Your request for {{quantity}} was rejected",
+      "orderReceived": "Your order arrived · {{quantity}}",
       "requestRejectedReason": "Rejected · {{reason}}",
       "requestComment": "{{author}}: {{excerpt}}",
       "orderComment": "{{author}}: {{excerpt}}",
@@ -807,5 +831,34 @@
     "other": "Other documents",
     "draft": "Draft pending legal review. Items marked [PENDIENTE] must be completed before publishing.",
     "spanishOnly": "This document is only available in Spanish, which is the legally binding language in Costa Rica."
+  },
+  "units": {
+    "short": {
+      "UNIT": "pcs",
+      "KG": "kg",
+      "G": "g",
+      "L": "L",
+      "ML": "mL",
+      "M": "m",
+      "CM": "cm",
+      "M2": "m²"
+    },
+    "long": {
+      "UNIT": "Unit",
+      "KG": "Kilogram (kg)",
+      "G": "Gram (g)",
+      "L": "Liter (L)",
+      "ML": "Milliliter (mL)",
+      "M": "Meter (m)",
+      "CM": "Centimeter (cm)",
+      "M2": "Square meter (m²)"
+    }
+  },
+  "taxRates": {
+    "RATE_13": "13% (standard)",
+    "RATE_4": "4%",
+    "RATE_2": "2%",
+    "RATE_1": "1%",
+    "EXEMPT": "Exempt"
   }
 }

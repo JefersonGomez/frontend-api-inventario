@@ -145,7 +145,7 @@ export function Dashboard() {
                   </span>
                   <span className="dash-mono dash-move-qty">
                     {m.type === "OUT" ? "−" : "+"}
-                    {num.format(m.quantity)}
+                    {num.format(m.quantity)} {t(`units.short.${m.product?.unit ?? "UNIT"}`)}
                   </span>
                   <MovementStatus movement={m} t={t} />
                 </li>
@@ -201,7 +201,7 @@ export function Dashboard() {
                   <li key={p.id}>
                     <span>{p.name}</span>
                     <span className="dash-mono">
-                      <strong>{num.format(p.stock)}</strong> / {num.format(p.minStock)}
+                      <strong>{num.format(p.stock)}</strong> / {num.format(p.minStock)} {t(`units.short.${p.unit ?? "UNIT"}`)}
                     </span>
                   </li>
                 ))}

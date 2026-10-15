@@ -12,7 +12,11 @@ export const COLUMNS = [
   { field: "cost", header: "Costo", aliases: ["costo", "cost", "costo unitario", "precio de compra", "costo promedio"] },
   { field: "stock", header: "Stock inicial", aliases: ["stock inicial", "stock", "existencias", "existencia", "cantidad", "inventario", "initial stock", "qty"] },
   { field: "minStock", header: "Stock mínimo", aliases: ["stock minimo", "stock mínimo", "minimo", "mínimo", "min stock", "minimum stock", "punto de reorden"] },
-  { field: "barcode", header: "Código de barras", aliases: ["codigo de barras", "código de barras", "barcode", "ean", "upc", "cabys"] },
+  // unidad / IVA / CABYS van como texto: el backend reconoce "kg", "Kilos", "13 %", "Exento"...
+  { field: "unit", header: "Unidad", aliases: ["unidad", "unidad de medida", "um", "u/m", "medida", "unit", "uom", "unit of measure"] },
+  { field: "taxRate", header: "IVA", aliases: ["iva", "% iva", "tarifa iva", "tarifa", "impuesto", "tax", "vat", "tax rate"] },
+  { field: "cabys", header: "CABYS", aliases: ["cabys", "codigo cabys", "código cabys"] },
+  { field: "barcode", header: "Código de barras", aliases: ["codigo de barras", "código de barras", "barcode", "ean", "upc"] },
   { field: "description", header: "Descripción", aliases: ["descripcion", "descripción", "description"] },
   { field: "supplier", header: "Proveedor", aliases: ["proveedor", "supplier", "marca proveedor"] },
   { field: "expirationDate", header: "Vencimiento (AAAA-MM-DD)", aliases: ["vencimiento", "fecha de vencimiento", "expiration", "expiration date", "caducidad"] },
@@ -117,8 +121,8 @@ export function templateSheets(t) {
       name: t("products.import.templateSheet"),
       rows: [
         COLUMNS.map((c) => c.header),
-        ["FER-001", "Martillo de uña 16 oz", "Ferretería", 6500, 4200, 24, 5, "7441234567890", "Mango de fibra", "Distribuidora Sol", ""],
-        ["ALI-014", "Arroz 1 kg", "Abarrotes", 1150, 890, 120, 30, "", "", "", "2027-03-31"],
+        ["FER-001", "Martillo de uña 16 oz", "Ferretería", 6500, 4200, 24, 5, "Unidad", "13", "", "7441234567890", "Mango de fibra", "Distribuidora Sol", ""],
+        ["ALI-014", "Arroz a granel", "Abarrotes", 1150, 890, 120.5, 30, "kg", "1", "", "", "", "", "2027-03-31"],
       ],
     },
     {

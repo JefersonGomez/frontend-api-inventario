@@ -17,6 +17,7 @@ const STATUS_VARIANT = { create: "default", update: "outline", skip: "secondary"
 const RECOMMENDED = {
   defaultCategory: "General", generateSku: true, pendingPrice: true, fixNumbers: true,
   ignoreInvalidDate: true, dropConflictingBarcode: true, skipRepeated: true, updateExisting: false,
+  ignoreBadFiscal: true,
 }
 // grupo de problema (summary.groups) → opción que lo arregla; en el orden en que se muestran
 const FIXES = [
@@ -26,6 +27,7 @@ const FIXES = [
   { group: "missingSku", option: "generateSku" },
   { group: "repeatedSku", option: "skipRepeated" },
   { group: "badNumbers", option: "fixNumbers" },
+  { group: "badFiscal", option: "ignoreBadFiscal" },
   { group: "invalidDate", option: "ignoreInvalidDate" },
   { group: "barcodeConflict", option: "dropConflictingBarcode" },
 ]

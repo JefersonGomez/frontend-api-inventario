@@ -18,6 +18,8 @@ import {
 } from "@/components/ui/select"
 import { Plus, ArrowDownCircle, ArrowUpCircle, RotateCcw } from "lucide-react"
 import { BarcodeScanner } from "@/components/BarcodeScanner" // Importar componente reutilizable
+import { qtyStep, formatQty } from "@/lib/units"
+import { apiErrorMessage } from "@/lib/api-error"
 
 const emptyForm = { productId: "", type: "IN", quantity: "", reason: "" }
 
@@ -30,6 +32,8 @@ export function Movements() {
 
   const movementsQuery = useQuery({ queryKey: ["movements"], queryFn: getMovements })
   const productsQuery = useQuery({ queryKey: ["products"], queryFn: getProducts })
+  const selected = productsQuery.data?.find((p) => p.id === form.productId)
+  const step = qtyStep(selected?.unit)
 
   const createMutation = useMutation({
     mutationFn: () =>
@@ -125,9 +129,14 @@ export function Movements() {
                       {config.label}
                     </Badge>
                   </TableCell>
-                  <TableCell>{movement.quantity}</TableCell>
+                  <TableCell className="whitespace-nowrap">{formatQty(movement.quantity, movement.product?.unit, t)}</TableCell>
                   <TableCell className="text-muted-foreground">{movement.user?.name}</TableCell>
-                  <TableCell className="text-muted-foreground">{movement.reason ?? "—"}</TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {movement.source && movement.source !== "MANUAL" && (
+                      <Badge variant="outline" className="mr-2">{t(`movements.sources.${movement.source}`)}</Badge>
+                    )}
+                    {movement.reason ?? (movement.source && movement.source !== "MANUAL" ? null : "—")}
+                  </TableCell>
                 </TableRow>
               )
             })}
@@ -150,6 +159,7 @@ export function Movements() {
                   value={form.productId}
                   onValueChange={(value) => setForm({ ...form, productId: value })}
                   disabled={isSearching}
+                  items={(productsQuery.data ?? []).map((p) => ({ value: p.id, label: `${p.name} (${p.sku})` }))}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder={t("movements.dialog.placeholder_product")} />
@@ -179,6 +189,11 @@ export function Movements() {
               <Select
                 value={form.type}
                 onValueChange={(value) => setForm({ ...form, type: value })}
+                items={[
+                  { value: "IN", label: t("movements.types.in") },
+                  { value: "OUT", label: t("movements.types.out") },
+                  { value: "ADJUSTMENT", label: t("movements.types.adjustment_full") },
+                ]}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -199,11 +214,18 @@ export function Movements() {
               </Label>
               <Input
                 type="number"
-                min="1"
+                min={step}
+                step={step}
                 value={form.quantity}
                 onChange={(e) => setForm({ ...form, quantity: e.target.value })}
+                aria-describedby="movement-stock"
                 required
               />
+              {selected && (
+                <p id="movement-stock" className="text-xs text-muted-foreground">
+                  {t("movements.dialog.current_stock", { stock: formatQty(selected.stock, selected.unit, t) })}
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -216,7 +238,7 @@ export function Movements() {
 
             {createMutation.isError && (
               <p className="text-sm text-destructive">
-                {createMutation.error?.response?.data?.error ?? t("movements.errors.save_failed")}
+                {apiErrorMessage(createMutation.error, t("movements.errors.save_failed"))}
               </p>
             )}
 

@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/table"
 import { ImmobilizedCapitalReport } from "@/components/reports/ImmobilizedCapitalReport"
 import { StockForecastReport } from "@/components/reports/StockForecastReport"
+import { formatQty } from "@/lib/units"
 
 export function Reports() {
   const { t } = useTranslation()
@@ -253,9 +254,9 @@ export function Reports() {
                     <TableCell className="text-muted-foreground">{product.sku}</TableCell>
                     <TableCell className="font-medium">{product.name}</TableCell>
                     <TableCell>
-                      <Badge variant="destructive">{product.stock}</Badge>
+                      <Badge variant="destructive">{formatQty(product.stock, product.unit, t)}</Badge>
                     </TableCell>
-                    <TableCell className="text-muted-foreground">{product.minStock}</TableCell>
+                    <TableCell className="text-muted-foreground">{formatQty(product.minStock, product.unit, t)}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -310,7 +311,7 @@ export function Reports() {
                       <TableCell>
                         <Badge variant={config?.variant}>{config?.label}</Badge>
                       </TableCell>
-                      <TableCell>{movement.quantity}</TableCell>
+                      <TableCell className="whitespace-nowrap">{formatQty(movement.quantity, movement.product?.unit, t)}</TableCell>
                     </TableRow>
                   );
                 })}

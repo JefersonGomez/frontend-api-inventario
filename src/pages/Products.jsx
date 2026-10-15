@@ -28,6 +28,8 @@ import { useMoney } from "@/hoocks/useMoney"
 import { useAuth } from "@/context/AuthContext"
 import { ImportProductsDialog } from "@/components/products/ImportProductsDialog"
 import { ProductPriceHistory } from "@/components/products/ProductPriceHistory"
+import { UNITS, TAX_RATES, qtyStep, formatQty } from "@/lib/units"
+import { apiErrorMessage } from "@/lib/api-error"
 
 const emptyForm = { 
   sku: "", 
@@ -41,6 +43,9 @@ const emptyForm = {
   categoryId: "",
   supplierId: "",
   expirationDate: "",
+  unit: "UNIT",
+  taxRate: "RATE_13",
+  cabys: "",
 }
 
 export function Products() {
@@ -71,6 +76,8 @@ export function Products() {
   const categoriesQuery = useQuery({ queryKey: ["categories"], queryFn: getCategories })
   const suppliersQuery = useQuery({ queryKey: ["suppliers"], queryFn: getSuppliers })
   // "none" es el valor del ítem "Sin proveedor" del Select; en el form vacío = sin proveedor
+  const unitItems = UNITS.map((u) => ({ value: u, label: t(`units.long.${u}`) }))
+  const taxItems = TAX_RATES.map((r) => ({ value: r, label: t(`taxRates.${r}`) }))
   const supplierItems = [
     { value: "none", label: t("products.dialog.supplier_none") },
     ...(suppliersQuery.data ?? []).map((s) => ({ value: s.id, label: s.name })),
@@ -86,9 +93,11 @@ export function Products() {
         minStock: Number(form.minStock),
         supplierId: form.supplierId || null,
         expirationDate: form.expirationDate || undefined,
+        cabys: form.cabys.trim() || null,
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] })
+      queryClient.invalidateQueries({ queryKey: ["movements"] })
       closeDialog()
     },
   })
@@ -106,6 +115,9 @@ export function Products() {
         categoryId: form.categoryId,
         supplierId: form.supplierId || null,
         expirationDate: form.expirationDate || undefined,
+        unit: form.unit,
+        taxRate: form.taxRate,
+        cabys: form.cabys.trim() || null,
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] })
@@ -143,6 +155,9 @@ export function Products() {
       expirationDate: product.expirationDate
         ? product.expirationDate.slice(0, 10)
         : "",
+      unit: product.unit ?? "UNIT",
+      taxRate: product.taxRate ?? "RATE_13",
+      cabys: product.cabys ?? "",
     })
     setDialogOpen(true)
   }
@@ -151,6 +166,8 @@ export function Products() {
     setDialogOpen(false)
     setEditingProduct(null)
     setForm(emptyForm)
+    createMutation.reset()
+    updateMutation.reset()
   }
 
   function handleSubmit(e) {
@@ -173,6 +190,8 @@ export function Products() {
   }
 
   const isSaving = createMutation.isPending || updateMutation.isPending
+  const saveError = createMutation.error || updateMutation.error
+  const step = qtyStep(form.unit)
 
   return (
     <div>
@@ -246,11 +265,11 @@ export function Products() {
                 <TableCell className="hidden md:table-cell text-muted-foreground">
                   {product.cost == null ? "—" : money.format(product.cost)}
                 </TableCell>
-                <TableCell>
+                <TableCell className="whitespace-nowrap">
                   {product.stock <= product.minStock ? (
-                    <Badge variant="destructive">{product.stock}</Badge>
+                    <Badge variant="destructive">{formatQty(product.stock, product.unit, t)}</Badge>
                   ) : (
-                    product.stock
+                    formatQty(product.stock, product.unit, t)
                   )}
                 </TableCell>
                 <TableCell className="text-right">
@@ -341,11 +360,44 @@ export function Products() {
                 <p id="cost-hint" className="text-xs text-muted-foreground">{t("products.dialog.cost_hint")}</p>
               </div>
 
+              <div className="space-y-2">
+                <Label>{t("products.dialog.label_unit")}</Label>
+                <Select value={form.unit} onValueChange={(value) => setForm({ ...form, unit: value })} items={unitItems}>
+                  <SelectTrigger className="w-full" aria-describedby="unit-hint">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {unitItems.map((u) => (
+                      <SelectItem key={u.value} value={u.value}>{u.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label>{t("products.dialog.label_tax")}</Label>
+                <Select value={form.taxRate} onValueChange={(value) => setForm({ ...form, taxRate: value })} items={taxItems}>
+                  <SelectTrigger className="w-full" aria-describedby="tax-hint">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {taxItems.map((r) => (
+                      <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <p id="unit-hint" className="col-span-2 -mt-1 text-xs text-muted-foreground">
+                {t("products.dialog.unit_hint")} <span id="tax-hint">{t("products.dialog.tax_hint")}</span>
+              </p>
+
               {!editingProduct && (
                 <div className="space-y-2">
                   <Label>{t("products.dialog.label_initial_stock")}</Label>
                   <Input
                     type="number"
+                    min="0"
+                    step={step}
                     value={form.stock}
                     onChange={(e) => setForm({ ...form, stock: e.target.value })}
                     required
@@ -357,6 +409,8 @@ export function Products() {
                 <Label>{t("products.dialog.label_min_stock")}</Label>
                 <Input
                   type="number"
+                  min="0"
+                  step={step}
                   value={form.minStock}
                   onChange={(e) => setForm({ ...form, minStock: e.target.value })}
                   required
@@ -378,6 +432,7 @@ export function Products() {
               <Select
                 value={form.categoryId}
                 onValueChange={(value) => setForm({ ...form, categoryId: value })}
+                items={(categoriesQuery.data ?? []).map((c) => ({ value: c.id, label: c.name }))}
               >
                 <SelectTrigger>
                   <SelectValue placeholder={t("products.dialog.placeholder_category")} />
@@ -412,9 +467,29 @@ export function Products() {
               </Select>
             </div>
 
+            <div className="space-y-2">
+              <Label htmlFor="product-cabys">{t("products.dialog.label_cabys")}</Label>
+              <Input
+                id="product-cabys"
+                inputMode="numeric"
+                maxLength={13}
+                pattern="\d{13}"
+                value={form.cabys}
+                onChange={(e) => setForm({ ...form, cabys: e.target.value.replace(/\D/g, "") })}
+                aria-describedby="cabys-hint"
+              />
+              <p id="cabys-hint" className="text-xs text-muted-foreground">{t("products.dialog.cabys_hint")}</p>
+            </div>
+
             {/* Historial de precios, solo al editar */}
             {editingProduct && (
               <ProductPriceHistory productId={editingProduct.id} />
+            )}
+
+            {saveError && (
+              <p role="alert" className="text-sm text-destructive">
+                {apiErrorMessage(saveError, t("products.dialog.save_error"))}
+              </p>
             )}
 
             <DialogFooter>
