@@ -19,6 +19,7 @@ import {
   Box,
   ScanBarcode,
   Building2,
+  Contact,
 } from "lucide-react";
 
 const ICON = { className: "w-[18px] h-[18px]", strokeWidth: 1.7, "aria-hidden": true };
@@ -38,6 +39,7 @@ export function Sidebar() {
     { to: "/movements", label: t("sidebar.movements"), icon: ArrowLeftRight },
     { to: "/purchase-requests", label: t("sidebar.purchaseRequests"), icon: ClipboardList },
     ...(isAdmin ? [{ to: "/purchase-orders", label: t("sidebar.purchaseOrders"), icon: ShoppingCart }] : []),
+    { to: "/customers", label: t("sidebar.customers"), icon: Contact },
     { to: "/suppliers", label: t("sidebar.suppliers"), icon: Truck },
     { to: "/reports", label: t("sidebar.reports"), icon: BarChart3 },
     ...(isAdmin

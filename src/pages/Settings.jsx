@@ -13,6 +13,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useAuth } from "@/context/AuthContext"
 import { usePlatformOwner } from "@/hoocks/usePlatformOwner"
 import { getCompany, updateCompany } from "@/api/company"
+import { FiscalDataCard } from "@/components/settings/FiscalDataCard"
 const languageItems = [
   { value: "es", label: "Español" },
   { value: "en", label: "English" },
@@ -183,7 +184,12 @@ export function Settings() {
         </CardContent>
       </Card>
 
-      {user?.role === "ADMIN" && !isPlatformOwner && <CompanyCard />}
+      {user?.role === "ADMIN" && !isPlatformOwner && (
+        <>
+          <CompanyCard />
+          <FiscalDataCard />
+        </>
+      )}
     </div>
   )
 }

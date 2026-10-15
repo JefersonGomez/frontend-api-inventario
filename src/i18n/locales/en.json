@@ -25,7 +25,8 @@
     "auditLog": "Audit log",
     "scanText": "Log stock in and out by scanning the barcode with your camera.",
     "scanButton": "Scan product",
-    "platform": "Platform"
+    "platform": "Platform",
+    "customers": "Customers"
   },
   "topbar": {
     "search": "Search product or SKU",
@@ -154,7 +155,11 @@
       "tax_hint": "The sale price includes this VAT.",
       "label_cabys": "CABYS code (optional)",
       "cabys_hint": "13 digits. Required for electronic invoicing; you can fill it in later.",
-      "save_error": "The product could not be saved."
+      "save_error": "The product could not be saved.",
+      "section_basic": "Basic details",
+      "section_price": "Price and taxes",
+      "section_stock": "Inventory",
+      "section_variant": "Variant"
     },
     "delete": {
       "title": "Delete this product?",
@@ -297,6 +302,34 @@
       "banner_other": "{{count}} imported products are “To complete” (no price).",
       "show": "Show",
       "hide": "Show all"
+    },
+    "variants": {
+      "label_group": "Base product (variants)",
+      "group_none": "Not a variant",
+      "group_hint": "For sizes, colors or presentations: each variant is a product with its own SKU, price and stock.",
+      "manage": "Base products",
+      "manage_title": "Base products",
+      "manage_intro": "A base product groups its variants (e.g. \"Polo shirt\" with Size and Color).",
+      "name": "Base product name",
+      "attributes": "Attributes",
+      "attributes_hint": "Comma separated: Size, Color",
+      "add": "Add",
+      "count_one": "{{count}} variant",
+      "count_other": "{{count}} variants",
+      "empty": "No base products yet.",
+      "delete": "Delete",
+      "delete_hint": "Its variants become standalone products.",
+      "edit_attributes": "Save attributes",
+      "save_error": "The base product could not be saved.",
+      "add_variant": "Variant",
+      "add_variant_aria": "Add a variant to {{name}}",
+      "summary_one": "{{count}} variant · {{attrs}}",
+      "summary_other": "{{count}} variants · {{attrs}}",
+      "no_variants": "No variants yet · {{attrs}}",
+      "low": "{{count}} below minimum",
+      "expand": "Show the variants of {{name}}",
+      "collapse": "Hide the variants of {{name}}",
+      "base_badge": "Base product"
     }
   },
   "categories": {
@@ -528,6 +561,34 @@
     "currencies": {
       "CRC": "Colones (₡)",
       "USD": "US dollars ($)"
+    },
+    "fiscal": {
+      "title": "Tax details",
+      "description": "Your company's details as the issuer of electronic receipts. Optional until you start invoicing.",
+      "legalName": "Legal name or full name",
+      "legalName_hint": "For individuals, your name as it appears on your ID.",
+      "activity": "Economic activity",
+      "activity_hint": "The code of your registered activity (e.g. 620100).",
+      "invoiceEmail": "Email for receipts",
+      "phone": "Phone",
+      "province": "Province",
+      "province_none": "Not set",
+      "canton": "Canton (code)",
+      "district": "District (code)",
+      "code_hint": "2-digit codes from the tax office's territorial division (e.g. 01).",
+      "addressDetail": "Address details",
+      "save": "Save tax details",
+      "saved": "Tax details saved.",
+      "error": "The tax details could not be saved.",
+      "provinces": {
+        "1": "San José",
+        "2": "Alajuela",
+        "3": "Cartago",
+        "4": "Heredia",
+        "5": "Guanacaste",
+        "6": "Puntarenas",
+        "7": "Limón"
+      }
     }
   },
   "purchaseRequests": {
@@ -860,5 +921,61 @@
     "RATE_2": "2%",
     "RATE_1": "1%",
     "EXEMPT": "Exempt"
+  },
+  "fiscal": {
+    "idType": "ID type",
+    "idNumber": "ID number",
+    "none": "No ID",
+    "types": {
+      "FISICA": "Individual ID",
+      "JURIDICA": "Company ID",
+      "DIMEX": "DIMEX",
+      "NITE": "NITE",
+      "EXTRANJERO": "Foreign document"
+    },
+    "hints": {
+      "none": "Not needed for walk-in customers. Electronic invoices do require it.",
+      "FISICA": "9 digits, no dashes (e.g. 112340567).",
+      "JURIDICA": "10 digits, no dashes (e.g. 3101123456).",
+      "DIMEX": "11 or 12 digits.",
+      "NITE": "10 digits.",
+      "EXTRANJERO": "Up to 20 letters or numbers."
+    },
+    "invalid": "The number does not match this ID type."
+  },
+  "customers": {
+    "title": "Customers",
+    "subtitle": "Who you sell to: to invoice in their name and give credit",
+    "new": "New customer",
+    "create_title": "New customer",
+    "edit_title": "Edit customer",
+    "empty": "No customers yet.",
+    "search": "Search by name or ID",
+    "table": {
+      "name": "Name",
+      "id": "ID",
+      "email": "Email",
+      "phone": "Phone",
+      "credit": "Credit",
+      "actions": "Actions"
+    },
+    "fields": {
+      "name": "Name or company name",
+      "email": "Email",
+      "email_hint": "Their electronic receipts are sent here.",
+      "phone": "Phone",
+      "address": "Address",
+      "activity": "Economic activity (optional)",
+      "activity_hint": "The customer's activity code with the tax office, if you have it.",
+      "creditLimit": "Credit limit",
+      "creditLimit_hint": "Empty = cash only.",
+      "creditDays": "Credit term (days)"
+    },
+    "cash": "Cash",
+    "creditValue": "{{limit}} · {{days}} days",
+    "creditNoDays": "{{limit}}",
+    "delete_title": "Delete this customer?",
+    "delete_description": "\"{{name}}\" will no longer be listed. Receipts issued in their name are kept.",
+    "save_error": "The customer could not be saved."
   }
 }

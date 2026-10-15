@@ -22,7 +22,7 @@ import {
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
-import { Plus, Pencil, Trash2, FileUp } from "lucide-react"
+import { Plus, Pencil, Trash2, FileUp, Layers, ChevronRight } from "lucide-react"
 import { BarcodeScanner } from "@/components/BarcodeScanner"
 import { useMoney } from "@/hoocks/useMoney"
 import { useAuth } from "@/context/AuthContext"
@@ -30,6 +30,8 @@ import { ImportProductsDialog } from "@/components/products/ImportProductsDialog
 import { ProductPriceHistory } from "@/components/products/ProductPriceHistory"
 import { UNITS, TAX_RATES, qtyStep, formatQty } from "@/lib/units"
 import { apiErrorMessage } from "@/lib/api-error"
+import { getProductGroups } from "@/api/productGroups"
+import { ProductGroupsDialog } from "@/components/products/ProductGroupsDialog"
 
 const emptyForm = { 
   sku: "", 
@@ -46,13 +48,28 @@ const emptyForm = {
   unit: "UNIT",
   taxRate: "RATE_13",
   cabys: "",
+  groupId: "", // "" = no es una variante
+  attributes: {}, // { Talla: "M", Color: "Rojo" }
 }
+
+// "Talla M · Color Rojo" debajo del nombre de una variante
+const variantLabel = (p) =>
+  p.group ? p.group.attributeNames.map((a) => `${a} ${p.attributes?.[a] ?? ""}`.trim()).join(" · ") : null
 
 export function Products() {
   const { t } = useTranslation()
   const money = useMoney()
   const { user } = useAuth()
   const [importing, setImporting] = useState(false)
+  const [managingGroups, setManagingGroups] = useState(false)
+  const [expanded, setExpanded] = useState(() => new Set()) // productos base desplegados
+  const toggleGroup = (id) =>
+    setExpanded((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
   const queryClient = useQueryClient()
 
   const [searchParams] = useSearchParams()
@@ -71,9 +88,20 @@ export function Products() {
   const pendingCount = (productsQuery.data ?? []).filter((p) => p.pendingReview).length
   const visibleProducts = (productsQuery.data ?? []).filter(
     (p) => (!onlyPending || p.pendingReview) &&
-      (!q || [p.name, p.sku, p.barcode, p.category?.name].some((v) => fold(v).includes(q)))
+      (!q || [p.name, p.sku, p.barcode, p.category?.name, p.group?.name].some((v) => fold(v).includes(q)))
   )
   const categoriesQuery = useQuery({ queryKey: ["categories"], queryFn: getCategories })
+  const groupsQuery = useQuery({ queryKey: ["product-groups"], queryFn: getProductGroups })
+  const groupItems = [
+    { value: "none", label: t("products.variants.group_none") },
+    ...(groupsQuery.data ?? []).map((g) => ({ value: g.id, label: g.name })),
+  ]
+  const selectedGroup = (groupsQuery.data ?? []).find((g) => g.id === form.groupId)
+  // solo los atributos del grupo elegido (si se cambia de grupo, los de otro no viajan)
+  const variantPayload = () =>
+    selectedGroup
+      ? { groupId: selectedGroup.id, attributes: Object.fromEntries(selectedGroup.attributeNames.map((a) => [a, (form.attributes[a] ?? "").trim()])) }
+      : { groupId: null, attributes: null }
   const suppliersQuery = useQuery({ queryKey: ["suppliers"], queryFn: getSuppliers })
   // "none" es el valor del ítem "Sin proveedor" del Select; en el form vacío = sin proveedor
   const unitItems = UNITS.map((u) => ({ value: u, label: t(`units.long.${u}`) }))
@@ -94,9 +122,11 @@ export function Products() {
         supplierId: form.supplierId || null,
         expirationDate: form.expirationDate || undefined,
         cabys: form.cabys.trim() || null,
+        ...variantPayload(),
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] })
+      queryClient.invalidateQueries({ queryKey: ["product-groups"] })
       queryClient.invalidateQueries({ queryKey: ["movements"] })
       closeDialog()
     },
@@ -118,9 +148,11 @@ export function Products() {
         unit: form.unit,
         taxRate: form.taxRate,
         cabys: form.cabys.trim() || null,
+        ...variantPayload(),
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] })
+      queryClient.invalidateQueries({ queryKey: ["product-groups"] })
       closeDialog()
     },
   })
@@ -129,6 +161,7 @@ export function Products() {
     mutationFn: (productId) => deleteProduct(productId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] })
+      queryClient.invalidateQueries({ queryKey: ["product-groups"] })
       setDeletingProduct(null)
     },
   })
@@ -136,6 +169,25 @@ export function Products() {
   function openCreateDialog() {
     setEditingProduct(null)
     setForm(emptyForm)
+    setDialogOpen(true)
+  }
+
+  function openCreateVariant(group) {
+    const sibling = (productsQuery.data ?? []).find((p) => p.groupId === group.id)
+    setEditingProduct(null)
+    setForm({
+      ...emptyForm,
+      name: group.name,
+      groupId: group.id,
+      ...(sibling && {
+        categoryId: sibling.categoryId ?? "",
+        supplierId: sibling.supplierId ?? "",
+        unit: sibling.unit,
+        taxRate: sibling.taxRate,
+        cabys: sibling.cabys ?? "",
+        price: sibling.pendingReview ? "" : String(sibling.price),
+      }),
+    })
     setDialogOpen(true)
   }
 
@@ -158,6 +210,8 @@ export function Products() {
       unit: product.unit ?? "UNIT",
       taxRate: product.taxRate ?? "RATE_13",
       cabys: product.cabys ?? "",
+      groupId: product.groupId ?? "",
+      attributes: product.attributes ?? {},
     })
     setDialogOpen(true)
   }
@@ -189,9 +243,66 @@ export function Products() {
     setForm((prev) => ({ ...prev, barcode: code }))
   }
 
+  const groupRows = (groupsQuery.data ?? [])
+    .map((g) => {
+      const all = (productsQuery.data ?? []).filter((p) => p.groupId === g.id)
+      const shown = visibleProducts.filter((p) => p.groupId === g.id)
+      const prices = all.filter((p) => !p.pendingReview).map((p) => Number(p.price))
+      const units = new Set(all.map((p) => p.unit))
+      return {
+        group: g,
+        variants: shown,
+        matches: !q || fold(g.name).includes(q) || shown.length > 0,
+        minPrice: prices.length ? Math.min(...prices) : null,
+        maxPrice: prices.length ? Math.max(...prices) : null,
+        stock: units.size === 1 ? { qty: all.reduce((sum, p) => sum + Number(p.stock), 0), unit: [...units][0] } : null,
+        low: all.filter((p) => p.stock <= p.minStock).length,
+        // desplegado a mano, por búsqueda o porque trae el producto resaltado
+        open: expanded.has(g.id) || (q && shown.length > 0) || shown.some((p) => p.id === highlightId),
+      }
+    })
+    .filter((r) => r.matches && (!onlyPending || r.variants.length > 0))
+  const looseProducts = visibleProducts.filter((p) => !p.groupId || !(groupsQuery.data ?? []).some((g) => g.id === p.groupId))
+
   const isSaving = createMutation.isPending || updateMutation.isPending
   const saveError = createMutation.error || updateMutation.error
   const step = qtyStep(form.unit)
+
+  function renderProduct(product, nested) {
+    return (
+      <TableRow key={product.id} className={product.id === highlightId ? "bg-primary/10" : nested ? "bg-muted/30" : undefined}>
+        <TableCell className={`text-muted-foreground ${nested ? "pl-8" : ""}`}>{product.sku}</TableCell>
+        <TableCell className="font-medium">
+          {product.name}
+          {variantLabel(product) && (
+            <span className="block text-xs font-normal text-muted-foreground">{variantLabel(product)}</span>
+          )}
+        </TableCell>
+        <TableCell className="text-muted-foreground">{product.category?.name}</TableCell>
+        <TableCell>
+          {product.pendingReview ? <Badge variant="outline">{t("products.pending.badge")}</Badge> : money.format(product.price)}
+        </TableCell>
+        <TableCell className="hidden md:table-cell text-muted-foreground">
+          {product.cost == null ? "—" : money.format(product.cost)}
+        </TableCell>
+        <TableCell className="whitespace-nowrap">
+          {product.stock <= product.minStock ? (
+            <Badge variant="destructive">{formatQty(product.stock, product.unit, t)}</Badge>
+          ) : (
+            formatQty(product.stock, product.unit, t)
+          )}
+        </TableCell>
+        <TableCell className="text-right whitespace-nowrap">
+          <Button variant="ghost" size="icon" onClick={() => openEditDialog(product)} aria-label={`${t("products.dialog.edit_title")}: ${product.name}`}>
+            <Pencil className="w-4 h-4" />
+          </Button>
+          <Button variant="ghost" size="icon" onClick={() => setDeletingProduct(product)} aria-label={`${t("products.delete.title")}: ${product.name}`}>
+            <Trash2 className="w-4 h-4 text-destructive" />
+          </Button>
+        </TableCell>
+      </TableRow>
+    )
+  }
 
   return (
     <div>
@@ -201,6 +312,12 @@ export function Products() {
           <p className="text-sm text-muted-foreground">{t("products.subtitle")}</p>
         </div>
         <div className="flex flex-wrap gap-2">
+          {user?.role === "ADMIN" && (
+            <Button variant="outline" onClick={() => setManagingGroups(true)}>
+              <Layers className="w-4 h-4 mr-2" />
+              {t("products.variants.manage")}
+            </Button>
+          )}
           {user?.role === "ADMIN" && (
             <Button variant="outline" onClick={() => setImporting(true)}>
               <FileUp className="w-4 h-4 mr-2" />
@@ -214,6 +331,7 @@ export function Products() {
         </div>
       </div>
       <ImportProductsDialog open={importing} onOpenChange={setImporting} />
+      <ProductGroupsDialog open={managingGroups} onOpenChange={setManagingGroups} />
 
       {(pendingCount > 0 || onlyPending) && (
         <div className="mb-4 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border bg-muted/50 px-4 py-3 text-sm">
@@ -246,7 +364,7 @@ export function Products() {
               </TableRow>
             )}
 
-            {!productsQuery.isLoading && visibleProducts.length === 0 && q && (
+            {!productsQuery.isLoading && groupRows.length === 0 && looseProducts.length === 0 && q && (
               <TableRow>
                 <TableCell colSpan={7} className="text-center text-muted-foreground">
                   {t("products.noResults", { q: searchParams.get("q") })}
@@ -254,237 +372,217 @@ export function Products() {
               </TableRow>
             )}
 
-            {visibleProducts.map((product) => (
-              <TableRow key={product.id}  className={product.id === highlightId ? "bg-primary/10" : undefined}>
-                <TableCell className="text-muted-foreground">{product.sku}</TableCell>
-                <TableCell className="font-medium">{product.name}</TableCell>
-                <TableCell className="text-muted-foreground">{product.category?.name}</TableCell>
-                <TableCell>
-                  {product.pendingReview ? <Badge variant="outline">{t("products.pending.badge")}</Badge> : money.format(product.price)}
-                </TableCell>
-                <TableCell className="hidden md:table-cell text-muted-foreground">
-                  {product.cost == null ? "—" : money.format(product.cost)}
-                </TableCell>
-                <TableCell className="whitespace-nowrap">
-                  {product.stock <= product.minStock ? (
-                    <Badge variant="destructive">{formatQty(product.stock, product.unit, t)}</Badge>
-                  ) : (
-                    formatQty(product.stock, product.unit, t)
-                  )}
-                </TableCell>
-                <TableCell className="text-right">
-                  <Button variant="ghost" size="icon" onClick={() => openEditDialog(product)}>
-                    <Pencil className="w-4 h-4" />
-                  </Button>
-                  <Button variant="ghost" size="icon" onClick={() => setDeletingProduct(product)}>
-                    <Trash2 className="w-4 h-4 text-destructive" />
-                  </Button>
-                </TableCell>
-              </TableRow>
+            {groupRows.map((r) => (
+              <GroupRows
+                key={r.group.id}
+                row={r}
+                t={t}
+                money={money}
+                isAdmin={user?.role === "ADMIN"}
+                onToggle={() => toggleGroup(r.group.id)}
+                onAddVariant={() => openCreateVariant(r.group)}
+                renderProduct={(p) => renderProduct(p, true)}
+              />
             ))}
+            {looseProducts.map((p) => renderProduct(p, false))}
           </TableBody>
         </Table>
       </div>
 
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-md">
-          <form onSubmit={handleSubmit} className="space-y-4">
+      <Dialog open={dialogOpen} onOpenChange={(open) => (open ? setDialogOpen(true) : closeDialog())}>
+        {/* ancho y con scroll propio: en pantallas bajas el formulario no queda cortado */}
+        <DialogContent className="sm:max-w-3xl max-h-[92dvh] overflow-y-auto">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <DialogHeader>
               <DialogTitle>
                 {editingProduct ? t("products.dialog.edit_title") : t("products.dialog.create_title")}
               </DialogTitle>
             </DialogHeader>
 
-            {!editingProduct && (
-              <div className="space-y-2">
-                <Label>{t("products.dialog.label_sku")}</Label>
-                <Input
-                  value={form.sku}
-                  onChange={(e) => setForm({ ...form, sku: e.target.value })}
-                  required
-                />
+            <fieldset className="space-y-3">
+              <legend className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("products.dialog.section_basic")}</legend>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                <div className="space-y-1.5 sm:col-span-2">
+                  <Label htmlFor="product-name">{t("products.dialog.label_name")}</Label>
+                  <Input id="product-name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
+                </div>
+                {editingProduct ? (
+                  <div className="space-y-1.5">
+                    <Label htmlFor="product-sku">{t("products.dialog.label_sku")}</Label>
+                    <Input id="product-sku" value={form.sku} disabled />
+                  </div>
+                ) : (
+                  <div className="space-y-1.5">
+                    <Label htmlFor="product-sku">{t("products.dialog.label_sku")}</Label>
+                    <Input id="product-sku" value={form.sku} onChange={(e) => setForm({ ...form, sku: e.target.value })} required />
+                  </div>
+                )}
+                <div className="space-y-1.5 sm:col-span-2">
+                  <Label htmlFor="product-barcode">{t("products.dialog.label_barcode")}</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="product-barcode"
+                      value={form.barcode}
+                      onChange={(e) => setForm({ ...form, barcode: e.target.value })}
+                      placeholder="Escanea o escribe aquí"
+                    />
+                    <BarcodeScanner onScan={handleScan} />
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="product-category">{t("products.dialog.label_category")}</Label>
+                  <Select
+                    value={form.categoryId}
+                    onValueChange={(value) => setForm({ ...form, categoryId: value })}
+                    items={(categoriesQuery.data ?? []).map((c) => ({ value: c.id, label: c.name }))}
+                  >
+                    <SelectTrigger id="product-category" className="w-full">
+                      <SelectValue placeholder={t("products.dialog.placeholder_category")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categoriesQuery.data?.map((category) => (
+                        <SelectItem key={category.id} value={category.id}>{category.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1.5 sm:col-span-2">
+                  <Label htmlFor="product-description">{t("products.dialog.label_description")}</Label>
+                  <Input id="product-description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="product-supplier">{t("products.dialog.label_supplier")}</Label>
+                  <Select
+                    value={form.supplierId || "none"}
+                    onValueChange={(value) => setForm({ ...form, supplierId: value === "none" ? "" : value })}
+                    items={supplierItems}
+                  >
+                    <SelectTrigger id="product-supplier" className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {supplierItems.map((s) => (
+                        <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
-            )}
+            </fieldset>
 
-            <div className="space-y-2">
-              <Label>{t("products.dialog.label_barcode")}</Label>
-              <div className="flex gap-2">
-                <Input
-                  value={form.barcode}
-                  onChange={(e) => setForm({ ...form, barcode: e.target.value })}
-                  placeholder="Escanea o escribe aquí"
-                />
-                <BarcodeScanner onScan={handleScan} />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label>{t("products.dialog.label_name")}</Label>
-              <Input
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>{t("products.dialog.label_description")}</Label>
-              <Input
-                value={form.description}
-                onChange={(e) => setForm({ ...form, description: e.target.value })}
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-2">
-                <Label>{t("products.dialog.label_price")}</Label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  value={form.price}
-                  onChange={(e) => setForm({ ...form, price: e.target.value })}
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>{t("products.dialog.label_cost")}</Label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={form.cost}
-                  onChange={(e) => setForm({ ...form, cost: e.target.value })}
-                  aria-describedby="cost-hint"
-                />
-                <p id="cost-hint" className="text-xs text-muted-foreground">{t("products.dialog.cost_hint")}</p>
-              </div>
-
-              <div className="space-y-2">
-                <Label>{t("products.dialog.label_unit")}</Label>
-                <Select value={form.unit} onValueChange={(value) => setForm({ ...form, unit: value })} items={unitItems}>
-                  <SelectTrigger className="w-full" aria-describedby="unit-hint">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {unitItems.map((u) => (
-                      <SelectItem key={u.value} value={u.value}>{u.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label>{t("products.dialog.label_tax")}</Label>
-                <Select value={form.taxRate} onValueChange={(value) => setForm({ ...form, taxRate: value })} items={taxItems}>
-                  <SelectTrigger className="w-full" aria-describedby="tax-hint">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {taxItems.map((r) => (
-                      <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <p id="unit-hint" className="col-span-2 -mt-1 text-xs text-muted-foreground">
-                {t("products.dialog.unit_hint")} <span id="tax-hint">{t("products.dialog.tax_hint")}</span>
-              </p>
-
-              {!editingProduct && (
-                <div className="space-y-2">
-                  <Label>{t("products.dialog.label_initial_stock")}</Label>
+            <fieldset className="space-y-3">
+              <legend className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("products.dialog.section_price")}</legend>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="product-price">{t("products.dialog.label_price")}</Label>
+                  <Input id="product-price" type="number" step="0.01" min="0" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} required />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="product-cost">{t("products.dialog.label_cost")}</Label>
+                  <Input id="product-cost" type="number" step="0.01" min="0" value={form.cost} onChange={(e) => setForm({ ...form, cost: e.target.value })} aria-describedby="price-hint" />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="product-tax">{t("products.dialog.label_tax")}</Label>
+                  <Select value={form.taxRate} onValueChange={(value) => setForm({ ...form, taxRate: value })} items={taxItems}>
+                    <SelectTrigger id="product-tax" className="w-full" aria-describedby="price-hint">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {taxItems.map((r) => (
+                        <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="product-cabys">{t("products.dialog.label_cabys")}</Label>
                   <Input
-                    type="number"
-                    min="0"
-                    step={step}
-                    value={form.stock}
-                    onChange={(e) => setForm({ ...form, stock: e.target.value })}
-                    required
+                    id="product-cabys"
+                    inputMode="numeric"
+                    maxLength={13}
+                    pattern="\d{13}"
+                    value={form.cabys}
+                    onChange={(e) => setForm({ ...form, cabys: e.target.value.replace(/\D/g, "") })}
+                    aria-describedby="price-hint"
                   />
                 </div>
-              )}
-
-              <div className="space-y-2">
-                <Label>{t("products.dialog.label_min_stock")}</Label>
-                <Input
-                  type="number"
-                  min="0"
-                  step={step}
-                  value={form.minStock}
-                  onChange={(e) => setForm({ ...form, minStock: e.target.value })}
-                  required
-                />
               </div>
+              <p id="price-hint" className="text-xs text-muted-foreground">
+                {t("products.dialog.tax_hint")} {t("products.dialog.cost_hint")} {t("products.dialog.cabys_hint")}
+              </p>
+            </fieldset>
 
-              <div className="space-y-2">
-                <Label>{t("products.dialog.label_expiration_date", "Fecha de vencimiento")}</Label>
-                <Input
-                  type="date"
-                  value={form.expirationDate}
-                  onChange={(e) => setForm({ ...form, expirationDate: e.target.value })}
-                />
+            <fieldset className="space-y-3">
+              <legend className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("products.dialog.section_stock")}</legend>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="product-unit">{t("products.dialog.label_unit")}</Label>
+                  <Select value={form.unit} onValueChange={(value) => setForm({ ...form, unit: value })} items={unitItems}>
+                    <SelectTrigger id="product-unit" className="w-full" aria-describedby="stock-hint">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {unitItems.map((u) => (
+                        <SelectItem key={u.value} value={u.value}>{u.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                {!editingProduct && (
+                  <div className="space-y-1.5">
+                    <Label htmlFor="product-stock">{t("products.dialog.label_initial_stock")}</Label>
+                    <Input id="product-stock" type="number" min="0" step={step} value={form.stock} onChange={(e) => setForm({ ...form, stock: e.target.value })} required />
+                  </div>
+                )}
+                <div className="space-y-1.5">
+                  <Label htmlFor="product-minstock">{t("products.dialog.label_min_stock")}</Label>
+                  <Input id="product-minstock" type="number" min="0" step={step} value={form.minStock} onChange={(e) => setForm({ ...form, minStock: e.target.value })} required />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="product-expiration">{t("products.dialog.label_expiration_date", "Fecha de vencimiento")}</Label>
+                  <Input id="product-expiration" type="date" value={form.expirationDate} onChange={(e) => setForm({ ...form, expirationDate: e.target.value })} />
+                </div>
               </div>
-            </div>
+              <p id="stock-hint" className="text-xs text-muted-foreground">{t("products.dialog.unit_hint")}</p>
+            </fieldset>
 
-            <div className="space-y-2">
-              <Label>{t("products.dialog.label_category")}</Label>
-              <Select
-                value={form.categoryId}
-                onValueChange={(value) => setForm({ ...form, categoryId: value })}
-                items={(categoriesQuery.data ?? []).map((c) => ({ value: c.id, label: c.name }))}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder={t("products.dialog.placeholder_category")} />
-                </SelectTrigger>
-                <SelectContent>
-                  {categoriesQuery.data?.map((category) => (
-                    <SelectItem key={category.id} value={category.id}>
-                      {category.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label>{t("products.dialog.label_supplier")}</Label>
-              <Select
-                value={form.supplierId || "none"}
-                onValueChange={(value) => setForm({ ...form, supplierId: value === "none" ? "" : value })}
-                items={supplierItems}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {supplierItems.map((s) => (
-                    <SelectItem key={s.value} value={s.value}>
-                      {s.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="product-cabys">{t("products.dialog.label_cabys")}</Label>
-              <Input
-                id="product-cabys"
-                inputMode="numeric"
-                maxLength={13}
-                pattern="\d{13}"
-                value={form.cabys}
-                onChange={(e) => setForm({ ...form, cabys: e.target.value.replace(/\D/g, "") })}
-                aria-describedby="cabys-hint"
-              />
-              <p id="cabys-hint" className="text-xs text-muted-foreground">{t("products.dialog.cabys_hint")}</p>
-            </div>
+            <fieldset className="space-y-3">
+              <legend className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("products.dialog.section_variant")}</legend>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                <div className="space-y-1.5">
+                  <Label htmlFor="product-group">{t("products.variants.label_group")}</Label>
+                  <Select
+                    value={form.groupId || "none"}
+                    onValueChange={(value) => setForm({ ...form, groupId: value === "none" ? "" : value })}
+                    items={groupItems}
+                  >
+                    <SelectTrigger id="product-group" className="w-full" aria-describedby="product-group-hint">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {groupItems.map((g) => (
+                        <SelectItem key={g.value} value={g.value}>{g.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                {selectedGroup?.attributeNames.map((a) => (
+                  <div key={a} className="space-y-1.5">
+                    <Label htmlFor={`attr-${a}`}>{a}</Label>
+                    <Input
+                      id={`attr-${a}`}
+                      value={form.attributes[a] ?? ""}
+                      onChange={(e) => setForm({ ...form, attributes: { ...form.attributes, [a]: e.target.value } })}
+                      required
+                    />
+                  </div>
+                ))}
+              </div>
+              <p id="product-group-hint" className="text-xs text-muted-foreground">{t("products.variants.group_hint")}</p>
+            </fieldset>
 
             {/* Historial de precios, solo al editar */}
-            {editingProduct && (
-              <ProductPriceHistory productId={editingProduct.id} />
-            )}
+            {editingProduct && <ProductPriceHistory productId={editingProduct.id} />}
 
             {saveError && (
               <p role="alert" className="text-sm text-destructive">
@@ -492,7 +590,11 @@ export function Products() {
               </p>
             )}
 
-            <DialogFooter>
+            {/* pie fijo: Guardar siempre visible aunque el formulario tenga scroll */}
+            <DialogFooter className="sticky -bottom-6 -mx-6 -mb-6 border-t border-border bg-popover px-6 py-3">
+              <Button type="button" variant="outline" onClick={closeDialog} disabled={isSaving}>
+                {t("common.cancel")}
+              </Button>
               <Button type="submit" disabled={isSaving}>
                 {isSaving ? t("common.saving") : t("common.save")}
               </Button>
@@ -520,5 +622,59 @@ export function Products() {
         </AlertDialogContent>
       </AlertDialog>
     </div>
+  )
+}
+// Fila de un producto base (resumen de sus variantes) + sus variantes cuando está desplegado
+function GroupRows({ row, t, money, isAdmin, onToggle, onAddVariant, renderProduct }) {
+  const { group, variants, minPrice, maxPrice, stock, low, open } = row
+  const count = group._count?.products ?? variants.length
+  const attrs = group.attributeNames.join(", ")
+  const price =
+    minPrice == null ? "—" : minPrice === maxPrice ? money.format(minPrice) : `${money.format(minPrice)} – ${money.format(maxPrice)}`
+  return (
+    <>
+      <TableRow className="bg-muted/50">
+        <TableCell>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="-ml-2 size-7"
+            onClick={onToggle}
+            disabled={count === 0}
+            aria-expanded={open}
+            aria-label={t(open ? "products.variants.collapse" : "products.variants.expand", { name: group.name })}
+          >
+            <ChevronRight className={`h-4 w-4 transition-transform ${open ? "rotate-90" : ""}`} />
+          </Button>
+        </TableCell>
+        <TableCell className="font-semibold">
+          <span className="inline-flex items-center gap-2">
+            <Layers className="h-4 w-4 text-muted-foreground" aria-hidden />
+            {group.name}
+          </span>
+          <span className="block text-xs font-normal text-muted-foreground">
+            {count > 0 ? t("products.variants.summary", { count, attrs }) : t("products.variants.no_variants", { attrs })}
+          </span>
+        </TableCell>
+        <TableCell className="text-muted-foreground">
+          <Badge variant="outline">{t("products.variants.base_badge")}</Badge>
+        </TableCell>
+        <TableCell className="whitespace-nowrap">{price}</TableCell>
+        <TableCell className="hidden md:table-cell text-muted-foreground">—</TableCell>
+        <TableCell className="whitespace-nowrap">
+          {stock ? formatQty(stock.qty, stock.unit, t) : "—"}
+          {low > 0 && <Badge variant="destructive" className="ml-2">{t("products.variants.low", { count: low })}</Badge>}
+        </TableCell>
+        <TableCell className="text-right">
+          {isAdmin && (
+            <Button variant="outline" size="sm" onClick={onAddVariant} aria-label={t("products.variants.add_variant_aria", { name: group.name })}>
+              <Plus className="mr-1 h-3.5 w-3.5" />
+              {t("products.variants.add_variant")}
+            </Button>
+          )}
+        </TableCell>
+      </TableRow>
+      {open && variants.map((p) => renderProduct(p))}
+    </>
   )
 }

@@ -25,7 +25,8 @@
     "auditLog": "Auditoría",
     "scanText": "Registra entradas y salidas escaneando el código de barras con la cámara.",
     "scanButton": "Escanear producto",
-    "platform": "Plataforma"
+    "platform": "Plataforma",
+    "customers": "Clientes"
   },
   "topbar": {
     "search": "Buscar producto o SKU",
@@ -154,7 +155,11 @@
       "tax_hint": "El precio de venta incluye este IVA.",
       "label_cabys": "Código CABYS (opcional)",
       "cabys_hint": "13 dígitos. Lo exige la factura electrónica; puedes completarlo después.",
-      "save_error": "No se pudo guardar el producto."
+      "save_error": "No se pudo guardar el producto.",
+      "section_basic": "Datos básicos",
+      "section_price": "Precio e impuestos",
+      "section_stock": "Inventario",
+      "section_variant": "Variante"
     },
     "delete": {
       "title": "¿Eliminar este producto?",
@@ -297,6 +302,34 @@
       "banner_other": "{{count}} productos importados están “Por completar” (sin precio).",
       "show": "Ver",
       "hide": "Ver todos"
+    },
+    "variants": {
+      "label_group": "Producto base (variantes)",
+      "group_none": "No es una variante",
+      "group_hint": "Para tallas, colores o presentaciones: cada variante es un producto con su propio SKU, precio y stock.",
+      "manage": "Productos base",
+      "manage_title": "Productos base",
+      "manage_intro": "Un producto base agrupa sus variantes (por ejemplo, \"Camisa polo\" con Talla y Color).",
+      "name": "Nombre del producto base",
+      "attributes": "Atributos",
+      "attributes_hint": "Separados por coma: Talla, Color",
+      "add": "Agregar",
+      "count_one": "{{count}} variante",
+      "count_other": "{{count}} variantes",
+      "empty": "Todavía no hay productos base.",
+      "delete": "Borrar",
+      "delete_hint": "Sus variantes quedan como productos sueltos.",
+      "edit_attributes": "Guardar atributos",
+      "save_error": "No se pudo guardar el producto base.",
+      "add_variant": "Variante",
+      "add_variant_aria": "Agregar una variante a {{name}}",
+      "summary_one": "{{count}} variante · {{attrs}}",
+      "summary_other": "{{count}} variantes · {{attrs}}",
+      "no_variants": "Sin variantes todavía · {{attrs}}",
+      "low": "{{count}} bajo mínimo",
+      "expand": "Ver las variantes de {{name}}",
+      "collapse": "Ocultar las variantes de {{name}}",
+      "base_badge": "Producto base"
     }
   },
   "categories": {
@@ -528,6 +561,34 @@
     "currencies": {
       "CRC": "Colones (₡)",
       "USD": "Dólares ($)"
+    },
+    "fiscal": {
+      "title": "Datos fiscales",
+      "description": "Los datos de tu empresa como emisor de comprobantes electrónicos. Son opcionales hasta que empieces a facturar.",
+      "legalName": "Razón social o nombre completo",
+      "legalName_hint": "Si eres persona física, tu nombre como aparece en la cédula.",
+      "activity": "Actividad económica",
+      "activity_hint": "El código de tu actividad inscrita en Hacienda (ej. 620100).",
+      "invoiceEmail": "Correo para comprobantes",
+      "phone": "Teléfono",
+      "province": "Provincia",
+      "province_none": "Sin indicar",
+      "canton": "Cantón (código)",
+      "district": "Distrito (código)",
+      "code_hint": "Códigos de 2 dígitos de la división territorial de Hacienda (ej. 01).",
+      "addressDetail": "Otras señas",
+      "save": "Guardar datos fiscales",
+      "saved": "Datos fiscales guardados.",
+      "error": "No se pudieron guardar los datos fiscales.",
+      "provinces": {
+        "1": "San José",
+        "2": "Alajuela",
+        "3": "Cartago",
+        "4": "Heredia",
+        "5": "Guanacaste",
+        "6": "Puntarenas",
+        "7": "Limón"
+      }
     }
   },
   "purchaseRequests": {
@@ -860,5 +921,61 @@
     "RATE_2": "2 %",
     "RATE_1": "1 %",
     "EXEMPT": "Exento"
+  },
+  "fiscal": {
+    "idType": "Tipo de identificación",
+    "idNumber": "Número de identificación",
+    "none": "Sin identificación",
+    "types": {
+      "FISICA": "Cédula física",
+      "JURIDICA": "Cédula jurídica",
+      "DIMEX": "DIMEX",
+      "NITE": "NITE",
+      "EXTRANJERO": "Documento extranjero"
+    },
+    "hints": {
+      "none": "Para un consumidor final no hace falta. La factura electrónica sí la exige.",
+      "FISICA": "9 dígitos, sin guiones (ej. 112340567).",
+      "JURIDICA": "10 dígitos, sin guiones (ej. 3101123456).",
+      "DIMEX": "11 o 12 dígitos.",
+      "NITE": "10 dígitos.",
+      "EXTRANJERO": "Hasta 20 letras o números."
+    },
+    "invalid": "El número no tiene el formato de este tipo de identificación."
+  },
+  "customers": {
+    "title": "Clientes",
+    "subtitle": "A quién le vendes: para facturar a su nombre y dar crédito",
+    "new": "Nuevo cliente",
+    "create_title": "Nuevo cliente",
+    "edit_title": "Editar cliente",
+    "empty": "Todavía no hay clientes registrados.",
+    "search": "Buscar por nombre o identificación",
+    "table": {
+      "name": "Nombre",
+      "id": "Identificación",
+      "email": "Correo",
+      "phone": "Teléfono",
+      "credit": "Crédito",
+      "actions": "Acciones"
+    },
+    "fields": {
+      "name": "Nombre o razón social",
+      "email": "Correo electrónico",
+      "email_hint": "Ahí le llegarán sus comprobantes electrónicos.",
+      "phone": "Teléfono",
+      "address": "Dirección",
+      "activity": "Actividad económica (opcional)",
+      "activity_hint": "Código de la actividad del cliente ante Hacienda, si lo tienes.",
+      "creditLimit": "Límite de crédito",
+      "creditLimit_hint": "Vacío = solo vende de contado.",
+      "creditDays": "Plazo de crédito (días)"
+    },
+    "cash": "Contado",
+    "creditValue": "{{limit}} · {{days}} días",
+    "creditNoDays": "{{limit}}",
+    "delete_title": "¿Borrar este cliente?",
+    "delete_description": "\"{{name}}\" ya no aparecerá en la lista. Los comprobantes emitidos a su nombre se conservan.",
+    "save_error": "No se pudo guardar el cliente."
   }
 }

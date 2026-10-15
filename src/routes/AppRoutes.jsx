@@ -12,6 +12,7 @@ import { Profile } from "@/pages/Profile"
 import { Settings } from "@/pages/Settings"
 import {Users}from "@/pages/Users"
 import { Suppliers } from "@/pages/Suppliers"
+import { Customers } from "@/pages/Customers"
 import {PurchaseRequests} from "@/pages/PurchaseRequests"
 import { AdminRoute } from "./AdminRoute"
 import { PurchaseOrders } from "@/pages/PurchaseOrders"
@@ -48,6 +49,7 @@ const router = createBrowserRouter([
       {path:"settings", element:<Settings/>},
       { path: "users", element: <AdminRoute><Users /></AdminRoute> },
       { path: "suppliers", element: <Suppliers /> },
+      { path: "customers", element: <Customers /> },
       {path:"purchase-requests", element:<PurchaseRequests />},
       { path: "purchase-orders", element: <AdminRoute><PurchaseOrders /></AdminRoute> },
       { path: "audit-log", element: <AdminRoute><AuditLogPage /></AdminRoute> },

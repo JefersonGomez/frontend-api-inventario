@@ -19,10 +19,17 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction,
 } from "@/components/ui/alert-dialog"
 import { Plus, Pencil, Trash2 } from "lucide-react"
+import { useTranslation } from "react-i18next"
+import { FiscalIdFields } from "@/components/FiscalIdFields"
+import { cleanIdNumber, formatFiscalId, isValidId } from "@/lib/fiscal"
+import { apiErrorMessage } from "@/lib/api-error"
 
-const emptyForm = { name: "", email: "", phone: "", address: "" }
+const emptyForm = { name: "", email: "", phone: "", address: "", idType: "", idNumber: "" }
+// la identificación va sin guiones y solo si hay tipo
+const toPayload = (form) => ({ ...form, idType: form.idType || null, idNumber: form.idType ? cleanIdNumber(form.idNumber) : null })
 
 export function Suppliers() {
+  const { t } = useTranslation()
   const { user } = useAuth()
   const isAdmin = user?.role === "ADMIN"
   const queryClient = useQueryClient()
@@ -71,6 +78,8 @@ export function Suppliers() {
       email: supplier.email ?? "",
       phone: supplier.phone ?? "",
       address: supplier.address ?? "",
+      idType: supplier.idType ?? "",
+      idNumber: supplier.idNumber ?? "",
     })
     setDialogOpen(true)
   }
@@ -79,6 +88,8 @@ export function Suppliers() {
     setDialogOpen(false)
     setEditingSupplier(null)
     setForm(emptyForm)
+    createMutation.reset()
+    updateMutation.reset()
   }
 
   function handleOpenChange(open) {
@@ -91,14 +102,16 @@ export function Suppliers() {
 
   function handleSubmit(e) {
     e.preventDefault()
+    if (!isValidId(form.idType, form.idNumber)) return
     if (editingSupplier) {
-      updateMutation.mutate({ id: editingSupplier.id, data: form })
+      updateMutation.mutate({ id: editingSupplier.id, data: toPayload(form) })
     } else {
-      createMutation.mutate(form)
+      createMutation.mutate(toPayload(form))
     }
   }
 
   const isSaving = createMutation.isPending || updateMutation.isPending
+  const saveError = createMutation.error || updateMutation.error
 
   return (
     <div>
@@ -122,6 +135,7 @@ export function Suppliers() {
           <TableHeader>
             <TableRow>
               <TableHead>Nombre</TableHead>
+              <TableHead className="hidden md:table-cell">{t("fiscal.idNumber")}</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>Teléfono</TableHead>
               <TableHead>Productos</TableHead>
@@ -131,7 +145,7 @@ export function Suppliers() {
           <TableBody>
             {suppliersQuery.isLoading && (
               <TableRow>
-                <TableCell colSpan={isAdmin ? 5 : 4} className="text-center text-muted-foreground py-6">
+                <TableCell colSpan={isAdmin ? 6 : 5} className="text-center text-muted-foreground py-6">
                   Cargando...
                 </TableCell>
               </TableRow>
@@ -139,7 +153,7 @@ export function Suppliers() {
 
             {!suppliersQuery.isLoading && suppliersQuery.data?.length === 0 && (
               <TableRow>
-                <TableCell colSpan={isAdmin ? 5 : 4} className="text-center text-muted-foreground py-6">
+                <TableCell colSpan={isAdmin ? 6 : 5} className="text-center text-muted-foreground py-6">
                   No hay proveedores registrados.
                 </TableCell>
               </TableRow>
@@ -148,6 +162,9 @@ export function Suppliers() {
             {suppliersQuery.data?.map((supplier) => (
               <TableRow key={supplier.id}>
                 <TableCell className="font-medium">{supplier.name}</TableCell>
+                <TableCell className="hidden whitespace-nowrap text-muted-foreground md:table-cell">
+                  {formatFiscalId(t, supplier.idType, supplier.idNumber) ?? "—"}
+                </TableCell>
                 <TableCell className="text-muted-foreground">{supplier.email || "—"}</TableCell>
                 <TableCell className="text-muted-foreground">{supplier.phone || "—"}</TableCell>
                 <TableCell>
@@ -189,6 +206,7 @@ export function Suppliers() {
                     required
                   />
                 </div>
+                <FiscalIdFields idPrefix="supplier" value={form} onChange={(patch) => setForm({ ...form, ...patch })} />
                 <div className="space-y-2">
                   <Label htmlFor="supplier-email">Email</Label>
                   <Input
@@ -214,6 +232,10 @@ export function Suppliers() {
                     onChange={(e) => setForm({ ...form, address: e.target.value })}
                   />
                 </div>
+
+                {saveError && (
+                  <p role="alert" className="text-sm text-destructive">{apiErrorMessage(saveError, "No se pudo guardar el proveedor.")}</p>
+                )}
 
                 <DialogFooter>
                   <Button type="button" variant="outline" onClick={closeDialog} disabled={isSaving}>
