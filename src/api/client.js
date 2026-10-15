@@ -19,21 +19,30 @@ api.interceptors.request.use((config) => {
 
 let refreshPromise = null
 
-async function refreshAccessToken() {
-  const refreshToken = localStorage.getItem("refreshToken")
-  if (!refreshToken) {
-    throw new Error("No hay refresh token")
+// El refresh token rota: si dos pestañas lo renuevan a la vez, la segunda manda uno ya
+// invalidado y cierra la sesión. El lock del navegador las pone en fila, y la que llega tarde
+// ve que el token ya no es el que falló (lo cambió otra pestaña) y lo reutiliza.
+async function refreshAccessToken(failedToken) {
+  const run = async () => {
+    const current = localStorage.getItem("token")
+    if (current && current !== failedToken) return current
+
+    const refreshToken = localStorage.getItem("refreshToken")
+    if (!refreshToken) {
+      throw new Error("No hay refresh token")
+    }
+
+    // axios "pelado", no la instancia "api" — evita pasar de nuevo por este interceptor
+    const response = await axios.post(`${API_URL}/auth/refresh`, {
+      refreshToken,
+    })
+
+    const { token, refreshToken: newRefreshToken } = response.data
+    localStorage.setItem("token", token)
+    localStorage.setItem("refreshToken", newRefreshToken)
+    return token
   }
-
-  // axios "pelado", no la instancia "api" — evita pasar de nuevo por este interceptor
-  const response = await axios.post(`${API_URL}/auth/refresh`, {
-    refreshToken,
-  })
-
-  const { token, refreshToken: newRefreshToken } = response.data
-  localStorage.setItem("token", token)
-  localStorage.setItem("refreshToken", newRefreshToken)
-  return token
+  return navigator.locks ? navigator.locks.request("stockly-auth-refresh", run) : run()
 }
 
 api.interceptors.response.use(
@@ -46,7 +55,8 @@ api.interceptors.response.use(
 
       try {
         if (!refreshPromise) {
-          refreshPromise = refreshAccessToken().finally(() => {
+          const failedToken = String(originalRequest.headers?.Authorization ?? "").replace(/^Bearer /, "")
+          refreshPromise = refreshAccessToken(failedToken).finally(() => {
             refreshPromise = null
           })
         }
