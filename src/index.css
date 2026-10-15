@@ -164,6 +164,7 @@
   text-decoration: none; line-height: 1.2; background: none; border: 0; cursor: pointer; width: 100%;
   font-family: inherit; text-align: left;
 }
+.stk-link { transition: background-color 0.15s ease, color 0.15s ease; }
 .stk-link:hover { color: var(--foreground); background: var(--muted); }
 .stk-link[aria-current="page"] { background: var(--stk-accent-soft); color: var(--stk-accent-strong); font-weight: 600; }
 .stk-link svg { flex: none; }
@@ -192,6 +193,8 @@
 }
 .stk-search input { flex: 1; min-width: 0; border: 0; background: none; outline: none; font: inherit; font-size: 0.9rem; color: var(--foreground); }
 .stk-search:focus-within { outline: 2px solid var(--ring); outline-offset: 2px; }
+/* el contorno lo dibuja el contenedor: sin esto el input suma el suyo (regla .stk-app :focus-visible) y se ve doble */
+.stk-app .stk-search input:focus-visible { outline: none; }
 .stk-icon-btn {
   position: relative; flex: none; width: 42px; height: 42px; border-radius: 10px; border: 1px solid var(--border);
   background: var(--card); color: var(--foreground); display: grid; place-items: center; cursor: pointer;
@@ -206,6 +209,17 @@
 .stk-company-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
 
 .stk-app :focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+
+/* Transición al cambiar de página (Layout pone key={pathname} en main) */
+@keyframes stk-page-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+.stk-page-enter { animation: stk-page-in 0.22s ease-out; }
+@media (prefers-reduced-motion: reduce) {
+  .stk-page-enter { animation: none; }
+  .stk-link { transition: none; }
+}
 
 @media (max-width: 1100px) {
   .stk-shell { grid-template-columns: 200px minmax(0, 1fr); gap: 16px; padding: 14px 16px; }

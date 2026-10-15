@@ -27,7 +27,7 @@ export function Layout() {
         <Sidebar />
         <div>
           <Topbar />
-          <main>
+          <main key={pathname} className="stk-page-enter">
             {company?.suspendedAt ? <SuspendedScreen reason={company.suspensionReason} /> : <Outlet />}
           </main>
         </div>
