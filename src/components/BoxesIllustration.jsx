@@ -4,7 +4,7 @@ export function BoxesIllustration({ t }) {
       <defs>
         <linearGradient id="stk-edge" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0" stopColor="#fff" stopOpacity=".9" />
-          <stop offset="1" stopColor="#dcf20a" stopOpacity=".9" />
+          <stop offset="1" stopColor="#6aa7de" stopOpacity=".9" />
         </linearGradient>
         <linearGradient id="stk-top" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0" stopColor="#fff" stopOpacity=".38" />
@@ -12,15 +12,15 @@ export function BoxesIllustration({ t }) {
         </linearGradient>
         <linearGradient id="stk-left" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="#fff" stopOpacity=".22" />
-          <stop offset="1" stopColor="#8a8a85" stopOpacity=".08" />
+          <stop offset="1" stopColor="#7b8794" stopOpacity=".08" />
         </linearGradient>
         <linearGradient id="stk-right" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#c9c9c4" stopOpacity=".14" />
+          <stop offset="0" stopColor="#cbd2d9" stopOpacity=".14" />
           <stop offset="1" stopColor="#555" stopOpacity=".05" />
         </linearGradient>
         <radialGradient id="stk-glow">
-          <stop offset="0" stopColor="#dcf20a" stopOpacity=".55" />
-          <stop offset="1" stopColor="#dcf20a" stopOpacity="0" />
+          <stop offset="0" stopColor="#6aa7de" stopOpacity=".55" />
+          <stop offset="1" stopColor="#6aa7de" stopOpacity="0" />
         </radialGradient>
         <filter id="stk-blur" x="-20%" y="-200%" width="140%" height="500%">
           <feGaussianBlur stdDeviation="1.6" />
@@ -36,11 +36,11 @@ export function BoxesIllustration({ t }) {
           <path d="M60 160 L150 212 L150 270 L60 218 Z" fill="url(#stk-left)" />
           <path d="M240 160 L150 212 L150 270 L240 218 Z" fill="url(#stk-right)" />
         </g>
-        <path d="M105 134 L195 186" stroke="#dcf20a" strokeWidth="9" strokeOpacity=".85" />
+        <path d="M105 134 L195 186" stroke="#6aa7de" strokeWidth="9" strokeOpacity=".85" />
 
         {/* Etiqueta SKU en la cara izquierda */}
         <g transform="matrix(.61 .35 0 .7 78 180)">
-          <rect width="100" height="52" rx="4" fill="#f4f4f2" fillOpacity=".92" />
+          <rect width="100" height="52" rx="4" fill="#f6f7f9" fillOpacity=".92" />
           <g fill="#111">
             {[6, 9, 14, 16, 21, 26, 28, 33, 38, 41, 44, 50, 53, 58, 62, 65, 70, 74, 79, 83, 86, 91].map((x, i) => (
               <rect key={x} x={x} y="7" width={i % 3 === 0 ? 2.4 : 1.2} height="26" />
@@ -49,7 +49,7 @@ export function BoxesIllustration({ t }) {
           <text x="50" y="46" textAnchor="middle" className="stk-mono" fontSize="9" fill="#111">
             SKU 4821-07
           </text>
-          <rect className="stk-scan" x="2" y="20" width="96" height="2.4" fill="#dcf20a" filter="url(#stk-blur)" />
+          <rect className="stk-scan" x="2" y="20" width="96" height="2.4" fill="#6aa7de" filter="url(#stk-blur)" />
         </g>
 
         {/* Caja pequeña encima */}
@@ -58,17 +58,17 @@ export function BoxesIllustration({ t }) {
           <path d="M100 92 L150 121 L150 158 L100 129 Z" fill="url(#stk-left)" />
           <path d="M200 92 L150 121 L150 158 L200 129 Z" fill="url(#stk-right)" />
         </g>
-        <path d="M125 77.5 L175 106.5" stroke="#dcf20a" strokeWidth="6" strokeOpacity=".85" />
+        <path d="M125 77.5 L175 106.5" stroke="#6aa7de" strokeWidth="6" strokeOpacity=".85" />
 
         {/* Etiqueta flotante */}
-        <path d="M240 175 L268 132" stroke="#dcf20a" strokeWidth="1.2" strokeDasharray="3 4" />
-        <circle cx="240" cy="175" r="3" fill="#dcf20a" />
+        <path d="M240 175 L268 132" stroke="#6aa7de" strokeWidth="1.2" strokeDasharray="3 4" />
+        <circle cx="240" cy="175" r="3" fill="#6aa7de" />
         <g transform="translate(222 92)">
-          <rect width="92" height="42" rx="10" fill="#141413" stroke="#dcf20a" strokeWidth="1.2" />
-          <text x="12" y="17" fontSize="10" fill="#a9a9a3">
+          <rect width="92" height="42" rx="10" fill="#12161c" stroke="#6aa7de" strokeWidth="1.2" />
+          <text x="12" y="17" fontSize="10" fill="#9aa5b1">
             {t("auth.register.inStock")}
           </text>
-          <text x="12" y="33" fontSize="13" fontWeight="600" fill="#dcf20a" className="stk-mono">
+          <text x="12" y="33" fontSize="13" fontWeight="600" fill="#6aa7de" className="stk-mono">
             {t("auth.register.units", { count: 128 })}
           </text>
         </g>

@@ -29,10 +29,10 @@ const SECTIONS = [
 ];
 
 const TONE = {
-  crit: "bg-[color-mix(in_srgb,var(--stk-crit)_14%,transparent)] text-[var(--stk-crit)]",
-  warn: "bg-[color-mix(in_srgb,var(--stk-warn)_16%,transparent)] text-[var(--stk-warn)]",
-  ok: "bg-[color-mix(in_srgb,var(--stk-ok)_16%,transparent)] text-[var(--stk-ok)]",
-  info: "bg-[var(--stk-lime-soft)] text-foreground",
+  crit: "bg-[var(--stk-crit-bg)] text-[var(--stk-crit)]",
+  warn: "bg-[var(--stk-warn-bg)] text-[var(--stk-warn)]",
+  ok: "bg-[var(--stk-ok-bg)] text-[var(--stk-ok)]",
+  info: "bg-[var(--stk-accent-soft)] text-[var(--stk-accent)]",
 };
 
 const VISIBLE = 3;
@@ -213,7 +213,7 @@ export function NotificationBell() {
                 <p className="px-4 py-6 text-center text-sm text-muted-foreground">{t("notifications.error")}</p>
               ) : total === 0 ? (
                 <div className="flex flex-col items-center gap-2 px-6 py-10 text-center">
-                  <span className="grid size-10 place-items-center rounded-full bg-[var(--stk-lime-soft)]">
+                  <span className="grid size-10 place-items-center rounded-full bg-[var(--stk-accent-soft)]">
                     <CheckCheck className="size-5" strokeWidth={1.7} aria-hidden />
                   </span>
                   <p className="text-sm font-medium">{t("notifications.empty")}</p>

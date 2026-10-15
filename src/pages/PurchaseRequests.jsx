@@ -99,7 +99,7 @@ export function PurchaseRequests() {
   if (isLoading) return <div>{t("common.loading")}</div>;
 
   return (
-    <div className="p-6 space-y-4">
+    <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-semibold">{t("purchaseRequests.title")}</h1>
         <Dialog open={open} onOpenChange={setOpen}>

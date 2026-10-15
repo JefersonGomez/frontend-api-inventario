@@ -92,7 +92,7 @@ export function Sidebar() {
           <ScanBarcode className="w-[22px] h-[22px]" strokeWidth={1.7} aria-hidden />
         </span>
         <p>{t("sidebar.scanText")}</p>
-        <Link to="/movements" className="stk-btn-lime">
+        <Link to="/movements" className="stk-btn-accent">
           {t("sidebar.scanButton")}
         </Link>
       </div>

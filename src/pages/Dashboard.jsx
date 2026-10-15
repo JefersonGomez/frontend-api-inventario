@@ -87,14 +87,14 @@ export function Dashboard() {
               size={76}
               stroke={8}
               track="rgba(255,255,255,.12)"
-              color="var(--stk-lime)"
+              color="#6aa7de"
               label={t("dashboard.activeRing", { pct: activePct })}
             >
               <span className="dash-ring-text">{activePct}%</span>
             </Ring>
           </article>
 
-          <article className="dash-kpi dash-kpi--lime">
+          <article className="dash-kpi dash-kpi--accent">
             <div>
               <p className="dash-kpi-label">{t("dashboard.dispatched")}</p>
               <p className="dash-kpi-value">{num.format(dispatched)}</p>
@@ -104,8 +104,8 @@ export function Dashboard() {
               value={sellThrough}
               size={76}
               stroke={8}
-              track="rgba(0,0,0,.12)"
-              color="#161615"
+              track="rgba(255,255,255,.25)"
+              color="var(--stk-accent-fg)"
               label={t("dashboard.dispatchedRing", { pct: sellThrough })}
             >
               <span className="dash-ring-text">{sellThrough}%</span>
@@ -218,7 +218,7 @@ export function Dashboard() {
               </div>
               <p className="dash-muted dash-small">{t("dashboard.lowStockCoverage", { pct: lowCoverage })}</p>
               <p className="dash-small">{t("dashboard.lowStockHint")}</p>
-              <Link to="/purchase-requests" className="stk-btn-lime">
+              <Link to="/purchase-requests" className="stk-btn-accent">
                 {t("dashboard.lowStockCta")}
               </Link>
             </>

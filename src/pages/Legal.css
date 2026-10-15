@@ -7,7 +7,7 @@
 .legal-brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; letter-spacing: -0.01em; color: inherit; text-decoration: none; }
 .legal-mark {
   width: 30px; height: 30px; border-radius: 9px;
-  background: var(--stk-ink); color: var(--stk-lime);
+  background: var(--stk-accent); color: var(--stk-accent-fg);
   display: grid; place-items: center;
 }
 .dark .legal-mark { background: var(--muted); }
@@ -30,8 +30,8 @@
   margin: 0 0 24px; padding: 12px 14px;
   border-radius: 12px; font-size: 0.85rem; line-height: 1.5;
 }
-.legal-draft { background: color-mix(in srgb, var(--stk-warn) 14%, transparent); color: var(--foreground); border: 1px solid color-mix(in srgb, var(--stk-warn) 40%, transparent); }
+.legal-draft { background: var(--stk-warn-bg); color: var(--stk-warn); border: 1px solid var(--stk-warn-mid); }
 .legal-lang { background: var(--muted); }
 .legal-foot { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); }
-.legal-foot a { font-weight: 500; color: var(--foreground); text-decoration: underline; text-decoration-color: var(--stk-lime-dark); text-underline-offset: 3px; }
+.legal-foot a { font-weight: 500; color: var(--foreground); text-decoration: underline; text-decoration-color: var(--stk-accent-strong); text-underline-offset: 3px; }
 .legal-page a:focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; border-radius: 4px; }

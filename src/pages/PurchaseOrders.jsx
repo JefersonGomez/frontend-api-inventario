@@ -228,9 +228,9 @@ export function PurchaseOrders() {
   const isNoticeActive = Boolean(actionParam);
 
   return (
-    <div className="p-6 space-y-4">
+    <div className="space-y-4">
       {isNoticeActive && (
-        <div className="flex items-center gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-amber-600 dark:text-amber-400">
+        <div className="flex items-center gap-2 rounded-lg border border-[var(--stk-warn-mid)] bg-[var(--stk-warn-bg)] p-3 text-[var(--stk-warn)]">
           <AlertCircle className="h-5 w-5 shrink-0" />
           <p className="text-sm font-medium">
             Tienes una orden de compra pendiente de procesar. Se han precargado los datos correspondientes.

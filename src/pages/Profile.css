@@ -1,26 +1,25 @@
 /* Mi perfil — identidad Stockly. Usa los tokens de index.css (claro/oscuro); prefijo prof-* */
 .prof {
-  --prof-on-dark: #f4f4f2;
-  --prof-on-dark-muted: #a9a9a3;
+  --prof-on-dark: #e6eaef;
+  --prof-on-dark-muted: #9aa5b1;
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  max-width: 1080px;
+  gap: 20px;
 }
 .prof h1 { margin: 0; font-size: 1.5rem; font-weight: 600; letter-spacing: -0.02em; }
 .prof-sub { margin: 4px 0 0; color: var(--muted-foreground); font-size: 0.9rem; }
 
-/* ---------- Tarjeta principal (oscura, con brillo lima) ---------- */
+/* ---------- Tarjeta principal (oscura, con brillo azul) ---------- */
 .prof-hero {
   position: relative;
   overflow: hidden;
   border-radius: 22px;
-  padding: 28px;
+  padding: 22px;
   background: var(--stk-kpi-dark);
   color: var(--prof-on-dark);
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 20px;
 }
 .prof-hero::before,
 .prof-hero::after {
@@ -31,11 +30,11 @@
 }
 .prof-hero::before {
   width: 360px; height: 360px; right: -120px; top: -180px;
-  background: radial-gradient(closest-side, rgba(220, 242, 10, 0.32), transparent);
+  background: radial-gradient(closest-side, rgba(106, 167, 222, 0.30), transparent);
 }
 .prof-hero::after {
   width: 260px; height: 260px; left: 30%; bottom: -200px;
-  background: radial-gradient(closest-side, rgba(220, 242, 10, 0.12), transparent);
+  background: radial-gradient(closest-side, rgba(106, 167, 222, 0.12), transparent);
 }
 .prof-hero > * { position: relative; }
 .dark .prof-hero { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07); }
@@ -45,10 +44,10 @@
   width: 100%; height: 100%;
   border-radius: 50%;
   object-fit: cover;
-  box-shadow: 0 0 0 3px var(--stk-kpi-dark), 0 0 0 5px var(--stk-lime);
+  box-shadow: 0 0 0 3px var(--stk-kpi-dark), 0 0 0 5px var(--stk-accent);
   display: grid; place-items: center;
-  background: var(--stk-lime);
-  color: var(--stk-ink);
+  background: var(--stk-accent);
+  color: var(--stk-accent-fg);
   font-size: 2rem; font-weight: 600; letter-spacing: -0.02em;
 }
 .prof-avatar-btn {
@@ -56,13 +55,13 @@
   width: 36px; height: 36px;
   border-radius: 50%;
   border: 3px solid var(--stk-kpi-dark);
-  background: var(--stk-lime); color: var(--stk-ink);
+  background: var(--stk-accent); color: var(--stk-accent-fg);
   display: grid; place-items: center;
   cursor: pointer;
   transition: transform 0.15s ease;
 }
 .prof-avatar-btn:hover { transform: scale(1.08); }
-.prof-avatar-btn:focus-within { outline: 2px solid var(--stk-lime); outline-offset: 2px; }
+.prof-avatar-btn:focus-within { outline: 2px solid var(--stk-accent); outline-offset: 2px; }
 .prof-avatar-busy {
   position: absolute; inset: 0; border-radius: 50%;
   background: rgba(0, 0, 0, 0.55);
@@ -88,18 +87,18 @@
   border: 1px solid rgba(255, 255, 255, 0.16);
   color: var(--prof-on-dark);
 }
-.prof-chip--lime { background: var(--stk-lime); border-color: var(--stk-lime); color: var(--stk-ink); font-weight: 600; }
+.prof-chip--accent { background: var(--stk-accent); border-color: var(--stk-accent); color: var(--stk-accent-fg); font-weight: 600; }
 .prof-photo-hint { margin: 12px 0 0; font-size: 0.75rem; color: var(--prof-on-dark-muted); }
-.prof-photo-error { margin: 12px 0 0; font-size: 0.8rem; color: #ff8f86; }
+.prof-photo-error { margin: 12px 0 0; font-size: 0.8rem; color: #f5a097; }
 
 /* ---------- Tarjetas ---------- */
-.prof-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; align-items: start; }
+.prof-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; align-items: start; }
 .prof-card { display: flex; flex-direction: column; gap: 4px; }
 .prof-card-head { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
 .prof-card-icon {
   width: 38px; height: 38px; flex: none;
   border-radius: 11px;
-  background: var(--stk-lime-soft);
+  background: var(--stk-accent-soft);
   color: var(--foreground);
   display: grid; place-items: center;
 }
@@ -140,10 +139,10 @@
 .prof-eye:hover { background: var(--muted); color: var(--foreground); }
 .prof-meter { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-top: 2px; }
 .prof-meter span { height: 4px; border-radius: 4px; background: var(--muted); transition: background 0.2s ease; }
-.prof-meter[data-level="1"] span:nth-child(-n + 1) { background: var(--stk-crit); }
-.prof-meter[data-level="2"] span:nth-child(-n + 2) { background: var(--stk-warn); }
-.prof-meter[data-level="3"] span:nth-child(-n + 3) { background: var(--stk-ok); }
-.prof-meter[data-level="4"] span { background: var(--stk-ok); }
+.prof-meter[data-level="1"] span:nth-child(-n + 1) { background: var(--stk-crit-mid); }
+.prof-meter[data-level="2"] span:nth-child(-n + 2) { background: var(--stk-warn-mid); }
+.prof-meter[data-level="3"] span:nth-child(-n + 3) { background: var(--stk-ok-mid); }
+.prof-meter[data-level="4"] span { background: var(--stk-ok-mid); }
 .prof-hint { margin: 0; font-size: 0.78rem; color: var(--muted-foreground); }
 
 /* Mensajes */
@@ -154,8 +153,8 @@
   border-radius: 10px;
   font-size: 0.85rem;
 }
-.prof-msg--ok { background: color-mix(in srgb, var(--stk-ok) 12%, transparent); color: var(--stk-ok); }
-.prof-msg--err { background: color-mix(in srgb, var(--stk-crit) 12%, transparent); color: var(--stk-crit); }
+.prof-msg--ok { background: var(--stk-ok-bg); color: var(--stk-ok); }
+.prof-msg--err { background: var(--stk-crit-bg); color: var(--stk-crit); }
 
 /* Empresas */
 .prof-companies { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
@@ -165,11 +164,11 @@
   border-radius: 14px;
   border: 1px solid var(--border);
 }
-.prof-company--active { border-color: var(--stk-lime-dark); background: var(--stk-lime-soft); }
+.prof-company--active { border-color: var(--stk-accent-strong); background: var(--stk-accent-soft); }
 .prof-company-mark {
   width: 40px; height: 40px; flex: none;
   border-radius: 11px;
-  background: var(--stk-ink); color: var(--stk-lime);
+  background: var(--stk-accent-soft); color: var(--stk-accent);
   display: grid; place-items: center;
   font-weight: 600; font-size: 0.9rem;
 }

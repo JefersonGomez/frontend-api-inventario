@@ -219,7 +219,7 @@ export function Profile() {
           <h2 className="prof-name">{profile.name}</h2>
           <p className="prof-email">{profile.email}</p>
           <div className="prof-chips">
-            <span className="prof-chip prof-chip--lime">
+            <span className="prof-chip prof-chip--accent">
               {profile.isPlatformOwner ? t("topbar.platformMode") : t(`companies.roles.${profile.role}`)}
             </span>
             {company?.name && !profile.isPlatformOwner && (

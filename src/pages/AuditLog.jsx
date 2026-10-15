@@ -102,7 +102,7 @@ export function AuditLogPage() {
   const topAction = [...metrics.byAction].sort((a, b) => b.count - a.count)[0];
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-5">
       <div>
         <h1 className="text-2xl font-semibold">{t("auditLog.title")}</h1>
         <p className="text-sm text-muted-foreground">{t("auditLog.subtitle")}</p>
@@ -162,7 +162,7 @@ export function AuditLogPage() {
                     cx={cx}
                     cy={cy}
                     r={on ? 7 : 3}
-                    fill={on ? "var(--stk-lime)" : "var(--foreground)"}
+                    fill={on ? "var(--stk-accent)" : "var(--foreground)"}
                     stroke={on ? "var(--foreground)" : "none"}
                     strokeWidth={2}
                   />
@@ -171,7 +171,7 @@ export function AuditLogPage() {
               isAnimationActive={false}
             />
             {selectedPoint && (
-              <ReferenceLine x={selectedPoint.label} stroke="var(--stk-lime)" strokeWidth={2} strokeDasharray="4 3" />
+              <ReferenceLine x={selectedPoint.label} stroke="var(--stk-accent)" strokeWidth={2} strokeDasharray="4 3" />
             )}
           </LineChart>
         </ResponsiveContainer>
@@ -239,7 +239,7 @@ export function AuditLogPage() {
                         }
                       }}
                       className={`cursor-pointer border-b border-border/50 hover:bg-muted/50 focus-visible:outline-2 focus-visible:outline-ring ${
-                        log.id === selectedId ? "bg-[var(--stk-lime-soft)]" : ""
+                        log.id === selectedId ? "bg-[var(--stk-accent-soft)]" : ""
                       }`}
                     >
                       <td className="py-2">

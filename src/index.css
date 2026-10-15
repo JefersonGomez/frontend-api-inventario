@@ -1,68 +1,86 @@
 @import "tailwindcss";
 
+/* Paleta «Almacén» (decicionesDeDIseño/Paleta_Almacen.xlsx): azul acero + estados verde/ámbar/rojo.
+   Los derivados que el Excel no trae (muted/secondary/input) están marcados. */
 :root {
   /* le dice al navegador el tema: listas desplegables, fechas y barras nativas se dibujan acorde */
   color-scheme: light;
   --radius: 0.625rem;
-  /* Identidad Stockly (claro): contenedor #efefea, tarjetas #fbfbf8, acento lima */
-  --background: #efefea;
-  --foreground: #161615;
-  --card: #fbfbf8;
-  --card-foreground: #161615;
-  --popover: #fbfbf8;
-  --popover-foreground: #161615;
-  --primary: #161615;
-  --primary-foreground: #dcf20a;
-  --secondary: #e6e6e0;
-  --secondary-foreground: #161615;
-  --muted: #e8e8e2;
-  --muted-foreground: #74746d;
-  --accent: #eef7b4;
-  --accent-foreground: #161615;
-  --destructive: #b8322a;
+  --background: #f6f7f9;
+  --foreground: #1f2933;
+  --card: #ffffff;
+  --card-foreground: #1f2933;
+  --popover: #ffffff;
+  --popover-foreground: #1f2933;
+  --primary: #2f6fa8;
+  --primary-foreground: #ffffff;
+  --secondary: #eef1f4; /* derivado */
+  --secondary-foreground: #1f2933;
+  --muted: #eef1f4; /* derivado */
+  --muted-foreground: #52606d;
+  --accent: #e8f0f8;
+  --accent-foreground: #1f2933;
+  --destructive: #a8261a;
   --destructive-foreground: #ffffff;
-  --border: #e2e2dc;
-  --input: #e2e2dc;
-  --ring: #6f7c00;
+  --border: #e1e5ea;
+  --input: #cbd2d9; /* derivado: un poco más oscuro que el borde para que los campos se vean */
+  --ring: #2f6fa8;
 
-  --stk-page: #0b0b0a;
-  --stk-ink: #161615;
-  --stk-lime: #dcf20a;
-  --stk-lime-soft: #eef7b4;
-  --stk-lime-dark: #6f7c00;
-  --stk-ok: #2f7d4a;
-  --stk-warn: #a8690f;
-  --stk-crit: #b8322a;
-  --stk-kpi-dark: #161615;
+  --stk-page: #12161c;
+  --stk-ink: #1f2933;
+  --stk-accent: #2f6fa8;
+  --stk-accent-strong: #245a8a;
+  --stk-accent-soft: #e8f0f8;
+  --stk-accent-fg: #ffffff;
+  /* estados: texto (también íconos), fondo suave y tono medio (barras e íconos, no texto) */
+  --stk-ok: #1e6b47;
+  --stk-ok-bg: #e6f4ec;
+  --stk-ok-mid: #2e7d5b;
+  --stk-warn: #8a5300;
+  --stk-warn-bg: #fdf1dc;
+  --stk-warn-mid: #b26a00;
+  --stk-crit: #a8261a;
+  --stk-crit-bg: #fde8e6;
+  --stk-crit-mid: #b42318;
+  --stk-kpi-dark: #1f2933;
 }
 
 .dark {
   color-scheme: dark;
-  --background: #141413;
-  --foreground: #f2f2ee;
-  --card: #1c1c1a;
-  --card-foreground: #f2f2ee;
-  --popover: #1c1c1a;
-  --popover-foreground: #f2f2ee;
-  --primary: #dcf20a;
-  --primary-foreground: #161615;
-  --secondary: #262624;
-  --secondary-foreground: #f2f2ee;
-  --muted: #262624;
-  --muted-foreground: #9a9a92;
-  --accent: #2a2f0a;
-  --accent-foreground: #eef7b4;
-  --destructive: #e0584f;
-  --destructive-foreground: #ffffff;
-  --border: #2b2b28;
-  --input: #2b2b28;
-  --ring: #dcf20a;
+  --background: #12161c;
+  --foreground: #e6eaef;
+  --card: #1a2028;
+  --card-foreground: #e6eaef;
+  --popover: #1a2028;
+  --popover-foreground: #e6eaef;
+  --primary: #6aa7de;
+  --primary-foreground: #0e1a26;
+  --secondary: #232b35; /* derivado */
+  --secondary-foreground: #e6eaef;
+  --muted: #232b35; /* derivado */
+  --muted-foreground: #9aa5b1;
+  --accent: #1b2d40;
+  --accent-foreground: #e6eaef;
+  --destructive: #f5a097;
+  --destructive-foreground: #0e1a26;
+  --border: #2e3742;
+  --input: #3a4552; /* derivado */
+  --ring: #6aa7de;
 
-  --stk-lime-soft: #2a2f0a;
-  --stk-ok: #5cbf7e;
-  --stk-warn: #e0a040;
-  --stk-crit: #e0584f;
-  --stk-kpi-dark: #0b0b0a;
+  --stk-accent: #6aa7de;
+  --stk-accent-strong: #8dbde8;
+  --stk-accent-soft: #1b2d40;
+  --stk-accent-fg: #0e1a26;
+  --stk-ok: #7ed3ac;
+  --stk-ok-bg: #183428;
+  --stk-ok-mid: #5cc096;
+  --stk-warn: #f0be6a;
+  --stk-warn-bg: #3a2c12;
+  --stk-warn-mid: #e3a440;
+  --stk-crit: #f5a097;
+  --stk-crit-bg: #3d1e1c;
+  --stk-crit-mid: #f08a7e;
+  --stk-kpi-dark: #0e1a26;
 }
 
 @theme inline {
@@ -107,83 +125,82 @@
 .stk-app {
   min-height: 100dvh;
   overflow-x: hidden;
-  background:
-    radial-gradient(46rem 34rem at 100% 0%, rgba(220, 242, 10, 0.16), transparent 62%),
-    radial-gradient(52rem 38rem at 0% 100%, rgba(150, 170, 0, 0.16), transparent 62%),
-    var(--background);
-  background-attachment: fixed;
+  background: var(--background);
 }
-/* Sin contenedor: las tarjetas se apoyan directo sobre el fondo de la app */
+/* Sin contenedor y a todo el ancho: las tarjetas se apoyan directo sobre el fondo de la app.
+   ponytail: tope de 2200px solo para que en monitores ultra anchos las líneas no queden infinitas */
 .stk-shell {
-  max-width: 1680px;
+  max-width: 2200px;
   margin: 0 auto;
-  padding: 28px 32px;
+  padding: 16px 20px;
   display: grid;
-  grid-template-columns: 240px minmax(0, 1fr);
-  gap: 28px;
+  grid-template-columns: 224px minmax(0, 1fr);
+  gap: 20px;
   align-items: start;
 }
 .stk-shell > * { min-width: 0; }
 .stk-card {
   background: var(--card);
   color: var(--card-foreground);
-  border-radius: 18px;
-  padding: 22px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
 }
 
 /* Navegación */
-.stk-side { display: flex; flex-direction: column; gap: 24px; position: sticky; top: 28px; }
-.stk-nav { display: flex; flex-direction: column; gap: 6px; }
-.stk-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; text-decoration: none; color: inherit; }
+.stk-side { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 16px; }
+.stk-nav { display: flex; flex-direction: column; gap: 2px; padding: 14px 10px; }
+.stk-logo { display: flex; align-items: center; gap: 10px; margin: 0 6px 12px; text-decoration: none; color: inherit; }
 .stk-logo-mark {
-  flex: none; width: 38px; height: 38px; border-radius: 10px;
-  background: var(--stk-ink); color: var(--stk-lime);
+  flex: none; width: 34px; height: 34px; border-radius: 9px;
+  background: var(--stk-accent); color: var(--stk-accent-fg);
   display: grid; place-items: center;
 }
-.stk-logo-text { font-weight: 600; font-size: 1.35rem; letter-spacing: -0.02em; }
+.stk-logo-text { font-weight: 600; font-size: 1.25rem; letter-spacing: -0.02em; }
 .stk-link {
   display: flex; align-items: center; gap: 10px;
-  min-height: 44px; padding: 0 12px; border-radius: 12px;
+  min-height: 40px; padding: 0 12px; border-radius: 10px;
   font-size: 0.9rem; font-weight: 500; color: var(--muted-foreground);
   text-decoration: none; line-height: 1.2; background: none; border: 0; cursor: pointer; width: 100%;
   font-family: inherit; text-align: left;
 }
 .stk-link:hover { color: var(--foreground); background: var(--muted); }
-.stk-link[aria-current="page"] { background: var(--stk-lime-soft); color: var(--foreground); }
+.stk-link[aria-current="page"] { background: var(--stk-accent-soft); color: var(--stk-accent-strong); font-weight: 600; }
 .stk-link svg { flex: none; }
-.stk-sep { height: 1px; background: var(--border); margin: 10px 4px; }
+.stk-sep { height: 1px; background: var(--border); margin: 8px 4px; }
 
-.stk-promo { display: flex; flex-direction: column; gap: 12px; }
+.stk-promo { display: flex; flex-direction: column; gap: 10px; }
 .stk-promo-icon {
-  width: 46px; height: 46px; border-radius: 50%;
-  background: var(--stk-ink); color: var(--stk-lime); display: grid; place-items: center;
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--stk-accent-soft); color: var(--stk-accent); display: grid; place-items: center;
 }
 .stk-promo p { margin: 0; font-size: 0.85rem; line-height: 1.45; color: var(--muted-foreground); }
-.stk-btn-lime {
+.stk-btn-accent {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  min-height: 44px; padding: 0 16px; border-radius: 12px; border: 0;
-  background: var(--stk-lime); color: #161615; font-weight: 600; font-size: 0.9rem;
+  min-height: 40px; padding: 0 16px; border-radius: 10px; border: 0;
+  background: var(--stk-accent); color: var(--stk-accent-fg); font-weight: 600; font-size: 0.9rem;
   text-decoration: none; cursor: pointer; font-family: inherit;
 }
-.stk-btn-lime:hover { filter: brightness(0.95); }
+.stk-btn-accent:hover { background: var(--stk-accent-strong); }
 
 /* Barra superior */
-.stk-top { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; }
+.stk-top { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
 .stk-search {
   flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px;
-  min-height: 44px; padding: 0 14px; border-radius: 12px; background: var(--card); color: var(--muted-foreground);
+  min-height: 42px; padding: 0 14px; border-radius: 10px; border: 1px solid var(--border);
+  background: var(--card); color: var(--muted-foreground);
 }
 .stk-search input { flex: 1; min-width: 0; border: 0; background: none; outline: none; font: inherit; font-size: 0.9rem; color: var(--foreground); }
 .stk-search:focus-within { outline: 2px solid var(--ring); outline-offset: 2px; }
 .stk-icon-btn {
-  position: relative; flex: none; width: 44px; height: 44px; border-radius: 12px; border: 0;
+  position: relative; flex: none; width: 42px; height: 42px; border-radius: 10px; border: 1px solid var(--border);
   background: var(--card); color: var(--foreground); display: grid; place-items: center; cursor: pointer;
 }
 .stk-icon-btn:hover { background: var(--muted); }
 /* selector de empresa (barra superior) */
 .stk-company-btn {
-  flex: none; display: flex; align-items: center; gap: 8px; height: 44px; max-width: 240px; padding: 0 12px;
-  border-radius: 12px; border: 0; background: var(--card); color: var(--foreground); cursor: pointer; font: inherit; font-size: 0.875rem;
+  flex: none; display: flex; align-items: center; gap: 8px; height: 42px; max-width: 240px; padding: 0 12px;
+  border-radius: 10px; border: 1px solid var(--border); background: var(--card); color: var(--foreground); cursor: pointer; font: inherit; font-size: 0.875rem;
 }
 .stk-company-btn:hover { background: var(--muted); }
 .stk-company-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
@@ -191,20 +208,20 @@
 .stk-app :focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
 
 @media (max-width: 1100px) {
-  .stk-shell { grid-template-columns: 220px minmax(0, 1fr); gap: 24px; padding: 24px; }
+  .stk-shell { grid-template-columns: 200px minmax(0, 1fr); gap: 16px; padding: 14px 16px; }
 }
 @media (max-width: 760px) {
-  .stk-shell { grid-template-columns: minmax(0, 1fr); gap: 12px; padding: 16px; }
+  .stk-shell { grid-template-columns: minmax(0, 1fr); gap: 10px; padding: 10px 12px; }
   .stk-side { position: static; gap: 10px; }
-  .stk-nav { flex-direction: row; align-items: center; overflow-x: auto; scrollbar-width: none; padding: 10px; }
-  .stk-logo { margin: 0 8px 0 0; }
+  .stk-nav { flex-direction: row; align-items: center; overflow-x: auto; scrollbar-width: none; padding: 8px; }
+  .stk-logo { margin: 0 8px 0 4px; }
   .stk-link { width: auto; white-space: nowrap; }
   .stk-sep, .stk-promo { display: none; }
   .stk-company-btn { max-width: 140px; }
-  .stk-top { margin-bottom: 14px; }
-  .stk-card { padding: 18px; }
+  .stk-top { margin-bottom: 10px; }
+  .stk-card { padding: 14px; }
 }
-/* Impresión / "Guardar como PDF": solo el contenido de la página, sin menú, barra ni brillos */
+/* Impresión / "Guardar como PDF": solo el contenido de la página, sin menú ni barra */
 @media print {
   .stk-app { background: #fff; min-height: 0; overflow: visible; }
   .stk-shell { display: block; padding: 0; max-width: none; }

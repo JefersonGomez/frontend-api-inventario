@@ -146,7 +146,7 @@ export function Reports() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* encabezado que solo aparece en el PDF / papel */}
       <div className="hidden print:block border-b border-border pb-3">
         <p className="text-lg font-semibold">{company?.name ?? ""}</p>
@@ -176,7 +176,7 @@ export function Reports() {
       )}
 
       {/* Tarjetas resumen y módulos de análisis en grid de 2 columnas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 print:grid-cols-1 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 print:grid-cols-1 gap-5">
         <Card>
           <CardHeader>
             <CardTitle className="text-sm font-normal text-muted-foreground">

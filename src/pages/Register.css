@@ -1,13 +1,13 @@
 /* Estilo "Stockly" (negro + lima). Local a Register hasta migrar los tokens globales de la app. */
 .stk-page {
-  --stk-bg: #0b0b0a;
-  --stk-panel: #1a1a19;
-  --stk-lime: #dcf20a;
-  --stk-lime-dark: #7d8a00;
-  --stk-field: #f4f4f2;
-  --stk-border: #e3e3df;
-  --stk-ink: #111110;
-  --stk-muted: #6b6b66;
+  --stk-bg: #12161c;
+  --stk-panel: #1a2028;
+  --stk-accent: #2f6fa8;
+  --stk-accent-strong: #245a8a;
+  --stk-field: #f6f7f9;
+  --stk-border: #cbd2d9;
+  --stk-ink: #1f2933;
+  --stk-muted: #52606d;
 
   color-scheme: dark;
   box-sizing: border-box;
@@ -18,7 +18,7 @@
   overflow-x: hidden;
   font-family: "Onest", system-ui, sans-serif;
   background:
-    radial-gradient(60rem 40rem at 0% 100%, rgba(150, 170, 0, 0.55), transparent 60%),
+    radial-gradient(60rem 40rem at 0% 100%, rgba(47, 111, 168, 0.45), transparent 60%),
     var(--stk-bg);
 }
 .stk-page *,
@@ -42,8 +42,8 @@
   margin: 14px 0;
   padding: 2.25rem 2rem;
   border-radius: 20px 0 0 20px;
-  background: linear-gradient(160deg, #262624 0%, var(--stk-panel) 45%, #121211 100%);
-  color: #f4f4f2;
+  background: linear-gradient(160deg, #232b35 0%, var(--stk-panel) 45%, #12161c 100%);
+  color: #e6eaef;
   display: flex;
   flex-direction: column;
 }
@@ -56,7 +56,7 @@
 }
 .stk-sub {
   margin: 0.75rem 0 0;
-  color: #a9a9a3;
+  color: #9aa5b1;
   line-height: 1.5;
 }
 .stk-art {
@@ -129,11 +129,11 @@
   border-radius: 12px;
 }
 .stk-field input:focus-visible {
-  outline: 2px solid var(--stk-lime-dark);
+  outline: 2px solid var(--stk-accent-strong);
   outline-offset: 2px;
 }
 .stk-field input[aria-invalid="true"] {
-  border-color: #c2410c;
+  border-color: #a8261a;
 }
 
 .stk-btn {
@@ -145,15 +145,15 @@
   padding: 0.75rem 1rem;
   border: 0;
   border-radius: 12px;
-  background: var(--stk-lime);
-  color: var(--stk-ink);
+  background: var(--stk-accent);
+  color: #fff;
   font: inherit;
   font-weight: 600;
   text-decoration: none;
   cursor: pointer;
-  transition: filter 0.15s;
+  transition: background 0.15s;
 }
-.stk-btn:hover { filter: brightness(0.95); }
+.stk-btn:hover { background: var(--stk-accent-strong); }
 .stk-btn:disabled { opacity: 0.6; cursor: progress; }
 .stk-btn:focus-visible {
   outline: 2px solid var(--stk-ink);
@@ -163,7 +163,7 @@
 .stk-error {
   margin: 0;
   font-size: 0.875rem;
-  color: #c2410c;
+  color: #a8261a;
 }
 .stk-check {
   display: flex;
@@ -175,8 +175,8 @@
   cursor: pointer;
 }
 .stk-check input { margin-top: 3px; width: 16px; height: 16px; flex: none; accent-color: var(--stk-ink); cursor: pointer; }
-.stk-check input[aria-invalid="true"] { outline: 2px solid #c2410c; outline-offset: 2px; }
-.stk-check a { color: var(--stk-ink); font-weight: 600; text-decoration: underline; text-decoration-color: var(--stk-lime-dark); text-underline-offset: 3px; }
+.stk-check input[aria-invalid="true"] { outline: 2px solid #a8261a; outline-offset: 2px; }
+.stk-check a { color: var(--stk-ink); font-weight: 600; text-decoration: underline; text-decoration-color: var(--stk-accent-strong); text-underline-offset: 3px; }
 .stk-legal { margin: 0; text-align: center; font-size: 0.78rem; color: var(--stk-muted); }
 .stk-legal a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
 .stk-foot {
@@ -189,11 +189,11 @@
   color: var(--stk-ink);
   font-weight: 600;
   text-decoration: underline;
-  text-decoration-color: var(--stk-lime-dark);
+  text-decoration-color: var(--stk-accent-strong);
   text-underline-offset: 3px;
 }
 .stk-foot a:focus-visible {
-  outline: 2px solid var(--stk-lime-dark);
+  outline: 2px solid var(--stk-accent-strong);
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -211,8 +211,8 @@
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: var(--stk-lime);
-  box-shadow: 0 0 0 6px rgba(220, 242, 10, 0.25);
+  background: var(--stk-accent);
+  box-shadow: 0 0 0 6px rgba(47, 111, 168, 0.25);
 }
 
 /* Tablet y móvil: una columna, panel arriba */

@@ -9,7 +9,7 @@ export function SuspendedScreen({ reason }) {
     <section className="stk-card" style={{ maxWidth: 560, margin: "48px auto", textAlign: "center" }} role="alert">
       <span
         className="mx-auto mb-4 grid place-items-center rounded-full"
-        style={{ width: 56, height: 56, background: "var(--stk-lime-soft)" }}
+        style={{ width: 56, height: 56, background: "var(--stk-accent-soft)" }}
       >
         <PauseCircle className="w-7 h-7" aria-hidden="true" />
       </span>

@@ -63,7 +63,7 @@ export function Platform() {
   const totalUsers = companies.reduce((s, c) => s + c.users, 0)
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div>
         <h1 className="text-2xl font-semibold">{t("platform.title")}</h1>
         <p className="text-sm text-muted-foreground">{t("platform.subtitle")}</p>
@@ -76,7 +76,7 @@ export function Platform() {
           { icon: UsersIcon, label: t("platform.kpi.users"), value: totalUsers },
         ].map(({ icon: Icon, label, value }) => (
           <div key={label} className="stk-card flex items-center gap-4">
-            <span className="grid place-items-center rounded-xl shrink-0" style={{ width: 44, height: 44, background: "var(--stk-lime-soft)" }}>
+            <span className="grid place-items-center rounded-xl shrink-0" style={{ width: 44, height: 44, background: "var(--stk-accent-soft)" }}>
               <Icon className="w-5 h-5" aria-hidden="true" />
             </span>
             <div>
