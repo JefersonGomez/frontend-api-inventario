@@ -1,15 +1,19 @@
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { useAuth } from "../context/AuthContext";
 import {
   getPurchaseRequests,
+  getPurchaseRequest,
   createPurchaseRequest,
   updatePurchaseRequestStatus,
 } from "../api/PurchaseRequests";
-import { getProducts } from "../api/products";
 import { qtyStep, formatQty } from "@/lib/units";
+import { ProductPicker } from "@/components/ProductPicker";
+import { Pagination } from "@/components/Pagination";
+import { SearchInput } from "@/components/SearchInput";
+import { useListParams } from "@/hoocks/useListParams";
 import { CommentThread } from "@/components/CommentThread";
 import { Check, X } from "lucide-react";
 import {
@@ -39,12 +43,34 @@ export function PurchaseRequests() {
   const [detailId, setDetailId] = useState(null);
   const [rejecting, setRejecting] = useState(null);
   const [rejectionReason, setRejectionReason] = useState("");
-  const [form, setForm] = useState({ productId: "", quantity: "", reason: "" });
+  const [form, setForm] = useState({ product: null, quantity: "", reason: "" });
 
-  const { data: requests = [], isLoading } = useQuery({
-    queryKey: ["purchase-requests"],
-    queryFn: getPurchaseRequests,
+  // página, búsqueda y estado en la URL; el servidor filtra y pagina
+  const list = useListParams();
+  const filters = { q: list.get("q"), status: list.get("status") };
+  const requestsQuery = useQuery({
+    queryKey: ["purchase-requests", list.page, filters],
+    queryFn: () =>
+      getPurchaseRequests({
+        page: list.page,
+        ...(filters.q && { q: filters.q }),
+        ...(filters.status && { status: filters.status }),
+      }),
+    placeholderData: keepPreviousData,
   });
+  const { isLoading } = requestsQuery;
+  const pageItems = requestsQuery.data?.items ?? [];
+  // la resaltada (?highlight= desde la campanita) puede estar en otra página: se trae aparte y va arriba
+  const pinnedQuery = useQuery({
+    queryKey: ["purchase-requests", "one", highlightId],
+    queryFn: () => getPurchaseRequest(highlightId),
+    enabled: Boolean(highlightId) && !requestsQuery.isLoading && !pageItems.some((r) => r.id === highlightId),
+  });
+  const requests = pinnedQuery.data && !pageItems.some((r) => r.id === pinnedQuery.data.id) ? [pinnedQuery.data, ...pageItems] : pageItems;
+  const statusItems = [
+    { value: "all", label: t("list.all") },
+    ...["PENDING", "APPROVED", "REJECTED"].map((v) => ({ value: v, label: t(`purchaseRequests.status${v.charAt(0) + v.slice(1).toLowerCase()}`) })),
+  ];
 
   // ?comments=1 (aviso de comentario en la campanita) abre el detalle de ?highlight= con su hilo
   const openId = detailId ?? (searchParams.get("comments") === "1" ? highlightId : null);
@@ -54,18 +80,13 @@ export function PurchaseRequests() {
     if (searchParams.has("comments")) setSearchParams({ highlight: highlightId }, { replace: true });
   };
 
-  const { data: products = [] } = useQuery({
-    queryKey: ["products"],
-    queryFn: getProducts,
-  });
-
   const createMutation = useMutation({
     mutationFn: createPurchaseRequest,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["purchase-requests"] });
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
       setOpen(false);
-      setForm({ productId: "", quantity: "", reason: "" });
+      setForm({ product: null, quantity: "", reason: "" });
     },
   });
 
@@ -91,7 +112,7 @@ export function PurchaseRequests() {
   const handleCreate = (e) => {
     e.preventDefault();
     createMutation.mutate({
-      productId: form.productId,
+      productId: form.product.id,
       quantity: Number(form.quantity),
       reason: form.reason || undefined,
     });
@@ -112,26 +133,14 @@ export function PurchaseRequests() {
               <DialogTitle>{t("purchaseRequests.newRequest")}</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleCreate} className="space-y-4">
-              <Select
-                value={form.productId}
-                onValueChange={(v) => setForm({ ...form, productId: v })}
-                items={products.map((p) => ({ value: p.id, label: `${p.name} (${p.sku})` }))}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder={t("purchaseRequests.product")} />
-                </SelectTrigger>
-                <SelectContent>
-                  {products.map((p) => (
-                    <SelectItem key={p.id} value={p.id}>
-                      {p.name} ({p.sku})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="space-y-1">
+                <Label htmlFor="request-product">{t("purchaseRequests.product")}</Label>
+                <ProductPicker id="request-product" value={form.product} onChange={(product) => setForm({ ...form, product })} required />
+              </div>
               <Input
                 type="number"
-                min={qtyStep(products.find((p) => p.id === form.productId)?.unit)}
-                step={qtyStep(products.find((p) => p.id === form.productId)?.unit)}
+                min={qtyStep(form.product?.unit)}
+                step={qtyStep(form.product?.unit)}
                 placeholder={t("purchaseRequests.quantity")}
                 value={form.quantity}
                 onChange={(e) => setForm({ ...form, quantity: e.target.value })}
@@ -142,12 +151,30 @@ export function PurchaseRequests() {
                 value={form.reason}
                 onChange={(e) => setForm({ ...form, reason: e.target.value })}
               />
-              <Button type="submit" disabled={createMutation.isPending}>
+              <Button type="submit" disabled={createMutation.isPending || !form.product}>
                 {t("common.save")}
               </Button>
             </form>
           </DialogContent>
         </Dialog>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-2">
+        <SearchInput
+          id="request-search"
+          value={filters.q}
+          onSearch={(q) => list.set({ q })}
+          placeholder={t("list.search")}
+          className="w-full max-w-sm"
+        />
+        <Select items={statusItems} value={filters.status || "all"} onValueChange={(v) => list.set({ status: v === "all" ? "" : v })}>
+          <SelectTrigger className="w-44" aria-label={t("purchaseRequests.status")}>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {statusItems.map((i) => <SelectItem key={i.value} value={i.value}>{i.label}</SelectItem>)}
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="overflow-x-auto">
@@ -163,6 +190,11 @@ export function PurchaseRequests() {
           </tr>
         </thead>
         <tbody>
+          {requests.length === 0 && (
+            <tr>
+              <td colSpan={6} className="py-6 text-center text-muted-foreground">{t("pagination.none")}</td>
+            </tr>
+          )}
           {requests.map((r) => (
             <tr
               key={r.id}
@@ -221,6 +253,7 @@ export function PurchaseRequests() {
         </tbody>
       </table>
       </div>
+      <Pagination data={requestsQuery.data} onPage={list.setPage} />
 
       <Dialog open={!!rejecting} onOpenChange={(o) => !o && closeReject()}>
         <DialogContent>

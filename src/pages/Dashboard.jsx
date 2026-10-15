@@ -4,11 +4,7 @@ import { useQuery } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { Box } from "lucide-react"
 import { api } from "@/api/client"
-import { getProducts } from "@/api/products"
-import { getMovements } from "@/api/movements"
-import { getPurchaseRequests } from "@/api/PurchaseRequests"
-import { getLowStockReport, getInventoryValueBreakdown } from "@/api/reports"
-import { aggregateStockByCategory } from "@/lib/chart-utils"
+import { getDashboard, getLowStockReport, getInventoryValueBreakdown } from "@/api/reports"
 import { useAuth } from "@/context/AuthContext"
 import { useMoney } from "@/hoocks/useMoney"
 import "./Dashboard.css"
@@ -24,40 +20,33 @@ export function Dashboard() {
   const money = useMoney()
   const [avatarBroken, setAvatarBroken] = useState(false)
 
-  const products = useQuery({ queryKey: ["products"], queryFn: getProducts })
-  const movements = useQuery({ queryKey: ["movements"], queryFn: getMovements })
+  const now = new Date()
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
+  // totales calculados en el servidor (antes se bajaban todos los productos y movimientos)
+  const summary = useQuery({
+    queryKey: ["reports", "dashboard", monthStart.toISOString()],
+    queryFn: () => getDashboard(monthStart.toISOString()),
+  })
   const lowStock = useQuery({ queryKey: ["reports", "low-stock"], queryFn: getLowStockReport })
   const value = useQuery({
     queryKey: ["reports", "inventory-value-breakdown", 60],
     queryFn: () => getInventoryValueBreakdown(60),
   })
-  const requests = useQuery({ queryKey: ["purchase-requests"], queryFn: getPurchaseRequests })
 
-  const now = new Date()
-  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
-
-  // ponytail: agregados calculados en el cliente sobre todos los movimientos; pasar a un endpoint de resumen si el volumen crece
-  const units = (products.data ?? []).reduce((s, p) => s + (p.stock || 0), 0)
-  const dispatched = (movements.data ?? [])
-    .filter((m) => m.type === "OUT" && new Date(m.createdAt) >= monthStart)
-    .reduce((s, m) => s + m.quantity, 0)
+  const units = summary.data?.units ?? 0
+  const dispatched = summary.data?.dispatchedSince ?? 0
   const sellThrough = pct(dispatched, dispatched + units)
   const activePct = pct(value.data?.activeValue ?? 0, value.data?.totalValue ?? 0)
 
-  const count = (status) => (requests.data ?? []).filter((r) => r.status === status).length
+  const count = (status) => summary.data?.requests?.[status] ?? 0
   const requestStats = [
     { key: "PENDING", tone: "warn" },
     { key: "APPROVED", tone: "ok" },
     { key: "REJECTED", tone: "crit" },
   ]
 
-  const categories = aggregateStockByCategory(products.data)
-    .sort((a, b) => b.value - a.value)
-    .slice(0, 8)
-
-  const recent = [...(movements.data ?? [])]
-    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-    .slice(0, 4)
+  const categories = summary.data?.stockByCategory ?? []
+  const recent = summary.data?.recentMovements ?? []
 
   const low = lowStock.data ?? []
   const lowCoverage = pct(
@@ -121,7 +110,7 @@ export function Dashboard() {
           {categories.length ? (
             <BarChart data={categories} t={t} />
           ) : (
-            <p className="dash-empty">{products.isLoading ? "…" : t("dashboard.noData")}</p>
+            <p className="dash-empty">{summary.isLoading ? "…" : t("dashboard.noData")}</p>
           )}
         </article>
 
@@ -152,7 +141,7 @@ export function Dashboard() {
               ))}
             </ul>
           ) : (
-            <p className="dash-empty">{movements.isLoading ? "…" : t("dashboard.noMovements")}</p>
+            <p className="dash-empty">{summary.isLoading ? "…" : t("dashboard.noMovements")}</p>
           )}
         </article>
       </div>
@@ -183,7 +172,7 @@ export function Dashboard() {
                   <span className={`dash-dot dash-tone--${tone}`} aria-hidden />
                   {t(`dashboard.requests.${key}`)}
                 </span>
-                <span className={`dash-req-num dash-tone--${tone}`}>{requests.isLoading ? "…" : count(key)}</span>
+                <span className={`dash-req-num dash-tone--${tone}`}>{summary.isLoading ? "…" : count(key)}</span>
               </li>
             ))}
           </ul>

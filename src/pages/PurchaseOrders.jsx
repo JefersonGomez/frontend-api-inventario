@@ -2,16 +2,21 @@
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { Plus, Trash2, AlertCircle, Mail, MailCheck, PackageCheck } from "lucide-react";
 import {
   getPurchaseOrders,
+  getPurchaseOrder,
   createPurchaseOrder,
   receivePurchaseOrder,
   sendPurchaseOrderEmail,
 } from "@/api/purchaseOrders";
 import { getSuppliers } from "@/api/suppliers";
-import { getProducts } from "@/api/products";
+import { getProduct } from "@/api/products";
+import { ProductPicker } from "@/components/ProductPicker";
+import { Pagination } from "@/components/Pagination";
+import { SearchInput } from "@/components/SearchInput";
+import { useListParams } from "@/hoocks/useListParams";
 import { usePurchaseRequestAlerts } from "@/hoocks/usePurchaseRequestAlerts";
 import { cn } from "@/lib/utils";
 import { CommentThread } from "@/components/CommentThread";
@@ -38,7 +43,10 @@ const statusVariant = {
   CANCELLED: "destructive",
 };
 
-const emptyLine = () => ({ productId: "", quantity: "", unitCost: "", requestIds: [] });
+// product = el producto elegido (objeto, del selector con búsqueda)
+const emptyLine = () => ({ product: null, quantity: "", unitCost: "", requestIds: [] });
+// costo sugerido de una línea: el costo del producto si lo tiene; si no, su precio
+const suggestedCost = (p) => (p ? String(Number(p.cost ?? p.price)) : "");
 
 export function PurchaseOrders() {
   const { t } = useTranslation();
@@ -54,21 +62,39 @@ export function PurchaseOrders() {
   const [open, setOpen] = useState(() => actionParam === "create");
   const [detailId, setDetailId] = useState(null);
   const [supplierId, setSupplierId] = useState("");
-  const [lines, setLines] = useState(() => {
-    if (actionParam === "create" && productIdParam) {
-      return [{ ...emptyLine(), productId: productIdParam, quantity: 1 }];
-    }
-    return [emptyLine()];
-  });
+  const [lines, setLines] = useState(() => [emptyLine()]);
+  const [duplicateLine, setDuplicateLine] = useState(null); // línea donde se eligió un producto repetido
   // las solicitudes vinculadas salen de las líneas: una sola fuente de verdad
   const selectedRequestIds = lines.flatMap((l) => l.requestIds);
 
   const { data: alerts } = usePurchaseRequestAlerts();
 
-  const { data: orders = [], isLoading } = useQuery({
-    queryKey: ["purchase-orders"],
-    queryFn: getPurchaseOrders,
+  // página, búsqueda y estado en la URL; el servidor filtra y pagina
+  const list = useListParams();
+  const filters = { q: list.get("q"), status: list.get("status") };
+  const ordersQuery = useQuery({
+    queryKey: ["purchase-orders", list.page, filters],
+    queryFn: () =>
+      getPurchaseOrders({
+        page: list.page,
+        ...(filters.q && { q: filters.q }),
+        ...(filters.status && { status: filters.status }),
+      }),
+    placeholderData: keepPreviousData,
   });
+  const { isLoading } = ordersQuery;
+  const pageOrders = ordersQuery.data?.items ?? [];
+  // la resaltada (?highlight=) puede estar en otra página: se trae aparte y va arriba
+  const pinnedQuery = useQuery({
+    queryKey: ["purchase-orders", "one", highlightId],
+    queryFn: () => getPurchaseOrder(highlightId),
+    enabled: Boolean(highlightId) && !ordersQuery.isLoading && !pageOrders.some((o) => o.id === highlightId),
+  });
+  const orders = pinnedQuery.data && !pageOrders.some((o) => o.id === pinnedQuery.data.id) ? [pinnedQuery.data, ...pageOrders] : pageOrders;
+  const statusItems = [
+    { value: "all", label: t("list.all") },
+    ...["PENDING", "RECEIVED", "CANCELLED"].map((v) => ({ value: v, label: t(`purchaseOrders.status${v.charAt(0)}${v.slice(1).toLowerCase()}`) })),
+  ];
 
   // ?comments=1 (aviso de comentario en la campanita) abre el detalle de ?highlight= con su hilo
   const openId = detailId ?? (searchParams.get("comments") === "1" ? highlightId : null);
@@ -80,23 +106,21 @@ export function PurchaseOrders() {
 
   const { data: suppliers = [] } = useQuery({
     queryKey: ["suppliers"],
-    queryFn: getSuppliers,
+    queryFn: () => getSuppliers(),
   });
 
-  const { data: products = [] } = useQuery({
-    queryKey: ["products"],
-    queryFn: getProducts,
+  // llegada con ?productId= (desde un aviso de stock bajo): ese producto en la primera línea, una vez
+  const urlProduct = useQuery({
+    queryKey: ["products", "one", productIdParam],
+    queryFn: () => getProduct(productIdParam),
+    enabled: actionParam === "create" && Boolean(productIdParam),
   });
-
-  const productPriceMap = products.reduce((acc, p) => {
-    if (p.id) acc[p.id] = p.price;
-    return acc;
-  }, {});
-
-  const productSupplierMap = products.reduce((acc, p) => {
-    if (p.supplierId) acc[p.id] = p.supplierId;
-    return acc;
-  }, {});
+  const [urlProductApplied, setUrlProductApplied] = useState(false);
+  if (!urlProductApplied && urlProduct.data) {
+    setUrlProductApplied(true);
+    setLines([{ ...emptyLine(), product: urlProduct.data, quantity: "1", unitCost: suggestedCost(urlProduct.data) }]);
+    if (urlProduct.data.supplierId) setSupplierId((cur) => cur || urlProduct.data.supplierId);
+  }
 
   const createMutation = useMutation({
     mutationFn: createPurchaseOrder,
@@ -123,23 +147,20 @@ export function PurchaseOrders() {
   });
 
   const updateLine = (index, field, value) => {
-    // el proveedor del producto rellena el de la orden si todavía está vacío
-    if (field === "productId" && productSupplierMap[value]) {
-      setSupplierId((cur) => cur || productSupplierMap[value]);
+    if (field === "product") {
+      // el backend rechaza el mismo producto en dos líneas: se avisa en vez de elegirlo
+      if (value && lines.some((l, i) => i !== index && l.product?.id === value.id)) {
+        setDuplicateLine(index);
+        return;
+      }
+      setDuplicateLine(null);
+      // el proveedor del producto rellena el de la orden si todavía está vacío
+      if (value?.supplierId) setSupplierId((cur) => cur || value.supplierId);
     }
     setLines((prev) =>
       prev.map((line, i) => {
         if (i !== index) return line;
-
-        if (field === "productId") {
-          const autoPrice = productPriceMap[value];
-          return {
-            ...line,
-            productId: value,
-            unitCost: autoPrice !== undefined ? String(autoPrice) : line.unitCost,
-          };
-        }
-
+        if (field === "product") return { ...line, product: value, unitCost: value ? suggestedCost(value) : line.unitCost };
         return { ...line, [field]: value };
       })
     );
@@ -161,7 +182,7 @@ export function PurchaseOrders() {
     }
     setLines((prev) => {
       if (checked) {
-        const idx = prev.findIndex((l) => l.productId === r.productId);
+        const idx = prev.findIndex((l) => l.product?.id === r.productId);
         if (idx >= 0) {
           return prev.map((l, i) =>
             i === idx
@@ -169,8 +190,8 @@ export function PurchaseOrders() {
               : l
           );
         }
-        const used = prev.filter((l) => l.productId || l.quantity || l.unitCost);
-        return [...used, { ...emptyLine(), productId: r.productId, quantity: String(r.quantity), requestIds: [r.id] }];
+        const used = prev.filter((l) => l.product || l.quantity || l.unitCost);
+        return [...used, { ...emptyLine(), product: r.product, quantity: String(r.quantity), unitCost: suggestedCost(r.product), requestIds: [r.id] }];
       }
       const next = prev.flatMap((l) => {
         if (!l.requestIds.includes(r.id)) return [l];
@@ -194,17 +215,7 @@ export function PurchaseOrders() {
     toggleRequest(urlRequest, true);
   }
 
-  const getEffectiveUnitCost = (line) => {
-    if (line.unitCost !== "") return line.unitCost;
-    if (line.productId && productPriceMap[line.productId] !== undefined) {
-      return String(productPriceMap[line.productId]);
-    }
-    return "";
-  };
-
-  // el backend rechaza el mismo producto en dos líneas: no ofrecerlo dos veces
-  const availableProducts = (index) =>
-    products.filter((p) => !lines.some((l, i) => i !== index && l.productId === p.id));
+  const getEffectiveUnitCost = (line) => (line.unitCost !== "" ? line.unitCost : suggestedCost(line.product));
 
   const orderTotal = lines.reduce((sum, l) => {
     const cost = getEffectiveUnitCost(l);
@@ -216,7 +227,7 @@ export function PurchaseOrders() {
     createMutation.mutate({
       supplierId,
       items: lines.map((l) => ({
-        productId: l.productId,
+        productId: l.product.id,
         quantity: Number(l.quantity),
         unitCost: Number(getEffectiveUnitCost(l)),
       })),
@@ -327,28 +338,26 @@ export function PurchaseOrders() {
                   const effectiveUnitCost = getEffectiveUnitCost(line);
 
                   return (
-                    <div key={index} className="flex gap-2 items-center">
-                      <Select
-                        value={line.productId}
-                        onValueChange={(v) => updateLine(index, "productId", v)}
-                        disabled={line.requestIds.length > 0}
-                        items={products.map((p) => ({ value: p.id, label: `${p.name} (${p.sku})` }))}
-                      >
-                        <SelectTrigger className="flex-1 min-w-0">
-                          <SelectValue placeholder={t("purchaseOrders.product")} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {availableProducts(index).map((p) => (
-                            <SelectItem key={p.id} value={p.id}>
-                              {p.name} ({p.sku})
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                    <div key={index} className="flex gap-2 items-start">
+                      <div className="min-w-0 flex-1">
+                        <ProductPicker
+                          id={`order-line-${index}`}
+                          value={line.product}
+                          onChange={(p) => updateLine(index, "product", p)}
+                          disabled={line.requestIds.length > 0}
+                          required
+                          ariaDescribedBy={duplicateLine === index ? `order-line-${index}-dup` : undefined}
+                        />
+                        {duplicateLine === index && (
+                          <p id={`order-line-${index}-dup`} role="alert" className="mt-1 text-xs text-destructive">
+                            {t("purchaseOrders.duplicateProduct")}
+                          </p>
+                        )}
+                      </div>
                       <Input
                         type="number"
-                        min={qtyStep(products.find((p) => p.id === line.productId)?.unit)}
-                        step={qtyStep(products.find((p) => p.id === line.productId)?.unit)}
+                        min={qtyStep(line.product?.unit)}
+                        step={qtyStep(line.product?.unit)}
                         className="w-24 shrink-0"
                         placeholder={t("purchaseOrders.quantity")}
                         value={line.quantity}
@@ -386,7 +395,7 @@ export function PurchaseOrders() {
                 {t("purchaseOrders.total")}: {money.format(orderTotal)}
               </div>
 
-              <Button type="submit" disabled={createMutation.isPending}>
+              <Button type="submit" disabled={createMutation.isPending || lines.some((l) => !l.product)}>
                 {t("common.save")}
               </Button>
             </form>
@@ -407,6 +416,24 @@ export function PurchaseOrders() {
         </p>
       )}
 
+      <div className="flex flex-wrap items-center gap-2">
+        <SearchInput
+          id="order-search"
+          value={filters.q}
+          onSearch={(q) => list.set({ q })}
+          placeholder={t("list.search")}
+          className="w-full max-w-sm"
+        />
+        <Select items={statusItems} value={filters.status || "all"} onValueChange={(v) => list.set({ status: v === "all" ? "" : v })}>
+          <SelectTrigger className="w-44" aria-label={t("purchaseOrders.status")}>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {statusItems.map((i) => <SelectItem key={i.value} value={i.value}>{i.label}</SelectItem>)}
+          </SelectContent>
+        </Select>
+      </div>
+
       <div className="overflow-x-auto">
       <table className="w-full text-sm [&_th]:pr-3 [&_td]:pr-3 [&_th:last-child]:pr-0 [&_td:last-child]:pr-0">
         <thead>
@@ -418,6 +445,11 @@ export function PurchaseOrders() {
           </tr>
         </thead>
         <tbody>
+          {orders.length === 0 && (
+            <tr>
+              <td colSpan={4} className="py-6 text-center text-muted-foreground">{t("pagination.none")}</td>
+            </tr>
+          )}
           {orders.map((o) => (
             <tr
               key={o.id}
@@ -501,6 +533,7 @@ export function PurchaseOrders() {
         </tbody>
       </table>
       </div>
+      <Pagination data={ordersQuery.data} onPage={list.setPage} />
 
       <Dialog open={!!detail} onOpenChange={(o) => !o && closeDetail()}>
         <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">

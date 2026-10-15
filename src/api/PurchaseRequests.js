@@ -1,8 +1,11 @@
 // src/api/purchaseRequests.js
 import { api } from "./client" // ajustá al nombre real de tu instancia de axios
 
-export const getPurchaseRequests = () =>
-  api.get("/purchase-requests").then((res) => res.data);
+// { page, pageSize, q, status, unlinked } → página
+export const getPurchaseRequests = (params = {}) =>
+  api.get("/purchase-requests", { params }).then((res) => res.data);
+
+export const getPurchaseRequest = (id) => api.get(`/purchase-requests/${id}`).then((res) => res.data);
 
 export const createPurchaseRequest = (data) =>
   api.post("/purchase-requests", data).then((res) => res.data);

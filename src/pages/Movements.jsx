@@ -1,8 +1,12 @@
 import { useState } from "react"
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { getMovements, createMovement } from "@/api/movements"
-import { getProducts, getProductByBarcode } from "@/api/products" // Importar nueva función
+import { getProductByBarcode } from "@/api/products"
+import { ProductPicker } from "@/components/ProductPicker"
+import { Pagination } from "@/components/Pagination"
+import { SearchInput } from "@/components/SearchInput"
+import { useListParams } from "@/hoocks/useListParams"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -21,7 +25,8 @@ import { BarcodeScanner } from "@/components/BarcodeScanner" // Importar compone
 import { qtyStep, formatQty } from "@/lib/units"
 import { apiErrorMessage } from "@/lib/api-error"
 
-const emptyForm = { productId: "", type: "IN", quantity: "", reason: "" }
+const emptyForm = { product: null, type: "IN", quantity: "", reason: "" }
+const SOURCES = ["MANUAL", "INITIAL", "PURCHASE_RECEIPT", "SALE", "RETURN", "COUNT", "TRANSFER"]
 
 export function Movements() {
   const { t } = useTranslation()
@@ -30,15 +35,36 @@ export function Movements() {
   const [form, setForm] = useState(emptyForm)
   const [isSearching, setIsSearching] = useState(false) // Estado para feedback visual
 
-  const movementsQuery = useQuery({ queryKey: ["movements"], queryFn: getMovements })
-  const productsQuery = useQuery({ queryKey: ["products"], queryFn: getProducts })
-  const selected = productsQuery.data?.find((p) => p.id === form.productId)
+  // página, búsqueda y filtros en la URL; el servidor filtra y pagina
+  const list = useListParams()
+  const filters = { q: list.get("q"), type: list.get("type"), source: list.get("source") }
+  const movementsQuery = useQuery({
+    queryKey: ["movements", list.page, filters],
+    queryFn: () =>
+      getMovements({
+        page: list.page,
+        ...(filters.q && { q: filters.q }),
+        ...(filters.type && { type: filters.type }),
+        ...(filters.source && { source: filters.source }),
+      }),
+    placeholderData: keepPreviousData,
+  })
+  const movements = movementsQuery.data?.items ?? []
+  const selected = form.product
   const step = qtyStep(selected?.unit)
+  const typeItems = [
+    { value: "all", label: t("list.all") },
+    { value: "IN", label: t("movements.types.in") },
+    { value: "OUT", label: t("movements.types.out") },
+    { value: "ADJUSTMENT", label: t("movements.types.adjustment") },
+  ]
+  const sourceItems = [{ value: "all", label: t("list.all") }, ...SOURCES.map((v) => ({ value: v, label: t(`movements.sources.${v}`) }))]
 
   const createMutation = useMutation({
     mutationFn: () =>
       createMovement({
-        ...form,
+        productId: form.product.id,
+        type: form.type,
         quantity: Number(form.quantity),
         reason: form.reason || undefined,
       }),
@@ -62,7 +88,7 @@ export function Movements() {
     try {
       const product = await getProductByBarcode(code)
       if (product) {
-        setForm((prev) => ({ ...prev, productId: product.id }))
+        setForm((prev) => ({ ...prev, product }))
       } else {
         alert(t("movements.dialog.product_not_found"))
       }
@@ -93,6 +119,32 @@ export function Movements() {
         </Button>
       </div>
 
+      <div className="mb-4 flex flex-wrap items-center gap-2">
+        <SearchInput
+          id="movement-search"
+          value={filters.q}
+          onSearch={(q) => list.set({ q })}
+          placeholder={t("list.search")}
+          className="w-full max-w-sm"
+        />
+        <Select items={typeItems} value={filters.type || "all"} onValueChange={(v) => list.set({ type: v === "all" ? "" : v })}>
+          <SelectTrigger className="w-40" aria-label={t("movements.table.type")}>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {typeItems.map((i) => <SelectItem key={i.value} value={i.value}>{i.label}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        <Select items={sourceItems} value={filters.source || "all"} onValueChange={(v) => list.set({ source: v === "all" ? "" : v })}>
+          <SelectTrigger className="w-44" aria-label={t("movements.table.reason")}>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {sourceItems.map((i) => <SelectItem key={i.value} value={i.value}>{i.label}</SelectItem>)}
+          </SelectContent>
+        </Select>
+      </div>
+
       <div className="border border-border rounded-xl overflow-hidden overflow-x-auto">
         <Table>
           <TableHeader>
@@ -114,7 +166,15 @@ export function Movements() {
               </TableRow>
             )}
 
-            {movementsQuery.data?.map((movement) => {
+            {!movementsQuery.isLoading && movements.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center text-muted-foreground">
+                  {t("pagination.none")}
+                </TableCell>
+              </TableRow>
+            )}
+
+            {movements.map((movement) => {
               const config = typeConfig[movement.type]
               const Icon = config.icon
               return (
@@ -143,6 +203,7 @@ export function Movements() {
           </TableBody>
         </Table>
       </div>
+      <Pagination data={movementsQuery.data} onPage={list.setPage} />
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
@@ -153,26 +214,18 @@ export function Movements() {
 
             {/* CAMPO DE PRODUCTO CON ESCÁNER INTEGRADO */}
             <div className="space-y-2">
-              <Label>{t("movements.dialog.label_product")}</Label>
+              <Label htmlFor="movement-product">{t("movements.dialog.label_product")}</Label>
               <div className="flex gap-2">
-                <Select
-                  value={form.productId}
-                  onValueChange={(value) => setForm({ ...form, productId: value })}
-                  disabled={isSearching}
-                  items={(productsQuery.data ?? []).map((p) => ({ value: p.id, label: `${p.name} (${p.sku})` }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder={t("movements.dialog.placeholder_product")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {productsQuery.data?.map((p) => (
-                      <SelectItem key={p.id} value={p.id}>
-                        {p.name} ({p.sku})
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                
+                <div className="min-w-0 flex-1">
+                  <ProductPicker
+                    id="movement-product"
+                    value={form.product}
+                    onChange={(product) => setForm({ ...form, product })}
+                    disabled={isSearching}
+                    required
+                  />
+                </div>
+
                 {/* Botón de escaneo integrado */}
                 <BarcodeScanner onScan={handleScan} />
               </div>
@@ -243,7 +296,7 @@ export function Movements() {
             )}
 
             <DialogFooter>
-              <Button type="submit" disabled={createMutation.isPending || isSearching || !form.productId}>
+              <Button type="submit" disabled={createMutation.isPending || isSearching || !form.product}>
                 {createMutation.isPending ? t("common.saving") : t("movements.dialog.submit")}
               </Button>
             </DialogFooter>

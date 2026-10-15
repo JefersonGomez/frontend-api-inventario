@@ -1,9 +1,10 @@
 import {api} from "./client"
 
-export async function getProducts() {
-    const responce = await api.get("/products/")
-    return responce.data
-}
+// Listado paginado: { page, pageSize, q, view: "flat" | "grouped", categoryId, groupId, pending, lowStock }
+// → { items, total, page, pageSize, pageCount } (grouped: además pendingCount)
+export const getProducts = (params = {}) => api.get("/products", { params }).then((res) => res.data)
+
+export const getProduct = (id) => api.get(`/products/${id}`).then((res) => res.data)
 export async function createProduct(data) {
   const response = await api.post("/products/", data)
   return response.data

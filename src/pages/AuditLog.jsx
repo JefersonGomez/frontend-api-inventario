@@ -1,7 +1,9 @@
 // src/pages/AuditLog.jsx
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { Pagination } from "@/components/Pagination";
+import { useListParams } from "@/hoocks/useListParams";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine,
 } from "recharts";
@@ -47,7 +49,9 @@ function MetricCard({ icon: Icon, label, value, hint }) {
 
 export function AuditLogPage() {
   const { t } = useTranslation();
-  const [entityFilter, setEntityFilter] = useState("all");
+  // filtro y página en la URL; el servidor filtra y pagina (antes: los últimos 200 sin paginar)
+  const list = useListParams();
+  const entityFilter = list.get("filter") || "all";
   const [selectedId, setSelectedId] = useState(null);
   const chartRef = useRef(null);
 
@@ -56,18 +60,22 @@ export function AuditLogPage() {
     queryFn: getAuditMetrics,
   });
 
-  const { data: logs = [], isLoading: loadingLogs } = useQuery({
-    queryKey: ["audit-logs", entityFilter],
+  const logsQuery = useQuery({
+    queryKey: ["audit-logs", entityFilter, list.page],
+    placeholderData: keepPreviousData,
     // "all" | "action:EMAIL" | nombre de entidad
     queryFn: () =>
-      getAuditLogs(
-        entityFilter === "all"
+      getAuditLogs({
+        page: list.page,
+        ...(entityFilter === "all"
           ? {}
           : entityFilter.startsWith("action:")
             ? { action: entityFilter.slice(7) }
-            : { entityType: entityFilter }
-      ),
+            : { entityType: entityFilter }),
+      }),
   });
+  const logs = logsQuery.data?.items ?? [];
+  const loadingLogs = logsQuery.isLoading;
 
   if (loadingMetrics || loadingLogs) return <div className="p-6">{t("common.loading")}</div>;
 
@@ -189,7 +197,7 @@ export function AuditLogPage() {
             ]}
             value={entityFilter}
             onValueChange={(v) => {
-              setEntityFilter(v);
+              list.set({ filter: v === "all" ? "" : v });
               setSelectedId(null);
             }}
           >
@@ -264,6 +272,13 @@ export function AuditLogPage() {
             </table>
           </div>
         )}
+        <Pagination
+          data={logsQuery.data}
+          onPage={(p) => {
+            list.setPage(p);
+            setSelectedId(null);
+          }}
+        />
       </div>
     </div>
   );

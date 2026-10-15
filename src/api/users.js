@@ -1,9 +1,7 @@
 import { api } from "./client";
 
-export async function getUsers() {
-    const responce = await api.get("/users/")
-    return responce.data
-}
+// sin page: todos los miembros; con { page, pageSize, q }: página
+export const getUsers = (params = {}) => api.get("/users", { params }).then((res) => res.data)
 
 export async function toggleUserActive(id) {
     const responce = await api.patch(`/users/${id}/toggle-active`)

@@ -1,13 +1,15 @@
 import { useState } from "react"
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
-import { getProducts, createProduct, updateProduct, deleteProduct } from "@/api/products"
+import { getProducts, getProduct, createProduct, updateProduct, deleteProduct } from "@/api/products"
+import { Pagination } from "@/components/Pagination"
+import { SearchInput } from "@/components/SearchInput"
+import { useListParams } from "@/hoocks/useListParams"
 import { getCategories } from "@/api/categories"
 import { getSuppliers } from "@/api/suppliers"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useSearchParams } from "react-router-dom"
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table"
@@ -72,25 +74,49 @@ export function Products() {
     })
   const queryClient = useQueryClient()
 
-  const [searchParams] = useSearchParams()
-  const highlightId = searchParams.get("highlight")
-  const fold = (v) => (v ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase()
-  const q = fold(searchParams.get("q")).trim()
+  // búsqueda (también la del buscador global: /products?q=), filtros y página en la URL
+  const list = useListParams()
+  const highlightId = list.get("highlight")
+  const filters = {
+    q: list.get("q"),
+    categoryId: list.get("categoryId"),
+    pending: list.get("pending") === "1",
+    lowStock: list.get("lowStock") === "1",
+  }
+  const filterParams = {
+    ...(filters.q && { q: filters.q }),
+    ...(filters.categoryId && { categoryId: filters.categoryId }),
+    ...(filters.pending && { pending: 1 }),
+    ...(filters.lowStock && { lowStock: 1 }),
+  }
+  const hasFilters = Object.keys(filterParams).length > 0
 
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingProduct, setEditingProduct] = useState(null)
   const [form, setForm] = useState(emptyForm)
   const [deletingProduct, setDeletingProduct] = useState(null)
 
-  const productsQuery = useQuery({ queryKey: ["products"], queryFn: getProducts })
+  // vista agrupada del servidor: productos base (con su resumen) y después productos sueltos
+  const productsQuery = useQuery({
+    queryKey: ["products", "grouped", list.page, filterParams],
+    queryFn: () => getProducts({ view: "grouped", page: list.page, ...filterParams }),
+    placeholderData: keepPreviousData,
+  })
+  const rows = productsQuery.data?.items ?? []
   // importados sin precio: quedan "Por completar" hasta que se editan con su precio
-  const [onlyPending, setOnlyPending] = useState(false)
-  const pendingCount = (productsQuery.data ?? []).filter((p) => p.pendingReview).length
-  const visibleProducts = (productsQuery.data ?? []).filter(
-    (p) => (!onlyPending || p.pendingReview) &&
-      (!q || [p.name, p.sku, p.barcode, p.category?.name, p.group?.name].some((v) => fold(v).includes(q)))
-  )
+  const pendingCount = productsQuery.data?.pendingCount ?? 0
+  // el resaltado (?highlight=) puede estar en otra página: se trae aparte y va arriba
+  const pinnedQuery = useQuery({
+    queryKey: ["products", "one", highlightId],
+    queryFn: () => getProduct(highlightId),
+    enabled: Boolean(highlightId) && !productsQuery.isLoading && !rows.some((r) => r.id === highlightId),
+  })
+  const pinned = pinnedQuery.data && !pinnedQuery.data.groupId ? pinnedQuery.data : null
   const categoriesQuery = useQuery({ queryKey: ["categories"], queryFn: getCategories })
+  const categoryFilterItems = [
+    { value: "all", label: t("list.all") },
+    ...(categoriesQuery.data ?? []).map((c) => ({ value: c.id, label: c.name })),
+  ]
   const groupsQuery = useQuery({ queryKey: ["product-groups"], queryFn: getProductGroups })
   const groupItems = [
     { value: "none", label: t("products.variants.group_none") },
@@ -102,7 +128,7 @@ export function Products() {
     selectedGroup
       ? { groupId: selectedGroup.id, attributes: Object.fromEntries(selectedGroup.attributeNames.map((a) => [a, (form.attributes[a] ?? "").trim()])) }
       : { groupId: null, attributes: null }
-  const suppliersQuery = useQuery({ queryKey: ["suppliers"], queryFn: getSuppliers })
+  const suppliersQuery = useQuery({ queryKey: ["suppliers"], queryFn: () => getSuppliers() })
   // "none" es el valor del ítem "Sin proveedor" del Select; en el form vacío = sin proveedor
   const unitItems = UNITS.map((u) => ({ value: u, label: t(`units.long.${u}`) }))
   const taxItems = TAX_RATES.map((r) => ({ value: r, label: t(`taxRates.${r}`) }))
@@ -172,8 +198,12 @@ export function Products() {
     setDialogOpen(true)
   }
 
-  function openCreateVariant(group) {
-    const sibling = (productsQuery.data ?? []).find((p) => p.groupId === group.id)
+  async function openCreateVariant(group) {
+    const siblings = await queryClient.fetchQuery({
+      queryKey: ["products", "variants", group.id, {}],
+      queryFn: () => getProducts({ groupId: group.id, pageSize: 100 }),
+    })
+    const sibling = siblings.items[0]
     setEditingProduct(null)
     setForm({
       ...emptyForm,
@@ -242,27 +272,6 @@ export function Products() {
   const handleScan = (code) => {
     setForm((prev) => ({ ...prev, barcode: code }))
   }
-
-  const groupRows = (groupsQuery.data ?? [])
-    .map((g) => {
-      const all = (productsQuery.data ?? []).filter((p) => p.groupId === g.id)
-      const shown = visibleProducts.filter((p) => p.groupId === g.id)
-      const prices = all.filter((p) => !p.pendingReview).map((p) => Number(p.price))
-      const units = new Set(all.map((p) => p.unit))
-      return {
-        group: g,
-        variants: shown,
-        matches: !q || fold(g.name).includes(q) || shown.length > 0,
-        minPrice: prices.length ? Math.min(...prices) : null,
-        maxPrice: prices.length ? Math.max(...prices) : null,
-        stock: units.size === 1 ? { qty: all.reduce((sum, p) => sum + Number(p.stock), 0), unit: [...units][0] } : null,
-        low: all.filter((p) => p.stock <= p.minStock).length,
-        // desplegado a mano, por búsqueda o porque trae el producto resaltado
-        open: expanded.has(g.id) || (q && shown.length > 0) || shown.some((p) => p.id === highlightId),
-      }
-    })
-    .filter((r) => r.matches && (!onlyPending || r.variants.length > 0))
-  const looseProducts = visibleProducts.filter((p) => !p.groupId || !(groupsQuery.data ?? []).some((g) => g.id === p.groupId))
 
   const isSaving = createMutation.isPending || updateMutation.isPending
   const saveError = createMutation.error || updateMutation.error
@@ -333,14 +342,40 @@ export function Products() {
       <ImportProductsDialog open={importing} onOpenChange={setImporting} />
       <ProductGroupsDialog open={managingGroups} onOpenChange={setManagingGroups} />
 
-      {(pendingCount > 0 || onlyPending) && (
+      {(pendingCount > 0 || filters.pending) && (
         <div className="mb-4 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border bg-muted/50 px-4 py-3 text-sm">
           <span>{t("products.pending.banner", { count: pendingCount })}</span>
-          <Button variant="outline" size="sm" onClick={() => setOnlyPending((v) => !v)}>
-            {t(onlyPending ? "products.pending.hide" : "products.pending.show")}
+          <Button variant="outline" size="sm" onClick={() => list.set({ pending: filters.pending ? "" : 1 })}>
+            {t(filters.pending ? "products.pending.hide" : "products.pending.show")}
           </Button>
         </div>
       )}
+
+      <div className="mb-4 flex flex-wrap items-center gap-2">
+        <SearchInput
+          id="product-search"
+          value={filters.q}
+          onSearch={(q) => list.set({ q })}
+          placeholder={t("list.search")}
+          className="w-full max-w-sm"
+        />
+        <Select items={categoryFilterItems} value={filters.categoryId || "all"} onValueChange={(v) => list.set({ categoryId: v === "all" ? "" : v })}>
+          <SelectTrigger className="w-48" aria-label={t("products.table.category")}>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {categoryFilterItems.map((c) => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        <Button
+          variant={filters.lowStock ? "default" : "outline"}
+          size="sm"
+          aria-pressed={filters.lowStock}
+          onClick={() => list.set({ lowStock: filters.lowStock ? "" : 1 })}
+        >
+          {t("products.lowStockFilter")}
+        </Button>
+      </div>
 
       <div className="border border-border rounded-xl overflow-hidden overflow-x-auto">
         <Table>
@@ -364,30 +399,38 @@ export function Products() {
               </TableRow>
             )}
 
-            {!productsQuery.isLoading && groupRows.length === 0 && looseProducts.length === 0 && q && (
+            {!productsQuery.isLoading && rows.length === 0 && (
               <TableRow>
                 <TableCell colSpan={7} className="text-center text-muted-foreground">
-                  {t("products.noResults", { q: searchParams.get("q") })}
+                  {filters.q ? t("products.noResults", { q: filters.q }) : t("pagination.none")}
                 </TableCell>
               </TableRow>
             )}
 
-            {groupRows.map((r) => (
-              <GroupRows
-                key={r.group.id}
-                row={r}
-                t={t}
-                money={money}
-                isAdmin={user?.role === "ADMIN"}
-                onToggle={() => toggleGroup(r.group.id)}
-                onAddVariant={() => openCreateVariant(r.group)}
-                renderProduct={(p) => renderProduct(p, true)}
-              />
-            ))}
-            {looseProducts.map((p) => renderProduct(p, false))}
+            {pinned && renderProduct(pinned, false)}
+            {rows.map((r) =>
+              r.kind === "group" ? (
+                <GroupRows
+                  key={r.id}
+                  group={r}
+                  t={t}
+                  money={money}
+                  isAdmin={user?.role === "ADMIN"}
+                  // con filtros, los grupos que aparecen es porque alguna variante coincide: se abren solos
+                  open={expanded.has(r.id) || hasFilters}
+                  variantParams={filterParams}
+                  onToggle={() => toggleGroup(r.id)}
+                  onAddVariant={() => openCreateVariant(r)}
+                  renderProduct={(p) => renderProduct(p, true)}
+                />
+              ) : (
+                renderProduct(r, false)
+              )
+            )}
           </TableBody>
         </Table>
       </div>
+      <Pagination data={productsQuery.data} onPage={list.setPage} />
 
       <Dialog open={dialogOpen} onOpenChange={(open) => (open ? setDialogOpen(true) : closeDialog())}>
         {/* ancho y con scroll propio: en pantallas bajas el formulario no queda cortado */}
@@ -624,10 +667,16 @@ export function Products() {
     </div>
   )
 }
-// Fila de un producto base (resumen de sus variantes) + sus variantes cuando está desplegado
-function GroupRows({ row, t, money, isAdmin, onToggle, onAddVariant, renderProduct }) {
-  const { group, variants, minPrice, maxPrice, stock, low, open } = row
-  const count = group._count?.products ?? variants.length
+// Fila de un producto base (resumen calculado en el servidor) + sus variantes, que se piden al
+// desplegarlo (con los mismos filtros de la tabla)
+function GroupRows({ group, t, money, isAdmin, open, variantParams, onToggle, onAddVariant, renderProduct }) {
+  const { variantCount: count, minPrice, maxPrice, totalStock, unit, lowCount: low } = group
+  const variantsQuery = useQuery({
+    queryKey: ["products", "variants", group.id, variantParams],
+    queryFn: () => getProducts({ groupId: group.id, pageSize: 100, ...variantParams }),
+    enabled: open && count > 0,
+  })
+  const variants = variantsQuery.data?.items ?? []
   const attrs = group.attributeNames.join(", ")
   const price =
     minPrice == null ? "—" : minPrice === maxPrice ? money.format(minPrice) : `${money.format(minPrice)} – ${money.format(maxPrice)}`
@@ -662,7 +711,7 @@ function GroupRows({ row, t, money, isAdmin, onToggle, onAddVariant, renderProdu
         <TableCell className="whitespace-nowrap">{price}</TableCell>
         <TableCell className="hidden md:table-cell text-muted-foreground">—</TableCell>
         <TableCell className="whitespace-nowrap">
-          {stock ? formatQty(stock.qty, stock.unit, t) : "—"}
+          {totalStock != null && unit ? formatQty(totalStock, unit, t) : "—"}
           {low > 0 && <Badge variant="destructive" className="ml-2">{t("products.variants.low", { count: low })}</Badge>}
         </TableCell>
         <TableCell className="text-right">
@@ -674,6 +723,11 @@ function GroupRows({ row, t, money, isAdmin, onToggle, onAddVariant, renderProdu
           )}
         </TableCell>
       </TableRow>
+      {open && variantsQuery.isLoading && (
+        <TableRow>
+          <TableCell colSpan={7} className="pl-8 text-sm text-muted-foreground">{t("common.loading")}</TableCell>
+        </TableRow>
+      )}
       {open && variants.map((p) => renderProduct(p))}
     </>
   )

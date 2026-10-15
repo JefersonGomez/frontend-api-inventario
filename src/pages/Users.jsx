@@ -29,7 +29,7 @@ export function Users() {
   const [form, setForm] = useState({ email: "", role: "EMPLOYE" })
   const [copied, setCopied] = useState(false)
 
-  const usersQuery = useQuery({ queryKey: ["users"], queryFn: getUsers })
+  const usersQuery = useQuery({ queryKey: ["users"], queryFn: () => getUsers() })
   const { data: invitations = [] } = useQuery({ queryKey: ["invitations"], queryFn: getInvitations })
   const { data: company } = useQuery({ queryKey: ["company"], queryFn: getCompany })
 

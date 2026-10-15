@@ -1,7 +1,8 @@
 import { api } from "./client"
 
-export async function getSuppliers() {
-  const response = await api.get("/suppliers/")
+// sin page: lista completa (selectores); con { page, pageSize, q }: página
+export async function getSuppliers(params = {}) {
+  const response = await api.get("/suppliers", { params })
   return response.data
 }
 

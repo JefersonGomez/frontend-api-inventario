@@ -330,7 +330,8 @@
       "expand": "Ver las variantes de {{name}}",
       "collapse": "Ocultar las variantes de {{name}}",
       "base_badge": "Producto base"
-    }
+    },
+    "lowStockFilter": "Bajo mínimo"
   },
   "categories": {
     "title": "Categorías",
@@ -657,7 +658,8 @@
     "emailError": "No se pudo enviar el correo",
     "sendShort": "Enviar",
     "resendShort": "Reenviar",
-    "receiveShort": "Recibir"
+    "receiveShort": "Recibir",
+    "duplicateProduct": "Ese producto ya está en otra línea de la orden."
   },
   "auditLog": {
     "title": "Registro de auditoría",
@@ -977,5 +979,27 @@
     "delete_title": "¿Borrar este cliente?",
     "delete_description": "\"{{name}}\" ya no aparecerá en la lista. Los comprobantes emitidos a su nombre se conservan.",
     "save_error": "No se pudo guardar el cliente."
+  },
+  "pagination": {
+    "range": "{{from}}–{{to}} de {{total}}",
+    "page": "Página {{page}} de {{count}}",
+    "prev": "Anterior",
+    "next": "Siguiente",
+    "nav": "Paginación",
+    "none": "Sin resultados"
+  },
+  "picker": {
+    "placeholder": "Buscar por nombre, SKU o código…",
+    "searching": "Buscando…",
+    "empty": "Ningún producto coincide.",
+    "clear": "Quitar producto",
+    "open": "Ver productos",
+    "stock": "Stock: {{stock}}"
+  },
+  "list": {
+    "search": "Buscar",
+    "all": "Todos",
+    "filters": "Filtros",
+    "pinned": "Resaltado"
   }
 }

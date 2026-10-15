@@ -1,5 +1,8 @@
 import { api } from "./client";
 
+// Panel: totales ya calculados. since = inicio del mes en la zona del navegador
+export const getDashboard = (since) => api.get("/reports/dashboard", { params: { since } }).then((res) => res.data)
+
 export async function getLowStockReport() {
     const responce = await api.get("/reports/low-stock")
     return responce.data

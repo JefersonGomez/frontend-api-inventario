@@ -1,5 +1,8 @@
 import { useState } from "react"
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query"
+import { Pagination } from "@/components/Pagination"
+import { SearchInput } from "@/components/SearchInput"
+import { useListParams } from "@/hoocks/useListParams"
 import { useAuth } from "@/context/AuthContext"
 import {
   getSuppliers, createSupplier, updateSupplier, deleteSupplier,
@@ -39,7 +42,15 @@ export function Suppliers() {
   const [form, setForm] = useState(emptyForm)
   const [deletingSupplier, setDeletingSupplier] = useState(null)
 
-  const suppliersQuery = useQuery({ queryKey: ["suppliers"], queryFn: getSuppliers })
+  // con page: el servidor pagina y busca (los selectores usan la lista completa, sin page)
+  const list = useListParams()
+  const q = list.get("q")
+  const suppliersQuery = useQuery({
+    queryKey: ["suppliers", "page", list.page, q],
+    queryFn: () => getSuppliers({ page: list.page, ...(q && { q }) }),
+    placeholderData: keepPreviousData,
+  })
+  const suppliers = suppliersQuery.data?.items ?? []
 
   const createMutation = useMutation({
     mutationFn: (data) => createSupplier(data),
@@ -130,6 +141,14 @@ export function Suppliers() {
         )}
       </div>
 
+      <SearchInput
+        id="supplier-search"
+        value={q}
+        onSearch={(value) => list.set({ q: value })}
+        placeholder={t("list.search")}
+        className="mb-4 w-full max-w-sm"
+      />
+
       <div className="border border-border rounded-xl overflow-hidden overflow-x-auto">
         <Table>
           <TableHeader>
@@ -151,7 +170,7 @@ export function Suppliers() {
               </TableRow>
             )}
 
-            {!suppliersQuery.isLoading && suppliersQuery.data?.length === 0 && (
+            {!suppliersQuery.isLoading && suppliers.length === 0 && (
               <TableRow>
                 <TableCell colSpan={isAdmin ? 6 : 5} className="text-center text-muted-foreground py-6">
                   No hay proveedores registrados.
@@ -159,7 +178,7 @@ export function Suppliers() {
               </TableRow>
             )}
 
-            {suppliersQuery.data?.map((supplier) => (
+            {suppliers.map((supplier) => (
               <TableRow key={supplier.id}>
                 <TableCell className="font-medium">{supplier.name}</TableCell>
                 <TableCell className="hidden whitespace-nowrap text-muted-foreground md:table-cell">
@@ -168,7 +187,7 @@ export function Suppliers() {
                 <TableCell className="text-muted-foreground">{supplier.email || "—"}</TableCell>
                 <TableCell className="text-muted-foreground">{supplier.phone || "—"}</TableCell>
                 <TableCell>
-                  <Badge variant="secondary">{supplier.products?.length ?? 0}</Badge>
+                  <Badge variant="secondary">{supplier._count?.products ?? 0}</Badge>
                 </TableCell>
                 {isAdmin && (
                   <TableCell className="text-right">
@@ -185,6 +204,7 @@ export function Suppliers() {
           </TableBody>
         </Table>
       </div>
+      <Pagination data={suppliersQuery.data} onPage={list.setPage} />
 
       {isAdmin && (
         <>

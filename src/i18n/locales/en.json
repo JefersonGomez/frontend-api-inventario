@@ -330,7 +330,8 @@
       "expand": "Show the variants of {{name}}",
       "collapse": "Hide the variants of {{name}}",
       "base_badge": "Base product"
-    }
+    },
+    "lowStockFilter": "Below minimum"
   },
   "categories": {
     "title": "Categories",
@@ -657,7 +658,8 @@
     "emailError": "Could not send the email",
     "sendShort": "Send",
     "resendShort": "Resend",
-    "receiveShort": "Receive"
+    "receiveShort": "Receive",
+    "duplicateProduct": "That product is already in another line of the order."
   },
   "auditLog": {
     "title": "Audit Log",
@@ -977,5 +979,27 @@
     "delete_title": "Delete this customer?",
     "delete_description": "\"{{name}}\" will no longer be listed. Receipts issued in their name are kept.",
     "save_error": "The customer could not be saved."
+  },
+  "pagination": {
+    "range": "{{from}}–{{to}} of {{total}}",
+    "page": "Page {{page}} of {{count}}",
+    "prev": "Previous",
+    "next": "Next",
+    "nav": "Pagination",
+    "none": "No results"
+  },
+  "picker": {
+    "placeholder": "Search by name, SKU or barcode…",
+    "searching": "Searching…",
+    "empty": "No product matches.",
+    "clear": "Clear product",
+    "open": "Show products",
+    "stock": "Stock: {{stock}}"
+  },
+  "list": {
+    "search": "Search",
+    "all": "All",
+    "filters": "Filters",
+    "pinned": "Highlighted"
   }
 }

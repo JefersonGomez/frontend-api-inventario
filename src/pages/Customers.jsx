@@ -1,5 +1,8 @@
 import { useState } from "react"
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query"
+import { Pagination } from "@/components/Pagination"
+import { SearchInput } from "@/components/SearchInput"
+import { useListParams } from "@/hoocks/useListParams"
 import { useTranslation } from "react-i18next"
 import { getCustomers, createCustomer, updateCustomer, deleteCustomer } from "@/api/customers"
 import { useAuth } from "@/context/AuthContext"
@@ -16,12 +19,11 @@ import {
   AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle,
   AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction,
 } from "@/components/ui/alert-dialog"
-import { Plus, Pencil, Trash2, Search } from "lucide-react"
+import { Plus, Pencil, Trash2 } from "lucide-react"
 
 const emptyForm = {
   name: "", idType: "", idNumber: "", email: "", phone: "", address: "", economicActivity: "", creditLimit: "", creditDays: "",
 }
-const fold = (v) => (v ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase()
 
 export function Customers() {
   const { t } = useTranslation()
@@ -34,13 +36,15 @@ export function Customers() {
   const [editing, setEditing] = useState(null)
   const [form, setForm] = useState(emptyForm)
   const [deleting, setDeleting] = useState(null)
-  const [query, setQuery] = useState("")
-
-  const customersQuery = useQuery({ queryKey: ["customers"], queryFn: getCustomers })
-  const q = fold(query).trim()
-  const visible = (customersQuery.data ?? []).filter(
-    (c) => !q || fold(c.name).includes(q) || (c.idNumber ?? "").includes(cleanIdNumber(query))
-  )
+  // el servidor pagina y busca por nombre, correo o identificación
+  const list = useListParams()
+  const q = list.get("q")
+  const customersQuery = useQuery({
+    queryKey: ["customers", "page", list.page, q],
+    queryFn: () => getCustomers({ page: list.page, ...(q && { q }) }),
+    placeholderData: keepPreviousData,
+  })
+  const visible = customersQuery.data?.items ?? []
 
   const done = () => {
     queryClient.invalidateQueries({ queryKey: ["customers"] })
@@ -126,18 +130,13 @@ export function Customers() {
         </Button>
       </div>
 
-      <div className="mb-4 flex max-w-sm items-center gap-2 rounded-lg border border-input bg-card px-3">
-        <Search className="h-4 w-4 text-muted-foreground" aria-hidden />
-        <label htmlFor="customer-search" className="sr-only">{t("customers.search")}</label>
-        <input
-          id="customer-search"
-          type="search"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder={t("customers.search")}
-          className="h-9 flex-1 bg-transparent text-sm outline-none"
-        />
-      </div>
+      <SearchInput
+        id="customer-search"
+        value={q}
+        onSearch={(value) => list.set({ q: value })}
+        placeholder={t("customers.search")}
+        className="mb-4 w-full max-w-sm"
+      />
 
       <div className="overflow-hidden overflow-x-auto rounded-xl border border-border">
         <Table>
@@ -184,6 +183,7 @@ export function Customers() {
           </TableBody>
         </Table>
       </div>
+      <Pagination data={customersQuery.data} onPage={list.setPage} />
 
       <Dialog open={dialogOpen} onOpenChange={(open) => (open ? setDialogOpen(true) : closeDialog())}>
         <DialogContent className="max-w-lg">

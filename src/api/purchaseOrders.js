@@ -1,8 +1,11 @@
 
 import { api } from "./client"
 
-export const getPurchaseOrders = () =>
-  api.get("/purchase-orders").then((res) => res.data);
+// { page, pageSize, q, status, supplierId } → página
+export const getPurchaseOrders = (params = {}) =>
+  api.get("/purchase-orders", { params }).then((res) => res.data);
+
+export const getPurchaseOrder = (id) => api.get(`/purchase-orders/${id}`).then((res) => res.data);
 
 export const createPurchaseOrder = (data) =>
   api.post("/purchase-orders", data).then((res) => res.data);
