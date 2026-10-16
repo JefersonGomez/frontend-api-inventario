@@ -14,6 +14,8 @@ import { usePermissions } from "@/hoocks/usePermissions"
 import { usePlatformOwner } from "@/hoocks/usePlatformOwner"
 import { getCompany, updateCompany } from "@/api/company"
 import { FiscalDataCard } from "@/components/settings/FiscalDataCard"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useSearchParams } from "react-router-dom"
 const languageItems = [
   { value: "es", label: "Español" },
   { value: "en", label: "English" },
@@ -26,13 +28,16 @@ function CompanyCard() {
   const { data } = useQuery({ queryKey: ["company"], queryFn: getCompany })
   const [draft, setDraft] = useState(null)
   const [currencyDraft, setCurrencyDraft] = useState(null)
+  const [daysDraft, setDaysDraft] = useState(null)
   const name = draft ?? data?.name ?? ""
   const currency = currencyDraft ?? data?.currency ?? "CRC"
+  const days = daysDraft ?? String(data?.cashCodeDays ?? 30)
+  const daysValid = /^\d+$/.test(days) && Number(days) >= 7 && Number(days) <= 365
   const currencyItems = [
     { value: "CRC", label: t("settings.currencies.CRC") },
     { value: "USD", label: t("settings.currencies.USD") },
   ]
-  const dirty = (name.trim() !== "" && name.trim() !== data?.name) || currency !== data?.currency
+  const dirty = (name.trim() !== "" && name.trim() !== data?.name) || currency !== data?.currency || Number(days) !== data?.cashCodeDays
 
   const mutation = useMutation({
     mutationFn: updateCompany,
@@ -41,16 +46,18 @@ function CompanyCard() {
       queryClient.invalidateQueries({ queryKey: ["companies"] })
       setDraft(null)
       setCurrencyDraft(null)
+      setDaysDraft(null)
+      queryClient.invalidateQueries({ queryKey: ["me"] }) // cambia cuándo vence mi código
     },
   })
 
   const submit = (e) => {
     e.preventDefault()
-    mutation.mutate({ name: name.trim(), currency })
+    mutation.mutate({ name: name.trim(), currency, cashCodeDays: Number(days) })
   }
 
   return (
-    <Card className="mt-6">
+    <Card>
       <CardHeader>
         <CardTitle>{t("settings.company")}</CardTitle>
       </CardHeader>
@@ -83,12 +90,28 @@ function CompanyCard() {
             </Select>
           </div>
 
+          <div className="pt-3 space-y-2">
+            <Label htmlFor="cash-code-days">{t("settings.cashCodeDays")}</Label>
+            <p className="text-xs text-muted-foreground">{t("settings.cashCodeDaysDescription")}</p>
+            <Input
+              id="cash-code-days"
+              type="number"
+              min={7}
+              max={365}
+              className="w-full sm:w-32"
+              value={days}
+              onChange={(e) => setDaysDraft(e.target.value)}
+              aria-invalid={!daysValid}
+              required
+            />
+          </div>
+
           <div className="pt-3">
-            <Button type="submit" disabled={mutation.isPending || !name.trim() || !dirty}>
+            <Button type="submit" disabled={mutation.isPending || !name.trim() || !dirty || !daysValid}>
               {t("common.save")}
             </Button>
           </div>
-          {mutation.isSuccess && draft === null && currencyDraft === null && (
+          {mutation.isSuccess && draft === null && currencyDraft === null && daysDraft === null && (
             <p role="status" className="text-xs text-muted-foreground">{t("settings.companySaved")}</p>
           )}
           {mutation.isError && (
@@ -125,6 +148,11 @@ export function Settings() {
   const { isPlatformOwner } = usePlatformOwner()
   const { theme, toggleTheme } = useTheme()
   const { t, i18n } = useTranslation()
+  const [params, setParams] = useSearchParams()
+  const showCompany = can("company.manage") && !isPlatformOwner
+  const tabs = ["general", ...(showCompany ? ["company", "fiscal"] : [])]
+  const tab = tabs.includes(params.get("tab")) ? params.get("tab") : "general"
+  const changeTab = (next) => setParams(next === "general" ? {} : { tab: next }, { replace: true })
 
   function handleLanguageChange(value) {
     i18n.changeLanguage(value)
@@ -132,7 +160,7 @@ export function Settings() {
   }
 
   return (
-    <div className="max-w-xl">
+    <div className="max-w-2xl">
       <div className="mb-6">
         <h1 className="text-2xl font-semibold">{t("settings.title", "Configuración")}</h1>
         <p className="text-sm text-muted-foreground">
@@ -140,6 +168,14 @@ export function Settings() {
         </p>
       </div>
 
+      <Tabs value={tab} onValueChange={changeTab} className="gap-4">
+        <TabsList className="w-full sm:w-fit">
+          <TabsTrigger value="general">{t("settings.tabs.general")}</TabsTrigger>
+          {showCompany && <TabsTrigger value="company">{t("settings.tabs.company")}</TabsTrigger>}
+          {showCompany && <TabsTrigger value="fiscal">{t("settings.tabs.fiscal")}</TabsTrigger>}
+        </TabsList>
+
+        <TabsContent value="general">
       <Card>
         <CardHeader>
           <CardTitle>{t("settings.appearance", "Apariencia")}</CardTitle>
@@ -183,13 +219,19 @@ export function Settings() {
 </div>
         </CardContent>
       </Card>
+        </TabsContent>
 
-      {can("company.manage") && !isPlatformOwner && (
-        <>
-          <CompanyCard />
-          <FiscalDataCard />
-        </>
-      )}
+        {showCompany && (
+          <TabsContent value="company">
+            <CompanyCard />
+          </TabsContent>
+        )}
+        {showCompany && (
+          <TabsContent value="fiscal">
+            <FiscalDataCard />
+          </TabsContent>
+        )}
+      </Tabs>
     </div>
   )
 }

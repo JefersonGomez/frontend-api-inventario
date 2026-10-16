@@ -54,7 +54,7 @@ export function FiscalDataCard() {
   )
 
   return (
-    <Card className="mt-6">
+    <Card>
       <CardHeader>
         <CardTitle>{t("settings.fiscal.title")}</CardTitle>
         <p className="text-sm text-muted-foreground">{t("settings.fiscal.description")}</p>

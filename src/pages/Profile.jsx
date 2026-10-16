@@ -6,6 +6,9 @@ import {
 } from "lucide-react"
 import { getProfile, updateAvatar, changePassword, updateProfile, setMyPin } from "@/api/profile"
 import { usePermissions } from "@/hoocks/usePermissions"
+import { useSearchParams } from "react-router-dom"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { TeamCodesCard } from "@/components/profile/TeamCodesCard"
 import { getCompany, getMyCompanies } from "@/api/company"
 import { useAuth } from "@/context/AuthContext"
 import { Button } from "@/components/ui/button"
@@ -116,9 +119,9 @@ function PasswordInput({ id, value, onChange, autoComplete, minLength, placehold
   )
 }
 
-// Código de caja: abre su caja y, si autoriza, aprueba en la pantalla de otro. Lo genera el
-// administrador; la persona lo cambia y queda fijo un tiempo (las reglas las valida el backend).
-function PinCard({ hasPin, lockedUntil, isAdmin }) {
+// Mi código de caja: abre mi caja y, si mi rol lo permite, autorizo en la pantalla de otro. Lo asigna el
+// administrador; puedo cambiarlo y queda fijo hasta que vence. Vencido no sirve hasta renovarlo.
+function PinCard({ code, isAdmin }) {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
   const [pin, setPin] = useState("")
@@ -129,12 +132,14 @@ function PinCard({ hasPin, lockedUntil, isAdmin }) {
       setPin("")
       setPassword("")
       queryClient.invalidateQueries({ queryKey: ["me"] })
+      queryClient.invalidateQueries({ queryKey: ["notifications"] })
     },
   })
 
-  // sin código (lo genera el admin) o recién cambiado: no hay nada que hacer acá
-  const blocked = !hasPin && !isAdmin ? t("profile.pin.askAdmin")
-    : lockedUntil ? t("profile.pin.locked", { date: new Date(lockedUntil).toLocaleDateString() })
+  const date = (d) => new Date(d).toLocaleDateString()
+  // sin código (lo asigna el admin) o recién cambiado: no hay formulario
+  const blocked = !code.hasPin && !isAdmin ? t("profile.pin.askAdmin")
+    : code.pinLockedUntil ? t("profile.pin.locked", { date: date(code.pinLockedUntil) })
     : null
 
   return (
@@ -146,6 +151,15 @@ function PinCard({ hasPin, lockedUntil, isAdmin }) {
           <p>{t("profile.pin.hint")}</p>
         </div>
       </div>
+      {code.hasPin && code.pinExpired && (
+        <p role="alert" className="prof-notice prof-notice--crit"><CircleAlert className="w-4 h-4 shrink-0 mt-0.5" />{t("profile.pin.expired")}</p>
+      )}
+      {code.pinExpiringSoon && (
+        <p className="prof-notice prof-notice--warn"><CircleAlert className="w-4 h-4 shrink-0 mt-0.5" />{t("profile.pin.expiringSoon", { date: date(code.pinExpiresAt) })}</p>
+      )}
+      {code.hasPin && !code.pinExpired && !code.pinExpiringSoon && (
+        <p className="prof-hint">{t("profile.pin.validUntil", { date: date(code.pinExpiresAt) })}</p>
+      )}
       {save.isSuccess && (
         <p role="status" className="prof-msg prof-msg--ok"><Check className="w-4 h-4 shrink-0" />{t("profile.pin.saved")}</p>
       )}
@@ -159,7 +173,7 @@ function PinCard({ hasPin, lockedUntil, isAdmin }) {
             save.mutate()
           }}
         >
-          <p className="prof-hint">{hasPin ? t("profile.pin.canChange") : t("profile.pin.none")}</p>
+          <p className="prof-hint">{code.hasPin ? t("profile.pin.canChange") : t("profile.pin.none")}</p>
           <div className="prof-field">
             <label htmlFor="auth-pin">{t("profile.pin.pin")}</label>
             <Input
@@ -201,7 +215,8 @@ export function Profile() {
   const { t, i18n } = useTranslation()
   const queryClient = useQueryClient()
   const { updateUser } = useAuth()
-  const { can, hasPin, pinLockedUntil } = usePermissions()
+  const { can, code } = usePermissions()
+  const [params, setParams] = useSearchParams()
   const [avatarBroken, setAvatarBroken] = useState(false)
   const [currentPassword, setCurrentPassword] = useState("")
   const [newPassword, setNewPassword] = useState("")
@@ -251,6 +266,15 @@ export function Profile() {
       { name: profile.name, email: profile.email, [field]: next },
       { onSuccess: done }
     )
+
+  // pestaña en la URL: los avisos del código de caja llevan a /profile?tab=cash
+  const needsCode = can("cash.manage") || can("sales.discount") || can("sales.void")
+  const managesCodes = can("users.manage") || can("sales.discount") || can("sales.void")
+  const showCash = (needsCode || managesCodes) && !profile.isPlatformOwner
+  const showCompanies = companies.length > 0 && !profile.isPlatformOwner
+  const tabs = ["account", "security", ...(showCash ? ["cash"] : []), ...(showCompanies ? ["companies"] : [])]
+  const tab = tabs.includes(params.get("tab")) ? params.get("tab") : "account"
+  const changeTab = (next) => setParams(next === "account" ? {} : { tab: next }, { replace: true })
 
   const level = strengthOf(newPassword)
   const memberSince = new Date(profile.createdAt).toLocaleDateString(i18n.language, { month: "long", year: "numeric" })
@@ -324,129 +348,146 @@ export function Profile() {
         </div>
       </section>
 
-      <div className="prof-grid">
-        {/* Datos personales */}
-        <section className="stk-card prof-card">
-          <div className="prof-card-head">
-            <span className="prof-card-icon"><UserRound className="w-[18px] h-[18px]" aria-hidden="true" /></span>
-            <div>
-              <h2>{t("profile.info_card_title")}</h2>
-              <p>{t("profile.info_card_hint")}</p>
-            </div>
-          </div>
-          <div className="prof-rows">
-            <EditableRow label={t("profile.labels.full_name")} value={profile.name} saving={profileMutation.isPending} onSave={saveField("name")} />
-            <EditableRow label={t("profile.labels.email")} value={profile.email} type="email" saving={profileMutation.isPending} onSave={saveField("email")} />
-            {profile.phone && (
-              <div className="prof-row">
-                <div className="prof-row-main">
-                  <span className="prof-label">{t("profile.labels.phone")}</span>
-                  <p className="prof-value">{profile.phone}</p>
-                </div>
-              </div>
-            )}
-          </div>
-          {profileMutation.isError && (
-            <p role="alert" className="prof-msg prof-msg--err">
-              <CircleAlert className="w-4 h-4 shrink-0" />
-              {apiErrorMessage(profileMutation.error, t("profile.errors.update_failed"))}
-            </p>
-          )}
-          {profileMutation.isSuccess && (
-            <p role="status" className="prof-msg prof-msg--ok"><Check className="w-4 h-4 shrink-0" />{t("profile.success.updated")}</p>
-          )}
-        </section>
+      <Tabs value={tab} onValueChange={changeTab} className="prof-tabs">
+        <TabsList className="w-full sm:w-fit overflow-x-auto">
+          <TabsTrigger value="account"><UserRound />{t("profile.tabs.account")}</TabsTrigger>
+          <TabsTrigger value="security"><KeyRound />{t("profile.tabs.security")}</TabsTrigger>
+          {showCash && <TabsTrigger value="cash"><LockKeyhole />{t("profile.tabs.cash")}</TabsTrigger>}
+          {showCompanies && <TabsTrigger value="companies"><Building2 />{t("profile.tabs.companies")}</TabsTrigger>}
+        </TabsList>
 
-        {/* Seguridad */}
-        <section className="stk-card prof-card">
-          <div className="prof-card-head">
-            <span className="prof-card-icon"><KeyRound className="w-[18px] h-[18px]" aria-hidden="true" /></span>
-            <div>
-              <h2>{t("profile.security_card_title")}</h2>
-              <p>{t("profile.security_card_hint")}</p>
-            </div>
-          </div>
-          <form
-            className="prof-form"
-            onSubmit={(e) => {
-              e.preventDefault()
-              passwordMutation.mutate()
-            }}
-          >
-            <div className="prof-field">
-              <label htmlFor="current-password">{t("profile.labels.current_password")}</label>
-              <PasswordInput id="current-password" value={currentPassword} onChange={setCurrentPassword} autoComplete="current-password" />
-            </div>
-            <div className="prof-field">
-              <label htmlFor="new-password">{t("profile.labels.new_password")}</label>
-              <PasswordInput
-                id="new-password"
-                value={newPassword}
-                onChange={setNewPassword}
-                autoComplete="new-password"
-                minLength={8}
-                placeholder={t("profile.placeholders.min_chars")}
-              />
-              <div className="prof-meter" data-level={level} aria-hidden="true">
-                <span /><span /><span /><span />
+        <TabsContent value="account" className="max-w-3xl">
+          {/* Datos personales */}
+          <section className="stk-card prof-card">
+            <div className="prof-card-head">
+              <span className="prof-card-icon"><UserRound className="w-[18px] h-[18px]" aria-hidden="true" /></span>
+              <div>
+                <h2>{t("profile.info_card_title")}</h2>
+                <p>{t("profile.info_card_hint")}</p>
               </div>
-              <p className="prof-hint" aria-live="polite">
-                {level ? t(`profile.strength.${STRENGTH[level]}`) : t("profile.password_hint")}
-              </p>
             </div>
-            {passwordMutation.isError && (
+            <div className="prof-rows">
+              <EditableRow label={t("profile.labels.full_name")} value={profile.name} saving={profileMutation.isPending} onSave={saveField("name")} />
+              <EditableRow label={t("profile.labels.email")} value={profile.email} type="email" saving={profileMutation.isPending} onSave={saveField("email")} />
+              {profile.phone && (
+                <div className="prof-row">
+                  <div className="prof-row-main">
+                    <span className="prof-label">{t("profile.labels.phone")}</span>
+                    <p className="prof-value">{profile.phone}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+            {profileMutation.isError && (
               <p role="alert" className="prof-msg prof-msg--err">
                 <CircleAlert className="w-4 h-4 shrink-0" />
-                {apiErrorMessage(passwordMutation.error, t("profile.errors.password_failed"))}
+                {apiErrorMessage(profileMutation.error, t("profile.errors.update_failed"))}
               </p>
             )}
-            {passwordMutation.isSuccess && (
-              <p role="status" className="prof-msg prof-msg--ok"><Check className="w-4 h-4 shrink-0" />{t("profile.success.password_updated")}</p>
+            {profileMutation.isSuccess && (
+              <p role="status" className="prof-msg prof-msg--ok"><Check className="w-4 h-4 shrink-0" />{t("profile.success.updated")}</p>
             )}
-            <div>
-              <Button type="submit" disabled={passwordMutation.isPending || !currentPassword || newPassword.length < 8}>
-                {passwordMutation.isPending ? <Loader2 className="animate-spin" /> : <KeyRound />}
-                {passwordMutation.isPending ? t("common.updating") : t("profile.buttons.change_password")}
-              </Button>
-            </div>
-          </form>
-        </section>
-      </div>
+          </section>
+        </TabsContent>
 
-      {(can("cash.manage") || can("sales.discount") || can("sales.void")) && !profile.isPlatformOwner && (
-        <PinCard hasPin={hasPin} lockedUntil={pinLockedUntil} isAdmin={can("users.manage")} />
-      )}
-
-      {/* Empresas en las que participa (multi-empresa) */}
-      {companies.length > 0 && !profile.isPlatformOwner && (
-        <section className="stk-card prof-card">
-          <div className="prof-card-head">
-            <span className="prof-card-icon"><Building2 className="w-[18px] h-[18px]" aria-hidden="true" /></span>
-            <div>
-              <h2>{t("profile.companies_title")}</h2>
-              <p>{t("profile.companies_hint")}</p>
+        <TabsContent value="security" className="max-w-3xl">
+          {/* Seguridad */}
+          <section className="stk-card prof-card">
+            <div className="prof-card-head">
+              <span className="prof-card-icon"><KeyRound className="w-[18px] h-[18px]" aria-hidden="true" /></span>
+              <div>
+                <h2>{t("profile.security_card_title")}</h2>
+                <p>{t("profile.security_card_hint")}</p>
+              </div>
             </div>
-          </div>
-          <ul className="prof-companies">
-            {companies.map((c) => {
-              const active = c.id === company?.id
-              return (
-                <li key={c.id} className={`prof-company ${active ? "prof-company--active" : ""}`}>
-                  <span className="prof-company-mark" aria-hidden="true">{initialsOf(c.name)}</span>
-                  <div className="prof-company-body">
-                    <p className="prof-company-name" title={c.name}>{c.name}</p>
-                    <p className="prof-company-meta">
-                      {t(`companies.roles.${c.role}`)}
-                      {c.isOwner && <> · <Crown className="inline w-3 h-3 -mt-0.5" aria-hidden="true" /> {t("profile.owner")}</>}
-                      {active && <> · {t("profile.active_company")}</>}
-                    </p>
-                  </div>
-                </li>
-              )
-            })}
-          </ul>
-        </section>
-      )}
+            <form
+              className="prof-form"
+              onSubmit={(e) => {
+                e.preventDefault()
+                passwordMutation.mutate()
+              }}
+            >
+              <div className="prof-field">
+                <label htmlFor="current-password">{t("profile.labels.current_password")}</label>
+                <PasswordInput id="current-password" value={currentPassword} onChange={setCurrentPassword} autoComplete="current-password" />
+              </div>
+              <div className="prof-field">
+                <label htmlFor="new-password">{t("profile.labels.new_password")}</label>
+                <PasswordInput
+                  id="new-password"
+                  value={newPassword}
+                  onChange={setNewPassword}
+                  autoComplete="new-password"
+                  minLength={8}
+                  placeholder={t("profile.placeholders.min_chars")}
+                />
+                <div className="prof-meter" data-level={level} aria-hidden="true">
+                  <span /><span /><span /><span />
+                </div>
+                <p className="prof-hint" aria-live="polite">
+                  {level ? t(`profile.strength.${STRENGTH[level]}`) : t("profile.password_hint")}
+                </p>
+              </div>
+              {passwordMutation.isError && (
+                <p role="alert" className="prof-msg prof-msg--err">
+                  <CircleAlert className="w-4 h-4 shrink-0" />
+                  {apiErrorMessage(passwordMutation.error, t("profile.errors.password_failed"))}
+                </p>
+              )}
+              {passwordMutation.isSuccess && (
+                <p role="status" className="prof-msg prof-msg--ok"><Check className="w-4 h-4 shrink-0" />{t("profile.success.password_updated")}</p>
+              )}
+              <div>
+                <Button type="submit" disabled={passwordMutation.isPending || !currentPassword || newPassword.length < 8}>
+                  {passwordMutation.isPending ? <Loader2 className="animate-spin" /> : <KeyRound />}
+                  {passwordMutation.isPending ? t("common.updating") : t("profile.buttons.change_password")}
+                </Button>
+              </div>
+            </form>
+          </section>
+        </TabsContent>
+
+        {showCash && (
+          <TabsContent value="cash">
+            <div className="prof-grid">
+              {needsCode && <PinCard code={code} isAdmin={can("users.manage")} />}
+              {managesCodes && <TeamCodesCard />}
+            </div>
+          </TabsContent>
+        )}
+
+        {showCompanies && (
+          <TabsContent value="companies">
+            <section className="stk-card prof-card">
+              <div className="prof-card-head">
+                <span className="prof-card-icon"><Building2 className="w-[18px] h-[18px]" aria-hidden="true" /></span>
+                <div>
+                  <h2>{t("profile.companies_title")}</h2>
+                  <p>{t("profile.companies_hint")}</p>
+                </div>
+              </div>
+              <ul className="prof-companies">
+                {companies.map((c) => {
+                  const active = c.id === company?.id
+                  return (
+                    <li key={c.id} className={`prof-company ${active ? "prof-company--active" : ""}`}>
+                      <span className="prof-company-mark" aria-hidden="true">{initialsOf(c.name)}</span>
+                      <div className="prof-company-body">
+                        <p className="prof-company-name" title={c.name}>{c.name}</p>
+                        <p className="prof-company-meta">
+                          {t(`companies.roles.${c.role}`)}
+                          {c.isOwner && <> · <Crown className="inline w-3 h-3 -mt-0.5" aria-hidden="true" /> {t("profile.owner")}</>}
+                          {active && <> · {t("profile.active_company")}</>}
+                        </p>
+                      </div>
+                    </li>
+                  )
+                })}
+              </ul>
+            </section>
+          </TabsContent>
+        )}
+      </Tabs>
     </div>
   )
 }

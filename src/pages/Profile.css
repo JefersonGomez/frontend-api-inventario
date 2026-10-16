@@ -177,6 +177,19 @@
 .prof-company-name { margin: 0; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .prof-company-meta { margin: 2px 0 0; font-size: 0.78rem; color: var(--muted-foreground); }
 
+/* Pestañas y caja */
+.prof-tabs { gap: 16px; }
+.prof-tone--ok { color: var(--stk-ok); }
+.prof-tone--warn { color: var(--stk-warn); }
+.prof-tone--crit { color: var(--stk-crit); }
+.prof-notice { display: flex; align-items: flex-start; gap: 8px; margin: 6px 0 0; padding: 10px 12px; border-radius: 10px; font-size: 0.85rem; }
+.prof-notice--warn { background: var(--stk-warn-bg); color: var(--stk-warn); }
+.prof-notice--crit { background: var(--stk-crit-bg); color: var(--stk-crit); }
+.prof-team { list-style: none; margin: 14px 0 0; padding: 12px 0 0; border-top: 1px solid var(--border); display: grid; gap: 8px; }
+.prof-team li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; font-size: 0.85rem; }
+.prof-team-role { color: var(--muted-foreground); }
+.prof-team-state { font-size: 0.78rem; }
+
 .prof-skeleton { border-radius: 22px; min-height: 180px; background: var(--muted); animation: prof-pulse 1.4s ease-in-out infinite; }
 @keyframes prof-pulse { 50% { opacity: 0.55; } }
 

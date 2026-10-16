@@ -500,8 +500,10 @@
       "employee": "Empleado"
     },
     "tabs": {
-      "info": "Información",
-      "security": "Seguridad"
+      "account": "Mis datos",
+      "security": "Seguridad",
+      "cash": "Caja",
+      "companies": "Empresas"
     },
     "info_card_title": "Datos personales",
     "security_card_title": "Contraseña",
@@ -547,17 +549,44 @@
     "owner": "Dueño",
     "active_company": "Activa",
     "pin": {
-      "title": "Código de caja",
-      "hint": "Con él abres tu caja y, si tu rol lo permite, autorizas descuentos o anulaciones en la pantalla de otra persona sin que cierre su sesión.",
+      "title": "Mi código de caja",
+      "hint": "Con él abres tu caja y, si tu rol lo permite, autorizas descuentos, cambios de precio o anulaciones en la pantalla de otra persona sin que cierre su sesión.",
       "askAdmin": "Todavía no tienes código: pídeselo al administrador.",
-      "locked": "Ya cambiaste tu código: podrás cambiarlo de nuevo a partir del {{date}}. Si lo olvidaste, pide uno nuevo al administrador.",
-      "canChange": "Puedes cambiar el código que te dieron. Después de cambiarlo queda fijo 30 días.",
+      "locked": "Ya cambiaste tu código: podrás cambiarlo de nuevo cuando venza, el {{date}}. Si lo olvidaste, pide uno nuevo al administrador.",
+      "canChange": "Puedes cambiar el código que te dieron. Después de cambiarlo queda fijo hasta que vence.",
       "none": "Ponte un código de 4 a 6 dígitos, nada obvio como 1234.",
+      "validUntil": "Vigente hasta el {{date}}.",
+      "expiringSoon": "Tu código vence el {{date}}. Renuévalo antes para no quedarte sin poder usar la caja.",
+      "expired": "Tu código venció: no puedes usar la caja hasta renovarlo (cámbialo aquí o pide uno nuevo al administrador).",
       "pin": "Código nuevo",
       "save": "Guardar código",
       "saved": "Código guardado",
       "error": "No se pudo guardar el código",
       "password": "Tu contraseña"
+    },
+    "team": {
+      "title": "Códigos del equipo",
+      "hint": "Asigna el código de caja de una persona: escríbelo o genéralo al azar. Se muestra una sola vez y a la persona le llega un aviso.",
+      "empty": "No hay personas a las que puedas asignarles código.",
+      "member": "Empleado",
+      "choose": "Elige a quién",
+      "code": "Código",
+      "codePlaceholder": "Vacío = al azar",
+      "random": "Al azar",
+      "codeHint": "De 4 a 6 dígitos, nada obvio como 1234. Reemplaza el código anterior (úsalo si lo olvidó o venció).",
+      "invalid": "Usa de 4 a 6 dígitos y nada obvio (repetidos o seguidos).",
+      "assign": "Asignar código",
+      "assignRandom": "Asignar uno al azar",
+      "done": "Código asignado a {{name}}:",
+      "once": "Anótalo o entrégaselo ahora: no se vuelve a mostrar.",
+      "error": "No se pudo asignar el código",
+      "listLabel": "Estado de los códigos",
+      "state": {
+        "none": "Sin código",
+        "expired": "Venció el {{date}}",
+        "soon": "Vence el {{date}}",
+        "valid": "Vigente hasta el {{date}}"
+      }
     }
   },
   "settings": {
@@ -606,7 +635,14 @@
         "6": "Puntarenas",
         "7": "Limón"
       }
-    }
+    },
+    "tabs": {
+      "general": "General",
+      "company": "Empresa",
+      "fiscal": "Datos fiscales"
+    },
+    "cashCodeDays": "Vigencia del código de caja (días)",
+    "cashCodeDaysDescription": "Cada cuánto vence el código para abrir caja y autorizar. Tras cambiarlo, la persona no puede volver a cambiarlo hasta que vence. De 7 a 365 días."
   },
   "purchaseRequests": {
     "title": "Solicitudes de compra",
@@ -736,7 +772,10 @@
       "orderReceived": "Pedidos recibidos",
       "requestComment": "Comentarios en solicitudes",
       "orderComment": "Comentarios en órdenes",
-      "memberJoined": "Nuevos miembros"
+      "memberJoined": "Nuevos miembros",
+      "cashCodeExpired": "Código de caja vencido",
+      "cashCodeExpiring": "Código de caja por vencer",
+      "cashCodeAssigned": "Código de caja"
     },
     "detail": {
       "requestExpiring": "{{requester}} · {{quantity}} · vence {{when}}",
@@ -751,7 +790,10 @@
       "requestRejectedReason": "Rechazada · {{reason}}",
       "requestComment": "{{author}}: {{excerpt}}",
       "orderComment": "{{author}}: {{excerpt}}",
-      "memberJoined": "Se unió a {{company}}"
+      "memberJoined": "Se unió a {{company}}",
+      "cashCodeExpired": "Venció: no puedes usar la caja hasta renovarlo",
+      "cashCodeExpiring": "Vence {{when}}: renuévalo a tiempo",
+      "cashCodeAssigned": "{{by}} te asignó un código nuevo"
     },
     "when": {
       "today": "hoy",
@@ -761,7 +803,12 @@
       "past": "ya venció"
     },
     "unread": "Sin leer",
-    "markAllRead": "Marcar todo como leído"
+    "markAllRead": "Marcar todo como leído",
+    "titles": {
+      "cashCodeExpired": "Tu código de caja",
+      "cashCodeExpiring": "Tu código de caja",
+      "cashCodeAssigned": "Nuevo código de caja"
+    }
   },
   "comments": {
     "title": "Comentarios",
@@ -840,19 +887,6 @@
       "adminAll": "El administrador tiene todos los permisos.",
       "save": "Guardar acceso",
       "error": "No se pudo guardar el acceso"
-    },
-    "pin": {
-      "generate": "Generar código",
-      "renew": "Nuevo código",
-      "button_aria": "Código de caja de {{name}}",
-      "title": "Código de caja de {{name}}",
-      "intro": "Con este código {{name}} abre su caja{{authorizes}}. Se genera al azar; entrégaselo en persona.",
-      "authorizes": " y autoriza descuentos, anulaciones y notas de crédito",
-      "replace": "Ya tiene un código: el nuevo reemplaza al anterior (úsalo si lo olvidó).",
-      "after": "Podrá cambiarlo una vez desde su perfil; después queda fijo 30 días o hasta que generes otro.",
-      "ready": "Código de {{name}}:",
-      "once": "Anótalo o entrégaselo ahora: no se vuelve a mostrar.",
-      "error": "No se pudo generar el código"
     }
   },
   "invite": {

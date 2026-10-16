@@ -500,8 +500,10 @@
       "employee": "Employee"
     },
     "tabs": {
-      "info": "Information",
-      "security": "Security"
+      "account": "My details",
+      "security": "Security",
+      "cash": "Register",
+      "companies": "Companies"
     },
     "info_card_title": "Personal details",
     "security_card_title": "Password",
@@ -547,17 +549,44 @@
     "owner": "Owner",
     "active_company": "Active",
     "pin": {
-      "title": "Register code",
-      "hint": "You use it to open your register and, if your role allows it, to authorize discounts or voids on someone else's screen without them signing out.",
+      "title": "My register code",
+      "hint": "You use it to open your register and, if your role allows it, to authorize discounts, price changes or voids on someone else's screen without them signing out.",
       "askAdmin": "You don't have a code yet: ask your administrator.",
-      "locked": "You already changed your code: you can change it again from {{date}}. If you forgot it, ask your administrator for a new one.",
-      "canChange": "You can change the code you were given. After changing it, it stays fixed for 30 days.",
+      "locked": "You already changed your code: you can change it again when it expires, on {{date}}. If you forgot it, ask your administrator for a new one.",
+      "canChange": "You can change the code you were given. After changing it, it stays fixed until it expires.",
       "none": "Choose a 4 to 6 digit code, nothing obvious like 1234.",
+      "validUntil": "Valid until {{date}}.",
+      "expiringSoon": "Your code expires on {{date}}. Renew it in time so you can keep using the register.",
+      "expired": "Your code expired: you can't use the register until you renew it (change it here or ask your administrator for a new one).",
       "pin": "New code",
       "save": "Save code",
       "saved": "Code saved",
       "error": "Could not save the code",
       "password": "Your password"
+    },
+    "team": {
+      "title": "Team codes",
+      "hint": "Assign someone's register code: type it or generate a random one. It is shown only once and the person gets a notice.",
+      "empty": "There is nobody you can assign a code to.",
+      "member": "Employee",
+      "choose": "Choose who",
+      "code": "Code",
+      "codePlaceholder": "Empty = random",
+      "random": "Random",
+      "codeHint": "4 to 6 digits, nothing obvious like 1234. Replaces the previous code (use it if they forgot it or it expired).",
+      "invalid": "Use 4 to 6 digits and nothing obvious (repeated or sequential).",
+      "assign": "Assign code",
+      "assignRandom": "Assign a random one",
+      "done": "Code assigned to {{name}}:",
+      "once": "Write it down or hand it over now: it won't be shown again.",
+      "error": "Could not assign the code",
+      "listLabel": "Code status",
+      "state": {
+        "none": "No code",
+        "expired": "Expired on {{date}}",
+        "soon": "Expires on {{date}}",
+        "valid": "Valid until {{date}}"
+      }
     }
   },
   "settings": {
@@ -606,7 +635,14 @@
         "6": "Puntarenas",
         "7": "Limón"
       }
-    }
+    },
+    "tabs": {
+      "general": "General",
+      "company": "Company",
+      "fiscal": "Tax details"
+    },
+    "cashCodeDays": "Register code validity (days)",
+    "cashCodeDaysDescription": "How often the code to open the register and authorize expires. After changing it, the person can't change it again until it expires. 7 to 365 days."
   },
   "purchaseRequests": {
     "title": "Purchase Requests",
@@ -736,7 +772,10 @@
       "orderReceived": "Orders received",
       "requestComment": "Request comments",
       "orderComment": "Order comments",
-      "memberJoined": "New members"
+      "memberJoined": "New members",
+      "cashCodeExpired": "Register code expired",
+      "cashCodeExpiring": "Register code expiring",
+      "cashCodeAssigned": "Register code"
     },
     "detail": {
       "requestExpiring": "{{requester}} · {{quantity}} · expires {{when}}",
@@ -751,7 +790,10 @@
       "requestRejectedReason": "Rejected · {{reason}}",
       "requestComment": "{{author}}: {{excerpt}}",
       "orderComment": "{{author}}: {{excerpt}}",
-      "memberJoined": "Joined {{company}}"
+      "memberJoined": "Joined {{company}}",
+      "cashCodeExpired": "Expired: you can't use the register until you renew it",
+      "cashCodeExpiring": "Expires {{when}}: renew it in time",
+      "cashCodeAssigned": "{{by}} assigned you a new code"
     },
     "when": {
       "today": "today",
@@ -761,7 +803,12 @@
       "past": "already expired"
     },
     "unread": "Unread",
-    "markAllRead": "Mark all as read"
+    "markAllRead": "Mark all as read",
+    "titles": {
+      "cashCodeExpired": "Your register code",
+      "cashCodeExpiring": "Your register code",
+      "cashCodeAssigned": "New register code"
+    }
   },
   "comments": {
     "title": "Comments",
@@ -840,19 +887,6 @@
       "adminAll": "Administrators have every permission.",
       "save": "Save access",
       "error": "Could not save the access"
-    },
-    "pin": {
-      "generate": "Generate code",
-      "renew": "New code",
-      "button_aria": "Register code for {{name}}",
-      "title": "Register code for {{name}}",
-      "intro": "{{name}} uses this code to open their register{{authorizes}}. It is random; hand it over in person.",
-      "authorizes": " and to authorize discounts, voids and credit notes",
-      "replace": "They already have a code: the new one replaces it (use this if they forgot it).",
-      "after": "They can change it once from their profile; then it stays fixed for 30 days or until you generate another.",
-      "ready": "Code for {{name}}:",
-      "once": "Write it down or hand it over now: it won't be shown again.",
-      "error": "Could not generate the code"
     }
   },
   "invite": {

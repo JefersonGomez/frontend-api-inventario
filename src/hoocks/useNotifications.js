@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/context/AuthContext";
 import { getNotifications } from "@/api/notifications";
 
-// Disponible para ADMIN y EMPLOYE: el backend decide qué ve cada rol.
+// Para todos los roles: el backend decide qué ve cada uno (según sus permisos).
 export function useNotifications() {
   const { user } = useAuth()
   return useQuery({

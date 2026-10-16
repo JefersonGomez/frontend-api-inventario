@@ -5,8 +5,8 @@ import { useTranslation } from "react-i18next";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Popover } from "@base-ui/react/popover";
 import {
-  Bell, CalendarClock, CheckCheck, CheckCircle2, ChevronRight, Hourglass, Inbox, MessageSquare, PackageCheck, UserPlus, PackageMinus,
-  ShoppingCart, XCircle,
+  Bell, CalendarClock, CheckCheck, CheckCircle2, ChevronRight, Hourglass, Inbox, LockKeyhole, MessageSquare, PackageCheck, UserPlus,
+  PackageMinus, ShoppingCart, XCircle,
 } from "lucide-react";
 import { useNotifications } from "@/hoocks/useNotifications";
 import { markNotificationRead, markAllNotificationsRead } from "@/api/notifications";
@@ -16,6 +16,9 @@ import { formatQty } from "@/lib/units";
 
 // Orden = urgencia. Para reordenar los grupos basta con mover una línea.
 const SECTIONS = [
+  { type: "cashCodeExpired", icon: LockKeyhole, tone: "crit" },
+  { type: "cashCodeExpiring", icon: LockKeyhole, tone: "warn" },
+  { type: "cashCodeAssigned", icon: LockKeyhole, tone: "info" },
   { type: "memberJoined", icon: UserPlus, tone: "ok" },
   { type: "requestComment", icon: MessageSquare, tone: "info" },
   { type: "orderComment", icon: MessageSquare, tone: "info" },
@@ -66,6 +69,8 @@ function useDetail() {
     switch (n.type) {
       case "requestExpiring":
         return t("notifications.detail.requestExpiring", { ...m, when: when(daysUntil(m.expiresAt)) });
+      case "cashCodeExpiring":
+        return t("notifications.detail.cashCodeExpiring", { when: when(daysUntil(m.expiresAt)) });
       case "productExpiring":
         return t("notifications.detail.productExpiring", { when: when(daysUntil(m.expirationDate, true)) });
       case "requestRejected":
@@ -112,7 +117,7 @@ function Section({ section, items, onOpen }) {
               className="group flex items-center gap-3 rounded-lg px-2 py-2 transition-colors duration-150 hover:bg-muted focus-visible:bg-muted"
             >
               <span className="min-w-0 flex-1">
-                <span className={cn("block truncate text-sm", n.persisted && !n.read ? "font-semibold" : "font-medium")}>{n.title}</span>
+                <span className={cn("block truncate text-sm", n.persisted && !n.read ? "font-semibold" : "font-medium")}>{n.title || t(`notifications.titles.${n.type}`)}</span>
                 <span className="block truncate text-xs text-muted-foreground">{detailOf(n)}</span>
               </span>
               {n.persisted && !n.read && (
