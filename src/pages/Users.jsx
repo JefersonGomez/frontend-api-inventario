@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
-import { Copy, Check, UserPlus, RotateCw, X } from "lucide-react"
+import { Copy, Check, UserPlus, RotateCw, X, KeyRound } from "lucide-react"
 import { getUsers, toggleUserActive } from "@/api/users"
 import { getInvitations, createInvitation, revokeInvitation } from "@/api/invitations"
 import { getCompany } from "@/api/company"
@@ -20,6 +20,8 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table"
 import { API_URL } from "@/api/client"
+import { AccessDialog } from "@/components/users/AccessDialog"
+import { ROLES } from "@/lib/roles"
 
 export function Users() {
   const { t } = useTranslation()
@@ -28,6 +30,7 @@ export function Users() {
   const [inviting, setInviting] = useState(false)
   const [form, setForm] = useState({ email: "", role: "EMPLOYE" })
   const [copied, setCopied] = useState(false)
+  const [editingAccess, setEditingAccess] = useState(null)
 
   const usersQuery = useQuery({ queryKey: ["users"], queryFn: () => getUsers() })
   const { data: invitations = [] } = useQuery({ queryKey: ["invitations"], queryFn: getInvitations })
@@ -54,10 +57,7 @@ export function Users() {
   const used = activeUsers + invitations.length
   const full = maxUsers !== null && used >= maxUsers
 
-  const roleItems = [
-    { value: "EMPLOYE", label: t("companies.roles.EMPLOYE") },
-    { value: "ADMIN", label: t("companies.roles.ADMIN") },
-  ]
+  const roleItems = ROLES.map((r) => ({ value: r, label: t(`companies.roles.${r}`) }))
 
   const openInvite = (preset) => {
     setForm(preset ?? { email: "", role: "EMPLOYE" })
@@ -136,7 +136,24 @@ export function Users() {
                   </TableCell>
                   <TableCell className="hidden sm:table-cell text-muted-foreground">{u.email}</TableCell>
                   <TableCell>
-                    <Badge variant={u.role === "ADMIN" ? "default" : "secondary"}>{t(`companies.roles.${u.role}`)}</Badge>
+                    {/* nadie cambia su propio acceso (el backend también lo impide) */}
+                    {isSelf ? (
+                      <Badge variant="default">{t(`companies.roles.${u.role}`)}</Badge>
+                    ) : (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setEditingAccess(u)}
+                        aria-label={t("users.access.edit", { name: u.name })}
+                        title={t("users.access.edit", { name: u.name })}
+                      >
+                        <KeyRound />
+                        {t(`companies.roles.${u.role}`)}
+                        {(u.grantedPermissions?.length > 0 || u.revokedPermissions?.length > 0) && (
+                          <span className="text-xs text-[var(--stk-warn)]">· {t("users.access.changed")}</span>
+                        )}
+                      </Button>
+                    )}
                   </TableCell>
                   <TableCell className="hidden md:table-cell text-muted-foreground">
                     {new Date(u.createdAt).toLocaleDateString()}
@@ -208,6 +225,8 @@ export function Users() {
           </div>
         </section>
       )}
+
+      {editingAccess && <AccessDialog user={editingAccess} onClose={() => setEditingAccess(null)} />}
 
       <Dialog open={inviting} onOpenChange={setInviting}>
         <DialogContent>

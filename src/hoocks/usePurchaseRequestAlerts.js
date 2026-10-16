@@ -1,14 +1,14 @@
 // src/hooks/usePurchaseRequestAlerts.js
 import { useQuery } from "@tanstack/react-query";
 import { getPurchaseRequestAlerts } from "@/api/PurchaseRequests";
-import { useAuth } from "@/context/AuthContext";
+import { usePermissions } from "@/hoocks/usePermissions";
 
 export function usePurchaseRequestAlerts() {
-  const { user } = useAuth();
+  const { can } = usePermissions();
   return useQuery({
     queryKey: ["purchase-request-alerts"],
     queryFn: getPurchaseRequestAlerts,
-    enabled: user?.role === "ADMIN",
+    enabled: can("purchases.manage"),
     refetchInterval: 300_000, // respaldo: los cambios llegan por socket (useRealtime)
   });
 }

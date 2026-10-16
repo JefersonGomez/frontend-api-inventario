@@ -8,6 +8,7 @@ import { Pagination } from "@/components/Pagination"
 import { SearchInput } from "@/components/SearchInput"
 import { useListParams } from "@/hoocks/useListParams"
 import { Button } from "@/components/ui/button"
+import { usePermissions } from "@/hoocks/usePermissions"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
@@ -30,6 +31,7 @@ const SOURCES = ["MANUAL", "INITIAL", "PURCHASE_RECEIPT", "SALE", "RETURN", "COU
 
 export function Movements() {
   const { t } = useTranslation()
+  const { can } = usePermissions()
   const queryClient = useQueryClient()
   const [dialogOpen, setDialogOpen] = useState(false)
   const [form, setForm] = useState(emptyForm)
@@ -113,10 +115,12 @@ export function Movements() {
           <h1 className="text-2xl font-semibold">{t("movements.title")}</h1>
           <p className="text-sm text-muted-foreground">{t("movements.subtitle")}</p>
         </div>
-        <Button onClick={() => setDialogOpen(true)}>
-          <Plus className="w-4 h-4 mr-2" />
-          {t("movements.new_button")}
-        </Button>
+        {can("stock.move") && (
+          <Button onClick={() => setDialogOpen(true)}>
+            <Plus className="w-4 h-4 mr-2" />
+            {t("movements.new_button")}
+          </Button>
+        )}
       </div>
 
       <div className="mb-4 flex flex-wrap items-center gap-2">

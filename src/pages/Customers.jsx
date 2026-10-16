@@ -5,7 +5,7 @@ import { SearchInput } from "@/components/SearchInput"
 import { useListParams } from "@/hoocks/useListParams"
 import { useTranslation } from "react-i18next"
 import { getCustomers, createCustomer, updateCustomer, deleteCustomer } from "@/api/customers"
-import { useAuth } from "@/context/AuthContext"
+import { usePermissions } from "@/hoocks/usePermissions"
 import { useMoney } from "@/hoocks/useMoney"
 import { apiErrorMessage } from "@/lib/api-error"
 import { FiscalIdFields } from "@/components/FiscalIdFields"
@@ -27,8 +27,8 @@ const emptyForm = {
 
 export function Customers() {
   const { t } = useTranslation()
-  const { user } = useAuth()
-  const isAdmin = user?.role === "ADMIN"
+  const { can } = usePermissions()
+  const canManage = can("customers.manage")
   const money = useMoney()
   const queryClient = useQueryClient()
 
@@ -124,10 +124,12 @@ export function Customers() {
           <h1 className="text-2xl font-semibold">{t("customers.title")}</h1>
           <p className="text-sm text-muted-foreground">{t("customers.subtitle")}</p>
         </div>
-        <Button onClick={openCreate}>
-          <Plus className="mr-2 h-4 w-4" />
-          {t("customers.new")}
-        </Button>
+        {canManage && (
+          <Button onClick={openCreate}>
+            <Plus className="mr-2 h-4 w-4" />
+            {t("customers.new")}
+          </Button>
+        )}
       </div>
 
       <SearchInput
@@ -169,10 +171,12 @@ export function Customers() {
                 <TableCell className="hidden text-muted-foreground lg:table-cell">{c.phone || "—"}</TableCell>
                 <TableCell className="whitespace-nowrap">{credit(c)}</TableCell>
                 <TableCell className="text-right">
-                  <Button variant="ghost" size="icon" onClick={() => openEdit(c)} aria-label={t("customers.edit_title")}>
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                  {isAdmin && (
+                  {canManage && (
+                    <Button variant="ghost" size="icon" onClick={() => openEdit(c)} aria-label={t("customers.edit_title")}>
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                  )}
+                  {can("customers.delete") && (
                     <Button variant="ghost" size="icon" onClick={() => setDeleting(c)} aria-label={t("customers.delete_title")}>
                       <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>

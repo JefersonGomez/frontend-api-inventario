@@ -103,7 +103,10 @@
     },
     "roles": {
       "ADMIN": "Administrator",
-      "EMPLOYE": "Employee"
+      "MANAGER": "Manager",
+      "EMPLOYE": "Warehouse",
+      "CASHIER": "Cashier",
+      "ACCOUNTANT": "Accountant"
     },
     "lowStock": "Below minimum stock",
     "lowStockCoverage": "Minimum coverage: {{pct}}%",
@@ -542,7 +545,20 @@
     "companies_title": "Your companies",
     "companies_hint": "Switch company from the selector in the top bar",
     "owner": "Owner",
-    "active_company": "Active"
+    "active_company": "Active",
+    "pin": {
+      "title": "Authorization PIN",
+      "hint": "With this PIN you authorize discounts or voids on someone else's screen without them signing out. 4 to 6 digits, nothing obvious like 1234.",
+      "active": "You have an active PIN.",
+      "none": "You don't have a PIN yet.",
+      "pin": "New PIN",
+      "password": "Your password",
+      "save": "Save PIN",
+      "remove": "Delete PIN",
+      "saved": "PIN saved",
+      "removed": "PIN deleted",
+      "error": "Could not save the PIN"
+    }
   },
   "settings": {
     "title": "Settings",
@@ -768,7 +784,10 @@
     "switchError": "Could not switch company",
     "roles": {
       "ADMIN": "Admin",
-      "EMPLOYE": "Employee"
+      "MANAGER": "Manager",
+      "EMPLOYE": "Warehouse",
+      "CASHIER": "Cashier",
+      "ACCOUNTANT": "Accountant"
     },
     "plan": {
       "title": "Plan",
@@ -811,7 +830,17 @@
     "revoke": "Revoke",
     "usage": "{{used}} of {{max}} users",
     "usageHint": "Active users plus pending invitations, per your plan",
-    "full": "You reached your plan user limit"
+    "full": "You reached your plan user limit",
+    "access": {
+      "edit": "Change access for {{name}}",
+      "title": "Access for {{name}}",
+      "hint": "The role brings its permissions. You can grant or remove single permissions for this person only; it applies on their next action.",
+      "permissions": "Permissions",
+      "changed": "adjusted",
+      "adminAll": "Administrators have every permission.",
+      "save": "Save access",
+      "error": "Could not save the access"
+    }
   },
   "invite": {
     "panelTitle": "You were invited to Stockly",
@@ -1001,5 +1030,24 @@
     "all": "All",
     "filters": "Filters",
     "pinned": "Highlighted"
+  },
+  "permissions": {
+    "products.manage": "Create and edit products and categories",
+    "costs.view": "See costs and cost value",
+    "stock.move": "Record stock in, out and adjustments",
+    "purchases.request": "Request goods (purchase requests)",
+    "purchases.manage": "Approve requests and manage purchase orders",
+    "suppliers.manage": "Manage suppliers",
+    "customers.manage": "Add and edit customers",
+    "customers.delete": "Delete customers",
+    "reports.view": "See reports and use the assistant",
+    "audit.view": "See the audit log",
+    "users.manage": "Manage users and access",
+    "company.manage": "Edit company details",
+    "sales.sell": "Sell at the register",
+    "cash.manage": "Open and close the register",
+    "sales.discount": "Authorize discounts (with PIN)",
+    "sales.void": "Authorize voids (with PIN)",
+    "accounting.view": "See accounting"
   }
 }

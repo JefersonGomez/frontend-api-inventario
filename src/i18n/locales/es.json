@@ -103,7 +103,10 @@
     },
     "roles": {
       "ADMIN": "Administrador",
-      "EMPLOYE": "Empleado"
+      "MANAGER": "Encargado",
+      "EMPLOYE": "Bodega",
+      "CASHIER": "Cajero",
+      "ACCOUNTANT": "Contador"
     },
     "lowStock": "Stock bajo mínimo",
     "lowStockCoverage": "Cobertura del mínimo: {{pct}}%",
@@ -542,7 +545,20 @@
     "companies_title": "Tus empresas",
     "companies_hint": "Cambia de empresa desde el selector de la barra superior",
     "owner": "Dueño",
-    "active_company": "Activa"
+    "active_company": "Activa",
+    "pin": {
+      "title": "PIN de autorización",
+      "hint": "Con este PIN autorizas descuentos o anulaciones en la pantalla de otra persona, sin que cierre su sesión. De 4 a 6 dígitos, nada obvio como 1234.",
+      "active": "Tienes un PIN activo.",
+      "none": "Todavía no tienes PIN.",
+      "pin": "PIN nuevo",
+      "password": "Tu contraseña",
+      "save": "Guardar PIN",
+      "remove": "Borrar PIN",
+      "saved": "PIN guardado",
+      "removed": "PIN borrado",
+      "error": "No se pudo guardar el PIN"
+    }
   },
   "settings": {
     "title": "Configuración",
@@ -768,7 +784,10 @@
     "switchError": "No se pudo cambiar de empresa",
     "roles": {
       "ADMIN": "Administrador",
-      "EMPLOYE": "Empleado"
+      "MANAGER": "Encargado",
+      "EMPLOYE": "Bodega",
+      "CASHIER": "Cajero",
+      "ACCOUNTANT": "Contador"
     },
     "plan": {
       "title": "Plan",
@@ -811,7 +830,17 @@
     "revoke": "Anular",
     "usage": "{{used}} de {{max}} usuarios",
     "usageHint": "Usuarios activos más invitaciones pendientes, según tu plan",
-    "full": "Llegaste al límite de usuarios de tu plan"
+    "full": "Llegaste al límite de usuarios de tu plan",
+    "access": {
+      "edit": "Cambiar acceso de {{name}}",
+      "title": "Acceso de {{name}}",
+      "hint": "El rol trae sus permisos. Puedes dar o quitar permisos sueltos solo a esta persona; aplica en su siguiente acción.",
+      "permissions": "Permisos",
+      "changed": "ajustado",
+      "adminAll": "El administrador tiene todos los permisos.",
+      "save": "Guardar acceso",
+      "error": "No se pudo guardar el acceso"
+    }
   },
   "invite": {
     "panelTitle": "Te invitaron a Stockly",
@@ -1001,5 +1030,24 @@
     "all": "Todos",
     "filters": "Filtros",
     "pinned": "Resaltado"
+  },
+  "permissions": {
+    "products.manage": "Crear y editar productos y categorías",
+    "costs.view": "Ver costos y valor a costo",
+    "stock.move": "Registrar entradas, salidas y ajustes",
+    "purchases.request": "Pedir mercadería (solicitudes)",
+    "purchases.manage": "Aprobar solicitudes y gestionar órdenes de compra",
+    "suppliers.manage": "Gestionar proveedores",
+    "customers.manage": "Registrar y editar clientes",
+    "customers.delete": "Borrar clientes",
+    "reports.view": "Ver reportes y usar el asistente",
+    "audit.view": "Ver la auditoría",
+    "users.manage": "Gestionar usuarios y accesos",
+    "company.manage": "Editar los datos de la empresa",
+    "sales.sell": "Vender en la caja",
+    "cash.manage": "Abrir y cerrar caja",
+    "sales.discount": "Autorizar descuentos (con PIN)",
+    "sales.void": "Autorizar anulaciones (con PIN)",
+    "accounting.view": "Ver contabilidad"
   }
 }

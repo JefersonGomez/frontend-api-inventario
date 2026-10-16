@@ -19,10 +19,12 @@ import {
 import { ImmobilizedCapitalReport } from "@/components/reports/ImmobilizedCapitalReport"
 import { StockForecastReport } from "@/components/reports/StockForecastReport"
 import { formatQty } from "@/lib/units"
+import { usePermissions } from "@/hoocks/usePermissions"
 
 export function Reports() {
   const { t } = useTranslation()
   const money = useMoney()
+  const showCost = usePermissions().can("costs.view") // valor a costo y capital inmovilizado
   const [from, setFrom] = useState("")
   const [to, setTo] = useState("")
   const [immobilizedDays, setImmobilizedDays] = useState("60")
@@ -40,6 +42,7 @@ export function Reports() {
   const inventoryValueQuery = useQuery({
     queryKey: ["reports", "inventory-value"],
     queryFn: getInventoryValueReport,
+    enabled: showCost,
   })
 
   const movementsReportQuery = useQuery({
@@ -60,15 +63,15 @@ export function Reports() {
     try {
       const [lowStock, value, movements, breakdown, forecast] = await Promise.all([
         queryClient.fetchQuery({ queryKey: ["reports", "low-stock"], queryFn: getLowStockReport }),
-        queryClient.fetchQuery({ queryKey: ["reports", "inventory-value"], queryFn: getInventoryValueReport }),
+        showCost ? queryClient.fetchQuery({ queryKey: ["reports", "inventory-value"], queryFn: getInventoryValueReport }) : null,
         queryClient.fetchQuery({
           queryKey: ["reports", "movements", from, to],
           queryFn: () => getMovementsReport(from || undefined, to || undefined),
         }),
-        queryClient.fetchQuery({
+        showCost ? queryClient.fetchQuery({
           queryKey: ["inventory-value-breakdown", immobilizedDays],
           queryFn: () => getInventoryValueBreakdown(Number(immobilizedDays)),
-        }),
+        }) : null,
         queryClient.fetchQuery({ queryKey: ["stock-forecast"], queryFn: () => getStockForecast() }),
       ])
       const x = (key) => t(`reports.export.${key}`)
@@ -81,13 +84,17 @@ export function Reports() {
             [x("company"), company?.name ?? "—"],
             [x("generatedAt"), new Date().toLocaleString()],
             [x("currency"), company?.currency ?? "CRC"],
-            [t("reports.cards.total_value_title"), value.totalValue],
-            [x("productsInCatalog"), value.totalProducts],
-            [x("retailValue"), value.retailValue],
-            [x("withoutCost"), value.productsWithoutCost],
+            ...(value ? [
+              [t("reports.cards.total_value_title"), value.totalValue],
+              [x("productsInCatalog"), value.totalProducts],
+              [x("retailValue"), value.retailValue],
+              [x("withoutCost"), value.productsWithoutCost],
+            ] : []),
             [t("reports.cards.low_stock_title"), lowStock.length],
-            [t("reports.immobilizedCapital.activeValue"), breakdown.activeValue],
-            [`${t("reports.immobilizedCapital.immobilizedValue")} (${breakdown.daysThreshold} ${x("days")})`, breakdown.immobilizedValue],
+            ...(breakdown ? [
+              [t("reports.immobilizedCapital.activeValue"), breakdown.activeValue],
+              [`${t("reports.immobilizedCapital.immobilizedValue")} (${breakdown.daysThreshold} ${x("days")})`, breakdown.immobilizedValue],
+            ] : []),
             [x("movementsPeriod"), period],
           ],
         },
@@ -110,13 +117,13 @@ export function Reports() {
             ]),
           ],
         },
-        {
+        ...(breakdown ? [{
           name: x("immobilized"),
           rows: [
             [t("reports.immobilizedCapital.sku"), t("reports.immobilizedCapital.product"), t("reports.immobilizedCapital.value")],
             ...breakdown.immobilizedProducts.map((p) => [p.sku, p.name, p.hasCost ? p.value : ""]),
           ],
-        },
+        }] : []),
         {
           name: x("forecast"),
           rows: [
@@ -178,7 +185,7 @@ export function Reports() {
 
       {/* Tarjetas resumen y módulos de análisis en grid de 2 columnas */}
       <div className="grid grid-cols-1 md:grid-cols-2 print:grid-cols-1 gap-5">
-        <Card>
+        {showCost && <Card>
           <CardHeader>
             <CardTitle className="text-sm font-normal text-muted-foreground">
               {t("reports.cards.total_value_title")}
@@ -200,7 +207,7 @@ export function Reports() {
               </p>
             )}
           </CardContent>
-        </Card>
+        </Card>}
 
         <Card>
           <CardHeader>
@@ -215,9 +222,11 @@ export function Reports() {
         </Card>
 
         {/* Reporte de Capital Inmovilizado */}
-        <div className="rounded-xl border border-border bg-card p-5 flex flex-col justify-between">
-          <ImmobilizedCapitalReport days={immobilizedDays} onDaysChange={setImmobilizedDays} />
-        </div>
+        {showCost && (
+          <div className="rounded-xl border border-border bg-card p-5 flex flex-col justify-between">
+            <ImmobilizedCapitalReport days={immobilizedDays} onDaysChange={setImmobilizedDays} />
+          </div>
+        )}
 
         {/* Reporte de Pronóstico de Stock */}
         <div className="rounded-xl border border-border bg-card p-5 flex flex-col justify-between">

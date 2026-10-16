@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useState } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { useAuth } from "@/context/AuthContext"
+import { usePermissions } from "@/hoocks/usePermissions"
 import { usePlatformOwner } from "@/hoocks/usePlatformOwner"
 import { getCompany, updateCompany } from "@/api/company"
 import { FiscalDataCard } from "@/components/settings/FiscalDataCard"
@@ -121,7 +121,7 @@ function CompanyCard() {
 }
 
 export function Settings() {
-  const { user } = useAuth()
+  const { can } = usePermissions()
   const { isPlatformOwner } = usePlatformOwner()
   const { theme, toggleTheme } = useTheme()
   const { t, i18n } = useTranslation()
@@ -184,7 +184,7 @@ export function Settings() {
         </CardContent>
       </Card>
 
-      {user?.role === "ADMIN" && !isPlatformOwner && (
+      {can("company.manage") && !isPlatformOwner && (
         <>
           <CompanyCard />
           <FiscalDataCard />

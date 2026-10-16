@@ -27,7 +27,7 @@ import {
 import { Plus, Pencil, Trash2, FileUp, Layers, ChevronRight } from "lucide-react"
 import { BarcodeScanner } from "@/components/BarcodeScanner"
 import { useMoney } from "@/hoocks/useMoney"
-import { useAuth } from "@/context/AuthContext"
+import { usePermissions } from "@/hoocks/usePermissions"
 import { ImportProductsDialog } from "@/components/products/ImportProductsDialog"
 import { ProductPriceHistory } from "@/components/products/ProductPriceHistory"
 import { UNITS, TAX_RATES, qtyStep, formatQty } from "@/lib/units"
@@ -61,7 +61,10 @@ const variantLabel = (p) =>
 export function Products() {
   const { t } = useTranslation()
   const money = useMoney()
-  const { user } = useAuth()
+  const { can } = usePermissions()
+  const canManage = can("products.manage")
+  const showCost = can("costs.view")
+  const cols = showCost ? 7 : 6
   const [importing, setImporting] = useState(false)
   const [managingGroups, setManagingGroups] = useState(false)
   const [expanded, setExpanded] = useState(() => new Set()) // productos base desplegados
@@ -165,8 +168,9 @@ export function Products() {
         barcode: form.barcode,
         description: form.description,
         price: Number(form.price),
-        // vacío = sin costo (null); en la recepción de órdenes se vuelve a calcular solo
-        cost: form.cost === "" ? null : Number(form.cost),
+        // vacío = sin costo (null); en la recepción de órdenes se vuelve a calcular solo.
+        // Sin permiso de ver costos no se manda: el campo no se mostró y lo borraría
+        ...(showCost && { cost: form.cost === "" ? null : Number(form.cost) }),
         minStock: Number(form.minStock),
         categoryId: form.categoryId,
         supplierId: form.supplierId || null,
@@ -291,9 +295,11 @@ export function Products() {
         <TableCell>
           {product.pendingReview ? <Badge variant="outline">{t("products.pending.badge")}</Badge> : money.format(product.price)}
         </TableCell>
-        <TableCell className="hidden md:table-cell text-muted-foreground">
-          {product.cost == null ? "—" : money.format(product.cost)}
-        </TableCell>
+        {showCost && (
+          <TableCell className="hidden md:table-cell text-muted-foreground">
+            {product.cost == null ? "—" : money.format(product.cost)}
+          </TableCell>
+        )}
         <TableCell className="whitespace-nowrap">
           {product.stock <= product.minStock ? (
             <Badge variant="destructive">{formatQty(product.stock, product.unit, t)}</Badge>
@@ -302,12 +308,14 @@ export function Products() {
           )}
         </TableCell>
         <TableCell className="text-right whitespace-nowrap">
+          {canManage && (<>
           <Button variant="ghost" size="icon" onClick={() => openEditDialog(product)} aria-label={`${t("products.dialog.edit_title")}: ${product.name}`}>
             <Pencil className="w-4 h-4" />
           </Button>
           <Button variant="ghost" size="icon" onClick={() => setDeletingProduct(product)} aria-label={`${t("products.delete.title")}: ${product.name}`}>
             <Trash2 className="w-4 h-4 text-destructive" />
           </Button>
+          </>)}
         </TableCell>
       </TableRow>
     )
@@ -321,22 +329,24 @@ export function Products() {
           <p className="text-sm text-muted-foreground">{t("products.subtitle")}</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          {user?.role === "ADMIN" && (
+          {canManage && (
             <Button variant="outline" onClick={() => setManagingGroups(true)}>
               <Layers className="w-4 h-4 mr-2" />
               {t("products.variants.manage")}
             </Button>
           )}
-          {user?.role === "ADMIN" && (
+          {canManage && (
             <Button variant="outline" onClick={() => setImporting(true)}>
               <FileUp className="w-4 h-4 mr-2" />
               {t("products.import.button")}
             </Button>
           )}
-          <Button onClick={openCreateDialog}>
-            <Plus className="w-4 h-4 mr-2" />
-            {t("products.new_button")}
-          </Button>
+          {canManage && (
+            <Button onClick={openCreateDialog}>
+              <Plus className="w-4 h-4 mr-2" />
+              {t("products.new_button")}
+            </Button>
+          )}
         </div>
       </div>
       <ImportProductsDialog open={importing} onOpenChange={setImporting} />
@@ -385,7 +395,7 @@ export function Products() {
               <TableHead>{t("products.table.name")}</TableHead>
               <TableHead>{t("products.table.category")}</TableHead>
               <TableHead>{t("products.table.price")}</TableHead>
-              <TableHead className="hidden md:table-cell">{t("products.table.cost")}</TableHead>
+              {showCost && <TableHead className="hidden md:table-cell">{t("products.table.cost")}</TableHead>}
               <TableHead>{t("products.table.stock")}</TableHead>
               <TableHead className="text-right">{t("products.table.actions")}</TableHead>
             </TableRow>
@@ -393,7 +403,7 @@ export function Products() {
           <TableBody>
             {productsQuery.isLoading && (
               <TableRow>
-                <TableCell colSpan={7} className="text-center text-muted-foreground">
+                <TableCell colSpan={cols} className="text-center text-muted-foreground">
                   {t("common.loading")}
                 </TableCell>
               </TableRow>
@@ -401,7 +411,7 @@ export function Products() {
 
             {!productsQuery.isLoading && rows.length === 0 && (
               <TableRow>
-                <TableCell colSpan={7} className="text-center text-muted-foreground">
+                <TableCell colSpan={cols} className="text-center text-muted-foreground">
                   {filters.q ? t("products.noResults", { q: filters.q }) : t("pagination.none")}
                 </TableCell>
               </TableRow>
@@ -415,7 +425,9 @@ export function Products() {
                   group={r}
                   t={t}
                   money={money}
-                  isAdmin={user?.role === "ADMIN"}
+                  canManage={canManage}
+                  showCost={showCost}
+                  cols={cols}
                   // con filtros, los grupos que aparecen es porque alguna variante coincide: se abren solos
                   open={expanded.has(r.id) || hasFilters}
                   variantParams={filterParams}
@@ -520,10 +532,10 @@ export function Products() {
                   <Label htmlFor="product-price">{t("products.dialog.label_price")}</Label>
                   <Input id="product-price" type="number" step="0.01" min="0" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} required />
                 </div>
-                <div className="space-y-1.5">
+                {showCost && <div className="space-y-1.5">
                   <Label htmlFor="product-cost">{t("products.dialog.label_cost")}</Label>
                   <Input id="product-cost" type="number" step="0.01" min="0" value={form.cost} onChange={(e) => setForm({ ...form, cost: e.target.value })} aria-describedby="price-hint" />
-                </div>
+                </div>}
                 <div className="space-y-1.5">
                   <Label htmlFor="product-tax">{t("products.dialog.label_tax")}</Label>
                   <Select value={form.taxRate} onValueChange={(value) => setForm({ ...form, taxRate: value })} items={taxItems}>
@@ -669,7 +681,7 @@ export function Products() {
 }
 // Fila de un producto base (resumen calculado en el servidor) + sus variantes, que se piden al
 // desplegarlo (con los mismos filtros de la tabla)
-function GroupRows({ group, t, money, isAdmin, open, variantParams, onToggle, onAddVariant, renderProduct }) {
+function GroupRows({ group, t, money, canManage, showCost, cols, open, variantParams, onToggle, onAddVariant, renderProduct }) {
   const { variantCount: count, minPrice, maxPrice, totalStock, unit, lowCount: low } = group
   const variantsQuery = useQuery({
     queryKey: ["products", "variants", group.id, variantParams],
@@ -709,13 +721,13 @@ function GroupRows({ group, t, money, isAdmin, open, variantParams, onToggle, on
           <Badge variant="outline">{t("products.variants.base_badge")}</Badge>
         </TableCell>
         <TableCell className="whitespace-nowrap">{price}</TableCell>
-        <TableCell className="hidden md:table-cell text-muted-foreground">—</TableCell>
+        {showCost && <TableCell className="hidden md:table-cell text-muted-foreground">—</TableCell>}
         <TableCell className="whitespace-nowrap">
           {totalStock != null && unit ? formatQty(totalStock, unit, t) : "—"}
           {low > 0 && <Badge variant="destructive" className="ml-2">{t("products.variants.low", { count: low })}</Badge>}
         </TableCell>
         <TableCell className="text-right">
-          {isAdmin && (
+          {canManage && (
             <Button variant="outline" size="sm" onClick={onAddVariant} aria-label={t("products.variants.add_variant_aria", { name: group.name })}>
               <Plus className="mr-1 h-3.5 w-3.5" />
               {t("products.variants.add_variant")}
@@ -725,7 +737,7 @@ function GroupRows({ group, t, money, isAdmin, open, variantParams, onToggle, on
       </TableRow>
       {open && variantsQuery.isLoading && (
         <TableRow>
-          <TableCell colSpan={7} className="pl-8 text-sm text-muted-foreground">{t("common.loading")}</TableCell>
+          <TableCell colSpan={cols} className="pl-8 text-sm text-muted-foreground">{t("common.loading")}</TableCell>
         </TableRow>
       )}
       {open && variants.map((p) => renderProduct(p))}

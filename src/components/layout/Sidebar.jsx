@@ -2,6 +2,7 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/context/AuthContext";
 import { usePlatformOwner } from "@/hoocks/usePlatformOwner";
+import { usePermissions } from "@/hoocks/usePermissions";
 import {
   LayoutDashboard,
   Package,
@@ -26,9 +27,9 @@ const ICON = { className: "w-[18px] h-[18px]", strokeWidth: 1.7, "aria-hidden": 
 
 export function Sidebar() {
   const { t } = useTranslation();
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
   const navigate = useNavigate();
-  const isAdmin = user?.role === "ADMIN";
+  const { can } = usePermissions();
   const { isPlatformOwner } = usePlatformOwner();
 
   // el dueño de la plataforma no usa el inventario de un cliente: solo ve la plataforma
@@ -38,16 +39,12 @@ export function Sidebar() {
     { to: "/categories", label: t("sidebar.categories"), icon: FolderTree },
     { to: "/movements", label: t("sidebar.movements"), icon: ArrowLeftRight },
     { to: "/purchase-requests", label: t("sidebar.purchaseRequests"), icon: ClipboardList },
-    ...(isAdmin ? [{ to: "/purchase-orders", label: t("sidebar.purchaseOrders"), icon: ShoppingCart }] : []),
+    ...(can("purchases.manage") ? [{ to: "/purchase-orders", label: t("sidebar.purchaseOrders"), icon: ShoppingCart }] : []),
     { to: "/customers", label: t("sidebar.customers"), icon: Contact },
     { to: "/suppliers", label: t("sidebar.suppliers"), icon: Truck },
-    { to: "/reports", label: t("sidebar.reports"), icon: BarChart3 },
-    ...(isAdmin
-      ? [
-          { to: "/users", label: t("sidebar.users"), icon: UsersIcon },
-          { to: "/audit-log", label: t("sidebar.auditLog"), icon: ShieldCheck },
-        ]
-      : []),
+    ...(can("reports.view") ? [{ to: "/reports", label: t("sidebar.reports"), icon: BarChart3 }] : []),
+    ...(can("users.manage") ? [{ to: "/users", label: t("sidebar.users"), icon: UsersIcon }] : []),
+    ...(can("audit.view") ? [{ to: "/audit-log", label: t("sidebar.auditLog"), icon: ShieldCheck }] : []),
   ];
 
   async function handleLogout() {

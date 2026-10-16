@@ -7,6 +7,7 @@ import { api } from "@/api/client"
 import { getDashboard, getLowStockReport, getInventoryValueBreakdown } from "@/api/reports"
 import { useAuth } from "@/context/AuthContext"
 import { useMoney } from "@/hoocks/useMoney"
+import { usePermissions } from "@/hoocks/usePermissions"
 import "./Dashboard.css"
 
 const num = new Intl.NumberFormat("es-CO")
@@ -18,6 +19,9 @@ export function Dashboard() {
   const { t } = useTranslation()
   const { user } = useAuth()
   const money = useMoney()
+  const { can } = usePermissions()
+  const reports = can("reports.view")
+  const showValue = reports && can("costs.view")
   const [avatarBroken, setAvatarBroken] = useState(false)
 
   const now = new Date()
@@ -27,10 +31,11 @@ export function Dashboard() {
     queryKey: ["reports", "dashboard", monthStart.toISOString()],
     queryFn: () => getDashboard(monthStart.toISOString()),
   })
-  const lowStock = useQuery({ queryKey: ["reports", "low-stock"], queryFn: getLowStockReport })
+  const lowStock = useQuery({ queryKey: ["reports", "low-stock"], queryFn: getLowStockReport, enabled: reports })
   const value = useQuery({
     queryKey: ["reports", "inventory-value-breakdown", 60],
     queryFn: () => getInventoryValueBreakdown(60),
+    enabled: showValue,
   })
 
   const units = summary.data?.units ?? 0
@@ -60,7 +65,7 @@ export function Dashboard() {
 
       <div className="dash-main">
         <section className="dash-kpis">
-          <article className="dash-kpi dash-kpi--dark">
+          {showValue && <article className="dash-kpi dash-kpi--dark">
             <div>
               <p className="dash-kpi-label">{t("dashboard.inventoryValue")}</p>
               <p className="dash-kpi-value">{money.compact(value.data?.totalValue ?? 0)}</p>
@@ -81,7 +86,7 @@ export function Dashboard() {
             >
               <span className="dash-ring-text">{activePct}%</span>
             </Ring>
-          </article>
+          </article>}
 
           <article className="dash-kpi dash-kpi--accent">
             <div>
@@ -178,7 +183,7 @@ export function Dashboard() {
           </ul>
         </article>
 
-        <article className="stk-card dash-low">
+        {reports && <article className="stk-card dash-low">
           <header className="dash-card-head">
             <h2>{t("dashboard.lowStock")}</h2>
           </header>
@@ -216,7 +221,7 @@ export function Dashboard() {
               {lowStock.isLoading ? "…" : t("dashboard.lowStockNone")}
             </p>
           )}
-        </article>
+        </article>}
       </aside>
     </div>
   )

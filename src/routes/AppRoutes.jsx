@@ -14,7 +14,7 @@ import {Users}from "@/pages/Users"
 import { Suppliers } from "@/pages/Suppliers"
 import { Customers } from "@/pages/Customers"
 import {PurchaseRequests} from "@/pages/PurchaseRequests"
-import { AdminRoute } from "./AdminRoute"
+import { PermissionRoute } from "./PermissionRoute"
 import { PurchaseOrders } from "@/pages/PurchaseOrders"
 import { AuditLogPage } from "@/pages/AuditLog"
 import { AcceptInvite } from "@/pages/AcceptInvite"
@@ -44,15 +44,15 @@ const router = createBrowserRouter([
       { path: "products", element: <Products /> },
       { path: "categories", element: <Categories /> },
       { path: "movements", element: <Movements /> },
-      { path: "reports", element: <Reports /> },
+      { path: "reports", element: <PermissionRoute perm="reports.view"><Reports /></PermissionRoute> },
       { path: "profile", element: <Profile /> },
       {path:"settings", element:<Settings/>},
-      { path: "users", element: <AdminRoute><Users /></AdminRoute> },
+      { path: "users", element: <PermissionRoute perm="users.manage"><Users /></PermissionRoute> },
       { path: "suppliers", element: <Suppliers /> },
       { path: "customers", element: <Customers /> },
       {path:"purchase-requests", element:<PurchaseRequests />},
-      { path: "purchase-orders", element: <AdminRoute><PurchaseOrders /></AdminRoute> },
-      { path: "audit-log", element: <AdminRoute><AuditLogPage /></AdminRoute> },
+      { path: "purchase-orders", element: <PermissionRoute perm="purchases.manage"><PurchaseOrders /></PermissionRoute> },
+      { path: "audit-log", element: <PermissionRoute perm="audit.view"><AuditLogPage /></PermissionRoute> },
       { path: "platform", element: <PlatformRoute><Platform /></PlatformRoute> },
     ],
   },

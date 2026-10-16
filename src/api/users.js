@@ -8,3 +8,8 @@ export async function toggleUserActive(id) {
     return responce.data
     
 }
+// catálogo de permisos y los de cada rol
+export const getPermissionCatalog = () => api.get("/users/permissions").then((res) => res.data)
+
+export const updateUserAccess = (id, { role, grantedPermissions, revokedPermissions }) =>
+  api.patch(`/users/${id}/access`, { role, grantedPermissions, revokedPermissions }).then((res) => res.data)

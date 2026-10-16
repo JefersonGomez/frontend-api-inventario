@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query"
 import { getCompany } from "@/api/company"
 import { SuspendedScreen } from "@/components/SuspendedScreen"
 import { usePlatformOwner } from "@/hoocks/usePlatformOwner"
+import { usePermissions } from "@/hoocks/usePermissions"
 
 // Lo único a lo que accede el dueño de la plataforma
 const OWNER_PATHS = ["/platform", "/profile", "/settings"]
@@ -15,6 +16,7 @@ export function Layout() {
   useRealtime()
   const { pathname } = useLocation()
   const { isPlatformOwner, isLoading } = usePlatformOwner()
+  const { can } = usePermissions()
   // GET /company sigue permitido con la empresa suspendida: de ahí sale el aviso
   const { data: company } = useQuery({ queryKey: ["company"], queryFn: getCompany })
   // sin saber si es el dueño no se pinta nada (evita mostrar un instante el menú de un cliente)
@@ -33,7 +35,7 @@ export function Layout() {
         </div>
       </div>
 
-      {!isPlatformOwner && (
+      {!isPlatformOwner && can("reports.view") && (
         <div className="print:hidden">
           <AssistantWidget />
         </div>

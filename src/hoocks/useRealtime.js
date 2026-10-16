@@ -21,6 +21,8 @@ export function useRealtime() {
 
     socket.on("invalidate", (topics) => {
       topics.forEach((topic) => queryClient.invalidateQueries({ queryKey: [topic] }))
+      // cambiaron mis permisos: reconectar para entrar a las salas que ahora me tocan
+      if (topics.includes("me")) socket.disconnect().connect()
     })
 
     // Token vencido: el servidor rechaza y socket.io no reintenta solo. Una llamada a la API

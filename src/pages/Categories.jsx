@@ -10,6 +10,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { usePermissions } from "@/hoocks/usePermissions"
 import {
   Table,
   TableBody,
@@ -39,6 +40,8 @@ import { Plus, Pencil, Trash2 } from "lucide-react"
 
 export function Categories() {
   const { t } = useTranslation() // 2. Llamar al hook
+  const { can } = usePermissions()
+  const canManage = can("products.manage")
   const queryClient = useQueryClient()
 
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -120,10 +123,12 @@ export function Categories() {
           <h1 className="text-2xl font-semibold">{t("categories.title")}</h1>
           <p className="text-sm text-muted-foreground">{t("categories.subtitle")}</p>
         </div>
-        <Button onClick={openCreateDialog}>
-          <Plus className="w-4 h-4 mr-2" />
-          {t("categories.new_button")}
-        </Button>
+        {canManage && (
+          <Button onClick={openCreateDialog}>
+            <Plus className="w-4 h-4 mr-2" />
+            {t("categories.new_button")}
+          </Button>
+        )}
       </div>
 
       <div className="border border-border rounded-xl overflow-hidden">
@@ -153,6 +158,7 @@ export function Categories() {
                   {category.description || "—"}
                 </TableCell>
                 <TableCell className="text-right">
+                  {canManage && (<>
                   <Button variant="ghost" size="icon" onClick={() => openEditDialog(category)}>
                     <Pencil className="w-4 h-4" />
                   </Button>
@@ -163,6 +169,7 @@ export function Categories() {
                   >
                     <Trash2 className="w-4 h-4 text-destructive" />
                   </Button>
+                  </>)}
                 </TableCell>
               </TableRow>
             ))}

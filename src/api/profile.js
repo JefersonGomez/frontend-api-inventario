@@ -24,3 +24,6 @@ export async function updateProfile(name,email) {
   const responce = await api.put("/profile/me",{name,email})
   return responce.data
 }
+// PIN de autorización (encargados): se confirma con la contraseña
+export const setMyPin = (pin, password) => api.put("/profile/me/pin", { pin, password })
+export const deleteMyPin = () => api.delete("/profile/me/pin")

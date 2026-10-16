@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
-import { useAuth } from "../context/AuthContext";
+import { usePermissions } from "@/hoocks/usePermissions";
 import {
   getPurchaseRequests,
   getPurchaseRequest,
@@ -35,7 +35,8 @@ const statusVariant = {
 
 export function PurchaseRequests() {
   const { t } = useTranslation();
-  const { user } = useAuth();
+  const { can } = usePermissions();
+  const manages = can("purchases.manage"); // ve las de todos y aprueba/rechaza
   const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
   const highlightId = searchParams.get("highlight");
@@ -126,7 +127,7 @@ export function PurchaseRequests() {
         <h1 className="text-2xl font-semibold">{t("purchaseRequests.title")}</h1>
         <Dialog open={open} onOpenChange={setOpen}>
           {/* ✅ CORRECCIÓN: Usar la prop render en lugar de asChild */}
-          <DialogTrigger render={<Button>{t("purchaseRequests.newRequest")}</Button>} />
+          {can("purchases.request") && <DialogTrigger render={<Button>{t("purchaseRequests.newRequest")}</Button>} />}
           
           <DialogContent>
             <DialogHeader>
@@ -184,9 +185,9 @@ export function PurchaseRequests() {
             <th className="py-2">{t("purchaseRequests.product")}</th>
             <th className="hidden sm:table-cell">{t("purchaseRequests.quantity")}</th>
             <th className="hidden md:table-cell">{t("purchaseRequests.reason")}</th>
-            {user.role === "ADMIN" && <th className="hidden sm:table-cell">{t("purchaseRequests.requestedBy")}</th>}
+            {manages && <th className="hidden sm:table-cell">{t("purchaseRequests.requestedBy")}</th>}
             <th>{t("purchaseRequests.status")}</th>
-            {user.role === "ADMIN" && <th className="text-right"><span className="sr-only sm:not-sr-only">{t("purchaseRequests.actions")}</span></th>}
+            {manages && <th className="text-right"><span className="sr-only sm:not-sr-only">{t("purchaseRequests.actions")}</span></th>}
           </tr>
         </thead>
         <tbody>
@@ -204,12 +205,12 @@ export function PurchaseRequests() {
               <td className="py-2">
                 {r.product.name}
                 <span className="block text-xs text-muted-foreground sm:hidden">
-                  ×{formatQty(r.quantity, r.product.unit, t)}{user.role === "ADMIN" && ` · ${r.requestedBy.name}`}
+                  ×{formatQty(r.quantity, r.product.unit, t)}{manages && ` · ${r.requestedBy.name}`}
                 </span>
               </td>
               <td className="hidden sm:table-cell whitespace-nowrap">{formatQty(r.quantity, r.product.unit, t)}</td>
               <td className="hidden md:table-cell">{r.reason || "—"}</td>
-              {user.role === "ADMIN" && <td className="hidden sm:table-cell">{r.requestedBy.name}</td>}
+              {manages && <td className="hidden sm:table-cell">{r.requestedBy.name}</td>}
               <td>
                 <Badge variant={statusVariant[r.status]}>
                   {t(`purchaseRequests.status${r.status.charAt(0) + r.status.slice(1).toLowerCase()}`)}
@@ -220,7 +221,7 @@ export function PurchaseRequests() {
                   </p>
                 )}
               </td>
-              {user.role === "ADMIN" && (
+              {manages && (
                 <td className="py-1.5" onClick={(e) => e.stopPropagation()}>
                   {r.status === "PENDING" && (
                     <div className="flex items-center justify-end gap-1.5">

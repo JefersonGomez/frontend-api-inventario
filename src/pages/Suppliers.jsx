@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tansta
 import { Pagination } from "@/components/Pagination"
 import { SearchInput } from "@/components/SearchInput"
 import { useListParams } from "@/hoocks/useListParams"
-import { useAuth } from "@/context/AuthContext"
+import { usePermissions } from "@/hoocks/usePermissions"
 import {
   getSuppliers, createSupplier, updateSupplier, deleteSupplier,
 } from "@/api/suppliers"
@@ -33,8 +33,8 @@ const toPayload = (form) => ({ ...form, idType: form.idType || null, idNumber: f
 
 export function Suppliers() {
   const { t } = useTranslation()
-  const { user } = useAuth()
-  const isAdmin = user?.role === "ADMIN"
+  const { can } = usePermissions()
+  const isAdmin = can("suppliers.manage")
   const queryClient = useQueryClient()
 
   const [dialogOpen, setDialogOpen] = useState(false)
