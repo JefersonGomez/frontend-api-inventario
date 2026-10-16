@@ -14,6 +14,7 @@ import { usePermissions } from "@/hoocks/usePermissions"
 import { usePlatformOwner } from "@/hoocks/usePlatformOwner"
 import { getCompany, updateCompany } from "@/api/company"
 import { FiscalDataCard } from "@/components/settings/FiscalDataCard"
+import { LocationsCard } from "@/components/settings/LocationsCard"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useSearchParams } from "react-router-dom"
 const languageItems = [
@@ -127,6 +128,9 @@ function CompanyCard() {
               {t("companies.plan.limits", {
                 items: [
                   t("companies.plan.companies", { count: data.limits.maxCompanies }),
+                  data.limits.maxBranches === null
+                    ? t("companies.plan.unlimitedBranches")
+                    : t("companies.plan.branches", { count: data.limits.maxBranches }),
                   data.limits.maxUsersPerCompany === null
                     ? t("companies.plan.unlimitedUsers")
                     : t("companies.plan.users", { count: data.limits.maxUsersPerCompany }),
@@ -150,7 +154,7 @@ export function Settings() {
   const { t, i18n } = useTranslation()
   const [params, setParams] = useSearchParams()
   const showCompany = can("company.manage") && !isPlatformOwner
-  const tabs = ["general", ...(showCompany ? ["company", "fiscal"] : [])]
+  const tabs = ["general", ...(showCompany ? ["company", "locations", "fiscal"] : [])]
   const tab = tabs.includes(params.get("tab")) ? params.get("tab") : "general"
   const changeTab = (next) => setParams(next === "general" ? {} : { tab: next }, { replace: true })
 
@@ -160,7 +164,7 @@ export function Settings() {
   }
 
   return (
-    <div className="max-w-2xl">
+    <div className="max-w-3xl">
       <div className="mb-6">
         <h1 className="text-2xl font-semibold">{t("settings.title", "Configuración")}</h1>
         <p className="text-sm text-muted-foreground">
@@ -172,6 +176,7 @@ export function Settings() {
         <TabsList className="w-full sm:w-fit">
           <TabsTrigger value="general">{t("settings.tabs.general")}</TabsTrigger>
           {showCompany && <TabsTrigger value="company">{t("settings.tabs.company")}</TabsTrigger>}
+          {showCompany && <TabsTrigger value="locations">{t("settings.tabs.locations")}</TabsTrigger>}
           {showCompany && <TabsTrigger value="fiscal">{t("settings.tabs.fiscal")}</TabsTrigger>}
         </TabsList>
 
@@ -224,6 +229,11 @@ export function Settings() {
         {showCompany && (
           <TabsContent value="company">
             <CompanyCard />
+          </TabsContent>
+        )}
+        {showCompany && (
+          <TabsContent value="locations">
+            <LocationsCard />
           </TabsContent>
         )}
         {showCompany && (

@@ -25,13 +25,15 @@ import { Plus, ArrowDownCircle, ArrowUpCircle, RotateCcw } from "lucide-react"
 import { BarcodeScanner } from "@/components/BarcodeScanner" // Importar componente reutilizable
 import { qtyStep, formatQty } from "@/lib/units"
 import { apiErrorMessage } from "@/lib/api-error"
+import { LocationSelect } from "@/components/LocationSelect"
+import { getProduct } from "@/api/products"
 
-const emptyForm = { product: null, type: "IN", quantity: "", reason: "" }
+const emptyForm = { product: null, type: "IN", quantity: "", reason: "", locationId: "" }
 const SOURCES = ["MANUAL", "INITIAL", "PURCHASE_RECEIPT", "SALE", "RETURN", "COUNT", "TRANSFER"]
 
 export function Movements() {
   const { t } = useTranslation()
-  const { can } = usePermissions()
+  const { can, activeLocationId } = usePermissions()
   const queryClient = useQueryClient()
   const [dialogOpen, setDialogOpen] = useState(false)
   const [form, setForm] = useState(emptyForm)
@@ -54,6 +56,12 @@ export function Movements() {
   const movements = movementsQuery.data?.items ?? []
   const selected = form.product
   const step = qtyStep(selected?.unit)
+  // stock del producto en la ubicación del movimiento (la elegida o la activa)
+  const detail = useQuery({ queryKey: ["products", selected?.id, "detail"], queryFn: () => getProduct(selected.id), enabled: !!selected })
+  const movementLocation = form.locationId || activeLocationId
+  const stockHere = movementLocation
+    ? Number(detail.data?.stocks?.find((s) => s.location.id === movementLocation)?.quantity ?? 0)
+    : detail.data?.stock
   const typeItems = [
     { value: "all", label: t("list.all") },
     { value: "IN", label: t("movements.types.in") },
@@ -69,6 +77,7 @@ export function Movements() {
         type: form.type,
         quantity: Number(form.quantity),
         reason: form.reason || undefined,
+        locationId: form.locationId || undefined, // sin elegir: la ubicación activa
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["movements"] })
@@ -157,6 +166,7 @@ export function Movements() {
               <TableHead>{t("movements.table.product")}</TableHead>
               <TableHead>{t("movements.table.type")}</TableHead>
               <TableHead>{t("movements.table.quantity")}</TableHead>
+              <TableHead className="hidden md:table-cell">{t("movements.table.location")}</TableHead>
               <TableHead>{t("movements.table.user")}</TableHead>
               <TableHead>{t("movements.table.reason")}</TableHead>
             </TableRow>
@@ -164,7 +174,7 @@ export function Movements() {
           <TableBody>
             {movementsQuery.isLoading && (
               <TableRow>
-                <TableCell colSpan={6} className="text-center text-muted-foreground">
+                <TableCell colSpan={7} className="text-center text-muted-foreground">
                   {t("common.loading")}
                 </TableCell>
               </TableRow>
@@ -172,7 +182,7 @@ export function Movements() {
 
             {!movementsQuery.isLoading && movements.length === 0 && (
               <TableRow>
-                <TableCell colSpan={6} className="text-center text-muted-foreground">
+                <TableCell colSpan={7} className="text-center text-muted-foreground">
                   {t("pagination.none")}
                 </TableCell>
               </TableRow>
@@ -194,6 +204,7 @@ export function Movements() {
                     </Badge>
                   </TableCell>
                   <TableCell className="whitespace-nowrap">{formatQty(movement.quantity, movement.product?.unit, t)}</TableCell>
+                  <TableCell className="hidden md:table-cell text-muted-foreground">{movement.location?.name}</TableCell>
                   <TableCell className="text-muted-foreground">{movement.user?.name}</TableCell>
                   <TableCell className="text-muted-foreground">
                     {movement.source && movement.source !== "MANUAL" && (
@@ -241,6 +252,12 @@ export function Movements() {
               )}
             </div>
 
+            <LocationSelect
+              id="movement-location"
+              value={form.locationId}
+              onChange={(locationId) => setForm({ ...form, locationId })}
+            />
+
             <div className="space-y-2">
               <Label>{t("movements.dialog.label_type")}</Label>
               <Select
@@ -278,9 +295,9 @@ export function Movements() {
                 aria-describedby="movement-stock"
                 required
               />
-              {selected && (
+              {selected && stockHere !== undefined && (
                 <p id="movement-stock" className="text-xs text-muted-foreground">
-                  {t("movements.dialog.current_stock", { stock: formatQty(selected.stock, selected.unit, t) })}
+                  {t("movements.dialog.current_stock", { stock: formatQty(stockHere, selected.unit, t) })}
                 </p>
               )}
             </div>

@@ -2,6 +2,7 @@ import { useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { getPermissionCatalog, updateUserAccess } from "@/api/users"
+import { getLocations } from "@/api/locations"
 import { apiErrorMessage } from "@/lib/api-error"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
@@ -19,6 +20,10 @@ export function AccessDialog({ user, onClose }) {
   const [role, setRole] = useState(user.role)
   const [granted, setGranted] = useState(user.grantedPermissions ?? [])
   const [revoked, setRevoked] = useState(user.revokedPermissions ?? [])
+  const [locationIds, setLocationIds] = useState(user.locationIds ?? [])
+  const { data: locations = [] } = useQuery({ queryKey: ["locations"], queryFn: () => getLocations() })
+  const toggleLocation = (id) =>
+    setLocationIds((ids) => (ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id]))
 
   const fromRole = catalog?.rolePermissions[role] ?? []
   const isAdmin = role === "ADMIN"
@@ -38,7 +43,12 @@ export function AccessDialog({ user, onClose }) {
   }
 
   const mutation = useMutation({
-    mutationFn: () => updateUserAccess(user.id, { role, grantedPermissions: isAdmin ? [] : granted, revokedPermissions: isAdmin ? [] : revoked }),
+    mutationFn: () => updateUserAccess(user.id, {
+      role,
+      grantedPermissions: isAdmin ? [] : granted,
+      revokedPermissions: isAdmin ? [] : revoked,
+      locationIds: isAdmin ? [] : locationIds,
+    }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] })
       onClose()
@@ -89,6 +99,20 @@ export function AccessDialog({ user, onClose }) {
               )
             })}
           </fieldset>
+
+          {locations.length > 1 && !isAdmin && (
+            <fieldset className="space-y-1">
+              <legend className="mb-1 text-sm font-medium">{t("users.access.locations")}</legend>
+              <p className="mb-2 text-xs text-muted-foreground">{t("users.access.locationsHint")}</p>
+              {locations.map((l) => (
+                <label key={l.id} className="flex items-center gap-2.5 rounded-md px-1.5 py-1 text-sm hover:bg-muted/50">
+                  <input type="checkbox" className="size-4 accent-primary" checked={locationIds.includes(l.id)} onChange={() => toggleLocation(l.id)} />
+                  <span className="flex-1">{l.name}</span>
+                  <span className="text-xs text-muted-foreground">{t(`locations.types.${l.type}`)}</span>
+                </label>
+              ))}
+            </fieldset>
+          )}
 
           {mutation.isError && (
             <p role="alert" className="text-sm text-destructive">{apiErrorMessage(mutation.error, t("users.access.error"))}</p>

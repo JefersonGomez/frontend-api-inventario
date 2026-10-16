@@ -27,6 +27,7 @@ export function AuthProvider({ children }) {
     function onStorage(e) {
       if (e.key === "token") setToken(e.newValue) // refresh hecho en otra pestaña
       if (e.key === "companyId") return window.location.reload() // otra pestaña cambió de empresa
+      if (e.key === "locationId") return window.location.reload() // u otra ubicación
       if (e.key !== "user" && e.key !== null) return // key null = localStorage.clear()
       let next
       try {
@@ -47,6 +48,7 @@ export function AuthProvider({ children }) {
     localStorage.setItem("refreshToken", newRefreshToken)
     localStorage.setItem("user", JSON.stringify(newUser))
     if (companyId) localStorage.setItem("companyId", companyId)
+    localStorage.removeItem("locationId") // las ubicaciones son de cada empresa
     setToken(newToken)
     setUser(newUser)
   }
@@ -73,6 +75,7 @@ export function AuthProvider({ children }) {
       localStorage.removeItem("refreshToken") // ← nuevo
       localStorage.removeItem("user")
       localStorage.removeItem("companyId")
+      localStorage.removeItem("locationId")
       setToken(null)
       setUser(null)
     }

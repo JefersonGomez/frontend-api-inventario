@@ -17,5 +17,5 @@ export const getCashCodeTeam = () => api.get("/users/cash-codes").then((res) => 
 // asigna el código de caja de alguien (sin pin = al azar); la respuesta { pin } es la única vez que se ve
 export const assignUserPin = (id, pin) => api.post(`/users/${id}/pin`, pin ? { pin } : undefined).then((res) => res.data)
 
-export const updateUserAccess = (id, { role, grantedPermissions, revokedPermissions }) =>
-  api.patch(`/users/${id}/access`, { role, grantedPermissions, revokedPermissions }).then((res) => res.data)
+export const updateUserAccess = (id, { role, grantedPermissions, revokedPermissions, locationIds }) =>
+  api.patch(`/users/${id}/access`, { role, grantedPermissions, revokedPermissions, locationIds }).then((res) => res.data)

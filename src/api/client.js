@@ -12,6 +12,9 @@ api.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
   }
+  // ubicación elegida en el selector (sin ella: todas las de la persona); el backend la valida
+  const locationId = localStorage.getItem("locationId")
+  if (locationId) config.headers["X-Location-Id"] = locationId
   return config
 })
 

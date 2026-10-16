@@ -12,6 +12,9 @@ export function usePermissions() {
     ready: isSuccess,
     role: data?.role,
     hasPin: data?.hasPin === true,
+    // ubicaciones: dónde trabaja (null = todas) y en cuál está (null = todas las suyas)
+    locationIds: data?.locationIds ?? null,
+    activeLocationId: data?.activeLocationId ?? null,
     // código de caja: vencimiento y hasta cuándo no puede cambiarlo
     code: {
       hasPin: data?.hasPin === true,

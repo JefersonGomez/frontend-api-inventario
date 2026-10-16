@@ -32,6 +32,7 @@ import { ImportProductsDialog } from "@/components/products/ImportProductsDialog
 import { ProductPriceHistory } from "@/components/products/ProductPriceHistory"
 import { UNITS, TAX_RATES, qtyStep, formatQty } from "@/lib/units"
 import { apiErrorMessage } from "@/lib/api-error"
+import { LocationSelect } from "@/components/LocationSelect"
 import { getProductGroups } from "@/api/productGroups"
 import { ProductGroupsDialog } from "@/components/products/ProductGroupsDialog"
 
@@ -52,6 +53,7 @@ const emptyForm = {
   cabys: "",
   groupId: "", // "" = no es una variante
   attributes: {}, // { Talla: "M", Color: "Rojo" }
+  locationId: "", // dónde entra el stock inicial ("" = la ubicación activa)
 }
 
 // "Talla M · Color Rojo" debajo del nombre de una variante
@@ -147,6 +149,7 @@ export function Products() {
         price: Number(form.price),
         cost: form.cost === "" ? null : Number(form.cost),
         stock: Number(form.stock),
+        locationId: form.locationId || undefined,
         minStock: Number(form.minStock),
         supplierId: form.supplierId || null,
         expirationDate: form.expirationDate || undefined,
@@ -599,6 +602,16 @@ export function Products() {
                 </div>
               </div>
               <p id="stock-hint" className="text-xs text-muted-foreground">{t("products.dialog.unit_hint")}</p>
+              {editingProduct ? (
+                <StockByLocation productId={editingProduct.id} unit={form.unit} t={t} />
+              ) : (
+                <LocationSelect
+                  id="product-location"
+                  label={t("products.dialog.label_location")}
+                  value={form.locationId}
+                  onChange={(locationId) => setForm({ ...form, locationId })}
+                />
+              )}
             </fieldset>
 
             <fieldset className="space-y-3">
@@ -681,6 +694,26 @@ export function Products() {
 }
 // Fila de un producto base (resumen calculado en el servidor) + sus variantes, que se piden al
 // desplegarlo (con los mismos filtros de la tabla)
+// Al editar: cuánto hay en cada ubicación (solo lectura; se cambia con movimientos o transferencias)
+function StockByLocation({ productId, unit, t }) {
+  const { data } = useQuery({ queryKey: ["products", productId, "detail"], queryFn: () => getProduct(productId) })
+  const stocks = data?.stocks ?? []
+  if (stocks.length <= 1) return null
+  return (
+    <div className="rounded-lg border border-border p-3">
+      <p className="mb-2 text-xs font-medium text-muted-foreground">{t("products.dialog.stock_by_location")}</p>
+      <ul className="grid gap-1 text-sm sm:grid-cols-2">
+        {stocks.map((s) => (
+          <li key={s.location.id} className="flex justify-between gap-3">
+            <span className="truncate">{s.location.name}</span>
+            <span className="font-mono tabular-nums">{formatQty(s.quantity, unit, t)}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
 function GroupRows({ group, t, money, canManage, showCost, cols, open, variantParams, onToggle, onAddVariant, renderProduct }) {
   const { variantCount: count, minPrice, maxPrice, totalStock, unit, lowCount: low } = group
   const variantsQuery = useQuery({

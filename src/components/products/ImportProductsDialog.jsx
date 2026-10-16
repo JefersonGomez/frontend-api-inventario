@@ -7,6 +7,7 @@ import { readXlsxRows } from "@/lib/xlsx-read"
 import { downloadXlsx } from "@/lib/xlsx"
 import { COLUMNS, buildRows, detectColumns, templateSheets } from "@/lib/product-import"
 import { apiErrorMessage } from "@/lib/api-error"
+import { LocationSelect } from "@/components/LocationSelect"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -46,13 +47,14 @@ export function ImportProductsDialog({ open, onOpenChange }) {
   const [showMapping, setShowMapping] = useState(false)
   const [rows, setRows] = useState(null) // filas enviadas a la vista previa
   const [options, setOptions] = useState(RECOMMENDED)
+  const [locationId, setLocationId] = useState("")
   const [readError, setReadError] = useState("")
   const [onlyProblems, setOnlyProblems] = useState(false)
   const nameMissing = sheetRows && mapping.name === undefined
 
   const preview = useMutation({ mutationFn: ({ rows, options }) => importProducts(rows, true, options) })
   const commit = useMutation({
-    mutationFn: () => importProducts(rows, false, options),
+    mutationFn: () => importProducts(rows, false, options, locationId || undefined),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] })
       queryClient.invalidateQueries({ queryKey: ["categories"] })
@@ -407,6 +409,12 @@ export function ImportProductsDialog({ open, onOpenChange }) {
                   <p className="text-xs text-muted-foreground">{t("products.import.previewLimit", { count: PREVIEW_LIMIT })}</p>
                 )}
 
+                <LocationSelect
+                  id="import-location"
+                  label={t("products.import.location")}
+                  value={locationId}
+                  onChange={setLocationId}
+                />
                 <div className="flex justify-end gap-2">
                   <Button variant="outline" onClick={() => close(false)}>{t("common.cancel")}</Button>
                   <Button onClick={() => commit.mutate()} disabled={toImport === 0 || preview.isPending || commit.isPending}>

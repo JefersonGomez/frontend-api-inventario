@@ -162,7 +162,9 @@
       "section_basic": "Datos básicos",
       "section_price": "Precio e impuestos",
       "section_stock": "Inventario",
-      "section_variant": "Variante"
+      "section_variant": "Variante",
+      "label_location": "¿A dónde entra el stock inicial?",
+      "stock_by_location": "Stock por ubicación"
     },
     "delete": {
       "title": "¿Eliminar este producto?",
@@ -296,7 +298,8 @@
         "badFiscal_one": "{{count}} fila con unidad, IVA o CABYS que no reconocemos",
         "badFiscal_other": "{{count}} filas con unidad, IVA o CABYS que no reconocemos",
         "badFiscalAction": "Importarlas igual: por unidad, con IVA 13 % y sin CABYS (lo puedes cambiar después)"
-      }
+      },
+      "location": "¿A dónde entra el stock inicial?"
     },
     "pending": {
       "badge": "Por completar",
@@ -373,7 +376,8 @@
       "type": "Tipo",
       "quantity": "Cantidad",
       "user": "Usuario",
-      "reason": "Motivo"
+      "reason": "Motivo",
+      "location": "Ubicación"
     },
     "dialog": {
       "title": "Nuevo movimiento de stock",
@@ -639,7 +643,8 @@
     "tabs": {
       "general": "General",
       "company": "Empresa",
-      "fiscal": "Datos fiscales"
+      "fiscal": "Datos fiscales",
+      "locations": "Sucursales y bodegas"
     },
     "cashCodeDays": "Vigencia del código de caja (días)",
     "cashCodeDaysDescription": "Cada cuánto vence el código para abrir caja y autorizar. Tras cambiarlo, la persona no puede volver a cambiarlo hasta que vence. De 7 a 365 días."
@@ -711,7 +716,8 @@
     "sendShort": "Enviar",
     "resendShort": "Reenviar",
     "receiveShort": "Recibir",
-    "duplicateProduct": "Ese producto ya está en otra línea de la orden."
+    "duplicateProduct": "Ese producto ya está en otra línea de la orden.",
+    "location": "Recibir en"
   },
   "auditLog": {
     "title": "Registro de auditoría",
@@ -847,7 +853,10 @@
       "products": "{{count}} productos",
       "unlimitedUsers": "usuarios ilimitados",
       "unlimitedProducts": "productos ilimitados",
-      "limits": "Incluye: {{items}}"
+      "limits": "Incluye: {{items}}",
+      "branches_one": "{{count}} sucursal",
+      "branches_other": "{{count}} sucursales",
+      "unlimitedBranches": "sucursales ilimitadas"
     }
   },
   "users": {
@@ -886,7 +895,9 @@
       "changed": "ajustado",
       "adminAll": "El administrador tiene todos los permisos.",
       "save": "Guardar acceso",
-      "error": "No se pudo guardar el acceso"
+      "error": "No se pudo guardar el acceso",
+      "locations": "Dónde trabaja",
+      "locationsHint": "Sin marcar ninguna, trabaja en todas. Con varias, elige en cuál está al entrar (selector de arriba)."
     }
   },
   "invite": {
@@ -1096,5 +1107,31 @@
     "sales.discount": "Autorizar descuentos (con PIN)",
     "sales.void": "Autorizar anulaciones (con PIN)",
     "accounting.view": "Ver contabilidad"
+  },
+  "locations": {
+    "label": "Ubicación",
+    "where": "¿Dónde estás?",
+    "all": "Todas las ubicaciones",
+    "types": {
+      "BRANCH": "Sucursal",
+      "WAREHOUSE": "Bodega"
+    },
+    "title": "Sucursales y bodegas",
+    "hint": "La sucursal vende (tiene cajas y su código en las facturas); la bodega solo almacena. El stock de cada producto se lleva por ubicación.",
+    "usage": "Sucursales: {{used}} de {{max}} de tu plan (las bodegas no tienen límite)",
+    "new": "Nueva ubicación",
+    "newTitle": "Nueva ubicación",
+    "editTitle": "Editar ubicación",
+    "edit": "Editar {{name}}",
+    "name": "Nombre",
+    "type": "Tipo",
+    "address": "Dirección",
+    "active": "Activa",
+    "activeAria": "{{name}} activa",
+    "typeHint": {
+      "BRANCH": "Vende al público: tendrá cajas y un código de 3 dígitos para sus comprobantes.",
+      "WAREHOUSE": "Solo almacena: recibe compras y transfiere a las sucursales."
+    },
+    "error": "No se pudo guardar la ubicación"
   }
 }

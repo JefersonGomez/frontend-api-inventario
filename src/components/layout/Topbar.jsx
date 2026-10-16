@@ -3,6 +3,7 @@ import { Search } from "lucide-react"
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { NotificationBell } from "./NotificationBell"
+import { LocationSwitcher } from "./LocationSwitcher"
 import { CompanySwitcher } from "./CompanySwitcher"
 import { usePlatformOwner } from "@/hoocks/usePlatformOwner"
 
@@ -46,6 +47,7 @@ export function Topbar() {
           placeholder={t("topbar.search")}
         />
       </form>
+      <LocationSwitcher />
       <CompanySwitcher />
       <NotificationBell />
     </header>

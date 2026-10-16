@@ -29,5 +29,6 @@ export const getProductPriceHistory = (id) =>
   api.get(`/products/${id}/price-history`).then((res) => res.data);
 
 // Importación desde Excel: dryRun = true solo valida y devuelve la vista previa
-export const importProducts = (rows, dryRun, options) =>
-  api.post("/products/import", { rows, dryRun, options }).then((res) => res.data);
+// locationId: dónde entra el stock inicial (sin indicar: la ubicación activa)
+export const importProducts = (rows, dryRun, options, locationId) =>
+  api.post("/products/import", { rows, dryRun, options, ...(locationId && { locationId }) }).then((res) => res.data);

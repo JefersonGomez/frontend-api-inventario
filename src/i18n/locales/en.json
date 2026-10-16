@@ -162,7 +162,9 @@
       "section_basic": "Basic details",
       "section_price": "Price and taxes",
       "section_stock": "Inventory",
-      "section_variant": "Variant"
+      "section_variant": "Variant",
+      "label_location": "Where does the initial stock go?",
+      "stock_by_location": "Stock by location"
     },
     "delete": {
       "title": "Delete this product?",
@@ -296,7 +298,8 @@
         "badFiscal_one": "{{count}} row with an unknown unit, VAT or CABYS",
         "badFiscal_other": "{{count}} rows with an unknown unit, VAT or CABYS",
         "badFiscalAction": "Import them anyway: per unit, 13% VAT and no CABYS (you can change it later)"
-      }
+      },
+      "location": "Where does the initial stock go?"
     },
     "pending": {
       "badge": "To complete",
@@ -373,7 +376,8 @@
       "type": "Type",
       "quantity": "Quantity",
       "user": "User",
-      "reason": "Reason"
+      "reason": "Reason",
+      "location": "Location"
     },
     "dialog": {
       "title": "New Stock Movement",
@@ -639,7 +643,8 @@
     "tabs": {
       "general": "General",
       "company": "Company",
-      "fiscal": "Tax details"
+      "fiscal": "Tax details",
+      "locations": "Branches and warehouses"
     },
     "cashCodeDays": "Register code validity (days)",
     "cashCodeDaysDescription": "How often the code to open the register and authorize expires. After changing it, the person can't change it again until it expires. 7 to 365 days."
@@ -711,7 +716,8 @@
     "sendShort": "Send",
     "resendShort": "Resend",
     "receiveShort": "Receive",
-    "duplicateProduct": "That product is already in another line of the order."
+    "duplicateProduct": "That product is already in another line of the order.",
+    "location": "Receive at"
   },
   "auditLog": {
     "title": "Audit Log",
@@ -847,7 +853,10 @@
       "products": "{{count}} products",
       "unlimitedUsers": "unlimited users",
       "unlimitedProducts": "unlimited products",
-      "limits": "Includes: {{items}}"
+      "limits": "Includes: {{items}}",
+      "branches_one": "{{count}} branch",
+      "branches_other": "{{count}} branches",
+      "unlimitedBranches": "unlimited branches"
     }
   },
   "users": {
@@ -886,7 +895,9 @@
       "changed": "adjusted",
       "adminAll": "Administrators have every permission.",
       "save": "Save access",
-      "error": "Could not save the access"
+      "error": "Could not save the access",
+      "locations": "Where they work",
+      "locationsHint": "With none checked, they work in all. With several, they choose where they are when signing in (selector at the top)."
     }
   },
   "invite": {
@@ -1096,5 +1107,31 @@
     "sales.discount": "Authorize discounts (with PIN)",
     "sales.void": "Authorize voids (with PIN)",
     "accounting.view": "See accounting"
+  },
+  "locations": {
+    "label": "Location",
+    "where": "Where are you?",
+    "all": "All locations",
+    "types": {
+      "BRANCH": "Branch",
+      "WAREHOUSE": "Warehouse"
+    },
+    "title": "Branches and warehouses",
+    "hint": "A branch sells (it has registers and its code on invoices); a warehouse only stores. Each product's stock is kept per location.",
+    "usage": "Branches: {{used}} of {{max}} in your plan (warehouses are unlimited)",
+    "new": "New location",
+    "newTitle": "New location",
+    "editTitle": "Edit location",
+    "edit": "Edit {{name}}",
+    "name": "Name",
+    "type": "Type",
+    "address": "Address",
+    "active": "Active",
+    "activeAria": "{{name}} active",
+    "typeHint": {
+      "BRANCH": "Sells to the public: it will have registers and a 3-digit code for its documents.",
+      "WAREHOUSE": "Only stores: receives purchases and transfers to branches."
+    },
+    "error": "Could not save the location"
   }
 }

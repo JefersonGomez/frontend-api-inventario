@@ -1,5 +1,6 @@
 // src/pages/PurchaseOrders.jsx
 import { useState } from "react";
+import { LocationSelect } from "@/components/LocationSelect";
 import { Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
@@ -62,6 +63,7 @@ export function PurchaseOrders() {
   const [open, setOpen] = useState(() => actionParam === "create");
   const [detailId, setDetailId] = useState(null);
   const [supplierId, setSupplierId] = useState("");
+  const [locationId, setLocationId] = useState(""); // a dónde entra la mercadería ("" = la ubicación activa)
   const [lines, setLines] = useState(() => [emptyLine()]);
   const [duplicateLine, setDuplicateLine] = useState(null); // línea donde se eligió un producto repetido
   // las solicitudes vinculadas salen de las líneas: una sola fuente de verdad
@@ -232,6 +234,7 @@ export function PurchaseOrders() {
         unitCost: Number(getEffectiveUnitCost(l)),
       })),
       fulfilledRequestIds: selectedRequestIds.length ? selectedRequestIds : undefined,
+      locationId: locationId || undefined,
     });
   };
 
@@ -290,6 +293,12 @@ export function PurchaseOrders() {
                   ))}
                 </SelectContent>
               </Select>
+              <LocationSelect
+                id="order-location"
+                label={t("purchaseOrders.location")}
+                value={locationId}
+                onChange={setLocationId}
+              />
               {suppliers.length === 0 && (
                 <p className="text-sm text-muted-foreground">
                   {t("purchaseOrders.noSuppliers")}{" "}
@@ -545,6 +554,8 @@ export function PurchaseOrders() {
               <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2">
                 <dt className="text-muted-foreground">{t("purchaseOrders.supplier")}</dt>
                 <dd>{detail.supplier.name}</dd>
+                <dt className="text-muted-foreground">{t("purchaseOrders.location")}</dt>
+                <dd>{detail.location?.name ?? "—"}</dd>
                 <dt className="text-muted-foreground">{t("purchaseOrders.status")}</dt>
                 <dd>
                   <Badge variant={statusVariant[detail.status]}>
