@@ -547,17 +547,17 @@
     "owner": "Owner",
     "active_company": "Active",
     "pin": {
-      "title": "Authorization PIN",
-      "hint": "With this PIN you authorize discounts or voids on someone else's screen without them signing out. 4 to 6 digits, nothing obvious like 1234.",
-      "active": "You have an active PIN.",
-      "none": "You don't have a PIN yet.",
-      "pin": "New PIN",
-      "password": "Your password",
-      "save": "Save PIN",
-      "remove": "Delete PIN",
-      "saved": "PIN saved",
-      "removed": "PIN deleted",
-      "error": "Could not save the PIN"
+      "title": "Register code",
+      "hint": "You use it to open your register and, if your role allows it, to authorize discounts or voids on someone else's screen without them signing out.",
+      "askAdmin": "You don't have a code yet: ask your administrator.",
+      "locked": "You already changed your code: you can change it again from {{date}}. If you forgot it, ask your administrator for a new one.",
+      "canChange": "You can change the code you were given. After changing it, it stays fixed for 30 days.",
+      "none": "Choose a 4 to 6 digit code, nothing obvious like 1234.",
+      "pin": "New code",
+      "save": "Save code",
+      "saved": "Code saved",
+      "error": "Could not save the code",
+      "password": "Your password"
     }
   },
   "settings": {
@@ -840,6 +840,19 @@
       "adminAll": "Administrators have every permission.",
       "save": "Save access",
       "error": "Could not save the access"
+    },
+    "pin": {
+      "generate": "Generate code",
+      "renew": "New code",
+      "button_aria": "Register code for {{name}}",
+      "title": "Register code for {{name}}",
+      "intro": "{{name}} uses this code to open their register{{authorizes}}. It is random; hand it over in person.",
+      "authorizes": " and to authorize discounts, voids and credit notes",
+      "replace": "They already have a code: the new one replaces it (use this if they forgot it).",
+      "after": "They can change it once from their profile; then it stays fixed for 30 days or until you generate another.",
+      "ready": "Code for {{name}}:",
+      "once": "Write it down or hand it over now: it won't be shown again.",
+      "error": "Could not generate the code"
     }
   },
   "invite": {

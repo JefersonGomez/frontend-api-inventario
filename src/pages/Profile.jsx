@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next"
 import {
   Building2, CalendarDays, Camera, Check, CircleAlert, Crown, Eye, EyeOff, KeyRound, Loader2, LockKeyhole, Pencil, UserRound, X,
 } from "lucide-react"
-import { getProfile, updateAvatar, changePassword, updateProfile, setMyPin, deleteMyPin } from "@/api/profile"
+import { getProfile, updateAvatar, changePassword, updateProfile, setMyPin } from "@/api/profile"
 import { usePermissions } from "@/hoocks/usePermissions"
 import { getCompany, getMyCompanies } from "@/api/company"
 import { useAuth } from "@/context/AuthContext"
@@ -116,22 +116,26 @@ function PasswordInput({ id, value, onChange, autoComplete, minLength, placehold
   )
 }
 
-// PIN para autorizar en la pantalla de otro (descuentos, anulaciones). Solo para quien puede autorizar.
-function PinCard({ hasPin }) {
+// Código de caja: abre su caja y, si autoriza, aprueba en la pantalla de otro. Lo genera el
+// administrador; la persona lo cambia y queda fijo un tiempo (las reglas las valida el backend).
+function PinCard({ hasPin, lockedUntil, isAdmin }) {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
   const [pin, setPin] = useState("")
   const [password, setPassword] = useState("")
-  const [done, setDone] = useState(null) // "saved" | "removed"
-  const onSuccess = (what) => () => {
-    setPin("")
-    setPassword("")
-    setDone(what)
-    queryClient.invalidateQueries({ queryKey: ["me"] })
-  }
-  const save = useMutation({ mutationFn: () => setMyPin(pin, password), onSuccess: onSuccess("saved") })
-  const remove = useMutation({ mutationFn: deleteMyPin, onSuccess: onSuccess("removed") })
-  const error = save.error || remove.error
+  const save = useMutation({
+    mutationFn: () => setMyPin(pin, password),
+    onSuccess: () => {
+      setPin("")
+      setPassword("")
+      queryClient.invalidateQueries({ queryKey: ["me"] })
+    },
+  })
+
+  // sin código (lo genera el admin) o recién cambiado: no hay nada que hacer acá
+  const blocked = !hasPin && !isAdmin ? t("profile.pin.askAdmin")
+    : lockedUntil ? t("profile.pin.locked", { date: new Date(lockedUntil).toLocaleDateString() })
+    : null
 
   return (
     <section className="stk-card prof-card">
@@ -142,65 +146,53 @@ function PinCard({ hasPin }) {
           <p>{t("profile.pin.hint")}</p>
         </div>
       </div>
-      <form
-        className="prof-form"
-        onSubmit={(e) => {
-          e.preventDefault()
-          setDone(null)
-          remove.reset()
-          save.mutate()
-        }}
-      >
-        <p className="prof-hint">{hasPin ? t("profile.pin.active") : t("profile.pin.none")}</p>
-        <div className="prof-field">
-          <label htmlFor="auth-pin">{t("profile.pin.pin")}</label>
-          <Input
-            id="auth-pin"
-            type="password"
-            inputMode="numeric"
-            autoComplete="off"
-            pattern="\d{4,6}"
-            minLength={4}
-            maxLength={6}
-            value={pin}
-            onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))}
-            required
-          />
-        </div>
-        <div className="prof-field">
-          <label htmlFor="pin-password">{t("profile.pin.password")}</label>
-          <PasswordInput id="pin-password" value={password} onChange={setPassword} autoComplete="current-password" />
-        </div>
-        {error && (
-          <p role="alert" className="prof-msg prof-msg--err">
-            <CircleAlert className="w-4 h-4 shrink-0" />
-            {apiErrorMessage(error, t("profile.pin.error"))}
-          </p>
-        )}
-        {done && (
-          <p role="status" className="prof-msg prof-msg--ok"><Check className="w-4 h-4 shrink-0" />{t(`profile.pin.${done}`)}</p>
-        )}
-        <div className="flex flex-wrap gap-2">
-          <Button type="submit" disabled={save.isPending || pin.length < 4 || !password}>
-            {save.isPending ? <Loader2 className="animate-spin" /> : <LockKeyhole />}
-            {t("profile.pin.save")}
-          </Button>
-          {hasPin && (
-            <Button
-              type="button"
-              variant="outline"
-              disabled={remove.isPending}
-              onClick={() => {
-                setDone(null)
-                save.reset()
-                remove.mutate()
-              }}
-            >
-              {t("profile.pin.remove")}
-            </Button>
+      {save.isSuccess && (
+        <p role="status" className="prof-msg prof-msg--ok"><Check className="w-4 h-4 shrink-0" />{t("profile.pin.saved")}</p>
+      )}
+      {blocked ? (
+        <p className="prof-hint">{blocked}</p>
+      ) : (
+        <form
+          className="prof-form"
+          onSubmit={(e) => {
+            e.preventDefault()
+            save.mutate()
+          }}
+        >
+          <p className="prof-hint">{hasPin ? t("profile.pin.canChange") : t("profile.pin.none")}</p>
+          <div className="prof-field">
+            <label htmlFor="auth-pin">{t("profile.pin.pin")}</label>
+            <Input
+              id="auth-pin"
+              type="password"
+              inputMode="numeric"
+              autoComplete="off"
+              pattern="\d{4,6}"
+              minLength={4}
+              maxLength={6}
+              value={pin}
+              onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))}
+              required
+            />
+          </div>
+          <div className="prof-field">
+            <label htmlFor="pin-password">{t("profile.pin.password")}</label>
+            <PasswordInput id="pin-password" value={password} onChange={setPassword} autoComplete="current-password" />
+          </div>
+          {save.isError && (
+            <p role="alert" className="prof-msg prof-msg--err">
+              <CircleAlert className="w-4 h-4 shrink-0" />
+              {apiErrorMessage(save.error, t("profile.pin.error"))}
+            </p>
           )}
-        </div>
-      </form>
+          <div>
+            <Button type="submit" disabled={save.isPending || pin.length < 4 || !password}>
+              {save.isPending ? <Loader2 className="animate-spin" /> : <LockKeyhole />}
+              {t("profile.pin.save")}
+            </Button>
+          </div>
+        </form>
+      )}
     </section>
   )
 }
@@ -209,7 +201,7 @@ export function Profile() {
   const { t, i18n } = useTranslation()
   const queryClient = useQueryClient()
   const { updateUser } = useAuth()
-  const { can, hasPin } = usePermissions()
+  const { can, hasPin, pinLockedUntil } = usePermissions()
   const [avatarBroken, setAvatarBroken] = useState(false)
   const [currentPassword, setCurrentPassword] = useState("")
   const [newPassword, setNewPassword] = useState("")
@@ -421,7 +413,9 @@ export function Profile() {
         </section>
       </div>
 
-      {(can("sales.discount") || can("sales.void")) && !profile.isPlatformOwner && <PinCard hasPin={hasPin} />}
+      {(can("cash.manage") || can("sales.discount") || can("sales.void")) && !profile.isPlatformOwner && (
+        <PinCard hasPin={hasPin} lockedUntil={pinLockedUntil} isAdmin={can("users.manage")} />
+      )}
 
       {/* Empresas en las que participa (multi-empresa) */}
       {companies.length > 0 && !profile.isPlatformOwner && (

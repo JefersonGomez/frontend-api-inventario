@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
-import { Copy, Check, UserPlus, RotateCw, X, KeyRound } from "lucide-react"
+import { Copy, Check, UserPlus, RotateCw, X, KeyRound, LockKeyhole } from "lucide-react"
 import { getUsers, toggleUserActive } from "@/api/users"
 import { getInvitations, createInvitation, revokeInvitation } from "@/api/invitations"
 import { getCompany } from "@/api/company"
@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/table"
 import { API_URL } from "@/api/client"
 import { AccessDialog } from "@/components/users/AccessDialog"
+import { PinCodeDialog } from "@/components/users/PinCodeDialog"
 import { ROLES } from "@/lib/roles"
 
 export function Users() {
@@ -31,6 +32,7 @@ export function Users() {
   const [form, setForm] = useState({ email: "", role: "EMPLOYE" })
   const [copied, setCopied] = useState(false)
   const [editingAccess, setEditingAccess] = useState(null)
+  const [pinFor, setPinFor] = useState(null)
 
   const usersQuery = useQuery({ queryKey: ["users"], queryFn: () => getUsers() })
   const { data: invitations = [] } = useQuery({ queryKey: ["invitations"], queryFn: getInvitations })
@@ -158,7 +160,20 @@ export function Users() {
                   <TableCell className="hidden md:table-cell text-muted-foreground">
                     {new Date(u.createdAt).toLocaleDateString()}
                   </TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="text-right whitespace-nowrap">
+                    {u.needsPin && !isSelf && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="mr-2"
+                        onClick={() => setPinFor(u)}
+                        aria-label={t("users.pin.button_aria", { name: u.name })}
+                        title={t("users.pin.button_aria", { name: u.name })}
+                      >
+                        <LockKeyhole />
+                        <span className="hidden lg:inline">{u.hasPin ? t("users.pin.renew") : t("users.pin.generate")}</span>
+                      </Button>
+                    )}
                     <Switch
                       checked={u.isActive}
                       aria-label={t("users.active")}
@@ -227,6 +242,7 @@ export function Users() {
       )}
 
       {editingAccess && <AccessDialog user={editingAccess} onClose={() => setEditingAccess(null)} />}
+      {pinFor && <PinCodeDialog user={pinFor} onClose={() => setPinFor(null)} />}
 
       <Dialog open={inviting} onOpenChange={setInviting}>
         <DialogContent>

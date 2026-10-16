@@ -12,6 +12,7 @@ export function usePermissions() {
     ready: isSuccess,
     role: data?.role,
     hasPin: data?.hasPin === true,
+    pinLockedUntil: data?.pinLockedUntil ?? null, // hasta cuándo no puede cambiar su código
     can: (p) => permissions.includes(p),
   }
 }

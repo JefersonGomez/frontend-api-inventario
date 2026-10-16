@@ -547,17 +547,17 @@
     "owner": "Dueño",
     "active_company": "Activa",
     "pin": {
-      "title": "PIN de autorización",
-      "hint": "Con este PIN autorizas descuentos o anulaciones en la pantalla de otra persona, sin que cierre su sesión. De 4 a 6 dígitos, nada obvio como 1234.",
-      "active": "Tienes un PIN activo.",
-      "none": "Todavía no tienes PIN.",
-      "pin": "PIN nuevo",
-      "password": "Tu contraseña",
-      "save": "Guardar PIN",
-      "remove": "Borrar PIN",
-      "saved": "PIN guardado",
-      "removed": "PIN borrado",
-      "error": "No se pudo guardar el PIN"
+      "title": "Código de caja",
+      "hint": "Con él abres tu caja y, si tu rol lo permite, autorizas descuentos o anulaciones en la pantalla de otra persona sin que cierre su sesión.",
+      "askAdmin": "Todavía no tienes código: pídeselo al administrador.",
+      "locked": "Ya cambiaste tu código: podrás cambiarlo de nuevo a partir del {{date}}. Si lo olvidaste, pide uno nuevo al administrador.",
+      "canChange": "Puedes cambiar el código que te dieron. Después de cambiarlo queda fijo 30 días.",
+      "none": "Ponte un código de 4 a 6 dígitos, nada obvio como 1234.",
+      "pin": "Código nuevo",
+      "save": "Guardar código",
+      "saved": "Código guardado",
+      "error": "No se pudo guardar el código",
+      "password": "Tu contraseña"
     }
   },
   "settings": {
@@ -840,6 +840,19 @@
       "adminAll": "El administrador tiene todos los permisos.",
       "save": "Guardar acceso",
       "error": "No se pudo guardar el acceso"
+    },
+    "pin": {
+      "generate": "Generar código",
+      "renew": "Nuevo código",
+      "button_aria": "Código de caja de {{name}}",
+      "title": "Código de caja de {{name}}",
+      "intro": "Con este código {{name}} abre su caja{{authorizes}}. Se genera al azar; entrégaselo en persona.",
+      "authorizes": " y autoriza descuentos, anulaciones y notas de crédito",
+      "replace": "Ya tiene un código: el nuevo reemplaza al anterior (úsalo si lo olvidó).",
+      "after": "Podrá cambiarlo una vez desde su perfil; después queda fijo 30 días o hasta que generes otro.",
+      "ready": "Código de {{name}}:",
+      "once": "Anótalo o entrégaselo ahora: no se vuelve a mostrar.",
+      "error": "No se pudo generar el código"
     }
   },
   "invite": {
