@@ -1,6 +1,7 @@
 // src/pages/PurchaseOrders.jsx
 import { useState } from "react";
 import { LocationSelect } from "@/components/LocationSelect";
+import { ReceiveOrderDialog } from "@/components/purchases/ReceiveOrderDialog";
 import { Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
@@ -9,7 +10,6 @@ import {
   getPurchaseOrders,
   getPurchaseOrder,
   createPurchaseOrder,
-  receivePurchaseOrder,
   sendPurchaseOrderEmail,
 } from "@/api/purchaseOrders";
 import { getSuppliers } from "@/api/suppliers";
@@ -25,11 +25,6 @@ import { useMoney } from "@/hoocks/useMoney";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader,
-  AlertDialogTitle, AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -40,9 +35,13 @@ import {
 
 const statusVariant = {
   PENDING: "secondary",
+  PARTIAL: "outline",
   RECEIVED: "default",
+  CLOSED: "secondary",
   CANCELLED: "destructive",
 };
+const ORDER_STATUSES = ["PENDING", "PARTIAL", "RECEIVED", "CLOSED", "CANCELLED"];
+const statusLabel = (t, status) => t(`purchaseOrders.status${status.charAt(0)}${status.slice(1).toLowerCase()}`);
 
 // product = el producto elegido (objeto, del selector con búsqueda)
 const emptyLine = () => ({ product: null, quantity: "", unitCost: "", requestIds: [] });
@@ -62,6 +61,7 @@ export function PurchaseOrders() {
 
   const [open, setOpen] = useState(() => actionParam === "create");
   const [detailId, setDetailId] = useState(null);
+  const [receiving, setReceiving] = useState(null); // orden que se está recibiendo
   const [supplierId, setSupplierId] = useState("");
   const [locationId, setLocationId] = useState(""); // a dónde entra la mercadería ("" = la ubicación activa)
   const [lines, setLines] = useState(() => [emptyLine()]);
@@ -95,7 +95,7 @@ export function PurchaseOrders() {
   const orders = pinnedQuery.data && !pageOrders.some((o) => o.id === pinnedQuery.data.id) ? [pinnedQuery.data, ...pageOrders] : pageOrders;
   const statusItems = [
     { value: "all", label: t("list.all") },
-    ...["PENDING", "RECEIVED", "CANCELLED"].map((v) => ({ value: v, label: t(`purchaseOrders.status${v.charAt(0)}${v.slice(1).toLowerCase()}`) })),
+    ...ORDER_STATUSES.map((v) => ({ value: v, label: statusLabel(t, v) })),
   ];
 
   // ?comments=1 (aviso de comentario en la campanita) abre el detalle de ?highlight= con su hilo
@@ -132,14 +132,6 @@ export function PurchaseOrders() {
       setOpen(false);
       setSupplierId("");
       setLines([emptyLine()]);
-    },
-  });
-
-  const receiveMutation = useMutation({
-    mutationFn: receivePurchaseOrder,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["purchase-orders"] });
-      queryClient.invalidateQueries({ queryKey: ["products"] });
     },
   });
 
@@ -473,9 +465,7 @@ export function PurchaseOrders() {
               </td>
               <td className="hidden sm:table-cell">{new Date(o.createdAt).toLocaleDateString()}</td>
               <td>
-                <Badge variant={statusVariant[o.status]}>
-                  {t(`purchaseOrders.status${o.status.charAt(0)}${o.status.slice(1).toLowerCase()}`)}
-                </Badge>
+                <Badge variant={statusVariant[o.status]}>{statusLabel(t, o.status)}</Badge>
               </td>
               <td className="py-1.5" onClick={(e) => e.stopPropagation()}>
                 <div className="flex items-center justify-end gap-1.5">
@@ -500,40 +490,16 @@ export function PurchaseOrders() {
                     </span>
                   </Button>
                 )}
-                {o.status === "PENDING" && (
-                  <AlertDialog>
-                    <AlertDialogTrigger
-                      render={
-                        <Button
-                          size="sm"
-                          aria-label={t("purchaseOrders.receive")}
-                          title={t("purchaseOrders.receive")}
-                          disabled={receiveMutation.isPending}
-                        >
-                          <PackageCheck />
-                          <span className="hidden sm:inline">{t("purchaseOrders.receiveShort")}</span>
-                        </Button>
-                      }
-                    />
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>
-                          {t("purchaseOrders.confirmReceiveTitle")}
-                        </AlertDialogTitle>
-                        <AlertDialogDescription>
-                          {t("purchaseOrders.confirmReceiveDescription")}
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>{t("purchaseOrders.cancel")}</AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={() => receiveMutation.mutate(o.id)}
-                        >
-                          {t("purchaseOrders.confirm")}
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+                {(o.status === "PENDING" || o.status === "PARTIAL") && (
+                  <Button
+                    size="sm"
+                    aria-label={t("purchaseOrders.receive")}
+                    title={t("purchaseOrders.receive")}
+                    onClick={() => setReceiving(o)}
+                  >
+                    <PackageCheck />
+                    <span className="hidden sm:inline">{t("purchaseOrders.receiveShort")}</span>
+                  </Button>
                 )}
                 </div>
               </td>
@@ -543,6 +509,7 @@ export function PurchaseOrders() {
       </table>
       </div>
       <Pagination data={ordersQuery.data} onPage={list.setPage} />
+      {receiving && <ReceiveOrderDialog order={receiving} onClose={() => setReceiving(null)} />}
 
       <Dialog open={!!detail} onOpenChange={(o) => !o && closeDetail()}>
         <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
@@ -556,10 +523,16 @@ export function PurchaseOrders() {
                 <dd>{detail.supplier.name}</dd>
                 <dt className="text-muted-foreground">{t("purchaseOrders.location")}</dt>
                 <dd>{detail.location?.name ?? "—"}</dd>
+                {detail.cancelReason && (
+                  <>
+                    <dt className="text-muted-foreground">{t("purchaseOrders.reason")}</dt>
+                    <dd>{detail.cancelReason}</dd>
+                  </>
+                )}
                 <dt className="text-muted-foreground">{t("purchaseOrders.status")}</dt>
                 <dd>
                   <Badge variant={statusVariant[detail.status]}>
-                    {t(`purchaseOrders.status${detail.status.charAt(0)}${detail.status.slice(1).toLowerCase()}`)}
+                    {statusLabel(t, detail.status)}
                   </Badge>
                 </dd>
                 <dt className="text-muted-foreground">{t("purchaseOrders.createdBy")}</dt>
@@ -584,6 +557,7 @@ export function PurchaseOrders() {
                   <tr className="text-left border-b">
                     <th className="py-1">{t("purchaseOrders.product")}</th>
                     <th>{t("purchaseOrders.quantity")}</th>
+                    <th>{t("purchaseOrders.receivedSoFar")}</th>
                     <th>{t("purchaseOrders.unitCost")}</th>
                   </tr>
                 </thead>
@@ -592,6 +566,7 @@ export function PurchaseOrders() {
                     <tr key={i.id} className="border-b">
                       <td className="py-1">{i.product.name}</td>
                       <td className="whitespace-nowrap">{formatQty(i.quantity, i.product?.unit, t)}</td>
+                      <td className="whitespace-nowrap">{formatQty(i.receivedQuantity ?? 0, i.product?.unit, t)}</td>
                       <td>{money.format(i.unitCost)}</td>
                     </tr>
                   ))}
