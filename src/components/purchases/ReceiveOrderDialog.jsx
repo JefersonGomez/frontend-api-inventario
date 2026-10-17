@@ -17,6 +17,7 @@ export function ReceiveOrderDialog({ order, onClose }) {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
   const [arriving, setArriving] = useState(() => Object.fromEntries(order.items.map((i) => [i.id, String(pendingOf(i))])))
+  const [lots, setLots] = useState({}) // itemId → { code, expires } (productos con lotes)
   const [ending, setEnding] = useState(null) // "cancel" | "close"
   const [reason, setReason] = useState("")
 
@@ -30,7 +31,13 @@ export function ReceiveOrderDialog({ order, onClose }) {
     mutationFn: () =>
       receivePurchaseOrder(
         order.id,
-        order.items.filter((i) => pendingOf(i) > 0).map((i) => ({ itemId: i.id, quantity: Number(arriving[i.id] || 0) }))
+        order.items.filter((i) => pendingOf(i) > 0).map((i) => ({
+          itemId: i.id,
+          quantity: Number(arriving[i.id] || 0),
+          ...(i.product.tracksLots && lots[i.id]?.code?.trim() && {
+            lot: { code: lots[i.id].code.trim(), expiresAt: lots[i.id].expires || null },
+          }),
+        }))
       ),
     onSuccess: done,
   })
@@ -68,7 +75,28 @@ export function ReceiveOrderDialog({ order, onClose }) {
                 const pending = pendingOf(i)
                 return (
                   <tr key={i.id} className="border-b last:border-0">
-                    <td className="px-3 py-2">{i.product.name}</td>
+                    <td className="px-3 py-2">
+                      {i.product.name}
+                      {i.product.tracksLots && pending > 0 && (
+                        <div className="mt-1.5 flex flex-wrap gap-1.5">
+                          <Input
+                            className="h-8 w-28"
+                            maxLength={40}
+                            placeholder={t("products.lots.code")}
+                            aria-label={t("products.lots.codeOf", { name: i.product.name })}
+                            value={lots[i.id]?.code ?? ""}
+                            onChange={(e) => setLots({ ...lots, [i.id]: { ...lots[i.id], code: e.target.value } })}
+                          />
+                          <Input
+                            type="date"
+                            className="h-8 w-36"
+                            aria-label={t("products.lots.expiresOf", { name: i.product.name })}
+                            value={lots[i.id]?.expires ?? ""}
+                            onChange={(e) => setLots({ ...lots, [i.id]: { ...lots[i.id], expires: e.target.value } })}
+                          />
+                        </div>
+                      )}
+                    </td>
                     <td className="px-3 py-2 text-right whitespace-nowrap">{formatQty(i.quantity, i.product.unit, t)}</td>
                     <td className="px-3 py-2 text-right whitespace-nowrap">{formatQty(i.receivedQuantity ?? 0, i.product.unit, t)}</td>
                     <td className="px-3 py-2 text-right">

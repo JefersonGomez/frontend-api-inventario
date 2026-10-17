@@ -54,6 +54,9 @@ const emptyForm = {
   groupId: "", // "" = no es una variante
   attributes: {}, // { Talla: "M", Color: "Rojo" }
   locationId: "", // dónde entra el stock inicial ("" = la ubicación activa)
+  tracksLots: false, // maneja lotes con vencimiento
+  lotCode: "", // con lotes y stock inicial: lote y vencimiento
+  lotExpires: "",
 }
 
 // "Talla M · Color Rojo" debajo del nombre de una variante
@@ -150,6 +153,9 @@ export function Products() {
         cost: form.cost === "" ? null : Number(form.cost),
         stock: Number(form.stock),
         locationId: form.locationId || undefined,
+        ...(form.tracksLots && Number(form.stock) > 0 && {
+          lot: { code: form.lotCode.trim(), expiresAt: form.lotExpires || null },
+        }),
         minStock: Number(form.minStock),
         supplierId: form.supplierId || null,
         expirationDate: form.expirationDate || undefined,
@@ -181,6 +187,7 @@ export function Products() {
         unit: form.unit,
         taxRate: form.taxRate,
         cabys: form.cabys.trim() || null,
+        tracksLots: form.tracksLots,
         ...variantPayload(),
       }),
     onSuccess: () => {
@@ -249,6 +256,9 @@ export function Products() {
       cabys: product.cabys ?? "",
       groupId: product.groupId ?? "",
       attributes: product.attributes ?? {},
+      tracksLots: product.tracksLots ?? false,
+      lotCode: "",
+      lotExpires: "",
     })
     setDialogOpen(true)
   }
@@ -602,6 +612,30 @@ export function Products() {
                 </div>
               </div>
               <p id="stock-hint" className="text-xs text-muted-foreground">{t("products.dialog.unit_hint")}</p>
+              <label className="flex items-start gap-2.5 text-sm">
+                <input
+                  type="checkbox"
+                  className="mt-0.5 size-4 accent-primary"
+                  checked={form.tracksLots}
+                  onChange={(e) => setForm({ ...form, tracksLots: e.target.checked })}
+                />
+                <span>
+                  {t("products.lots.tracks")}
+                  <span className="block text-xs text-muted-foreground">{t("products.lots.tracksHint")}</span>
+                </span>
+              </label>
+              {!editingProduct && form.tracksLots && Number(form.stock) > 0 && (
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="product-lot">{t("products.lots.code")}</Label>
+                    <Input id="product-lot" maxLength={40} value={form.lotCode} onChange={(e) => setForm({ ...form, lotCode: e.target.value })} required />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="product-lot-expires">{t("products.lots.expires")}</Label>
+                    <Input id="product-lot-expires" type="date" value={form.lotExpires} onChange={(e) => setForm({ ...form, lotExpires: e.target.value })} />
+                  </div>
+                </div>
+              )}
               {editingProduct ? (
                 <StockByLocation productId={editingProduct.id} unit={form.unit} t={t} />
               ) : (
@@ -699,7 +733,8 @@ function StockByLocation({ productId, unit, t }) {
   const { data } = useQuery({ queryKey: ["products", productId, "detail"], queryFn: () => getProduct(productId) })
   const stocks = data?.stocks ?? []
   const inTransit = Number(data?.inTransit ?? 0)
-  if (stocks.length <= 1 && !inTransit) return null
+  const lots = data?.lots ?? []
+  if (stocks.length <= 1 && !inTransit && !lots.length) return null
   return (
     <div className="rounded-lg border border-border p-3">
       <p className="mb-2 text-xs font-medium text-muted-foreground">{t("products.dialog.stock_by_location")}</p>
@@ -713,6 +748,27 @@ function StockByLocation({ productId, unit, t }) {
       </ul>
       {inTransit > 0 && (
         <p className="mt-2 text-xs text-muted-foreground">{t("products.dialog.in_transit", { qty: formatQty(inTransit, unit, t) })}</p>
+      )}
+      {lots.length > 0 && (
+        <>
+          <p className="mb-1 mt-3 text-xs font-medium text-muted-foreground">{t("products.lots.title")}</p>
+          <ul className="grid gap-1 text-sm">
+            {lots.map((l) => {
+              const expired = l.expiresAt && new Date(l.expiresAt) < new Date()
+              return (
+                <li key={l.id} className="flex flex-wrap justify-between gap-x-3">
+                  <span className="truncate">
+                    <span className="font-mono">{l.code}</span>
+                    <span className="text-muted-foreground"> · {l.location.name}</span>
+                  </span>
+                  <span className={`tabular-nums ${expired ? "text-[var(--stk-crit)]" : ""}`}>
+                    {formatQty(l.quantity, unit, t)} · {l.expiresAt ? t("products.lots.until", { date: new Date(l.expiresAt).toLocaleDateString() }) : t("products.lots.noDate")}
+                  </span>
+                </li>
+              )
+            })}
+          </ul>
+        </>
       )}
     </div>
   )

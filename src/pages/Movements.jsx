@@ -28,7 +28,7 @@ import { apiErrorMessage } from "@/lib/api-error"
 import { LocationSelect } from "@/components/LocationSelect"
 import { getProduct } from "@/api/products"
 
-const emptyForm = { product: null, type: "IN", quantity: "", reason: "", locationId: "" }
+const emptyForm = { product: null, type: "IN", quantity: "", reason: "", locationId: "", lotCode: "", lotExpires: "" }
 const SOURCES = ["MANUAL", "INITIAL", "PURCHASE_RECEIPT", "SALE", "RETURN", "COUNT", "TRANSFER"]
 
 export function Movements() {
@@ -58,6 +58,7 @@ export function Movements() {
   const step = qtyStep(selected?.unit)
   // stock del producto en la ubicación del movimiento (la elegida o la activa)
   const detail = useQuery({ queryKey: ["products", selected?.id, "detail"], queryFn: () => getProduct(selected.id), enabled: !!selected })
+  const needsLot = Boolean(selected?.tracksLots) && form.type !== "OUT"
   const movementLocation = form.locationId || activeLocationId
   const stockHere = movementLocation
     ? Number(detail.data?.stocks?.find((s) => s.location.id === movementLocation)?.quantity ?? 0)
@@ -78,6 +79,8 @@ export function Movements() {
         quantity: Number(form.quantity),
         reason: form.reason || undefined,
         locationId: form.locationId || undefined, // sin elegir: la ubicación activa
+        // productos con lotes: la entrada (o un ajuste que suma) va a un lote; la salida toma el que vence antes
+        ...(needsLot && form.lotCode.trim() && { lot: { code: form.lotCode.trim(), expiresAt: form.lotExpires || null } }),
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["movements"] })
@@ -211,6 +214,11 @@ export function Movements() {
                       <Badge variant="outline" className="mr-2">{t(`movements.sources.${movement.source}`)}</Badge>
                     )}
                     {movement.reason ?? (movement.source && movement.source !== "MANUAL" ? null : "—")}
+                    {movement.lots?.length > 0 && (
+                      <span className="block text-xs">
+                        {t("products.lots.short")}: {movement.lots.map((l) => `${l.code} (${formatQty(l.quantity, movement.product?.unit, t)})`).join(", ")}
+                      </span>
+                    )}
                   </TableCell>
                 </TableRow>
               )
@@ -301,6 +309,20 @@ export function Movements() {
                 </p>
               )}
             </div>
+
+            {needsLot && (
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label htmlFor="movement-lot">{t("products.lots.code")}</Label>
+                  <Input id="movement-lot" maxLength={40} value={form.lotCode} onChange={(e) => setForm({ ...form, lotCode: e.target.value })} required={form.type === "IN"} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="movement-lot-expires">{t("products.lots.expires")}</Label>
+                  <Input id="movement-lot-expires" type="date" value={form.lotExpires} onChange={(e) => setForm({ ...form, lotExpires: e.target.value })} />
+                </div>
+                <p className="col-span-2 text-xs text-muted-foreground">{t("products.lots.movementHint")}</p>
+              </div>
+            )}
 
             <div className="space-y-2">
               <Label>{t("movements.dialog.label_reason")}</Label>

@@ -341,7 +341,20 @@
       "collapse": "Ocultar las variantes de {{name}}",
       "base_badge": "Producto base"
     },
-    "lowStockFilter": "Bajo mínimo"
+    "lowStockFilter": "Bajo mínimo",
+    "lots": {
+      "title": "Lotes",
+      "tracks": "Maneja lotes con vencimiento",
+      "tracksHint": "Para alimentos, medicinas y similares: cada entrada pide lote y vencimiento, y las salidas toman primero el que vence antes. Al activarlo, el stock actual pasa a un lote INICIAL.",
+      "code": "Lote",
+      "expires": "Vence",
+      "codeOf": "Lote de {{name}}",
+      "expiresOf": "Vencimiento de {{name}}",
+      "until": "vence {{date}}",
+      "noDate": "sin vencimiento",
+      "short": "Lotes",
+      "movementHint": "En una salida no hace falta: se toma primero el lote que vence antes."
+    }
   },
   "categories": {
     "title": "Categorías",

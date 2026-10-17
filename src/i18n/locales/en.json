@@ -341,7 +341,20 @@
       "collapse": "Hide the variants of {{name}}",
       "base_badge": "Base product"
     },
-    "lowStockFilter": "Below minimum"
+    "lowStockFilter": "Below minimum",
+    "lots": {
+      "title": "Lots",
+      "tracks": "Tracks lots with expiry",
+      "tracksHint": "For food, medicine and similar: each entry asks for lot and expiry, and outflows take the one that expires first. When enabled, current stock goes into an INICIAL lot.",
+      "code": "Lot",
+      "expires": "Expires",
+      "codeOf": "Lot of {{name}}",
+      "expiresOf": "Expiry of {{name}}",
+      "until": "expires {{date}}",
+      "noDate": "no expiry",
+      "short": "Lots",
+      "movementHint": "Not needed for outflows: the lot that expires first is used."
+    }
   },
   "categories": {
     "title": "Categories",
