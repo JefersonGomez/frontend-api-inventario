@@ -12,6 +12,7 @@ import {
   ArrowLeftRight,
   Route,
   ClipboardCheck,
+  Tag,
   BarChart3,
   ClipboardList,
   ShoppingCart,
@@ -46,6 +47,7 @@ export function Sidebar() {
     // transferencias: solo tiene sentido con más de una ubicación
     ...(can("stock.move") && locations.length > 1 ? [{ to: "/transfers", label: t("sidebar.transfers"), icon: Route }] : []),
     ...(can("stock.move") ? [{ to: "/stock-counts", label: t("sidebar.stockCounts"), icon: ClipboardCheck }] : []),
+    ...(can("stock.move") ? [{ to: "/labels", label: t("sidebar.labels"), icon: Tag }] : []),
     { to: "/purchase-requests", label: t("sidebar.purchaseRequests"), icon: ClipboardList },
     ...(can("purchases.manage") ? [{ to: "/purchase-orders", label: t("sidebar.purchaseOrders"), icon: ShoppingCart }] : []),
     { to: "/customers", label: t("sidebar.customers"), icon: Contact },

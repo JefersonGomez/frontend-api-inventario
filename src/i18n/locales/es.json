@@ -29,7 +29,8 @@
     "platform": "Plataforma",
     "customers": "Clientes",
     "transfers": "Transferencias",
-    "stockCounts": "Conteos"
+    "stockCounts": "Conteos",
+    "labels": "Etiquetas"
   },
   "topbar": {
     "search": "Buscar producto o SKU",
@@ -1268,5 +1269,30 @@
     "cancelDescription": "Se descarta lo contado y el inventario no cambia.",
     "loadError": "No se pudo cargar el conteo",
     "error": "No se pudo completar"
+  },
+  "labels": {
+    "title": "Etiquetas",
+    "subtitle": "Imprime etiquetas con nombre, precio y código de barras",
+    "empty": "Busca y agrega los productos a etiquetar",
+    "copies": "Copias",
+    "remove": "Quitar {{name}}",
+    "noCode": "Sin código de barras",
+    "notStandard": "{{code}} · no es EAN: se imprime solo el texto",
+    "missing_one": "{{count}} producto no tiene código EAN",
+    "missing_other": "{{count}} productos no tienen código EAN",
+    "generate": "Generar códigos internos",
+    "format": "Formato",
+    "formats": {
+      "letter30": "Hoja carta, 30 por hoja (66,7 × 25,4 mm)",
+      "a4_24": "Hoja A4, 24 por hoja (70 × 37 mm)",
+      "roll50x25": "Rollo de etiquetadora (50 × 25 mm)"
+    },
+    "showName": "Mostrar nombre",
+    "showPrice": "Mostrar precio",
+    "printHint": "En la ventana de impresión elige escala 100 % (sin \"ajustar a la página\") para que las medidas coincidan.",
+    "print_one": "Imprimir {{count}} etiqueta",
+    "print_other": "Imprimir {{count}} etiquetas",
+    "preview": "Vista previa",
+    "error": "No se pudieron generar los códigos"
   }
 }

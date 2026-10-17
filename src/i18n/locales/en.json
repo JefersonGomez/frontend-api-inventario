@@ -29,7 +29,8 @@
     "platform": "Platform",
     "customers": "Customers",
     "transfers": "Transfers",
-    "stockCounts": "Counts"
+    "stockCounts": "Counts",
+    "labels": "Labels"
   },
   "topbar": {
     "search": "Search product or SKU",
@@ -1268,5 +1269,30 @@
     "cancelDescription": "What was counted is discarded and the inventory doesn't change.",
     "loadError": "Could not load the count",
     "error": "Could not complete it"
+  },
+  "labels": {
+    "title": "Labels",
+    "subtitle": "Print labels with name, price and barcode",
+    "empty": "Search and add the products to label",
+    "copies": "Copies",
+    "remove": "Remove {{name}}",
+    "noCode": "No barcode",
+    "notStandard": "{{code}} · not EAN: only the text is printed",
+    "missing_one": "{{count}} product has no EAN code",
+    "missing_other": "{{count}} products have no EAN code",
+    "generate": "Generate internal codes",
+    "format": "Format",
+    "formats": {
+      "letter30": "Letter sheet, 30 per sheet (66.7 × 25.4 mm)",
+      "a4_24": "A4 sheet, 24 per sheet (70 × 37 mm)",
+      "roll50x25": "Label printer roll (50 × 25 mm)"
+    },
+    "showName": "Show name",
+    "showPrice": "Show price",
+    "printHint": "In the print dialog choose 100% scale (no \"fit to page\") so sizes match.",
+    "print_one": "Print {{count}} label",
+    "print_other": "Print {{count}} labels",
+    "preview": "Preview",
+    "error": "Could not generate the codes"
   }
 }

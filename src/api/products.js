@@ -32,3 +32,7 @@ export const getProductPriceHistory = (id) =>
 // locationId: dónde entra el stock inicial (sin indicar: la ubicación activa)
 export const importProducts = (rows, dryRun, options, locationId) =>
   api.post("/products/import", { rows, dryRun, options, ...(locationId && { locationId }) }).then((res) => res.data);
+
+// genera EAN-13 internos para los productos sin código (los indicados, o todos si no se indican)
+export const generateBarcodes = (productIds) =>
+  api.post("/products/barcodes", productIds ? { productIds } : {}).then((res) => res.data)
