@@ -8,7 +8,8 @@
     "deleting": "Eliminando...",
     "edit": "Editar",
     "updating": "Actualizando...",
-    "error_loading": "No se pudieron cargar los datos."
+    "error_loading": "No se pudieron cargar los datos.",
+    "close": "Cerrar"
   },
   "sidebar": {
     "dashboard": "Panel",
@@ -26,7 +27,8 @@
     "scanText": "Registra entradas y salidas escaneando el código de barras con la cámara.",
     "scanButton": "Escanear producto",
     "platform": "Plataforma",
-    "customers": "Clientes"
+    "customers": "Clientes",
+    "transfers": "Transferencias"
   },
   "topbar": {
     "search": "Buscar producto o SKU",
@@ -164,7 +166,8 @@
       "section_stock": "Inventario",
       "section_variant": "Variante",
       "label_location": "¿A dónde entra el stock inicial?",
-      "stock_by_location": "Stock por ubicación"
+      "stock_by_location": "Stock por ubicación",
+      "in_transit": "En tránsito (enviado y sin recibir): {{qty}}"
     },
     "delete": {
       "title": "¿Eliminar este producto?",
@@ -781,7 +784,9 @@
       "memberJoined": "Nuevos miembros",
       "cashCodeExpired": "Código de caja vencido",
       "cashCodeExpiring": "Código de caja por vencer",
-      "cashCodeAssigned": "Código de caja"
+      "cashCodeAssigned": "Código de caja",
+      "transferIncoming": "Transferencias en camino",
+      "transferReceived": "Transferencias recibidas"
     },
     "detail": {
       "requestExpiring": "{{requester}} · {{quantity}} · vence {{when}}",
@@ -799,7 +804,10 @@
       "memberJoined": "Se unió a {{company}}",
       "cashCodeExpired": "Venció: no puedes usar la caja hasta renovarlo",
       "cashCodeExpiring": "Vence {{when}}: renuévalo a tiempo",
-      "cashCodeAssigned": "{{by}} te asignó un código nuevo"
+      "cashCodeAssigned": "{{by}} te asignó un código nuevo",
+      "transferIncoming": "Viene de {{from}} hacia {{to}} · {{lines}} producto(s)",
+      "transferReceived": "{{to}} recibió todo",
+      "transferReceivedShort": "{{to}} la recibió con faltantes ({{shortages}})"
     },
     "when": {
       "today": "hoy",
@@ -1133,5 +1141,45 @@
       "WAREHOUSE": "Solo almacena: recibe compras y transfiere a las sucursales."
     },
     "error": "No se pudo guardar la ubicación"
+  },
+  "transfers": {
+    "title": "Transferencias",
+    "subtitle": "Mueve mercadería entre sucursales y bodegas: el origen envía y el destino confirma lo que llegó",
+    "new": "Nueva transferencia",
+    "statusLabel": "Estado",
+    "date": "Fecha",
+    "route": "Ruta",
+    "lines": "Productos",
+    "sentBy": "Enviada por",
+    "receivedBy": "Recibida por",
+    "lineCount_one": "{{count}} producto",
+    "lineCount_other": "{{count}} productos",
+    "empty": "No hay transferencias",
+    "from": "Desde",
+    "to": "Hacia",
+    "chooseTo": "Elige el destino",
+    "products": "Productos",
+    "quantity": "Cantidad",
+    "addLine": "Agregar producto",
+    "removeLine": "Quitar producto",
+    "notes": "Notas",
+    "sendHint": "Al enviar, el stock sale del origen y queda en tránsito (sigue contando en el total) hasta que el destino lo reciba.",
+    "send": "Enviar",
+    "detailTitle": "Transferencia",
+    "product": "Producto",
+    "sent": "Enviado",
+    "received": "Llegó",
+    "receivedOf": "Llegó de {{name}}",
+    "shortage": "faltante",
+    "receiveHint": "Anota lo que realmente llegó. Lo que falte queda registrado como faltante y sale del inventario; a quien la envió le llega un aviso.",
+    "receive": "Recibir",
+    "cancel": "Cancelar transferencia",
+    "notFound": "No se encontró la transferencia",
+    "error": "No se pudo completar",
+    "status": {
+      "IN_TRANSIT": "En tránsito",
+      "RECEIVED": "Recibida",
+      "CANCELLED": "Cancelada"
+    }
   }
 }

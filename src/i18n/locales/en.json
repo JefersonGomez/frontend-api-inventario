@@ -8,7 +8,8 @@
     "deleting": "Deleting...",
     "edit": "Edit",
     "updating": "Updating...",
-    "error_loading": "Could not load data."
+    "error_loading": "Could not load data.",
+    "close": "Close"
   },
   "sidebar": {
     "dashboard": "Dashboard",
@@ -26,7 +27,8 @@
     "scanText": "Log stock in and out by scanning the barcode with your camera.",
     "scanButton": "Scan product",
     "platform": "Platform",
-    "customers": "Customers"
+    "customers": "Customers",
+    "transfers": "Transfers"
   },
   "topbar": {
     "search": "Search product or SKU",
@@ -164,7 +166,8 @@
       "section_stock": "Inventory",
       "section_variant": "Variant",
       "label_location": "Where does the initial stock go?",
-      "stock_by_location": "Stock by location"
+      "stock_by_location": "Stock by location",
+      "in_transit": "In transit (sent, not yet received): {{qty}}"
     },
     "delete": {
       "title": "Delete this product?",
@@ -781,7 +784,9 @@
       "memberJoined": "New members",
       "cashCodeExpired": "Register code expired",
       "cashCodeExpiring": "Register code expiring",
-      "cashCodeAssigned": "Register code"
+      "cashCodeAssigned": "Register code",
+      "transferIncoming": "Incoming transfers",
+      "transferReceived": "Received transfers"
     },
     "detail": {
       "requestExpiring": "{{requester}} · {{quantity}} · expires {{when}}",
@@ -799,7 +804,10 @@
       "memberJoined": "Joined {{company}}",
       "cashCodeExpired": "Expired: you can't use the register until you renew it",
       "cashCodeExpiring": "Expires {{when}}: renew it in time",
-      "cashCodeAssigned": "{{by}} assigned you a new code"
+      "cashCodeAssigned": "{{by}} assigned you a new code",
+      "transferIncoming": "From {{from}} to {{to}} · {{lines}} product(s)",
+      "transferReceived": "{{to}} received everything",
+      "transferReceivedShort": "{{to}} received it with shortages ({{shortages}})"
     },
     "when": {
       "today": "today",
@@ -1133,5 +1141,45 @@
       "WAREHOUSE": "Only stores: receives purchases and transfers to branches."
     },
     "error": "Could not save the location"
+  },
+  "transfers": {
+    "title": "Transfers",
+    "subtitle": "Move goods between branches and warehouses: the origin sends and the destination confirms what arrived",
+    "new": "New transfer",
+    "statusLabel": "Status",
+    "date": "Date",
+    "route": "Route",
+    "lines": "Products",
+    "sentBy": "Sent by",
+    "receivedBy": "Received by",
+    "lineCount_one": "{{count}} product",
+    "lineCount_other": "{{count}} products",
+    "empty": "No transfers",
+    "from": "From",
+    "to": "To",
+    "chooseTo": "Choose the destination",
+    "products": "Products",
+    "quantity": "Quantity",
+    "addLine": "Add product",
+    "removeLine": "Remove product",
+    "notes": "Notes",
+    "sendHint": "When sent, stock leaves the origin and stays in transit (still counted in the total) until the destination receives it.",
+    "send": "Send",
+    "detailTitle": "Transfer",
+    "product": "Product",
+    "sent": "Sent",
+    "received": "Arrived",
+    "receivedOf": "Arrived of {{name}}",
+    "shortage": "short",
+    "receiveHint": "Enter what actually arrived. Anything missing is recorded as a shortage and leaves the inventory; the sender gets a notice.",
+    "receive": "Receive",
+    "cancel": "Cancel transfer",
+    "notFound": "Transfer not found",
+    "error": "Could not complete it",
+    "status": {
+      "IN_TRANSIT": "In transit",
+      "RECEIVED": "Received",
+      "CANCELLED": "Cancelled"
+    }
   }
 }

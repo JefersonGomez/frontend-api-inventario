@@ -698,7 +698,8 @@ export function Products() {
 function StockByLocation({ productId, unit, t }) {
   const { data } = useQuery({ queryKey: ["products", productId, "detail"], queryFn: () => getProduct(productId) })
   const stocks = data?.stocks ?? []
-  if (stocks.length <= 1) return null
+  const inTransit = Number(data?.inTransit ?? 0)
+  if (stocks.length <= 1 && !inTransit) return null
   return (
     <div className="rounded-lg border border-border p-3">
       <p className="mb-2 text-xs font-medium text-muted-foreground">{t("products.dialog.stock_by_location")}</p>
@@ -710,6 +711,9 @@ function StockByLocation({ productId, unit, t }) {
           </li>
         ))}
       </ul>
+      {inTransit > 0 && (
+        <p className="mt-2 text-xs text-muted-foreground">{t("products.dialog.in_transit", { qty: formatQty(inTransit, unit, t) })}</p>
+      )}
     </div>
   )
 }

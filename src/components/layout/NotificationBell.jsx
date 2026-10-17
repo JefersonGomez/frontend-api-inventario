@@ -6,7 +6,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Popover } from "@base-ui/react/popover";
 import {
   Bell, CalendarClock, CheckCheck, CheckCircle2, ChevronRight, Hourglass, Inbox, LockKeyhole, MessageSquare, PackageCheck, UserPlus,
-  PackageMinus, ShoppingCart, XCircle,
+  PackageMinus, ShoppingCart, Truck, XCircle,
 } from "lucide-react";
 import { useNotifications } from "@/hoocks/useNotifications";
 import { markNotificationRead, markAllNotificationsRead } from "@/api/notifications";
@@ -19,6 +19,8 @@ const SECTIONS = [
   { type: "cashCodeExpired", icon: LockKeyhole, tone: "crit" },
   { type: "cashCodeExpiring", icon: LockKeyhole, tone: "warn" },
   { type: "cashCodeAssigned", icon: LockKeyhole, tone: "info" },
+  { type: "transferIncoming", icon: Truck, tone: "info" },
+  { type: "transferReceived", icon: Truck, tone: "ok" },
   { type: "memberJoined", icon: UserPlus, tone: "ok" },
   { type: "requestComment", icon: MessageSquare, tone: "info" },
   { type: "orderComment", icon: MessageSquare, tone: "info" },
@@ -71,6 +73,10 @@ function useDetail() {
         return t("notifications.detail.requestExpiring", { ...m, when: when(daysUntil(m.expiresAt)) });
       case "cashCodeExpiring":
         return t("notifications.detail.cashCodeExpiring", { when: when(daysUntil(m.expiresAt)) });
+      case "transferReceived":
+        return raw.shortages > 0
+          ? t("notifications.detail.transferReceivedShort", m)
+          : t("notifications.detail.transferReceived", m);
       case "productExpiring":
         return t("notifications.detail.productExpiring", { when: when(daysUntil(m.expirationDate, true)) });
       case "requestRejected":

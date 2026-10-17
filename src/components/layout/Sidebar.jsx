@@ -3,11 +3,14 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "@/context/AuthContext";
 import { usePlatformOwner } from "@/hoocks/usePlatformOwner";
 import { usePermissions } from "@/hoocks/usePermissions";
+import { useQuery } from "@tanstack/react-query";
+import { getLocations } from "@/api/locations";
 import {
   LayoutDashboard,
   Package,
   FolderTree,
   ArrowLeftRight,
+  Route,
   BarChart3,
   ClipboardList,
   ShoppingCart,
@@ -30,6 +33,7 @@ export function Sidebar() {
   const { logout } = useAuth();
   const navigate = useNavigate();
   const { can } = usePermissions();
+  const { data: locations = [] } = useQuery({ queryKey: ["locations"], queryFn: () => getLocations() });
   const { isPlatformOwner } = usePlatformOwner();
 
   // el dueño de la plataforma no usa el inventario de un cliente: solo ve la plataforma
@@ -38,6 +42,8 @@ export function Sidebar() {
     { to: "/products", label: t("sidebar.products"), icon: Package },
     { to: "/categories", label: t("sidebar.categories"), icon: FolderTree },
     { to: "/movements", label: t("sidebar.movements"), icon: ArrowLeftRight },
+    // transferencias: solo tiene sentido con más de una ubicación
+    ...(can("stock.move") && locations.length > 1 ? [{ to: "/transfers", label: t("sidebar.transfers"), icon: Route }] : []),
     { to: "/purchase-requests", label: t("sidebar.purchaseRequests"), icon: ClipboardList },
     ...(can("purchases.manage") ? [{ to: "/purchase-orders", label: t("sidebar.purchaseOrders"), icon: ShoppingCart }] : []),
     { to: "/customers", label: t("sidebar.customers"), icon: Contact },
