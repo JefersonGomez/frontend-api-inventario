@@ -11,6 +11,7 @@ import {
   FolderTree,
   ArrowLeftRight,
   Route,
+  ClipboardCheck,
   BarChart3,
   ClipboardList,
   ShoppingCart,
@@ -44,6 +45,7 @@ export function Sidebar() {
     { to: "/movements", label: t("sidebar.movements"), icon: ArrowLeftRight },
     // transferencias: solo tiene sentido con más de una ubicación
     ...(can("stock.move") && locations.length > 1 ? [{ to: "/transfers", label: t("sidebar.transfers"), icon: Route }] : []),
+    ...(can("stock.move") ? [{ to: "/stock-counts", label: t("sidebar.stockCounts"), icon: ClipboardCheck }] : []),
     { to: "/purchase-requests", label: t("sidebar.purchaseRequests"), icon: ClipboardList },
     ...(can("purchases.manage") ? [{ to: "/purchase-orders", label: t("sidebar.purchaseOrders"), icon: ShoppingCart }] : []),
     { to: "/customers", label: t("sidebar.customers"), icon: Contact },

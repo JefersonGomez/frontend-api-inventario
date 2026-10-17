@@ -28,7 +28,8 @@
     "scanButton": "Scan product",
     "platform": "Platform",
     "customers": "Customers",
-    "transfers": "Transfers"
+    "transfers": "Transfers",
+    "stockCounts": "Counts"
   },
   "topbar": {
     "search": "Search product or SKU",
@@ -1199,5 +1200,60 @@
       "RECEIVED": "Received",
       "CANCELLED": "Cancelled"
     }
+  },
+  "stockCounts": {
+    "title": "Stock counts",
+    "subtitle": "Count what's on the shelf and adjust the inventory with the differences",
+    "new": "New count",
+    "open": "Open count",
+    "statusLabel": "Status",
+    "date": "Date",
+    "location": "Location",
+    "scope": "What is counted",
+    "openedBy": "Opened by",
+    "empty": "No counts",
+    "allProducts": "All products",
+    "productCount_one": "{{count}} product",
+    "productCount_other": "{{count}} products",
+    "notes": "Notes",
+    "newHint": "You can keep selling during the count: when closing, only each product's difference against what the system said when you counted it is applied.",
+    "status": {
+      "OPEN": "Open",
+      "CLOSED": "Closed",
+      "CANCELLED": "Cancelled"
+    },
+    "back": "Counts",
+    "countOf": "Count of {{location}}",
+    "openedByOn": "opened by {{name}} on {{date}}",
+    "summary": {
+      "counted": "Counted",
+      "over": "Surplus",
+      "short": "Shortage",
+      "value": "Difference at cost"
+    },
+    "scanPlaceholder": "Scan or type the code or SKU and Enter (adds 1)",
+    "scanned": "{{name}}: {{qty}}",
+    "notFound": "\"{{code}}\" not found",
+    "filters": {
+      "all": "All",
+      "pending": "Not counted",
+      "diff": "With difference"
+    },
+    "product": "Product",
+    "system": "System",
+    "counted": "Counted",
+    "countedOf": "Counted of {{name}}",
+    "difference": "Difference",
+    "nothingHere": "Nothing to show with this filter",
+    "save_one": "Save ({{count}})",
+    "save_other": "Save ({{count}})",
+    "close": "Close and adjust",
+    "cancel": "Cancel count",
+    "closeTitle": "Close the count and adjust the inventory?",
+    "closeDescription": "{{counted}} counted products are adjusted ({{over}} surplus, {{short}} shortage) with count movements. The {{uncounted}} not counted are left as is. This can't be undone.",
+    "cancelTitle": "Cancel the count?",
+    "cancelDescription": "What was counted is discarded and the inventory doesn't change.",
+    "loadError": "Could not load the count",
+    "error": "Could not complete it"
   }
 }

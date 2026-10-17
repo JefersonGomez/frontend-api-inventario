@@ -28,7 +28,8 @@
     "scanButton": "Escanear producto",
     "platform": "Plataforma",
     "customers": "Clientes",
-    "transfers": "Transferencias"
+    "transfers": "Transferencias",
+    "stockCounts": "Conteos"
   },
   "topbar": {
     "search": "Buscar producto o SKU",
@@ -1199,5 +1200,60 @@
       "RECEIVED": "Recibida",
       "CANCELLED": "Cancelada"
     }
+  },
+  "stockCounts": {
+    "title": "Conteos físicos",
+    "subtitle": "Cuenta lo que hay en el estante y ajusta el inventario con las diferencias",
+    "new": "Nuevo conteo",
+    "open": "Abrir conteo",
+    "statusLabel": "Estado",
+    "date": "Fecha",
+    "location": "Ubicación",
+    "scope": "Qué se cuenta",
+    "openedBy": "Abierto por",
+    "empty": "No hay conteos",
+    "allProducts": "Todos los productos",
+    "productCount_one": "{{count}} producto",
+    "productCount_other": "{{count}} productos",
+    "notes": "Notas",
+    "newHint": "Mientras dura el conteo se puede seguir vendiendo: al cerrar se ajusta solo la diferencia de cada producto contra lo que decía el sistema cuando lo contaste.",
+    "status": {
+      "OPEN": "Abierto",
+      "CLOSED": "Cerrado",
+      "CANCELLED": "Cancelado"
+    },
+    "back": "Conteos",
+    "countOf": "Conteo de {{location}}",
+    "openedByOn": "abierto por {{name}} el {{date}}",
+    "summary": {
+      "counted": "Contados",
+      "over": "Con sobrante",
+      "short": "Con faltante",
+      "value": "Diferencia a costo"
+    },
+    "scanPlaceholder": "Escanea o escribe el código o SKU y Enter (suma 1)",
+    "scanned": "{{name}}: {{qty}}",
+    "notFound": "No se encontró \"{{code}}\"",
+    "filters": {
+      "all": "Todos",
+      "pending": "Sin contar",
+      "diff": "Con diferencia"
+    },
+    "product": "Producto",
+    "system": "Sistema",
+    "counted": "Contado",
+    "countedOf": "Contado de {{name}}",
+    "difference": "Diferencia",
+    "nothingHere": "Nada que mostrar con este filtro",
+    "save_one": "Guardar ({{count}})",
+    "save_other": "Guardar ({{count}})",
+    "close": "Cerrar y ajustar",
+    "cancel": "Cancelar conteo",
+    "closeTitle": "¿Cerrar el conteo y ajustar el inventario?",
+    "closeDescription": "Se ajustan {{counted}} productos contados ({{over}} con sobrante y {{short}} con faltante) con movimientos de conteo. Los {{uncounted}} sin contar no se tocan. No se puede deshacer.",
+    "cancelTitle": "¿Cancelar el conteo?",
+    "cancelDescription": "Se descarta lo contado y el inventario no cambia.",
+    "loadError": "No se pudo cargar el conteo",
+    "error": "No se pudo completar"
   }
 }

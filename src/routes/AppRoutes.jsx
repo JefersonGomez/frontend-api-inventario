@@ -17,6 +17,8 @@ import {PurchaseRequests} from "@/pages/PurchaseRequests"
 import { PermissionRoute } from "./PermissionRoute"
 import { PurchaseOrders } from "@/pages/PurchaseOrders"
 import { Transfers } from "@/pages/Transfers"
+import { StockCounts } from "@/pages/StockCounts"
+import { StockCount } from "@/pages/StockCount"
 import { AuditLogPage } from "@/pages/AuditLog"
 import { AcceptInvite } from "@/pages/AcceptInvite"
 import { Platform } from "@/pages/Platform"
@@ -46,6 +48,8 @@ const router = createBrowserRouter([
       { path: "categories", element: <Categories /> },
       { path: "movements", element: <Movements /> },
       { path: "transfers", element: <PermissionRoute perm="stock.move"><Transfers /></PermissionRoute> },
+      { path: "stock-counts", element: <PermissionRoute perm="stock.move"><StockCounts /></PermissionRoute> },
+      { path: "stock-counts/:id", element: <PermissionRoute perm="stock.move"><StockCount /></PermissionRoute> },
       { path: "reports", element: <PermissionRoute perm="reports.view"><Reports /></PermissionRoute> },
       { path: "profile", element: <Profile /> },
       {path:"settings", element:<Settings/>},
