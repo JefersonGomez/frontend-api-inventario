@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
-import { FileSpreadsheet, Printer } from "lucide-react"
+import { FileSpreadsheet, History, Printer } from "lucide-react"
+import { Link } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import {
   getLowStockReport, getInventoryValueReport, getMovementsReport, getInventoryValueBreakdown, getStockForecast,
@@ -172,6 +173,10 @@ export function Reports() {
           <Button variant="outline" size="sm" onClick={handleExcel} disabled={exporting}>
             <FileSpreadsheet />
             {exporting ? t("reports.export.exporting") : t("reports.export.excel")}
+          </Button>
+          <Button variant="outline" size="sm" render={<Link to="/daily-summaries" />}>
+            <History />
+            {t("dailySummary.history")}
           </Button>
           <Button variant="outline" size="sm" onClick={handlePrint}>
             <Printer />

@@ -20,6 +20,7 @@ import { Transfers } from "@/pages/Transfers"
 import { StockCounts } from "@/pages/StockCounts"
 import { StockCount } from "@/pages/StockCount"
 import { Labels } from "@/pages/Labels"
+import { DailySummaries } from "@/pages/DailySummaries"
 import { AuditLogPage } from "@/pages/AuditLog"
 import { AcceptInvite } from "@/pages/AcceptInvite"
 import { Platform } from "@/pages/Platform"
@@ -52,6 +53,7 @@ const router = createBrowserRouter([
       { path: "stock-counts", element: <PermissionRoute perm="stock.move"><StockCounts /></PermissionRoute> },
       { path: "stock-counts/:id", element: <PermissionRoute perm="stock.move"><StockCount /></PermissionRoute> },
       { path: "labels", element: <PermissionRoute perm="stock.move"><Labels /></PermissionRoute> },
+      { path: "daily-summaries", element: <PermissionRoute perm="reports.view"><DailySummaries /></PermissionRoute> },
       { path: "reports", element: <PermissionRoute perm="reports.view"><Reports /></PermissionRoute> },
       { path: "profile", element: <Profile /> },
       {path:"settings", element:<Settings/>},

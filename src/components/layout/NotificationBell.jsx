@@ -6,7 +6,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Popover } from "@base-ui/react/popover";
 import {
   Bell, CalendarClock, CheckCheck, CheckCircle2, ChevronRight, Hourglass, Inbox, LockKeyhole, MessageSquare, PackageCheck, UserPlus,
-  PackageMinus, ShoppingCart, Truck, XCircle,
+  PackageMinus, ShoppingCart, Sparkles, Truck, XCircle,
 } from "lucide-react";
 import { useNotifications } from "@/hoocks/useNotifications";
 import { markNotificationRead, markAllNotificationsRead } from "@/api/notifications";
@@ -16,6 +16,7 @@ import { formatQty } from "@/lib/units";
 
 // Orden = urgencia. Para reordenar los grupos basta con mover una línea.
 const SECTIONS = [
+  { type: "aiBudgetAlert", icon: Sparkles, tone: "warn" },
   { type: "cashCodeExpired", icon: LockKeyhole, tone: "crit" },
   { type: "cashCodeExpiring", icon: LockKeyhole, tone: "warn" },
   { type: "cashCodeAssigned", icon: LockKeyhole, tone: "info" },

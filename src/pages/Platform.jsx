@@ -2,7 +2,10 @@ import { useState } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { Building2, PauseCircle, PlayCircle, Search, Users as UsersIcon } from "lucide-react"
-import { getPlatformCompanies, setCompanyPlan, setCompanySuspended } from "@/api/platform"
+import { getPlatformCompanies, setCompanyPlan, setCompanySuspended, getPlatformOverview, getOwnerActions } from "@/api/platform"
+import { useSearchParams } from "react-router-dom"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { AiUsagePanel } from "@/components/platform/AiUsagePanel"
 import { apiErrorMessage } from "@/lib/api-error"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -37,8 +40,19 @@ export function Platform() {
     queryKey: ["platform-companies"],
     queryFn: getPlatformCompanies,
   })
+  const { data: overview } = useQuery({ queryKey: ["platform-overview"], queryFn: getPlatformOverview })
+  const { data: actions = [] } = useQuery({ queryKey: ["platform-actions"], queryFn: getOwnerActions })
+  const activity = new Map((overview?.activity ?? []).map((a) => [a.companyId, a]))
+  const maxSignups = Math.max(1, ...(overview?.signups ?? []).map((s) => s.count))
+  // pestaña en la URL (el aviso de presupuesto de IA lleva a ?tab=ai)
+  const [params, setParams] = useSearchParams()
+  const tab = ["companies", "ai", "actions"].includes(params.get("tab")) ? params.get("tab") : "companies"
+  const changeTab = (next) => setParams(next === "companies" ? {} : { tab: next }, { replace: true })
 
-  const refresh = () => queryClient.invalidateQueries({ queryKey: ["platform-companies"] })
+  const refresh = () => {
+    queryClient.invalidateQueries({ queryKey: ["platform-companies"] })
+    queryClient.invalidateQueries({ queryKey: ["platform-actions"] })
+  }
   const planMutation = useMutation({ mutationFn: ({ id, plan }) => setCompanyPlan(id, plan), onSuccess: refresh })
   const suspendMutation = useMutation({
     mutationFn: setCompanySuspended,
@@ -87,6 +101,29 @@ export function Platform() {
         ))}
       </div>
 
+      <Tabs value={tab} onValueChange={changeTab} className="gap-4">
+        <TabsList className="w-full sm:w-fit">
+          <TabsTrigger value="companies">{t("platform.tabs.companies")}</TabsTrigger>
+          <TabsTrigger value="ai">{t("platform.tabs.ai")}</TabsTrigger>
+          <TabsTrigger value="actions">{t("platform.tabs.actions")}</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="companies" className="space-y-5">
+      {overview && (
+        <section className="stk-card">
+          <h2 className="mb-3 text-sm font-semibold">{t("platform.signups")}</h2>
+          <div className="flex h-24 items-end gap-1.5" role="img" aria-label={t("platform.signups")}>
+            {overview.signups.map((s) => (
+              <div key={s.weekStart} className="flex flex-1 flex-col items-center gap-1" title={`${new Date(s.weekStart).toLocaleDateString()}: ${s.count}`}>
+                <span className="text-[10px] tabular-nums text-muted-foreground">{s.count || ""}</span>
+                <div className="w-full rounded-t bg-primary/70" style={{ height: `${(s.count / maxSignups) * 64}px`, minHeight: s.count ? 3 : 1 }} />
+              </div>
+            ))}
+          </div>
+          <p className="mt-1 text-xs text-muted-foreground">{t("platform.signupsHint")}</p>
+        </section>
+      )}
+
       <div className="relative max-w-sm">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
         <Input
@@ -114,18 +151,20 @@ export function Platform() {
               <TableHead className="hidden sm:table-cell">{t("platform.table.users")}</TableHead>
               <TableHead className="hidden sm:table-cell">{t("platform.table.products")}</TableHead>
               <TableHead className="hidden lg:table-cell">{t("platform.table.created")}</TableHead>
+              <TableHead className="hidden xl:table-cell">{t("platform.table.lastSeen")}</TableHead>
+              <TableHead className="hidden xl:table-cell text-right">{t("platform.table.movementsWeek")}</TableHead>
               <TableHead className="text-right">{t("platform.table.status")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading && (
-              <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground">{t("common.loading")}</TableCell></TableRow>
+              <TableRow><TableCell colSpan={9} className="text-center text-muted-foreground">{t("common.loading")}</TableCell></TableRow>
             )}
             {isError && (
-              <TableRow><TableCell colSpan={7} className="text-center text-destructive">{t("platform.error")}</TableCell></TableRow>
+              <TableRow><TableCell colSpan={9} className="text-center text-destructive">{t("platform.error")}</TableCell></TableRow>
             )}
             {!isLoading && !isError && visible.length === 0 && (
-              <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground">{t("platform.empty")}</TableCell></TableRow>
+              <TableRow><TableCell colSpan={9} className="text-center text-muted-foreground">{t("platform.empty")}</TableCell></TableRow>
             )}
             {visible.map((c) => (
               <TableRow key={c.id} className={c.suspendedAt ? "opacity-70" : undefined}>
@@ -163,6 +202,10 @@ export function Platform() {
                 <TableCell className="hidden lg:table-cell text-muted-foreground">
                   {new Date(c.createdAt).toLocaleDateString()}
                 </TableCell>
+                <TableCell className="hidden xl:table-cell text-muted-foreground">
+                  {activity.get(c.id)?.lastSeenAt ? new Date(activity.get(c.id).lastSeenAt).toLocaleDateString() : "—"}
+                </TableCell>
+                <TableCell className="hidden xl:table-cell text-right tabular-nums">{activity.get(c.id)?.movementsWeek ?? 0}</TableCell>
                 <TableCell className="text-right">
                   <div className="flex items-center justify-end gap-2">
                     {c.suspendedAt && <Badge variant="destructive">{t("platform.suspended")}</Badge>}
@@ -198,6 +241,36 @@ export function Platform() {
         </Table>
       </div>
       <p className="text-xs text-muted-foreground">{t("platform.planNote")}</p>
+
+        </TabsContent>
+
+        <TabsContent value="ai">
+          <AiUsagePanel />
+        </TabsContent>
+
+        <TabsContent value="actions">
+          {actions.length === 0 ? (
+            <p className="text-sm text-muted-foreground">{t("platform.actionsEmpty")}</p>
+          ) : (
+            <ul className="divide-y divide-border rounded-xl border border-border text-sm">
+              {actions.map((a) => (
+                <li key={a.id} className="flex flex-wrap justify-between gap-2 p-3">
+                  <span>
+                    <span className="font-medium">{a.company}</span>
+                    {" · "}
+                    {a.changes?.plan ? t("platform.action.plan", { plan: t(`companies.plan.${a.changes.plan}`) })
+                      : a.changes?.suspended === true ? t("platform.action.suspended", { reason: a.changes.reason ?? "—" })
+                      : a.changes?.suspended === false ? t("platform.action.reactivated")
+                      : a.changes?.monthlyUsd !== undefined ? t("platform.action.aiBudget", { usd: a.changes.monthlyUsd, pct: a.changes.alertPercent })
+                      : t("platform.action.other")}
+                  </span>
+                  <span className="text-muted-foreground">{a.user} · {new Date(a.createdAt).toLocaleString()}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </TabsContent>
+      </Tabs>
 
       <Dialog open={!!suspending} onOpenChange={(o) => !o && closeSuspend()}>
         <DialogContent>

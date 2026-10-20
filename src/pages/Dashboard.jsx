@@ -9,6 +9,8 @@ import { useAuth } from "@/context/AuthContext"
 import { useMoney } from "@/hoocks/useMoney"
 import { usePermissions } from "@/hoocks/usePermissions"
 import "./Dashboard.css"
+import { OnboardingCard } from "@/components/OnboardingCard"
+import { DailySummaryCard } from "@/components/DailySummaryCard"
 
 const num = new Intl.NumberFormat("es-CO")
 const pct = (part, total) => (total > 0 ? Math.round((part / total) * 100) : 0)
@@ -64,6 +66,8 @@ export function Dashboard() {
       <h1 className="sr-only">{t("dashboard.title")}</h1>
 
       <div className="dash-main">
+        <OnboardingCard />
+        <DailySummaryCard />
         <section className="dash-kpis">
           {showValue && <article className="dash-kpi dash-kpi--dark">
             <div>

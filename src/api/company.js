@@ -12,3 +12,7 @@ export const createCompany = (name) => api.post("/companies", { name }).then((re
 
 export const switchCompanyRequest = (companyId) =>
   api.post("/auth/switch-company", { companyId }).then((res) => res.data)
+
+// guía de primeros pasos (la calcula el servidor)
+export const getOnboarding = () => api.get("/company/onboarding").then((res) => res.data)
+export const setOnboardingDismissed = (dismissed) => api.put("/company/onboarding", { dismissed }).then((res) => res.data)

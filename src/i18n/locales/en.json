@@ -304,7 +304,15 @@
         "badFiscal_other": "{{count}} rows with an unknown unit, VAT or CABYS",
         "badFiscalAction": "Import them anyway: per unit, 13% VAT and no CABYS (you can change it later)"
       },
-      "location": "Where does the initial stock go?"
+      "location": "Where does the initial stock go?",
+      "ai": {
+        "hint": "Is the file messy (titles on top, columns with other names)? The AI reads only the first rows and maps the columns for you.",
+        "button": "Help me with AI",
+        "remaining_one": "Done. You have {{count}} AI import left this month.",
+        "remaining_other": "Done. You have {{count}} AI imports left this month.",
+        "cached": "Done. We already knew this format: no AI import was used.",
+        "error": "The AI couldn't help this time; map the columns by hand"
+      }
     },
     "pending": {
       "badge": "To complete",
@@ -819,7 +827,8 @@
       "cashCodeExpiring": "Register code expiring",
       "cashCodeAssigned": "Register code",
       "transferIncoming": "Incoming transfers",
-      "transferReceived": "Received transfers"
+      "transferReceived": "Received transfers",
+      "aiBudgetAlert": "AI budget"
     },
     "detail": {
       "requestExpiring": "{{requester}} · {{quantity}} · expires {{when}}",
@@ -840,7 +849,8 @@
       "cashCodeAssigned": "{{by}} assigned you a new code",
       "transferIncoming": "From {{from}} to {{to}} · {{lines}} product(s)",
       "transferReceived": "{{to}} received everything",
-      "transferReceivedShort": "{{to}} received it with shortages ({{shortages}})"
+      "transferReceivedShort": "{{to}} received it with shortages ({{shortages}})",
+      "aiBudgetAlert": "US$ {{spent}} of {{budget}} spent this month ({{percent}} %)"
     },
     "when": {
       "today": "today",
@@ -854,7 +864,8 @@
     "titles": {
       "cashCodeExpired": "Your register code",
       "cashCodeExpiring": "Your register code",
-      "cashCodeAssigned": "New register code"
+      "cashCodeAssigned": "New register code",
+      "aiBudgetAlert": "AI usage"
     }
   },
   "comments": {
@@ -998,7 +1009,9 @@
       "users": "Users",
       "products": "Products",
       "created": "Created",
-      "status": "Status"
+      "status": "Status",
+      "lastSeen": "Last seen",
+      "movementsWeek": "Movements (7 days)"
     },
     "suspended": "Suspended",
     "suspend": "Suspend",
@@ -1007,7 +1020,42 @@
     "suspendHint": "Its users will be able to sign in but will only see a notice, with no access to data. Nothing is deleted and it can be reactivated in one click.",
     "reasonLabel": "Reason (the company will see it)",
     "reasonPlaceholder": "E.g.: payment pending",
-    "planNote": "The plan belongs to the owner's account: changing it applies to all their companies."
+    "planNote": "The plan belongs to the owner's account: changing it applies to all their companies.",
+    "tabs": {
+      "companies": "Companies",
+      "ai": "Artificial intelligence",
+      "actions": "My actions"
+    },
+    "signups": "New companies per week",
+    "signupsHint": "Last 12 weeks; hover a bar to see the date",
+    "actionsEmpty": "No actions of yours from the panel yet",
+    "action": {
+      "plan": "changed plan to {{plan}}",
+      "suspended": "suspended ({{reason}})",
+      "reactivated": "reactivated",
+      "aiBudget": "AI budget: US$ {{usd}} per month, alert at {{pct}} %",
+      "other": "change"
+    },
+    "ai": {
+      "month": "This month's usage",
+      "ofBudget": "{{pct}} % of budget",
+      "paused": "AI paused: budget reached",
+      "calls_one": "{{count}} request",
+      "calls_other": "{{count}} requests",
+      "tokens": "{{count}} tokens",
+      "features": {
+        "CHAT": "Assistant",
+        "IMPORT": "AI import",
+        "DAILY_SUMMARY": "Daily summary"
+      },
+      "budgetTitle": "Monthly budget",
+      "budgetHint": "At the alert % you get a notification; past the budget, AI is paused until next month. 0 = AI off.",
+      "monthlyUsd": "Budget (US$ per month)",
+      "alertPercent": "Alert me at (%)",
+      "cost": "Cost",
+      "none": "No AI requests this month",
+      "estimateNote": "Estimated cost using Google's per-token price (checked on 2026-10-16). Google's actual bill may vary slightly."
+    }
   },
   "legal": {
     "acceptPrefix": "I have read and accept the",
@@ -1294,5 +1342,80 @@
     "print_other": "Print {{count}} labels",
     "preview": "Preview",
     "error": "Could not generate the codes"
+  },
+  "onboarding": {
+    "title": "Getting started",
+    "subtitle": "{{done}} of {{total}} done to get your company ready",
+    "hide": "Hide the guide",
+    "done": "Done",
+    "pending": "Pending",
+    "steps": {
+      "fiscal": {
+        "title": "Complete your tax details",
+        "hint": "Legal name, ID, economic activity and address: invoices are issued with them"
+      },
+      "branch": {
+        "title": "Review your main branch",
+        "hint": "Give it a name and address; add your warehouse or other branches"
+      },
+      "categories": {
+        "title": "Create your categories",
+        "hint": "They group products for searching and reports"
+      },
+      "products": {
+        "title": "Add your products",
+        "hint": "One by one or all at once from Excel"
+      },
+      "taxes": {
+        "title": "Complete unit, VAT and CABYS",
+        "hint": "E-invoicing requires them on every product",
+        "missing": "{{cabys}} missing CABYS and {{pending}} to complete"
+      },
+      "team": {
+        "title": "Invite your team",
+        "hint": "Manager, warehouse, cashiers or accountant, each with their role"
+      },
+      "cashCodes": {
+        "title": "Assign register codes",
+        "hint": "Used to open the register and authorize discounts"
+      }
+    }
+  },
+  "dailySummary": {
+    "title": "Today's summary",
+    "generate": "Generate today's summary",
+    "hint": "The AI sums up today in a few lines: movements, low stock, expirations and pending purchases.",
+    "noAi": "The AI isn't available right now; here are today's numbers.",
+    "generatedAt": "Generated at {{time}}",
+    "error": "Could not generate the summary",
+    "numbers": {
+      "in": "In",
+      "out": "Out",
+      "lowStock": "Low stock",
+      "expiringSoon": "Expiring soon",
+      "pendingRequests": "Pending requests",
+      "openOrders": "Open orders",
+      "transfersInTransit": "Transfers in transit",
+      "openCounts": "Open counts"
+    },
+    "regenerate": "Regenerate",
+    "regenerateHint": "Generate another summary with current numbers; the previous one stays in the history",
+    "history": "History",
+    "hide": "Hide for today",
+    "hiddenNote": "You hid today's summary.",
+    "show": "Show it"
+  },
+  "dailySummaries": {
+    "title": "Daily summaries history",
+    "subtitle": "Every generated summary, to review or download",
+    "export": "Download Excel",
+    "from": "From",
+    "to": "To",
+    "empty": "No summaries in these dates",
+    "date": "Date",
+    "time": "Time",
+    "sheet": "Summaries",
+    "download": "Download the summary of {{date}}",
+    "downloadShort": "Download"
   }
 }

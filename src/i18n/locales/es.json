@@ -304,7 +304,15 @@
         "badFiscal_other": "{{count}} filas con unidad, IVA o CABYS que no reconocemos",
         "badFiscalAction": "Importarlas igual: por unidad, con IVA 13 % y sin CABYS (lo puedes cambiar después)"
       },
-      "location": "¿A dónde entra el stock inicial?"
+      "location": "¿A dónde entra el stock inicial?",
+      "ai": {
+        "hint": "¿El archivo viene desordenado (títulos arriba, columnas con otros nombres)? La IA lee solo las primeras filas y acomoda las columnas por ti.",
+        "button": "Ayúdame con la IA",
+        "remaining_one": "Listo. Te queda {{count}} importación con IA este mes.",
+        "remaining_other": "Listo. Te quedan {{count}} importaciones con IA este mes.",
+        "cached": "Listo. Ya conocíamos este formato: no gastó ninguna importación con IA.",
+        "error": "La IA no pudo ayudar esta vez; indica las columnas a mano"
+      }
     },
     "pending": {
       "badge": "Por completar",
@@ -819,7 +827,8 @@
       "cashCodeExpiring": "Código de caja por vencer",
       "cashCodeAssigned": "Código de caja",
       "transferIncoming": "Transferencias en camino",
-      "transferReceived": "Transferencias recibidas"
+      "transferReceived": "Transferencias recibidas",
+      "aiBudgetAlert": "Presupuesto de IA"
     },
     "detail": {
       "requestExpiring": "{{requester}} · {{quantity}} · vence {{when}}",
@@ -840,7 +849,8 @@
       "cashCodeAssigned": "{{by}} te asignó un código nuevo",
       "transferIncoming": "Viene de {{from}} hacia {{to}} · {{lines}} producto(s)",
       "transferReceived": "{{to}} recibió todo",
-      "transferReceivedShort": "{{to}} la recibió con faltantes ({{shortages}})"
+      "transferReceivedShort": "{{to}} la recibió con faltantes ({{shortages}})",
+      "aiBudgetAlert": "Llevas US$ {{spent}} de {{budget}} este mes ({{percent}} %)"
     },
     "when": {
       "today": "hoy",
@@ -854,7 +864,8 @@
     "titles": {
       "cashCodeExpired": "Tu código de caja",
       "cashCodeExpiring": "Tu código de caja",
-      "cashCodeAssigned": "Nuevo código de caja"
+      "cashCodeAssigned": "Nuevo código de caja",
+      "aiBudgetAlert": "Consumo de IA"
     }
   },
   "comments": {
@@ -998,7 +1009,9 @@
       "users": "Usuarios",
       "products": "Productos",
       "created": "Creada",
-      "status": "Estado"
+      "status": "Estado",
+      "lastSeen": "Última entrada",
+      "movementsWeek": "Movimientos (7 días)"
     },
     "suspended": "Suspendida",
     "suspend": "Suspender",
@@ -1007,7 +1020,42 @@
     "suspendHint": "Sus usuarios podrán iniciar sesión pero solo verán un aviso, sin acceso a los datos. No se borra nada y se reactiva en un clic.",
     "reasonLabel": "Motivo (lo verá la empresa)",
     "reasonPlaceholder": "Ej.: pago pendiente",
-    "planNote": "El plan es de la cuenta del dueño: cambiarlo aplica a todas sus empresas."
+    "planNote": "El plan es de la cuenta del dueño: cambiarlo aplica a todas sus empresas.",
+    "tabs": {
+      "companies": "Empresas",
+      "ai": "Inteligencia artificial",
+      "actions": "Mis acciones"
+    },
+    "signups": "Empresas nuevas por semana",
+    "signupsHint": "Últimas 12 semanas; pasa el mouse por una barra para ver la fecha",
+    "actionsEmpty": "Todavía no hay acciones tuyas desde el panel",
+    "action": {
+      "plan": "cambió el plan a {{plan}}",
+      "suspended": "suspendida ({{reason}})",
+      "reactivated": "reactivada",
+      "aiBudget": "presupuesto de IA: US$ {{usd}} al mes, aviso al {{pct}} %",
+      "other": "cambio"
+    },
+    "ai": {
+      "month": "Consumo del mes",
+      "ofBudget": "{{pct}} % del presupuesto",
+      "paused": "IA en pausa: presupuesto alcanzado",
+      "calls_one": "{{count}} consulta",
+      "calls_other": "{{count}} consultas",
+      "tokens": "{{count}} tokens",
+      "features": {
+        "CHAT": "Asistente",
+        "IMPORT": "Importar con IA",
+        "DAILY_SUMMARY": "Resumen del día"
+      },
+      "budgetTitle": "Presupuesto mensual",
+      "budgetHint": "Al llegar al % de aviso te llega una notificación; al pasar el presupuesto, la IA se pausa hasta el mes siguiente. 0 = IA apagada.",
+      "monthlyUsd": "Presupuesto (US$ al mes)",
+      "alertPercent": "Avisarme al (%)",
+      "cost": "Costo",
+      "none": "Sin consultas a la IA este mes",
+      "estimateNote": "Costo estimado con el precio por token de Google (verificado el 16-oct-2026). La factura real de Google puede variar un poco."
+    }
   },
   "legal": {
     "acceptPrefix": "He leído y acepto los",
@@ -1294,5 +1342,80 @@
     "print_other": "Imprimir {{count}} etiquetas",
     "preview": "Vista previa",
     "error": "No se pudieron generar los códigos"
+  },
+  "onboarding": {
+    "title": "Primeros pasos",
+    "subtitle": "{{done}} de {{total}} listos para dejar tu empresa preparada",
+    "hide": "Ocultar la guía",
+    "done": "Listo",
+    "pending": "Pendiente",
+    "steps": {
+      "fiscal": {
+        "title": "Completa los datos fiscales",
+        "hint": "Razón social, cédula, actividad económica y dirección: con ellos se emiten las facturas"
+      },
+      "branch": {
+        "title": "Revisa tu sucursal principal",
+        "hint": "Ponle nombre y dirección; si tienes bodega u otra sucursal, agrégalas"
+      },
+      "categories": {
+        "title": "Crea tus categorías",
+        "hint": "Agrupan los productos para buscarlos y reportarlos"
+      },
+      "products": {
+        "title": "Carga tus productos",
+        "hint": "Uno por uno o todos desde un Excel"
+      },
+      "taxes": {
+        "title": "Completa unidad, IVA y CABYS",
+        "hint": "La factura electrónica los exige en cada producto",
+        "missing": "Faltan CABYS en {{cabys}} y {{pending}} por completar"
+      },
+      "team": {
+        "title": "Invita a tu equipo",
+        "hint": "Encargado, bodega, cajeros o contador, cada uno con su rol"
+      },
+      "cashCodes": {
+        "title": "Asigna los códigos de caja",
+        "hint": "Con ellos se abre caja y se autorizan descuentos"
+      }
+    }
+  },
+  "dailySummary": {
+    "title": "Resumen del día",
+    "generate": "Generar resumen de hoy",
+    "hint": "La IA resume en pocas líneas lo que pasó hoy: movimientos, stock bajo, vencimientos y compras pendientes.",
+    "noAi": "La IA no está disponible en este momento; aquí van los números del día.",
+    "generatedAt": "Generado a las {{time}}",
+    "error": "No se pudo generar el resumen",
+    "numbers": {
+      "in": "Entradas",
+      "out": "Salidas",
+      "lowStock": "Bajo mínimo",
+      "expiringSoon": "Por vencer",
+      "pendingRequests": "Solicitudes pendientes",
+      "openOrders": "Órdenes abiertas",
+      "transfersInTransit": "Transferencias en camino",
+      "openCounts": "Conteos abiertos"
+    },
+    "regenerate": "Volver a generar",
+    "regenerateHint": "Genera otro resumen con los números de ahora; el anterior queda en el historial",
+    "history": "Historial",
+    "hide": "Ocultar por hoy",
+    "hiddenNote": "Ocultaste el resumen del día.",
+    "show": "Mostrarlo"
+  },
+  "dailySummaries": {
+    "title": "Historial de resúmenes del día",
+    "subtitle": "Todos los resúmenes generados, para consultarlos o descargarlos",
+    "export": "Descargar Excel",
+    "from": "Desde",
+    "to": "Hasta",
+    "empty": "No hay resúmenes en estas fechas",
+    "date": "Fecha",
+    "time": "Hora",
+    "sheet": "Resúmenes",
+    "download": "Descargar el resumen del {{date}}",
+    "downloadShort": "Descargar"
   }
 }

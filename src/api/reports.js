@@ -30,3 +30,11 @@ export const getStockForecast = (velocityDays = 30, alertDays = 14) =>
   api
     .get("/reports/stock-forecast", { params: { velocityDays, alertDays } })
     .then((res) => res.data)
+
+// resumen del día con IA: GET = lo guardado de hoy (sin gastar); POST = generarlo (una vez al día)
+export const getDailySummary = ({ date, since }) => api.get("/reports/daily-summary", { params: { date, since } }).then((res) => res.data)
+// force: volver a generar (el anterior queda en el historial)
+export const generateDailySummary = ({ date, since }, force = false) =>
+  api.post("/reports/daily-summary", undefined, { params: { date, since, ...(force && { force: 1 }) } }).then((res) => res.data)
+// historial: { page, from?, to? } paginado; { all: 1 } todo (para descargar)
+export const getSummaryHistory = (params) => api.get("/reports/daily-summaries", { params }).then((res) => res.data)

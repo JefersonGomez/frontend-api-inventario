@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { CheckCircle2, CircleAlert, Columns3, Download, FileSpreadsheet, Loader2, Upload, Wand2 } from "lucide-react"
-import { importProducts } from "@/api/products"
+import { CheckCircle2, CircleAlert, Columns3, Download, FileSpreadsheet, Loader2, Upload, Wand2, Sparkles } from "lucide-react"
+import { importProducts, aiMapColumns } from "@/api/products"
 import { readXlsxRows } from "@/lib/xlsx-read"
 import { downloadXlsx } from "@/lib/xlsx"
 import { COLUMNS, buildRows, detectColumns, templateSheets } from "@/lib/product-import"
@@ -115,6 +115,21 @@ export function ImportProductsDialog({ open, onOpenChange }) {
     }
   }
 
+  // "Ayúdame con la IA": solo las primeras 25 filas; la IA dice dónde están los encabezados y qué columna es cada dato
+  const aiMap = useMutation({
+    mutationFn: () => aiMapColumns(sheetRows.slice(0, 25).map((r) => Array.from(r.cells, (c) => (c === undefined ? null : c)))),
+    onSuccess: (result) => {
+      preview.reset()
+      setRows(null)
+      const sheet = sheetRows.slice(result.headerRow)
+      const detected = detectColumns(sheet)
+      setSheetRows(sheet)
+      setHeaders(detected.headers)
+      setMapping(result.mapping)
+      if (result.mapping.name !== undefined) review(sheet, result.mapping)
+    },
+  })
+
   const changeMapping = (field, value) => {
     preview.reset()
     setRows(null)
@@ -216,6 +231,25 @@ export function ImportProductsDialog({ open, onOpenChange }) {
                 </p>
               )}
             </div>
+
+            {/* Ayuda de la IA: visible apenas hay archivo (también cuando las columnas se reconocieron solas) */}
+            {sheetRows && (
+            <div className="flex flex-wrap items-center gap-3 rounded-lg bg-muted/50 p-3">
+              <p className="min-w-0 flex-1 text-sm">{t("products.import.ai.hint")}</p>
+              <Button type="button" variant="outline" size="sm" disabled={aiMap.isPending} onClick={() => aiMap.mutate()}>
+                {aiMap.isPending ? <Loader2 className="animate-spin" /> : <Sparkles />}
+                {t("products.import.ai.button")}
+              </Button>
+              {aiMap.isSuccess && (
+                <p role="status" className="w-full text-xs text-muted-foreground">
+                  {aiMap.data.cached ? t("products.import.ai.cached") : t("products.import.ai.remaining", { count: aiMap.data.remaining })}
+                </p>
+              )}
+              {aiMap.isError && (
+                <p role="alert" className="w-full text-xs text-destructive">{apiErrorMessage(aiMap.error, t("products.import.ai.error"))}</p>
+              )}
+            </div>
+            )}
 
             {/* Paso de columnas: qué columna del archivo es cada dato */}
             {sheetRows && showMapping && (

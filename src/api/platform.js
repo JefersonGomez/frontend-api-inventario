@@ -7,3 +7,9 @@ export const setCompanyPlan = (id, plan) => api.patch(`/platform/companies/${id}
 
 export const setCompanySuspended = ({ id, suspended, reason }) =>
   api.patch(`/platform/companies/${id}/suspension`, { suspended, ...(reason && { reason }) })
+
+// panel del dueño (Bloque 6A)
+export const getPlatformOverview = () => api.get("/platform/overview").then((res) => res.data)
+export const getAiUsage = (month) => api.get("/platform/ai-usage", { params: month ? { month } : {} }).then((res) => res.data)
+export const setAiBudget = (data) => api.put("/platform/ai-budget", data).then((res) => res.data)
+export const getOwnerActions = () => api.get("/platform/actions").then((res) => res.data)

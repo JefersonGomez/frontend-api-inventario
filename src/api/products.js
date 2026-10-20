@@ -36,3 +36,6 @@ export const importProducts = (rows, dryRun, options, locationId) =>
 // genera EAN-13 internos para los productos sin código (los indicados, o todos si no se indican)
 export const generateBarcodes = (productIds) =>
   api.post("/products/barcodes", productIds ? { productIds } : {}).then((res) => res.data)
+
+// importar con IA: se manda solo una muestra (máx. 25 filas); devuelve { headerRow, mapping, cached, remaining }
+export const aiMapColumns = (rows) => api.post("/products/import/ai-map", { rows }).then((res) => res.data)
