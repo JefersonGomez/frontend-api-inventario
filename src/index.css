@@ -242,3 +242,30 @@
   .stk-side, .stk-top { display: none !important; }
   .rounded-xl, [data-slot="card"] { break-inside: avoid; }
 }
+
+/* ---------- Tiquete térmico (POS) ---------- */
+.stk-ticket {
+  background: #fff;
+  color: #000;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.35;
+  padding: 12px 10px;
+  margin: 0 auto;
+}
+.stk-ticket p { margin: 0; overflow-wrap: anywhere; }
+.stk-ticket hr { border: 0; border-top: 1px dashed #000; margin: 6px 0; }
+.stk-ticket-center { text-align: center; }
+.stk-ticket-strong { font-weight: 700; }
+.stk-ticket-small { font-size: 9px; margin-top: 4px !important; }
+.stk-ticket-row { display: flex; justify-content: space-between; gap: 8px; }
+.stk-ticket-row > span:last-child { white-space: nowrap; }
+.stk-ticket-line + .stk-ticket-line { margin-top: 3px; }
+.stk-ticket-total { font-size: 14px; font-weight: 700; margin-top: 2px !important; }
+.stk-print-root { display: none; }
+@media print {
+  /* solo la copia del tiquete: el resto de la app y el modal no salen */
+  body > *:not(.stk-print-root) { display: none !important; }
+  .stk-print-root { display: block; }
+  .stk-print-root .stk-ticket { width: var(--ticket-mm) !important; margin: 0; padding: 2mm; }
+}

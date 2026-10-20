@@ -15,6 +15,7 @@ import { usePlatformOwner } from "@/hoocks/usePlatformOwner"
 import { getCompany, updateCompany } from "@/api/company"
 import { FiscalDataCard } from "@/components/settings/FiscalDataCard"
 import { LocationsCard } from "@/components/settings/LocationsCard"
+import { RegistersCard } from "@/components/settings/RegistersCard"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useSearchParams } from "react-router-dom"
 const languageItems = [
@@ -154,7 +155,7 @@ export function Settings() {
   const { t, i18n } = useTranslation()
   const [params, setParams] = useSearchParams()
   const showCompany = can("company.manage") && !isPlatformOwner
-  const tabs = ["general", ...(showCompany ? ["company", "locations", "fiscal"] : [])]
+  const tabs = ["general", ...(showCompany ? ["company", "locations", "registers", "fiscal"] : [])]
   const tab = tabs.includes(params.get("tab")) ? params.get("tab") : "general"
   const changeTab = (next) => setParams(next === "general" ? {} : { tab: next }, { replace: true })
 
@@ -177,6 +178,7 @@ export function Settings() {
           <TabsTrigger value="general">{t("settings.tabs.general")}</TabsTrigger>
           {showCompany && <TabsTrigger value="company">{t("settings.tabs.company")}</TabsTrigger>}
           {showCompany && <TabsTrigger value="locations">{t("settings.tabs.locations")}</TabsTrigger>}
+          {showCompany && <TabsTrigger value="registers">{t("settings.tabs.registers")}</TabsTrigger>}
           {showCompany && <TabsTrigger value="fiscal">{t("settings.tabs.fiscal")}</TabsTrigger>}
         </TabsList>
 
@@ -234,6 +236,11 @@ export function Settings() {
         {showCompany && (
           <TabsContent value="locations">
             <LocationsCard />
+          </TabsContent>
+        )}
+        {showCompany && (
+          <TabsContent value="registers">
+            <RegistersCard />
           </TabsContent>
         )}
         {showCompany && (

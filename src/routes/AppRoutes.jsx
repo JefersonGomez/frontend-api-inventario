@@ -26,6 +26,16 @@ import { AcceptInvite } from "@/pages/AcceptInvite"
 import { Platform } from "@/pages/Platform"
 import { Legal } from "@/pages/Legal"
 import { PlatformRoute } from "./PlatformRoute"
+import { Pos } from "@/pages/pos/Pos"
+import { PosOpen } from "@/pages/pos/PosOpen"
+import { PosClose } from "@/pages/pos/PosClose"
+
+// Caja: a pantalla completa, fuera del Layout (por eso no va en children)
+const pos = (page) => (
+  <ProtectedRoute>
+    <PermissionRoute perm="cash.manage">{page}</PermissionRoute>
+  </ProtectedRoute>
+)
 const router = createBrowserRouter([
   {
     path: "/login",
@@ -37,6 +47,9 @@ const router = createBrowserRouter([
   // documentos legales: públicos (se leen antes de crear la cuenta)
   { path: "/terms", element: <Legal doc="terms" /> },
   { path: "/privacy", element: <Legal doc="privacy" /> },
+  { path: "/pos", element: pos(<PermissionRoute perm="sales.sell"><Pos /></PermissionRoute>) },
+  { path: "/pos/abrir", element: pos(<PosOpen />) },
+  { path: "/pos/cierre", element: pos(<PosClose />) },
   {
     path: "/",
     element: (

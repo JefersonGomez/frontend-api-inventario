@@ -25,8 +25,7 @@ import {
   Box,
   ScanBarcode,
   Building2,
-  Contact,
-} from "lucide-react";
+  Contact, Monitor } from "lucide-react";
 
 const ICON = { className: "w-[18px] h-[18px]", strokeWidth: 1.7, "aria-hidden": true };
 
@@ -41,6 +40,7 @@ export function Sidebar() {
   // el dueño de la plataforma no usa el inventario de un cliente: solo ve la plataforma
   const navItems = isPlatformOwner ? [{ to: "/platform", label: t("sidebar.platform"), icon: Building2 }] : [
     { to: "/", label: t("sidebar.dashboard"), icon: LayoutDashboard },
+    ...(can("sales.sell") && can("cash.manage") ? [{ to: "/pos/abrir", label: t("sidebar.pos"), icon: Monitor }] : []),
     { to: "/products", label: t("sidebar.products"), icon: Package },
     { to: "/categories", label: t("sidebar.categories"), icon: FolderTree },
     { to: "/movements", label: t("sidebar.movements"), icon: ArrowLeftRight },
