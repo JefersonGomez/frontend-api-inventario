@@ -25,7 +25,7 @@ import {
   Box,
   ScanBarcode,
   Building2,
-  Contact, Monitor } from "lucide-react";
+  Contact, Monitor, AlertTriangle, Calculator } from "lucide-react";
 
 const ICON = { className: "w-[18px] h-[18px]", strokeWidth: 1.7, "aria-hidden": true };
 
@@ -41,6 +41,7 @@ export function Sidebar() {
   const navItems = isPlatformOwner ? [{ to: "/platform", label: t("sidebar.platform"), icon: Building2 }] : [
     { to: "/", label: t("sidebar.dashboard"), icon: LayoutDashboard },
     ...(can("sales.sell") && can("cash.manage") ? [{ to: "/pos/abrir", label: t("sidebar.pos"), icon: Monitor }] : []),
+    ...(can("cash.reconcile") ? [{ to: "/cash-closings", label: t("sidebar.cashClosings"), icon: Calculator }] : []),
     { to: "/products", label: t("sidebar.products"), icon: Package },
     { to: "/categories", label: t("sidebar.categories"), icon: FolderTree },
     { to: "/movements", label: t("sidebar.movements"), icon: ArrowLeftRight },
@@ -48,6 +49,7 @@ export function Sidebar() {
     ...(can("stock.move") && locations.length > 1 ? [{ to: "/transfers", label: t("sidebar.transfers"), icon: Route }] : []),
     ...(can("stock.move") ? [{ to: "/stock-counts", label: t("sidebar.stockCounts"), icon: ClipboardCheck }] : []),
     ...(can("stock.move") ? [{ to: "/labels", label: t("sidebar.labels"), icon: Tag }] : []),
+    ...(can("stock.move") ? [{ to: "/negatives", label: t("sidebar.negatives"), icon: AlertTriangle }] : []),
     { to: "/purchase-requests", label: t("sidebar.purchaseRequests"), icon: ClipboardList },
     ...(can("purchases.manage") ? [{ to: "/purchase-orders", label: t("sidebar.purchaseOrders"), icon: ShoppingCart }] : []),
     { to: "/customers", label: t("sidebar.customers"), icon: Contact },

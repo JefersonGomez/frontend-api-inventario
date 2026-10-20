@@ -1,54 +1,42 @@
 import { createContext, useContext, useEffect, useState } from "react"
 import { api } from "@/api/client" // ajustá el path si el archivo se llama distinto
 import { switchCompanyRequest } from "@/api/company"
+import { accountKey, endSession, getRefreshToken, getSession, getToken, startSession, updateSession } from "@/lib/session"
 
 const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
-  const [token, setToken] = useState(() => localStorage.getItem("token"))
-  const [user, setUser] = useState(() => {
-    const savedUser = localStorage.getItem("user");
-    if (savedUser && savedUser !== "undefined") {
-      try {
-        return JSON.parse(savedUser);
-      } catch (e) {
-        console.error("Error al parsear el usuario almacenado:", e);
-        return null;
-      }
-    }
-    return null;
-  });
+  const [token, setToken] = useState(() => getToken())
+  const [user, setUser] = useState(() => getSession()?.user ?? null)
 
-  // Las pestañas comparten localStorage: si otra pestaña cierra sesión o entra con otro usuario,
-  // esta recarga (así también se descarta la caché de react-query con datos del usuario anterior).
-  // El evento "storage" solo llega a las OTRAS pestañas, nunca a la que hizo el cambio.
+  // Cada pestaña está con SU cuenta (lib/session): otra pestaña puede estar con otra persona sin
+  // afectarla. Solo se escucha la cuenta propia: refresh, cambio de empresa o cierre de sesión hechos
+  // en otra pestaña del mismo usuario. El evento "storage" solo llega a las OTRAS pestañas.
   const userId = user?.id
   useEffect(() => {
+    if (!userId) return
+    const key = accountKey(userId)
+    const companyId = getSession()?.companyId
     function onStorage(e) {
-      if (e.key === "token") setToken(e.newValue) // refresh hecho en otra pestaña
-      if (e.key === "companyId") return window.location.reload() // otra pestaña cambió de empresa
-      if (e.key === "locationId") return window.location.reload() // u otra ubicación
-      if (e.key !== "user" && e.key !== null) return // key null = localStorage.clear()
+      if (e.key !== key && e.key !== null) return // key null = localStorage.clear()
       let next
       try {
         next = e.newValue ? JSON.parse(e.newValue) : null
       } catch {
         next = null
       }
-      if (next?.id !== userId) window.location.reload()
-      else if (next) setUser(next) // mismo usuario, cambió su perfil
+      if (!next) return window.location.reload() // cerró sesión en otra pestaña
+      if (next.companyId !== companyId) return window.location.reload() // cambió de empresa
+      setToken(next.token) // refresh hecho en otra pestaña
+      setUser(next.user) // cambió su perfil
     }
     window.addEventListener("storage", onStorage)
     return () => window.removeEventListener("storage", onStorage)
   }, [userId])
 
-  // companyId = empresa activa de la sesión (las otras pestañas recargan si cambia)
+  // Entra en ESTA pestaña con esa cuenta; companyId = empresa activa de la sesión
   function login(newToken, newRefreshToken, newUser, companyId) {
-    localStorage.setItem("token", newToken)
-    localStorage.setItem("refreshToken", newRefreshToken)
-    localStorage.setItem("user", JSON.stringify(newUser))
-    if (companyId) localStorage.setItem("companyId", companyId)
-    localStorage.removeItem("locationId") // las ubicaciones son de cada empresa
+    startSession({ token: newToken, refreshToken: newRefreshToken, user: newUser, companyId })
     setToken(newToken)
     setUser(newUser)
   }
@@ -61,9 +49,9 @@ export function AuthProvider({ children }) {
     window.location.assign("/")
   }
 
-  // ← ahora es async, y avisa al backend para revocar el refresh token
+  // Avisa al backend para revocar el refresh token y cierra la sesión de esta cuenta
   async function logout() {
-    const refreshToken = localStorage.getItem("refreshToken")
+    const refreshToken = getRefreshToken()
     try {
       if (refreshToken) {
         await api.post("/auth/logout", { refreshToken })
@@ -71,11 +59,7 @@ export function AuthProvider({ children }) {
     } catch {
       // si el backend no responde, igual cerramos sesión localmente
     } finally {
-      localStorage.removeItem("token")
-      localStorage.removeItem("refreshToken") // ← nuevo
-      localStorage.removeItem("user")
-      localStorage.removeItem("companyId")
-      localStorage.removeItem("locationId")
+      endSession()
       setToken(null)
       setUser(null)
     }
@@ -84,7 +68,7 @@ export function AuthProvider({ children }) {
   function updateUser(partialData) {
     setUser((prev) => {
       const updated = { ...prev, ...partialData }
-      localStorage.setItem("user", JSON.stringify(updated))
+      updateSession({ user: updated })
       return updated
     })
   }

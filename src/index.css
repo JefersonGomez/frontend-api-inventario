@@ -262,6 +262,8 @@
 .stk-ticket-row > span:last-child { white-space: nowrap; }
 .stk-ticket-line + .stk-ticket-line { margin-top: 3px; }
 .stk-ticket-total { font-size: 14px; font-weight: 700; margin-top: 2px !important; }
+.stk-ticket-sign { display: grid; gap: 28px; margin-top: 28px; }
+.stk-ticket-sign p { border-top: 1px solid #000; padding-top: 2px; text-align: center; }
 .stk-print-root { display: none; }
 @media print {
   /* solo la copia del tiquete: el resto de la app y el modal no salen */

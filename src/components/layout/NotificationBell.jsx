@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Popover } from "@base-ui/react/popover";
 import {
-  Bell, CalendarClock, CheckCheck, CheckCircle2, ChevronRight, Hourglass, Inbox, LockKeyhole, MessageSquare, PackageCheck, UserPlus,
+  AlertTriangle, Bell, CalendarClock, CheckCheck, CheckCircle2, ChevronRight, Hourglass, Inbox, LockKeyhole, MessageSquare, PackageCheck, UserPlus,
   PackageMinus, ShoppingCart, Sparkles, Truck, XCircle,
 } from "lucide-react";
 import { useNotifications } from "@/hoocks/useNotifications";
@@ -20,6 +20,7 @@ const SECTIONS = [
   { type: "cashCodeExpired", icon: LockKeyhole, tone: "crit" },
   { type: "cashCodeExpiring", icon: LockKeyhole, tone: "warn" },
   { type: "cashCodeAssigned", icon: LockKeyhole, tone: "info" },
+  { type: "stockNegative", icon: AlertTriangle, tone: "warn" },
   { type: "transferIncoming", icon: Truck, tone: "info" },
   { type: "transferReceived", icon: Truck, tone: "ok" },
   { type: "memberJoined", icon: UserPlus, tone: "ok" },

@@ -29,6 +29,10 @@ import { PlatformRoute } from "./PlatformRoute"
 import { Pos } from "@/pages/pos/Pos"
 import { PosOpen } from "@/pages/pos/PosOpen"
 import { PosClose } from "@/pages/pos/PosClose"
+import { CustomerDisplay } from "@/pages/pos/CustomerDisplay"
+import { Negatives } from "@/pages/Negatives"
+import { CashClosings } from "@/pages/CashClosings"
+import { CashClosing } from "@/pages/CashClosing"
 
 // Caja: a pantalla completa, fuera del Layout (por eso no va en children)
 const pos = (page) => (
@@ -50,6 +54,7 @@ const router = createBrowserRouter([
   { path: "/pos", element: pos(<PermissionRoute perm="sales.sell"><Pos /></PermissionRoute>) },
   { path: "/pos/abrir", element: pos(<PosOpen />) },
   { path: "/pos/cierre", element: pos(<PosClose />) },
+  { path: "/pos/cliente", element: pos(<CustomerDisplay />) },
   {
     path: "/",
     element: (
@@ -66,6 +71,9 @@ const router = createBrowserRouter([
       { path: "stock-counts", element: <PermissionRoute perm="stock.move"><StockCounts /></PermissionRoute> },
       { path: "stock-counts/:id", element: <PermissionRoute perm="stock.move"><StockCount /></PermissionRoute> },
       { path: "labels", element: <PermissionRoute perm="stock.move"><Labels /></PermissionRoute> },
+      { path: "negatives", element: <PermissionRoute perm="stock.move"><Negatives /></PermissionRoute> },
+      { path: "cash-closings", element: <PermissionRoute perm="cash.reconcile"><CashClosings /></PermissionRoute> },
+      { path: "cash-closings/:id", element: <PermissionRoute perm="cash.reconcile"><CashClosing /></PermissionRoute> },
       { path: "daily-summaries", element: <PermissionRoute perm="reports.view"><DailySummaries /></PermissionRoute> },
       { path: "reports", element: <PermissionRoute perm="reports.view"><Reports /></PermissionRoute> },
       { path: "profile", element: <Profile /> },

@@ -1,38 +1,21 @@
-import { createPortal } from "react-dom"
 import { useTranslation } from "react-i18next"
 import { moneyFormatter } from "@/lib/money"
 import { documentTaxes } from "@/lib/pos"
 import { formatFiscalId } from "@/lib/fiscal"
+import { PrintArea } from "./PrintArea"
 
-// Tiquete térmico: 80 mm = 302 px, 58 mm = 219 px en pantalla. "TIQUETE INTERNO" hasta que la facturación
-// electrónica esté activa (Bloque 9). Para imprimir se pone una copia directo en <body> (.stk-print-root):
-// dentro del modal, su alto máximo y su scroll recortaban el tiquete a lo que se veía en pantalla.
+// Tiquete térmico (80 o 58 mm según la caja). "TIQUETE INTERNO" hasta que la facturación electrónica
+// esté activa (Bloque 9).
 export function Ticket({ data }) {
-  return (
-    <>
-      <TicketBody data={data} />
-      {createPortal(
-        <div className="stk-print-root">
-          <TicketBody data={data} />
-        </div>,
-        document.body
-      )}
-    </>
-  )
-}
-
-function TicketBody({ data }) {
   const { t } = useTranslation()
   const { document: doc, company, register, location, cashier } = data
   const money = moneyFormatter(company.currency)
-  const width = register?.ticketWidth ?? 80
   const taxes = documentTaxes(doc.lines)
   const fiscalId = formatFiscalId(t, company.idType, company.idNumber)
   const issued = new Date(doc.issuedAt)
 
   return (
-    <div className="stk-ticket" style={{ width: width === 58 ? 219 : 302, "--ticket-mm": `${width}mm` }}>
-      <style>{`@media print { @page { size: ${width}mm auto; margin: 0 } }`}</style>
+    <PrintArea width={register?.ticketWidth ?? 80}>
       <header className="stk-ticket-center">
         <p className="stk-ticket-strong">{company.name}</p>
         {company.legalName && company.legalName !== company.name && <p>{company.legalName}</p>}
@@ -101,6 +84,6 @@ function TicketBody({ data }) {
       <hr />
       <p className="stk-ticket-center">{t("pos.ticket.thanks")}</p>
       <p className="stk-ticket-center stk-ticket-small">{t("pos.ticket.notFiscal")}</p>
-    </div>
+    </PrintArea>
   )
 }

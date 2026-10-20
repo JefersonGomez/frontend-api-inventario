@@ -31,7 +31,9 @@
     "transfers": "Transfers",
     "stockCounts": "Counts",
     "labels": "Labels",
-    "pos": "Register"
+    "pos": "Register",
+    "negatives": "Negatives",
+    "cashClosings": "Cash counts"
   },
   "topbar": {
     "search": "Search product or SKU",
@@ -830,7 +832,8 @@
       "cashCodeAssigned": "Register code",
       "transferIncoming": "Incoming transfers",
       "transferReceived": "Received transfers",
-      "aiBudgetAlert": "AI budget"
+      "aiBudgetAlert": "AI budget",
+      "stockNegative": "Negatives to review"
     },
     "detail": {
       "requestExpiring": "{{requester}} · {{quantity}} · expires {{when}}",
@@ -852,7 +855,8 @@
       "transferIncoming": "From {{from}} to {{to}} · {{lines}} product(s)",
       "transferReceived": "{{to}} received everything",
       "transferReceivedShort": "{{to}} received it with shortages ({{shortages}})",
-      "aiBudgetAlert": "US$ {{spent}} of {{budget}} spent this month ({{percent}} %)"
+      "aiBudgetAlert": "US$ {{spent}} of {{budget}} spent this month ({{percent}} %)",
+      "stockNegative": "{{quantity}} without stock at {{location}} · sold by {{cashier}}"
     },
     "when": {
       "today": "today",
@@ -1197,7 +1201,9 @@
     "cash.manage": "Open and close the register",
     "sales.discount": "Authorize discounts (with PIN)",
     "sales.void": "Authorize voids (with PIN)",
-    "accounting.view": "See accounting"
+    "accounting.view": "See accounting",
+    "sales.negative": "Authorize negatives (with PIN)",
+    "cash.reconcile": "Do cash counts (head cashier)"
   },
   "locations": {
     "label": "Location",
@@ -1443,7 +1449,11 @@
     "ticketWidthHint": "Depends on the thermal printer roll: 80 mm (most common) or 58 mm.",
     "emptyTitle": "No registers yet",
     "emptyHint": "Create the first one to start selling.",
-    "error": "Couldn't save the register"
+    "error": "Couldn't save the register",
+    "showStock": "Show the stock quantity at the register",
+    "showStockHint": "If off, the cashier only sees Available, Few left or Out of stock.",
+    "customerDisplay": "Customer display",
+    "customerDisplayHint": "Turn on if this register has a second monitor facing the customer: they see each product, the total and their change."
   },
   "pos": {
     "backToApp": "Back to Stockly",
@@ -1571,7 +1581,112 @@
       "confirmBalanced": "Cash is balanced. After closing, no more sales can be recorded in this shift.",
       "confirmDiff": "There's a difference of {{amount}}. It will be recorded in the closing.",
       "done": "Register closed",
-      "openAgain": "Open register"
+      "openAgain": "Open register",
+      "doneHint": "Print the shift report and take the cash to the head cashier: they'll count it with you.",
+      "printReport": "Print shift report",
+      "blindHint": "You don't need to count the cash here: you'll count it later with the head cashier.",
+      "confirmBlind": "After closing, no more sales can be recorded in this shift. The cash is counted afterwards.",
+      "cardCharged": "Charged by card",
+      "cardDeclared": "Card terminal closing total (optional)",
+      "cardDeclaredHint": "The one the terminal printed on paper; only to compare with what was charged.",
+      "cardMismatch": "The card terminal doesn't match what was charged: difference of {{amount}}"
+    },
+    "counters": {
+      "label": "Shift counters",
+      "sales": "Sales",
+      "total": "Sold"
+    },
+    "customerDisplay": "Customer display",
+    "itemsCount_one": "{{count}} item",
+    "itemsCount_other": "{{count}} items",
+    "multHint": "Tip: type 3* and scan to add 3 at once.",
+    "multClear": "Remove ×{{n}} multiplier",
+    "available": "Available",
+    "fewLeft": "Few left",
+    "noStockLots": "{{name}} is tracked by lots and there's no more stock ({{stock}} left): it can't be sold as a negative.",
+    "negativeLine": "{{name}}: the system says {{stock}} left. It will be sold as a negative with a manager code.",
+    "negative": "Negative",
+    "negativeTitle": "Negative: ask for the manager code",
+    "negativeHint": "The system doesn't have enough stock of these products. If you have them in hand, a manager can authorize the sale; inventory will be notified to review the mismatch.",
+    "negativeRow": "system {{stock}} · selling {{quantity}}",
+    "negativePin": "Manager code",
+    "negativeAuthorize": "Authorize and charge",
+    "negativesSent_one": "{{count}} negative was recorded and inventory was notified.",
+    "negativesSent_other": "{{count}} negatives were recorded and inventory was notified.",
+    "display": {
+      "welcome": "Welcome!",
+      "thanks": "Thank you for your purchase!"
+    },
+    "report": {
+      "closeTitle": "REGISTER CLOSING",
+      "reconcileTitle": "CASH COUNT",
+      "opened": "Opened: {{at}}",
+      "closed": "Closed: {{at}}",
+      "sales_one": "{{count}} sale",
+      "sales_other": "{{count}} sales",
+      "note": "Note: {{note}}",
+      "count": "Count",
+      "cardDeclared": "Card terminal (paper)",
+      "cardDifference": "Card terminal difference",
+      "reconciledBy": "Counted by: {{name}} · {{at}}",
+      "signCashier": "Cashier signature",
+      "signSupervisor": "Head cashier signature",
+      "pending": "Pending cash count"
     }
+  },
+  "negatives": {
+    "title": "Negatives",
+    "subtitle": "Sales of products the system had out of stock. Review the mismatch and resolve them.",
+    "statusLabel": "Status",
+    "status": {
+      "OPEN": "To resolve",
+      "RESOLVED": "Resolved"
+    },
+    "openCount_one": "{{count}} to resolve",
+    "openCount_other": "{{count}} to resolve",
+    "date": "Date",
+    "product": "Product",
+    "quantity": "Without stock",
+    "location": "Branch",
+    "ticket": "Ticket",
+    "reportedBy": "Sold by",
+    "authorizedBy": "Authorized by",
+    "systemHad": "The system had {{stock}}",
+    "empty": "No negatives",
+    "emptyOpen": "No negatives to resolve",
+    "resolve": "Resolve",
+    "resolveTitle": "Resolve negative: {{name}}",
+    "counted": "Actual quantity at {{location}} (optional)",
+    "countedHint": "If you count it now, the branch stock is set to that quantity.",
+    "resolution": "What was found or done?",
+    "resolutionPlaceholder": "E.g. the goods arrived and the entry wasn't recorded",
+    "error": "Couldn't resolve the negative"
+  },
+  "cashClosings": {
+    "title": "Cash counts",
+    "subtitle": "The cashiers' closings. Count the cash with each one and keep the record.",
+    "filter": {
+      "label": "Show",
+      "pending": "Pending count",
+      "done": "Counted"
+    },
+    "pendingCount_one": "{{count}} pending",
+    "pendingCount_other": "{{count}} pending",
+    "closedAt": "Closed",
+    "register": "Register",
+    "cashier": "Cashier",
+    "expected": "Expected",
+    "difference": "Difference",
+    "status": "Count",
+    "empty": "No closings here",
+    "done": "Done",
+    "reconcile": "Count cash",
+    "back": "Back to cash counts",
+    "notFound": "Closing not found",
+    "reconcileTitle": "Cash count for {{name}}",
+    "stillOpen": "This register is still open: the cashier has to close it first.",
+    "printActa": "Print record",
+    "save": "Save count",
+    "confirmTitle": "Save the cash count?"
   }
 }

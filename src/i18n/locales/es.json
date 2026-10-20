@@ -31,7 +31,9 @@
     "transfers": "Transferencias",
     "stockCounts": "Conteos",
     "labels": "Etiquetas",
-    "pos": "Caja"
+    "pos": "Caja",
+    "negatives": "Negativas",
+    "cashClosings": "Arqueos"
   },
   "topbar": {
     "search": "Buscar producto o SKU",
@@ -830,7 +832,8 @@
       "cashCodeAssigned": "Código de caja",
       "transferIncoming": "Transferencias en camino",
       "transferReceived": "Transferencias recibidas",
-      "aiBudgetAlert": "Presupuesto de IA"
+      "aiBudgetAlert": "Presupuesto de IA",
+      "stockNegative": "Negativas por revisar"
     },
     "detail": {
       "requestExpiring": "{{requester}} · {{quantity}} · vence {{when}}",
@@ -852,7 +855,8 @@
       "transferIncoming": "Viene de {{from}} hacia {{to}} · {{lines}} producto(s)",
       "transferReceived": "{{to}} recibió todo",
       "transferReceivedShort": "{{to}} la recibió con faltantes ({{shortages}})",
-      "aiBudgetAlert": "Llevas US$ {{spent}} de {{budget}} este mes ({{percent}} %)"
+      "aiBudgetAlert": "Llevas US$ {{spent}} de {{budget}} este mes ({{percent}} %)",
+      "stockNegative": "{{quantity}} sin stock en {{location}} · vendió {{cashier}}"
     },
     "when": {
       "today": "hoy",
@@ -1197,7 +1201,9 @@
     "cash.manage": "Abrir y cerrar caja",
     "sales.discount": "Autorizar descuentos (con PIN)",
     "sales.void": "Autorizar anulaciones (con PIN)",
-    "accounting.view": "Ver contabilidad"
+    "accounting.view": "Ver contabilidad",
+    "sales.negative": "Autorizar negativas (con PIN)",
+    "cash.reconcile": "Hacer arqueos de caja (jefa de caja)"
   },
   "locations": {
     "label": "Ubicación",
@@ -1443,7 +1449,11 @@
     "ticketWidthHint": "Según el rollo de la impresora térmica: 80 mm (el más común) o 58 mm.",
     "emptyTitle": "Todavía no hay cajas",
     "emptyHint": "Crea la primera para empezar a vender.",
-    "error": "No se pudo guardar la caja"
+    "error": "No se pudo guardar la caja",
+    "showStock": "Mostrar la cantidad en stock en la caja",
+    "showStockHint": "Si lo apagas, el cajero solo ve Disponible, Pocas unidades o Agotado.",
+    "customerDisplay": "Pantalla del cliente",
+    "customerDisplayHint": "Activa si esta caja tiene un segundo monitor mirando al cliente: ve cada producto, el total y su vuelto."
   },
   "pos": {
     "backToApp": "Volver a Stockly",
@@ -1571,7 +1581,112 @@
       "confirmBalanced": "El efectivo cuadra. Después de cerrar no se pueden registrar más ventas en este turno.",
       "confirmDiff": "Hay una diferencia de {{amount}}. Quedará registrada en el cierre.",
       "done": "Caja cerrada",
-      "openAgain": "Abrir caja"
+      "openAgain": "Abrir caja",
+      "doneHint": "Imprime el reporte del turno y lleva el efectivo a la jefa de caja: ella hace el arqueo contigo.",
+      "printReport": "Imprimir reporte del turno",
+      "blindHint": "No necesitas contar el efectivo aquí: el arqueo lo haces después con la jefa de caja.",
+      "confirmBlind": "Después de cerrar no se pueden registrar más ventas en este turno. El efectivo se cuenta en el arqueo.",
+      "cardCharged": "Cobrado con tarjeta",
+      "cardDeclared": "Total del cierre del datáfono (opcional)",
+      "cardDeclaredHint": "El que imprimió el datáfono en papel; solo para comparar con lo cobrado.",
+      "cardMismatch": "El datáfono no coincide con lo cobrado: diferencia de {{amount}}"
+    },
+    "counters": {
+      "label": "Contadores del turno",
+      "sales": "Ventas",
+      "total": "Vendido"
+    },
+    "customerDisplay": "Pantalla del cliente",
+    "itemsCount_one": "{{count}} artículo",
+    "itemsCount_other": "{{count}} artículos",
+    "multHint": "Tip: escribe 3* y escanea para agregar 3 de una vez.",
+    "multClear": "Quitar multiplicador ×{{n}}",
+    "available": "Disponible",
+    "fewLeft": "Pocas unidades",
+    "noStockLots": "{{name}} se maneja por lotes y no hay más stock (quedan {{stock}}): no se puede vender como negativa.",
+    "negativeLine": "{{name}}: el sistema dice que quedan {{stock}}. Se venderá como negativa con el código del encargado.",
+    "negative": "Negativa",
+    "negativeTitle": "Negativa: pide el código del encargado",
+    "negativeHint": "El sistema no tiene stock suficiente de estos productos. Si los tienes en la mano, un encargado puede autorizar la venta; inventario recibirá el aviso para revisar el descuadre.",
+    "negativeRow": "sistema {{stock}} · vendes {{quantity}}",
+    "negativePin": "Código del encargado",
+    "negativeAuthorize": "Autorizar y cobrar",
+    "negativesSent_one": "Se registró {{count}} negativa y se avisó a inventario.",
+    "negativesSent_other": "Se registraron {{count}} negativas y se avisó a inventario.",
+    "display": {
+      "welcome": "¡Bienvenido!",
+      "thanks": "¡Gracias por tu compra!"
+    },
+    "report": {
+      "closeTitle": "CIERRE DE CAJA",
+      "reconcileTitle": "ARQUEO DE CAJA",
+      "opened": "Apertura: {{at}}",
+      "closed": "Cierre: {{at}}",
+      "sales_one": "{{count}} venta",
+      "sales_other": "{{count}} ventas",
+      "note": "Nota: {{note}}",
+      "count": "Conteo",
+      "cardDeclared": "Datáfono (papel)",
+      "cardDifference": "Diferencia datáfono",
+      "reconciledBy": "Arqueo: {{name}} · {{at}}",
+      "signCashier": "Firma del cajero",
+      "signSupervisor": "Firma de la jefa de caja",
+      "pending": "Pendiente de arqueo"
     }
+  },
+  "negatives": {
+    "title": "Negativas",
+    "subtitle": "Ventas de productos que el sistema tenía sin stock. Revisa el descuadre y resuélvelas.",
+    "statusLabel": "Estado",
+    "status": {
+      "OPEN": "Por resolver",
+      "RESOLVED": "Resueltas"
+    },
+    "openCount_one": "{{count}} por resolver",
+    "openCount_other": "{{count}} por resolver",
+    "date": "Fecha",
+    "product": "Producto",
+    "quantity": "Sin stock",
+    "location": "Sucursal",
+    "ticket": "Tiquete",
+    "reportedBy": "Vendió",
+    "authorizedBy": "Autorizó",
+    "systemHad": "El sistema tenía {{stock}}",
+    "empty": "No hay negativas",
+    "emptyOpen": "No hay negativas por resolver",
+    "resolve": "Resolver",
+    "resolveTitle": "Resolver negativa: {{name}}",
+    "counted": "Cantidad real en {{location}} (opcional)",
+    "countedHint": "Si la cuentas ahora, el stock de la sucursal queda en esa cantidad.",
+    "resolution": "¿Qué se encontró o qué se hizo?",
+    "resolutionPlaceholder": "Ej.: la mercadería llegó y no se registró la entrada",
+    "error": "No se pudo resolver la negativa"
+  },
+  "cashClosings": {
+    "title": "Arqueos de caja",
+    "subtitle": "Los cierres de los cajeros. Cuenta el efectivo con cada uno y deja el acta.",
+    "filter": {
+      "label": "Mostrar",
+      "pending": "Pendientes de arqueo",
+      "done": "Con arqueo"
+    },
+    "pendingCount_one": "{{count}} pendiente",
+    "pendingCount_other": "{{count}} pendientes",
+    "closedAt": "Cierre",
+    "register": "Caja",
+    "cashier": "Cajero",
+    "expected": "Esperado",
+    "difference": "Diferencia",
+    "status": "Arqueo",
+    "empty": "No hay cierres aquí",
+    "done": "Hecho",
+    "reconcile": "Hacer arqueo",
+    "back": "Volver a arqueos",
+    "notFound": "No se encontró el cierre",
+    "reconcileTitle": "Arqueo de {{name}}",
+    "stillOpen": "Esta caja sigue abierta: el cajero tiene que cerrarla antes del arqueo.",
+    "printActa": "Imprimir acta",
+    "save": "Guardar arqueo",
+    "confirmTitle": "¿Guardar el arqueo?"
   }
 }

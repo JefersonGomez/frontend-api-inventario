@@ -1,10 +1,10 @@
 import { useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
-import { Monitor, Pencil, Plus } from "lucide-react"
+import { Monitor, MonitorUp, Pencil, Plus } from "lucide-react"
 import { createRegister, getRegisters, updateRegister } from "@/api/pos"
 import { getLocations } from "@/api/locations"
-import { getCompany } from "@/api/company"
+import { getCompany, updateCompany } from "@/api/company"
 import { apiErrorMessage } from "@/lib/api-error"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -25,7 +25,7 @@ export function RegistersCard() {
   const { data: locations = [] } = useQuery({ queryKey: ["locations", "all"], queryFn: () => getLocations(true) })
   const { data: company } = useQuery({ queryKey: ["company"], queryFn: getCompany })
   const [editing, setEditing] = useState(null) // null = cerrado; {} = nueva; objeto = editar
-  const [form, setForm] = useState({ name: "", locationId: "", ticketWidth: 80 })
+  const [form, setForm] = useState({ name: "", locationId: "", ticketWidth: 80, customerDisplay: false })
 
   const branches = locations.filter((l) => l.type === "BRANCH" && l.isActive)
   const branchItems = branches.map((l) => ({ value: l.id, label: l.name }))
@@ -36,21 +36,26 @@ export function RegistersCard() {
   const save = useMutation({
     mutationFn: () =>
       editing?.id
-        ? updateRegister(editing.id, { name: form.name.trim(), ticketWidth: form.ticketWidth })
-        : createRegister({ name: form.name.trim(), locationId: form.locationId, ticketWidth: form.ticketWidth }),
+        ? updateRegister(editing.id, { name: form.name.trim(), ticketWidth: form.ticketWidth, customerDisplay: form.customerDisplay })
+        : createRegister({ name: form.name.trim(), locationId: form.locationId, ticketWidth: form.ticketWidth, customerDisplay: form.customerDisplay }),
     onSuccess: () => {
       refresh()
       setEditing(null)
     },
   })
   const toggle = useMutation({ mutationFn: (r) => updateRegister(r.id, { isActive: !r.isActive }), onSuccess: refresh })
+  // de la empresa: si el cajero ve la cantidad en stock o solo disponible/agotado
+  const showStock = useMutation({
+    mutationFn: (posShowStock) => updateCompany({ posShowStock }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["company"] }),
+  })
 
   function open(register) {
     setEditing(register ?? {})
     setForm(
       register
-        ? { name: register.name, locationId: register.locationId, ticketWidth: register.ticketWidth }
-        : { name: t("registers.defaultName", { n: registers.length + 1 }), locationId: branches[0]?.id ?? "", ticketWidth: 80 }
+        ? { name: register.name, locationId: register.locationId, ticketWidth: register.ticketWidth, customerDisplay: register.customerDisplay }
+        : { name: t("registers.defaultName", { n: registers.length + 1 }), locationId: branches[0]?.id ?? "", ticketWidth: 80, customerDisplay: false }
     )
     save.reset()
   }
@@ -69,6 +74,18 @@ export function RegistersCard() {
         </Button>
       </CardHeader>
       <CardContent>
+        <div className="mb-4 flex items-start justify-between gap-4 rounded-xl border border-border p-3">
+          <div>
+            <p className="text-sm font-medium">{t("registers.showStock")}</p>
+            <p className="text-xs text-muted-foreground">{t("registers.showStockHint")}</p>
+          </div>
+          <Switch
+            checked={company?.posShowStock !== false}
+            disabled={!company || showStock.isPending}
+            onCheckedChange={(v) => showStock.mutate(v)}
+            aria-label={t("registers.showStock")}
+          />
+        </div>
         {registers.length === 0 ? (
           <div className="rounded-xl border border-dashed border-border p-8 text-center">
             <Monitor className="mx-auto mb-2 h-8 w-8 text-muted-foreground" aria-hidden />
@@ -95,6 +112,9 @@ export function RegistersCard() {
                       <TableCell className="font-medium">
                         {r.name}
                         <span className="ml-2 text-xs text-muted-foreground">{t("registers.width", { mm: r.ticketWidth })}</span>
+                        {r.customerDisplay && (
+                          <MonitorUp className="ml-2 inline h-3.5 w-3.5 text-muted-foreground" aria-label={t("registers.customerDisplay")} />
+                        )}
                       </TableCell>
                       <TableCell>{r.location.name}</TableCell>
                       <TableCell className="hidden sm:table-cell font-mono text-xs">
@@ -173,6 +193,13 @@ export function RegistersCard() {
                 </SelectContent>
               </Select>
               <p className="text-xs text-muted-foreground">{t("registers.ticketWidthHint")}</p>
+            </div>
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <Label htmlFor="register-display">{t("registers.customerDisplay")}</Label>
+                <p className="text-xs text-muted-foreground">{t("registers.customerDisplayHint")}</p>
+              </div>
+              <Switch id="register-display" checked={form.customerDisplay} onCheckedChange={(customerDisplay) => setForm({ ...form, customerDisplay })} />
             </div>
             {save.isError && <p role="alert" className="text-sm text-destructive">{apiErrorMessage(save.error, t("registers.error"))}</p>}
             <div className="flex justify-end gap-2">

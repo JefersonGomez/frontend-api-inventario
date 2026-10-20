@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useNavigate, Link } from "react-router-dom"
+import { Link } from "react-router-dom"
 import { useMutation } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { loginRequest } from "@/api/auth"
@@ -13,13 +13,13 @@ export function Login() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const { login } = useAuth()
-  const navigate = useNavigate()
 
   const mutation = useMutation({
     mutationFn: () => loginRequest(email.trim(), password),
     onSuccess: (data) => {
       login(data.token, data.refreshToken, data.user, data.company?.id)
-      navigate("/")
+      // recarga completa: no queda en memoria nada del usuario que estaba antes en esta pestaña
+      window.location.assign("/")
     },
   })
 

@@ -12,8 +12,13 @@ export const openSession = (data) => api.post("/pos/session", data).then((res) =
 export const renewCode = (managerPin) => api.post("/pos/session/renew-code", { managerPin }).then((res) => res.data)
 export const getCashMovements = () => api.get("/pos/session/movements").then((res) => res.data)
 export const addCashMovement = (data) => api.post("/pos/session/movements", data).then((res) => res.data)
-// denominations: { "20000": 3, ... }
+// cierre ciego del cajero ({ note? }) → reporte del turno
 export const closeSession = (id, data) => api.post(`/pos/sessions/${id}/close`, data).then((res) => res.data)
+// arqueos (cash.reconcile): { page, pending: "1" | "0" } → página + pendingCount
+export const getSessions = (params = {}) => api.get("/pos/sessions", { params }).then((res) => res.data)
+export const getSessionReport = (id) => api.get(`/pos/sessions/${id}/report`).then((res) => res.data)
+// { denominations, cardDeclared?, note? }
+export const reconcileSession = (id, data) => api.post(`/pos/sessions/${id}/reconcile`, data).then((res) => res.data)
 
 // → datos del tiquete { document, company, register, location, cashier }
 export const sell = (data) => api.post("/pos/sales", data).then((res) => res.data)

@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { currentAccountId, endSession, getLocationId, getRefreshToken, getToken, updateSession } from "@/lib/session"
 
 // URL del backend: VITE_API_URL en .env (ver .env.example); en desarrollo, localhost:3000
 export const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000"
@@ -8,12 +9,12 @@ export const api = axios.create({
 })
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token")
+  const token = getToken()
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
   }
   // ubicación elegida en el selector (sin ella: todas las de la persona); el backend la valida
-  const locationId = localStorage.getItem("locationId")
+  const locationId = getLocationId()
   if (locationId) config.headers["X-Location-Id"] = locationId
   return config
 })
@@ -22,15 +23,15 @@ api.interceptors.request.use((config) => {
 
 let refreshPromise = null
 
-// El refresh token rota: si dos pestañas lo renuevan a la vez, la segunda manda uno ya
-// invalidado y cierra la sesión. El lock del navegador las pone en fila, y la que llega tarde
-// ve que el token ya no es el que falló (lo cambió otra pestaña) y lo reutiliza.
+// El refresh token rota: si dos pestañas de la MISMA cuenta lo renuevan a la vez, la segunda manda
+// uno ya invalidado y cierra la sesión. El lock del navegador (uno por cuenta) las pone en fila, y la
+// que llega tarde ve que el token ya no es el que falló (lo cambió otra pestaña) y lo reutiliza.
 async function refreshAccessToken(failedToken) {
   const run = async () => {
-    const current = localStorage.getItem("token")
+    const current = getToken()
     if (current && current !== failedToken) return current
 
-    const refreshToken = localStorage.getItem("refreshToken")
+    const refreshToken = getRefreshToken()
     if (!refreshToken) {
       throw new Error("No hay refresh token")
     }
@@ -41,11 +42,10 @@ async function refreshAccessToken(failedToken) {
     })
 
     const { token, refreshToken: newRefreshToken } = response.data
-    localStorage.setItem("token", token)
-    localStorage.setItem("refreshToken", newRefreshToken)
+    updateSession({ token, refreshToken: newRefreshToken })
     return token
   }
-  return navigator.locks ? navigator.locks.request("stockly-auth-refresh", run) : run()
+  return navigator.locks ? navigator.locks.request(`stockly-auth-refresh:${currentAccountId()}`, run) : run()
 }
 
 api.interceptors.response.use(
@@ -68,9 +68,7 @@ api.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${newToken}`
         return api(originalRequest)
       } catch (refreshError) {
-        localStorage.removeItem("token")
-        localStorage.removeItem("refreshToken")
-        localStorage.removeItem("user")
+        endSession()
         window.location.href = "/login"
         return Promise.reject(refreshError)
       }

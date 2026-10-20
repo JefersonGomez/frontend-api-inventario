@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { Check, ChevronDown, MapPin, Store, Warehouse } from "lucide-react"
 import { getLocations } from "@/api/locations"
 import { usePermissions } from "@/hoocks/usePermissions"
+import { setLocationId } from "@/lib/session"
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel,
   DropdownMenuSeparator, DropdownMenuTrigger,
@@ -22,12 +23,7 @@ export function LocationSwitcher() {
   const canSeeAll = !locationIds || locationIds.length > 1
 
   function choose(id) {
-    try {
-      if (id) localStorage.setItem("locationId", id)
-      else localStorage.removeItem("locationId")
-    } catch {
-      // sin almacenamiento: queda en "todas"
-    }
+    setLocationId(id) // de esta pestaña
     queryClient.invalidateQueries() // todo lo que se ve depende de la ubicación
   }
 
