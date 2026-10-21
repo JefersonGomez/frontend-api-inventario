@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { FileSpreadsheet, History, Printer } from "lucide-react"
-import { Link } from "react-router-dom"
+import { Link, useSearchParams } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import {
   getLowStockReport, getInventoryValueReport, getMovementsReport, getInventoryValueBreakdown, getStockForecast,
@@ -19,10 +19,37 @@ import {
 } from "@/components/ui/table"
 import { ImmobilizedCapitalReport } from "@/components/reports/ImmobilizedCapitalReport"
 import { StockForecastReport } from "@/components/reports/StockForecastReport"
+import { SalesReport } from "@/components/reports/SalesReport"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { formatQty } from "@/lib/units"
 import { usePermissions } from "@/hoocks/usePermissions"
 
+// Reportes: pestañas de inventario y de ventas (?tab=sales)
 export function Reports() {
+  const { t } = useTranslation()
+  const [params, setParams] = useSearchParams()
+  const tab = params.get("tab") === "sales" ? "sales" : "inventory"
+  return (
+    <Tabs value={tab} onValueChange={(v) => setParams(v === "sales" ? { tab: v } : {}, { replace: true })} className="gap-4">
+      <TabsList className="print:hidden">
+        <TabsTrigger value="inventory">{t("reports.tabs.inventory")}</TabsTrigger>
+        <TabsTrigger value="sales">{t("reports.tabs.sales")}</TabsTrigger>
+      </TabsList>
+      <TabsContent value="inventory">
+        <InventoryReports />
+      </TabsContent>
+      <TabsContent value="sales" className="space-y-5">
+        <div>
+          <h1 className="text-2xl font-semibold">{t("salesReport.title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("salesReport.subtitle")}</p>
+        </div>
+        <SalesReport />
+      </TabsContent>
+    </Tabs>
+  )
+}
+
+function InventoryReports() {
   const { t } = useTranslation()
   const money = useMoney()
   const showCost = usePermissions().can("costs.view") // valor a costo y capital inmovilizado

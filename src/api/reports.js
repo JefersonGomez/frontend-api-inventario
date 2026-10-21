@@ -38,3 +38,8 @@ export const generateDailySummary = ({ date, since }, force = false) =>
   api.post("/reports/daily-summary", undefined, { params: { date, since, ...(force && { force: 1 }) } }).then((res) => res.data)
 // historial: { page, from?, to? } paginado; { all: 1 } todo (para descargar)
 export const getSummaryHistory = (params) => api.get("/reports/daily-summaries", { params }).then((res) => res.data)
+
+// Ventas (7D-1): reporte del período { from, to } (AAAA-MM-DD), ventas de hoy (Panel) y las del cajero { month? }
+export const getSalesReport = (from, to) => api.get("/reports/sales", { params: { from, to } }).then((res) => res.data)
+export const getSalesToday = () => api.get("/reports/sales-today").then((res) => res.data)
+export const getMySales = (month) => api.get("/reports/my-sales", { params: month ? { month } : {} }).then((res) => res.data)

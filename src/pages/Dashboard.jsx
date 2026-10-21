@@ -11,6 +11,7 @@ import { usePermissions } from "@/hoocks/usePermissions"
 import "./Dashboard.css"
 import { OnboardingCard } from "@/components/OnboardingCard"
 import { DailySummaryCard } from "@/components/DailySummaryCard"
+import { MySalesCard, SalesTodayCard } from "@/components/SalesCards"
 
 const num = new Intl.NumberFormat("es-CO")
 const pct = (part, total) => (total > 0 ? Math.round((part / total) * 100) : 0)
@@ -68,6 +69,8 @@ export function Dashboard() {
       <div className="dash-main">
         <OnboardingCard />
         <DailySummaryCard />
+        {reports && <SalesTodayCard />}
+        {can("sales.sell") && <MySalesCard />}
         <section className="dash-kpis">
           {showValue && <article className="dash-kpi dash-kpi--dark">
             <div>
