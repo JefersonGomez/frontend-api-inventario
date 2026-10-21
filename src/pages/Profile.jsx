@@ -268,8 +268,8 @@ export function Profile() {
     )
 
   // pestaña en la URL: los avisos del código de caja llevan a /profile?tab=cash
-  const needsCode = can("cash.manage") || can("sales.discount") || can("sales.void") || can("sales.negative")
-  const managesCodes = can("users.manage") || can("sales.discount") || can("sales.void") || can("sales.negative")
+  const needsCode = can("cash.manage") || can("sales.discount") || can("sales.void") || can("sales.negative") || can("sales.credit")
+  const managesCodes = can("users.manage") || can("sales.discount") || can("sales.void") || can("sales.negative") || can("sales.credit")
   const showCash = (needsCode || managesCodes) && !profile.isPlatformOwner
   const showCompanies = companies.length > 0 && !profile.isPlatformOwner
   const tabs = ["account", "security", ...(showCash ? ["cash"] : []), ...(showCompanies ? ["companies"] : [])]

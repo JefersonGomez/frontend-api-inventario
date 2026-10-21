@@ -33,7 +33,8 @@
     "labels": "Labels",
     "pos": "Register",
     "negatives": "Negatives",
-    "cashClosings": "Cash counts"
+    "cashClosings": "Cash counts",
+    "receivables": "Receivables"
   },
   "topbar": {
     "search": "Search product or SKU",
@@ -833,7 +834,8 @@
       "transferIncoming": "Incoming transfers",
       "transferReceived": "Received transfers",
       "aiBudgetAlert": "AI budget",
-      "stockNegative": "Negatives to review"
+      "stockNegative": "Negatives to review",
+      "installmentOverdue": "Overdue installments"
     },
     "detail": {
       "requestExpiring": "{{requester}} · {{quantity}} · expires {{when}}",
@@ -856,7 +858,9 @@
       "transferReceived": "{{to}} received everything",
       "transferReceivedShort": "{{to}} received it with shortages ({{shortages}})",
       "aiBudgetAlert": "US$ {{spent}} of {{budget}} spent this month ({{percent}} %)",
-      "stockNegative": "{{quantity}} without stock at {{location}} · sold by {{cashier}}"
+      "stockNegative": "{{quantity}} without stock at {{location}} · sold by {{cashier}}",
+      "installmentOverdue_one": "{{count}} overdue installment · {{amount}}",
+      "installmentOverdue_other": "{{count}} overdue installments · {{amount}}"
     },
     "when": {
       "today": "today",
@@ -1150,13 +1154,9 @@
       "phone": "Phone",
       "address": "Address",
       "activity": "Economic activity (optional)",
-      "activity_hint": "The customer's activity code with the tax office, if you have it.",
-      "creditLimit": "Credit limit",
-      "creditLimit_hint": "Empty = cash only.",
-      "creditDays": "Credit term (days)"
+      "activity_hint": "The customer's activity code with the tax office, if you have it."
     },
     "cash": "Cash",
-    "creditValue": "{{limit}} · {{days}} days",
     "creditNoDays": "{{limit}}",
     "delete_title": "Delete this customer?",
     "delete_description": "\"{{name}}\" will no longer be listed. Receipts issued in their name are kept.",
@@ -1203,7 +1203,10 @@
     "sales.void": "Authorize voids (with PIN)",
     "accounting.view": "See accounting",
     "sales.negative": "Authorize negatives (with PIN)",
-    "cash.reconcile": "Do cash counts (head cashier)"
+    "cash.reconcile": "Do cash counts (head cashier)",
+    "sales.credit": "Approve credit sales (with PIN)",
+    "credit.manage": "Give customers credit and set their limit",
+    "receivables.manage": "Receivables and off-register payments"
   },
   "locations": {
     "label": "Location",
@@ -1516,7 +1519,8 @@
       "CASH": "Cash",
       "CARD": "Card",
       "SINPE": "SINPE Móvil",
-      "MIXED": "Split"
+      "MIXED": "Split",
+      "CREDIT": "Credit"
     },
     "methods": {
       "CASH": "Cash",
@@ -1558,7 +1562,11 @@
       "notFiscal": "Internal receipt, not a tax document.",
       "internalInvoice": "INTERNAL INVOICE",
       "discount": "Disc. {{label}}",
-      "authorizedBy": "Discount approved by {{name}}"
+      "authorizedBy": "Discount approved by {{name}}",
+      "credit": "CREDIT SALE",
+      "installment": "Installment {{n}} · {{date}}",
+      "creditBy": "Credit approved by {{name}}",
+      "signature": "Customer signature"
     },
     "close": {
       "title": "Close register",
@@ -1592,7 +1600,8 @@
       "cardCharged": "Charged by card",
       "cardDeclared": "Card terminal closing total (optional)",
       "cardDeclaredHint": "The one the terminal printed on paper; only to compare with what was charged.",
-      "cardMismatch": "The card terminal doesn't match what was charged: difference of {{amount}}"
+      "cardMismatch": "The card terminal doesn't match what was charged: difference of {{amount}}",
+      "cashCollections": "Cash credit payments"
     },
     "counters": {
       "label": "Shift counters",
@@ -1635,7 +1644,9 @@
       "reconciledBy": "Counted by: {{name}} · {{at}}",
       "signCashier": "Cashier signature",
       "signSupervisor": "Head cashier signature",
-      "pending": "Pending cash count"
+      "pending": "Pending cash count",
+      "collections_one": "{{count}} credit payment",
+      "collections_other": "{{count}} credit payments"
     },
     "discount": {
       "label": "Discount",
@@ -1681,6 +1692,19 @@
       "reason": "Reason",
       "shelf": "Shelf price",
       "remove": "Back to the system price"
+    },
+    "credit": {
+      "available": "Available credit",
+      "down": "Down payment (optional)",
+      "frequency": "Payments",
+      "installments": "Installments",
+      "MONTHLY": "Monthly",
+      "BIWEEKLY": "Biweekly",
+      "plan_one": "{{amount}} on credit in {{count}} installment of {{each}}",
+      "plan_other": "{{amount}} on credit in {{count}} installments of {{each}}",
+      "overdue": "Has overdue installments for {{amount}}: no credit sales until they catch up.",
+      "overLimit": "Over the limit: only {{amount}} available. Raise the down payment or charge in full.",
+      "nothing": "The down payment covers everything: charge it in full."
     }
   },
   "negatives": {
@@ -1771,5 +1795,70 @@
     "emptyTitle": "No discounts yet",
     "emptyHint": "Create the ones your business uses: seniors, staff, promotions…",
     "error": "Couldn't save the discount"
+  },
+  "receivables": {
+    "title": "Accounts receivable",
+    "subtitle": "Customers on credit: balances, overdue installments and payments.",
+    "totalBalance": "Receivable",
+    "totalOverdue": "Overdue",
+    "search": "Search by name or ID",
+    "onlyOverdue": "Only with overdue installments",
+    "customer": "Customer",
+    "balance": "Balance",
+    "overdue": "Overdue",
+    "nextDue": "Next installment",
+    "empty": "No customers on credit",
+    "installments": "Installments",
+    "dueDate": "Due",
+    "sale": "Sale",
+    "amount": "Amount",
+    "pending": "Pending",
+    "status": "Status",
+    "noInstallments": "No credit purchases yet",
+    "installment": "Installment {{n}}",
+    "paid": "Paid",
+    "late": "Overdue",
+    "upcoming": "On time",
+    "payments": "Payments",
+    "date": "Date",
+    "by": "Received by",
+    "after": "Balance after",
+    "noPayments": "No payments yet",
+    "atRegister": "At register",
+    "offRegister": "Off register",
+    "limit": {
+      "label": "Credit limit",
+      "change": "Credit limit",
+      "title": "Credit for {{name}}",
+      "button": "Credit for {{name}}",
+      "needsId": "To get credit, the customer needs an ID. Edit them and add it first.",
+      "hint": "The most they can owe. A manager approves each credit sale with their code.",
+      "error": "Couldn't save the credit",
+      "remove": "Remove credit"
+    },
+    "pay": {
+      "button": "Payment",
+      "title": "Payment from {{name}}",
+      "done": "Payment recorded",
+      "close": "Done",
+      "nothing": "No pending balance.",
+      "amount": "Payment amount",
+      "nextInstallment": "Next installment",
+      "allOverdue": "All overdue",
+      "all": "Full balance",
+      "reference": "Reference",
+      "note": "Note (optional)",
+      "newBalance": "New balance",
+      "error": "Couldn't record the payment",
+      "submit": "Record payment"
+    },
+    "receipt": {
+      "title": "PAYMENT RECEIPT",
+      "by": "Received by: {{name}}",
+      "before": "Previous balance",
+      "amount": "Payment ({{method}})",
+      "after": "New balance",
+      "reprint": "View and print the receipt"
+    }
   }
 }

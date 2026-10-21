@@ -97,6 +97,22 @@ export function Ticket({ data }) {
           )}
         </div>
       ))}
+      {doc.installments?.length > 0 && (
+        <>
+          <hr />
+          <p className="stk-ticket-strong">{t("pos.ticket.credit")}</p>
+          {doc.installments.map((i) => (
+            <p key={i.id} className="stk-ticket-row">
+              <span>{t("pos.ticket.installment", { n: i.number, date: new Date(i.dueDate).toLocaleDateString("es-CR", { timeZone: "UTC" }) })}</span>
+              <span>{money.format(i.amount)}</span>
+            </p>
+          ))}
+          {doc.creditAuthorizedBy && <p>{t("pos.ticket.creditBy", { name: doc.creditAuthorizedBy.name })}</p>}
+          <p className="stk-ticket-center stk-ticket-small">{t("pos.ticket.signature")}</p>
+          <p>&nbsp;</p>
+          <p className="stk-ticket-center">____________________________</p>
+        </>
+      )}
       <hr />
       <p className="stk-ticket-center">{t("pos.ticket.thanks")}</p>
       <p className="stk-ticket-center stk-ticket-small">{t("pos.ticket.notFiscal")}</p>

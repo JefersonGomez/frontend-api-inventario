@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { Banknote, CreditCard, Plus, Smartphone, Split, X } from "lucide-react"
+import { Banknote, CreditCard, HandCoins, Plus, Smartphone, Split, X } from "lucide-react"
 import { useMoney } from "@/hoocks/useMoney"
 import { quickCash } from "@/lib/pos"
 import { apiErrorMessage } from "@/lib/api-error"
@@ -15,17 +15,21 @@ const MODES = [
   { id: "CARD", icon: CreditCard },
   { id: "SINPE", icon: Smartphone },
   { id: "MIXED", icon: Split },
+  { id: "CREDIT", icon: HandCoins },
 ]
 const round2 = (v) => Math.round(v * 100) / 100
 
-// Cobrar: arma los pagos y llama a onCharge(payments). El crédito llega en 7B.
-export function ChargeDialog({ open, onOpenChange, total, onCharge, pending, error }) {
+// Cobrar: arma los pagos y llama a onCharge(payments, credit?). Crédito solo si el cliente lo tiene
+// (account = su estado de cuenta): prima opcional, plan quincenal o mensual hasta 6 meses y código del encargado.
+export function ChargeDialog({ open, onOpenChange, total, onCharge, pending, error, account }) {
   const { t } = useTranslation()
   const money = useMoney()
   const [mode, setMode] = useState("CASH")
   const [received, setReceived] = useState("")
   const [reference, setReference] = useState("")
   const [split, setSplit] = useState([{ method: "CASH", amount: "" }, { method: "CARD", amount: "", reference: "" }])
+  const [credit, setCredit] = useState({ down: "", downMethod: "CASH", frequency: "MONTHLY", installments: 1, pin: "" })
+  const modes = MODES.filter((m) => m.id !== "CREDIT" || account?.creditLimit != null)
 
   const cash = Number(received) || 0
   const change = round2(cash - total)
@@ -46,11 +50,25 @@ export function ChargeDialog({ open, onOpenChange, total, onCharge, pending, err
     setReceived("")
     setReference("")
   }
-  const submit = (e) => {
-    e.preventDefault()
-    if (payments && !pending) onCharge(payments)
-  }
   const updateSplit = (i, patch) => setSplit(split.map((p, j) => (j === i ? { ...p, ...patch } : p)))
+
+  const down = Number(credit.down) || 0
+  const financed = round2(total - down)
+  const maxInstallments = credit.frequency === "MONTHLY" ? 6 : 12
+  const creditProblem =
+    account?.overdueCount > 0 ? t("pos.credit.overdue", { amount: money.format(account.overdue) })
+    : financed > (account?.available ?? 0) ? t("pos.credit.overLimit", { amount: money.format(account?.available ?? 0) })
+    : financed <= 0 ? t("pos.credit.nothing")
+    : null
+  if (mode === "CREDIT" && !creditProblem && credit.pin.length >= 4) {
+    payments = down > 0 ? [{ method: credit.downMethod, amount: down, ...(credit.downMethod === "CASH" && { tendered: down }) }] : []
+  }
+  const charge = (e) => {
+    e.preventDefault()
+    if (!payments || pending) return
+    if (mode === "CREDIT") onCharge(payments, { credit: { frequency: credit.frequency, installments: credit.installments }, creditPin: credit.pin })
+    else onCharge(payments)
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -58,14 +76,14 @@ export function ChargeDialog({ open, onOpenChange, total, onCharge, pending, err
         <DialogHeader>
           <DialogTitle>{t("pos.charge.title")}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-5">
+        <form onSubmit={charge} className="space-y-5">
           <div className="rounded-xl bg-[var(--stk-kpi-dark)] px-5 py-4 text-white">
             <p className="text-xs uppercase tracking-wide opacity-70">{t("pos.charge.toPay")}</p>
             <p className="font-mono text-4xl font-semibold">{money.format(total)}</p>
           </div>
 
-          <div role="radiogroup" aria-label={t("pos.charge.method")} className="grid grid-cols-4 gap-2">
-            {MODES.map(({ id, icon: Icon }) => (
+          <div role="radiogroup" aria-label={t("pos.charge.method")} className={cn("grid gap-2", modes.length === 5 ? "grid-cols-5" : "grid-cols-4")}>
+            {modes.map(({ id, icon: Icon }) => (
               <button
                 key={id}
                 type="button"
@@ -176,6 +194,77 @@ export function ChargeDialog({ open, onOpenChange, total, onCharge, pending, err
               <p className={cn("text-sm font-medium", splitLeft === 0 ? "text-[var(--stk-ok)]" : "text-[var(--stk-warn)]")}>
                 {splitLeft === 0 ? t("pos.charge.complete") : splitLeft > 0 ? t("pos.charge.left", { amount: money.format(splitLeft) }) : t("pos.charge.over", { amount: money.format(-splitLeft) })}
               </p>
+            </div>
+          )}
+
+          {mode === "CREDIT" && (
+            <div className="space-y-3">
+              <p className="flex justify-between rounded-lg bg-muted px-3 py-2 text-sm">
+                <span>{t("pos.credit.available")}</span>
+                <span className="font-mono font-semibold">{money.format(account.available)}</span>
+              </p>
+              <div className="grid grid-cols-[1fr_auto] gap-2">
+                <div className="space-y-2">
+                  <Label htmlFor="credit-down">{t("pos.credit.down")}</Label>
+                  <Input id="credit-down" type="number" min={0} step="any" inputMode="decimal" className="font-mono" value={credit.down} onChange={(e) => setCredit({ ...credit, down: e.target.value })} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="credit-down-method">{t("pos.charge.method")}</Label>
+                  <select
+                    id="credit-down-method"
+                    className="h-9 rounded-md border border-input bg-background px-2 text-sm"
+                    value={credit.downMethod}
+                    onChange={(e) => setCredit({ ...credit, downMethod: e.target.value })}
+                  >
+                    {["CASH", "CARD", "SINPE"].map((m) => <option key={m} value={m}>{t(`pos.methods.${m}`)}</option>)}
+                  </select>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-2">
+                  <Label htmlFor="credit-frequency">{t("pos.credit.frequency")}</Label>
+                  <select
+                    id="credit-frequency"
+                    className="h-9 w-full rounded-md border border-input bg-background px-2 text-sm"
+                    value={credit.frequency}
+                    onChange={(e) => setCredit({ ...credit, frequency: e.target.value, installments: Math.min(credit.installments, e.target.value === "MONTHLY" ? 6 : 12) })}
+                  >
+                    <option value="MONTHLY">{t("pos.credit.MONTHLY")}</option>
+                    <option value="BIWEEKLY">{t("pos.credit.BIWEEKLY")}</option>
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="credit-installments">{t("pos.credit.installments")}</Label>
+                  <select
+                    id="credit-installments"
+                    className="h-9 w-full rounded-md border border-input bg-background px-2 text-sm"
+                    value={credit.installments}
+                    onChange={(e) => setCredit({ ...credit, installments: Number(e.target.value) })}
+                  >
+                    {Array.from({ length: maxInstallments }, (_, i) => i + 1).map((n) => <option key={n} value={n}>{n}</option>)}
+                  </select>
+                </div>
+              </div>
+              {creditProblem ? (
+                <p className="rounded-lg bg-[var(--stk-crit-bg)] px-3 py-2 text-sm text-[var(--stk-crit)]">{creditProblem}</p>
+              ) : (
+                <p className="rounded-lg bg-[var(--stk-accent-soft)] px-3 py-2 text-sm">
+                  {t("pos.credit.plan", { amount: money.format(financed), count: credit.installments, each: money.format(financed / credit.installments) })}
+                </p>
+              )}
+              <div className="space-y-2">
+                <Label htmlFor="credit-pin">{t("pos.discount.pin")}</Label>
+                <Input
+                  id="credit-pin"
+                  type="password"
+                  inputMode="numeric"
+                  autoComplete="off"
+                  maxLength={6}
+                  className="font-mono text-lg tracking-widest"
+                  value={credit.pin}
+                  onChange={(e) => setCredit({ ...credit, pin: e.target.value.replace(/D/g, "") })}
+                />
+              </div>
             </div>
           )}
 

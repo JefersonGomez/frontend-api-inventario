@@ -25,7 +25,7 @@ import {
   Box,
   ScanBarcode,
   Building2,
-  Contact, Monitor, AlertTriangle, Calculator } from "lucide-react";
+  Contact, Monitor, AlertTriangle, Calculator, HandCoins } from "lucide-react";
 
 const ICON = { className: "w-[18px] h-[18px]", strokeWidth: 1.7, "aria-hidden": true };
 
@@ -53,6 +53,7 @@ export function Sidebar() {
     { to: "/purchase-requests", label: t("sidebar.purchaseRequests"), icon: ClipboardList },
     ...(can("purchases.manage") ? [{ to: "/purchase-orders", label: t("sidebar.purchaseOrders"), icon: ShoppingCart }] : []),
     { to: "/customers", label: t("sidebar.customers"), icon: Contact },
+    ...(can("receivables.manage") ? [{ to: "/receivables", label: t("sidebar.receivables"), icon: HandCoins }] : []),
     { to: "/suppliers", label: t("sidebar.suppliers"), icon: Truck },
     ...(can("reports.view") ? [{ to: "/reports", label: t("sidebar.reports"), icon: BarChart3 }] : []),
     ...(can("users.manage") ? [{ to: "/users", label: t("sidebar.users"), icon: UsersIcon }] : []),

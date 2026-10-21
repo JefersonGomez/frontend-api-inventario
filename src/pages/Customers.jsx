@@ -19,10 +19,11 @@ import {
   AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle,
   AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction,
 } from "@/components/ui/alert-dialog"
-import { Plus, Pencil, Trash2 } from "lucide-react"
+import { HandCoins, Plus, Pencil, Trash2 } from "lucide-react"
+import { CreditLimitDialog } from "@/components/receivables/CreditLimitDialog"
 
 const emptyForm = {
-  name: "", idType: "", idNumber: "", email: "", phone: "", address: "", economicActivity: "", creditLimit: "", creditDays: "",
+  name: "", idType: "", idNumber: "", email: "", phone: "", address: "", economicActivity: "",
 }
 
 export function Customers() {
@@ -36,6 +37,7 @@ export function Customers() {
   const [editing, setEditing] = useState(null)
   const [form, setForm] = useState(emptyForm)
   const [deleting, setDeleting] = useState(null)
+  const [crediting, setCrediting] = useState(null) // cliente al que se le habilita el crédito
   // el servidor pagina y busca por nombre, correo o identificación
   const list = useListParams()
   const q = list.get("q")
@@ -58,8 +60,6 @@ export function Customers() {
     phone: form.phone.trim() || null,
     address: form.address.trim() || null,
     economicActivity: form.economicActivity.trim() || null,
-    creditLimit: form.creditLimit === "" ? null : Number(form.creditLimit),
-    creditDays: form.creditLimit === "" || form.creditDays === "" ? null : Number(form.creditDays),
   })
   const createMutation = useMutation({ mutationFn: () => createCustomer(toPayload()), onSuccess: done })
   const updateMutation = useMutation({ mutationFn: () => updateCustomer(editing.id, toPayload()), onSuccess: done })
@@ -87,8 +87,6 @@ export function Customers() {
       phone: c.phone ?? "",
       address: c.address ?? "",
       economicActivity: c.economicActivity ?? "",
-      creditLimit: c.creditLimit == null ? "" : String(c.creditLimit),
-      creditDays: c.creditDays == null ? "" : String(c.creditDays),
     })
     setDialogOpen(true)
   }
@@ -110,12 +108,7 @@ export function Customers() {
 
   const isSaving = createMutation.isPending || updateMutation.isPending
   const saveError = createMutation.error || updateMutation.error
-  const credit = (c) =>
-    c.creditLimit == null
-      ? t("customers.cash")
-      : c.creditDays
-        ? t("customers.creditValue", { limit: money.format(c.creditLimit), days: c.creditDays })
-        : t("customers.creditNoDays", { limit: money.format(c.creditLimit) })
+  const credit = (c) => (c.creditLimit == null ? t("customers.cash") : t("customers.creditNoDays", { limit: money.format(c.creditLimit) }))
 
   return (
     <div>
@@ -171,6 +164,11 @@ export function Customers() {
                 <TableCell className="hidden text-muted-foreground lg:table-cell">{c.phone || "—"}</TableCell>
                 <TableCell className="whitespace-nowrap">{credit(c)}</TableCell>
                 <TableCell className="text-right">
+                  {can("credit.manage") && (
+                    <Button variant="ghost" size="icon" onClick={() => setCrediting(c)} aria-label={t("receivables.limit.button", { name: c.name })} title={t("receivables.limit.button", { name: c.name })}>
+                      <HandCoins className="h-4 w-4" />
+                    </Button>
+                  )}
                   {canManage && (
                     <Button variant="ghost" size="icon" onClick={() => openEdit(c)} aria-label={t("customers.edit_title")}>
                       <Pencil className="h-4 w-4" />
@@ -188,6 +186,7 @@ export function Customers() {
         </Table>
       </div>
       <Pagination data={customersQuery.data} onPage={list.setPage} />
+      <CreditLimitDialog customer={crediting} onClose={() => setCrediting(null)} />
 
       <Dialog open={dialogOpen} onOpenChange={(open) => (open ? setDialogOpen(true) : closeDialog())}>
         <DialogContent className="max-w-lg">
@@ -224,18 +223,6 @@ export function Customers() {
               <Label htmlFor="customer-activity">{t("customers.fields.activity")}</Label>
               <Input id="customer-activity" inputMode="numeric" value={form.economicActivity} onChange={(e) => setForm({ ...form, economicActivity: e.target.value })} aria-describedby="customer-activity-hint" />
               <p id="customer-activity-hint" className="text-xs text-muted-foreground">{t("customers.fields.activity_hint")}</p>
-            </div>
-
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="customer-credit">{t("customers.fields.creditLimit")}</Label>
-                <Input id="customer-credit" type="number" min="0" step="0.01" value={form.creditLimit} onChange={(e) => setForm({ ...form, creditLimit: e.target.value })} aria-describedby="customer-credit-hint" />
-                <p id="customer-credit-hint" className="text-xs text-muted-foreground">{t("customers.fields.creditLimit_hint")}</p>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="customer-days">{t("customers.fields.creditDays")}</Label>
-                <Input id="customer-days" type="number" min="1" max="365" step="1" value={form.creditDays} onChange={(e) => setForm({ ...form, creditDays: e.target.value })} disabled={form.creditLimit === ""} />
-              </div>
             </div>
 
             {saveError && (

@@ -3,10 +3,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { Link, Navigate } from "react-router-dom"
 import {
-  AlertTriangle, ArrowDownToLine, ArrowUpFromLine, LogOut, Minus, MonitorUp, Percent, Plus, Printer, Search, ShoppingCart, Trash2, UserRound,
+  AlertTriangle, ArrowDownToLine, ArrowUpFromLine, HandCoins, LogOut, Minus, MonitorUp, Percent, Plus, Printer, Search, ShoppingCart, Trash2, UserRound,
   Wallet, X,
 } from "lucide-react"
 import { addCashMovement, getDiscountTypes, getSession, sell } from "@/api/pos"
+import { getAccount } from "@/api/receivables"
 import { getProductByBarcode, getProducts } from "@/api/products"
 import { getCategories } from "@/api/categories"
 import { getCompany } from "@/api/company"
@@ -21,6 +22,7 @@ import { ChargeDialog } from "@/components/pos/ChargeDialog"
 import { CustomerPicker } from "@/components/pos/CustomerPicker"
 import { DiscountDialog } from "@/components/pos/DiscountDialog"
 import { PriceDialog } from "@/components/pos/PriceDialog"
+import { PaymentDialog } from "@/components/pos/PaymentDialog"
 import { Ticket } from "@/components/pos/Ticket"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -60,7 +62,8 @@ export function Pos() {
   const [discountFor, setDiscountFor] = useState(null) // target del DiscountDialog
   const [priceFor, setPriceFor] = useState(null) // línea a la que se le ajusta el precio
   const [customer, setCustomer] = useState(null)
-  const [pickingCustomer, setPickingCustomer] = useState(false)
+  const [pickingCustomer, setPickingCustomer] = useState(false) // false | "sale" | "payment" (abono)
+  const [payingCustomer, setPayingCustomer] = useState(null) // abono de este cliente
 
   const locationId = session?.register.location.id
   const showStock = company?.posShowStock !== false
@@ -113,8 +116,15 @@ export function Pos() {
     display.current?.post(stateRef.current)
   }, [cart, ticket, lastId, company?.name, totalDiscount, discountTypes])
 
+  // cliente con crédito: su estado de cuenta para cobrar a crédito (disponible, vencidas)
+  const { data: account } = useQuery({
+    queryKey: ["receivables", customer?.id],
+    queryFn: () => getAccount(customer.id),
+    enabled: customer?.creditLimit != null,
+  })
+
   const sale = useMutation({
-    mutationFn: (payments) =>
+    mutationFn: ({ payments, credit }) =>
       sell({
         lines: cart.map((i) => ({
           productId: i.id, quantity: i.quantity,
@@ -126,6 +136,7 @@ export function Pos() {
         ...(customer && { customerId: customer.id }),
         ...(negativePin && { negativePin }),
         ...(discountPin && { discountPin }),
+        ...credit, // { credit: { frequency, installments }, creditPin }
       }),
     onSuccess: (data) => {
       resetSale()
@@ -133,6 +144,7 @@ export function Pos() {
       setTicket(data)
       queryClient.invalidateQueries({ queryKey: ["products"] })
       queryClient.invalidateQueries({ queryKey: ["cash-session"] })
+      queryClient.invalidateQueries({ queryKey: ["receivables"] })
     },
     onError: (e) => {
       const body = e.response?.data
@@ -157,7 +169,7 @@ export function Pos() {
         searchRef.current?.focus()
       } else if (e.key === "F12") {
         e.preventDefault()
-        if (cart.length && !ticket && !charging && !askNegative && !discountFor && !priceFor && !pickingCustomer) startCharge()
+        if (cart.length && !ticket && !charging && !askNegative && !discountFor && !priceFor && !pickingCustomer && !payingCustomer) startCharge()
       }
     }
     window.addEventListener("keydown", onKey)
@@ -294,6 +306,10 @@ export function Pos() {
               <span className="hidden lg:inline">{t("pos.customerDisplay")}</span>
             </Button>
           )}
+          <Button variant="outline" size="sm" onClick={() => setPickingCustomer("payment")} aria-label={t("receivables.pay.button")}>
+            <HandCoins />
+            <span className="hidden lg:inline">{t("receivables.pay.button")}</span>
+          </Button>
           <Button variant="outline" size="sm" onClick={() => setCashMove("IN")} aria-label={t("pos.cashIn")}>
             <ArrowDownToLine />
             <span className="hidden lg:inline">{t("pos.cashIn")}</span>
@@ -496,7 +512,7 @@ export function Pos() {
           </ol>
           <div className="border-t border-border p-4">
             <div className="mb-3 flex gap-2">
-              <Button variant="outline" size="sm" className="min-w-0 flex-1 justify-start" onClick={() => setPickingCustomer(true)}>
+              <Button variant="outline" size="sm" className="min-w-0 flex-1 justify-start" onClick={() => setPickingCustomer("sale")}>
                 <UserRound />
                 <span className="truncate">{customer ? customer.name : t("pos.customer.add")}</span>
               </Button>
@@ -555,7 +571,8 @@ export function Pos() {
         open={charging}
         onOpenChange={setCharging}
         total={totals.total}
-        onCharge={(payments) => sale.mutate(payments)}
+        onCharge={(payments, credit) => sale.mutate({ payments, credit })}
+        account={customer?.creditLimit != null ? account : null}
         pending={sale.isPending}
         error={sale.error}
       />
@@ -564,13 +581,15 @@ export function Pos() {
       <DiscountDialog target={discountFor} types={discountTypes} onApply={applyDiscount} onRemove={removeDiscount} onClose={() => setDiscountFor(null)} />
 
       <CustomerPicker
-        open={pickingCustomer}
+        open={!!pickingCustomer}
         onClose={() => setPickingCustomer(false)}
         onPick={(c) => {
-          setCustomer(c)
+          if (pickingCustomer === "payment") setPayingCustomer(c)
+          else setCustomer(c)
           setPickingCustomer(false)
         }}
       />
+      <PaymentDialog customer={payingCustomer} inRegister onClose={() => setPayingCustomer(null)} />
 
       <NegativeDialog
         items={askNegative}

@@ -33,7 +33,8 @@
     "labels": "Etiquetas",
     "pos": "Caja",
     "negatives": "Negativas",
-    "cashClosings": "Arqueos"
+    "cashClosings": "Arqueos",
+    "receivables": "Cuentas por cobrar"
   },
   "topbar": {
     "search": "Buscar producto o SKU",
@@ -833,7 +834,8 @@
       "transferIncoming": "Transferencias en camino",
       "transferReceived": "Transferencias recibidas",
       "aiBudgetAlert": "Presupuesto de IA",
-      "stockNegative": "Negativas por revisar"
+      "stockNegative": "Negativas por revisar",
+      "installmentOverdue": "Cuotas vencidas"
     },
     "detail": {
       "requestExpiring": "{{requester}} · {{quantity}} · vence {{when}}",
@@ -856,7 +858,9 @@
       "transferReceived": "{{to}} recibió todo",
       "transferReceivedShort": "{{to}} la recibió con faltantes ({{shortages}})",
       "aiBudgetAlert": "Llevas US$ {{spent}} de {{budget}} este mes ({{percent}} %)",
-      "stockNegative": "{{quantity}} sin stock en {{location}} · vendió {{cashier}}"
+      "stockNegative": "{{quantity}} sin stock en {{location}} · vendió {{cashier}}",
+      "installmentOverdue_one": "{{count}} cuota vencida · {{amount}}",
+      "installmentOverdue_other": "{{count}} cuotas vencidas · {{amount}}"
     },
     "when": {
       "today": "hoy",
@@ -1150,13 +1154,9 @@
       "phone": "Teléfono",
       "address": "Dirección",
       "activity": "Actividad económica (opcional)",
-      "activity_hint": "Código de la actividad del cliente ante Hacienda, si lo tienes.",
-      "creditLimit": "Límite de crédito",
-      "creditLimit_hint": "Vacío = solo vende de contado.",
-      "creditDays": "Plazo de crédito (días)"
+      "activity_hint": "Código de la actividad del cliente ante Hacienda, si lo tienes."
     },
     "cash": "Contado",
-    "creditValue": "{{limit}} · {{days}} días",
     "creditNoDays": "{{limit}}",
     "delete_title": "¿Borrar este cliente?",
     "delete_description": "\"{{name}}\" ya no aparecerá en la lista. Los comprobantes emitidos a su nombre se conservan.",
@@ -1203,7 +1203,10 @@
     "sales.void": "Autorizar anulaciones (con PIN)",
     "accounting.view": "Ver contabilidad",
     "sales.negative": "Autorizar negativas (con PIN)",
-    "cash.reconcile": "Hacer arqueos de caja (jefa de caja)"
+    "cash.reconcile": "Hacer arqueos de caja (jefa de caja)",
+    "sales.credit": "Autorizar ventas a crédito (con PIN)",
+    "credit.manage": "Dar crédito a clientes y fijar su límite",
+    "receivables.manage": "Cuentas por cobrar y abonos sin caja"
   },
   "locations": {
     "label": "Ubicación",
@@ -1516,7 +1519,8 @@
       "CASH": "Efectivo",
       "CARD": "Tarjeta",
       "SINPE": "SINPE Móvil",
-      "MIXED": "Mixto"
+      "MIXED": "Mixto",
+      "CREDIT": "Crédito"
     },
     "methods": {
       "CASH": "Efectivo",
@@ -1558,7 +1562,11 @@
       "notFiscal": "Comprobante interno, sin validez fiscal.",
       "internalInvoice": "FACTURA INTERNA",
       "discount": "Desc. {{label}}",
-      "authorizedBy": "Descuento autorizado por {{name}}"
+      "authorizedBy": "Descuento autorizado por {{name}}",
+      "credit": "VENTA A CRÉDITO",
+      "installment": "Cuota {{n}} · {{date}}",
+      "creditBy": "Crédito autorizado por {{name}}",
+      "signature": "Firma del cliente"
     },
     "close": {
       "title": "Cierre de caja",
@@ -1592,7 +1600,8 @@
       "cardCharged": "Cobrado con tarjeta",
       "cardDeclared": "Total del cierre del datáfono (opcional)",
       "cardDeclaredHint": "El que imprimió el datáfono en papel; solo para comparar con lo cobrado.",
-      "cardMismatch": "El datáfono no coincide con lo cobrado: diferencia de {{amount}}"
+      "cardMismatch": "El datáfono no coincide con lo cobrado: diferencia de {{amount}}",
+      "cashCollections": "Abonos en efectivo"
     },
     "counters": {
       "label": "Contadores del turno",
@@ -1635,7 +1644,9 @@
       "reconciledBy": "Arqueo: {{name}} · {{at}}",
       "signCashier": "Firma del cajero",
       "signSupervisor": "Firma de la jefa de caja",
-      "pending": "Pendiente de arqueo"
+      "pending": "Pendiente de arqueo",
+      "collections_one": "{{count}} abono a crédito",
+      "collections_other": "{{count}} abonos a crédito"
     },
     "discount": {
       "label": "Descuento",
@@ -1681,6 +1692,19 @@
       "reason": "Motivo",
       "shelf": "Precio de góndola",
       "remove": "Volver al precio del sistema"
+    },
+    "credit": {
+      "available": "Crédito disponible",
+      "down": "Prima (opcional)",
+      "frequency": "Pagos",
+      "installments": "Cuotas",
+      "MONTHLY": "Mensuales",
+      "BIWEEKLY": "Quincenales",
+      "plan_one": "A crédito {{amount}} en {{count}} cuota de {{each}}",
+      "plan_other": "A crédito {{amount}} en {{count}} cuotas de {{each}}",
+      "overdue": "Tiene cuotas vencidas por {{amount}}: no se le puede vender a crédito hasta que se ponga al día.",
+      "overLimit": "Pasa el límite: solo tiene {{amount}} disponibles. Sube la prima o cobra de contado.",
+      "nothing": "Con la prima no queda nada a crédito: cobra de contado."
     }
   },
   "negatives": {
@@ -1771,5 +1795,70 @@
     "emptyTitle": "Todavía no hay descuentos",
     "emptyHint": "Crea los que usa tu negocio: adulto mayor, empleado, promociones…",
     "error": "No se pudo guardar el descuento"
+  },
+  "receivables": {
+    "title": "Cuentas por cobrar",
+    "subtitle": "Clientes con crédito: saldos, cuotas vencidas y abonos.",
+    "totalBalance": "Por cobrar",
+    "totalOverdue": "Vencido",
+    "search": "Buscar por nombre o cédula",
+    "onlyOverdue": "Solo con cuotas vencidas",
+    "customer": "Cliente",
+    "balance": "Saldo",
+    "overdue": "Vencido",
+    "nextDue": "Próxima cuota",
+    "empty": "No hay clientes con crédito",
+    "installments": "Cuotas",
+    "dueDate": "Vence",
+    "sale": "Venta",
+    "amount": "Monto",
+    "pending": "Pendiente",
+    "status": "Estado",
+    "noInstallments": "Todavía no tiene compras a crédito",
+    "installment": "Cuota {{n}}",
+    "paid": "Pagada",
+    "late": "Vencida",
+    "upcoming": "Al día",
+    "payments": "Abonos",
+    "date": "Fecha",
+    "by": "Recibió",
+    "after": "Saldo después",
+    "noPayments": "Todavía no hay abonos",
+    "atRegister": "En caja",
+    "offRegister": "Sin caja",
+    "limit": {
+      "label": "Límite de crédito",
+      "change": "Límite de crédito",
+      "title": "Crédito de {{name}}",
+      "button": "Crédito de {{name}}",
+      "needsId": "Para darle crédito, el cliente necesita su identificación. Edítalo y agrégala primero.",
+      "hint": "Lo máximo que puede deber. Cada venta a crédito la autoriza el encargado con su código.",
+      "error": "No se pudo guardar el crédito",
+      "remove": "Quitar el crédito"
+    },
+    "pay": {
+      "button": "Abono",
+      "title": "Abono de {{name}}",
+      "done": "Abono registrado",
+      "close": "Listo",
+      "nothing": "No tiene saldo pendiente.",
+      "amount": "Monto del abono",
+      "nextInstallment": "Próxima cuota",
+      "allOverdue": "Todo lo vencido",
+      "all": "Todo el saldo",
+      "reference": "Referencia",
+      "note": "Nota (opcional)",
+      "newBalance": "Saldo nuevo",
+      "error": "No se pudo registrar el abono",
+      "submit": "Registrar abono"
+    },
+    "receipt": {
+      "title": "RECIBO DE ABONO",
+      "by": "Recibió: {{name}}",
+      "before": "Saldo anterior",
+      "amount": "Abono ({{method}})",
+      "after": "Saldo nuevo",
+      "reprint": "Ver e imprimir el recibo"
+    }
   }
 }

@@ -94,7 +94,9 @@ export function CashClosing() {
   const s = report.summary
   const counted = sumDenominations(counts)
   const diff = round2(counted - report.expectedCash)
-  const cardDiff = card === "" ? null : round2(Number(card) - (s.payments.CARD ?? 0))
+  // el datáfono cobra ventas y abonos con tarjeta
+  const cardCharged = round2((s.payments.CARD ?? 0) + (s.collections?.CARD ?? 0))
+  const cardDiff = card === "" ? null : round2(Number(card) - cardCharged)
 
   return (
     <div>
@@ -108,6 +110,7 @@ export function CashClosing() {
             <dl className="space-y-1">
               <Row label={t("pos.close.opening")} value={money.format(s.openingAmount)} />
               <Row label={t("pos.close.cashSales")} value={money.format(s.payments.CASH ?? 0)} />
+              {s.collections?.CASH > 0 && <Row label={t("pos.close.cashCollections")} value={money.format(s.collections.CASH)} />}
               <Row label={t("pos.cashIn")} value={money.format(s.cashIn)} />
               <Row label={t("pos.cashOut")} value={`− ${money.format(s.cashOut)}`} />
               <Row label={t("pos.close.expected")} value={money.format(report.expectedCash)} className="border-t border-border pt-2 font-semibold" />
@@ -121,8 +124,8 @@ export function CashClosing() {
 
           <div className="stk-card space-y-2 text-sm">
             <dl className="space-y-1">
-              <Row label={t("pos.close.cardCharged")} value={money.format(s.payments.CARD ?? 0)} />
-              <Row label={t("pos.methods.SINPE")} value={money.format(s.payments.SINPE ?? 0)} />
+              <Row label={t("pos.close.cardCharged")} value={money.format(cardCharged)} />
+              <Row label={t("pos.methods.SINPE")} value={money.format((s.payments.SINPE ?? 0) + (s.collections?.SINPE ?? 0))} />
             </dl>
             <Label htmlFor="card-declared">{t("pos.close.cardDeclared")}</Label>
             <Input id="card-declared" type="number" min={0} step="any" className="font-mono" value={card} onChange={(e) => setCard(e.target.value)} />
