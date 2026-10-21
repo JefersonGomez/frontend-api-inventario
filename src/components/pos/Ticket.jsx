@@ -26,8 +26,12 @@ export function Ticket({ data }) {
         {location && <p>{location.name}</p>}
       </header>
       <hr />
-      <p className="stk-ticket-center stk-ticket-strong">{doc.type === "INVOICE" ? t("pos.ticket.internalInvoice") : t("pos.ticket.internal")}</p>
+      <p className="stk-ticket-center stk-ticket-strong">
+        {doc.type === "CREDIT_NOTE" ? t("pos.ticket.creditNote") : doc.type === "INVOICE" ? t("pos.ticket.internalInvoice") : t("pos.ticket.internal")}
+      </p>
       <p className="stk-ticket-center">N.º {doc.consecutive}</p>
+      {doc.referenceDocument && <p>{t("pos.ticket.reference_doc", { number: doc.referenceDocument.consecutive })}</p>}
+      {doc.referenceReason && <p>{t("pos.ticket.reason", { reason: doc.referenceReason })}</p>}
       <p>
         {issued.toLocaleDateString("es-CR")} {issued.toLocaleTimeString("es-CR", { hour: "2-digit", minute: "2-digit" })}
       </p>
@@ -38,7 +42,10 @@ export function Ticket({ data }) {
       <hr />
       {doc.lines.map((l) => (
         <div key={l.id} className="stk-ticket-line">
-          <p>{l.description}</p>
+          <p>
+            {l.description}
+            {l.returnCondition === "DAMAGED" && ` (${t("sales.condition.DAMAGED")})`}
+          </p>
           <p className="stk-ticket-row">
             <span>
               {Number(l.quantity)} × {money.format(withTax(l, l.unitPrice))}
@@ -79,7 +86,7 @@ export function Ticket({ data }) {
       {doc.payments.map((p) => (
         <div key={p.id}>
           <p className="stk-ticket-row">
-            <span>{t(`pos.methods.${p.method}`)}</span>
+            <span>{doc.type === "CREDIT_NOTE" ? t("pos.ticket.refund", { method: t(`pos.methods.${p.method}`) }) : t(`pos.methods.${p.method}`)}</span>
             <span>{money.format(p.amount)}</span>
           </p>
           {p.reference && <p>{t("pos.ticket.reference", { ref: p.reference })}</p>}
@@ -97,6 +104,7 @@ export function Ticket({ data }) {
           )}
         </div>
       ))}
+      {doc.returnAuthorizedBy && <p>{t("pos.ticket.returnBy", { name: doc.returnAuthorizedBy.name })}</p>}
       {doc.installments?.length > 0 && (
         <>
           <hr />

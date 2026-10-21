@@ -22,6 +22,7 @@ const SECTIONS = [
   { type: "cashCodeAssigned", icon: LockKeyhole, tone: "info" },
   { type: "stockNegative", icon: AlertTriangle, tone: "warn" },
   { type: "installmentOverdue", icon: AlertTriangle, tone: "crit" },
+  { type: "returnDamaged", icon: AlertTriangle, tone: "warn" },
   { type: "transferIncoming", icon: Truck, tone: "info" },
   { type: "transferReceived", icon: Truck, tone: "ok" },
   { type: "memberJoined", icon: UserPlus, tone: "ok" },

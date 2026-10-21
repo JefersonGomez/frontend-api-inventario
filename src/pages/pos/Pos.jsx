@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { Link, Navigate } from "react-router-dom"
 import {
-  AlertTriangle, ArrowDownToLine, ArrowUpFromLine, HandCoins, LogOut, Minus, MonitorUp, Percent, Plus, Printer, Search, ShoppingCart, Trash2, UserRound,
+  AlertTriangle, ArrowDownToLine, ArrowUpFromLine, HandCoins, LogOut, Undo2, Minus, MonitorUp, Percent, Plus, Printer, Search, ShoppingCart, Trash2, UserRound,
   Wallet, X,
 } from "lucide-react"
 import { addCashMovement, getDiscountTypes, getSession, sell } from "@/api/pos"
@@ -23,6 +23,8 @@ import { CustomerPicker } from "@/components/pos/CustomerPicker"
 import { DiscountDialog } from "@/components/pos/DiscountDialog"
 import { PriceDialog } from "@/components/pos/PriceDialog"
 import { PaymentDialog } from "@/components/pos/PaymentDialog"
+import { FindSaleDialog } from "@/components/sales/FindSaleDialog"
+import { ReturnFlow } from "@/components/sales/ReturnFlow"
 import { Ticket } from "@/components/pos/Ticket"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -64,6 +66,8 @@ export function Pos() {
   const [customer, setCustomer] = useState(null)
   const [pickingCustomer, setPickingCustomer] = useState(false) // false | "sale" | "payment" (abono)
   const [payingCustomer, setPayingCustomer] = useState(null) // abono de este cliente
+  const [findingSale, setFindingSale] = useState(false) // devolución: buscar el tiquete
+  const [returnSaleId, setReturnSaleId] = useState(null)
 
   const locationId = session?.register.location.id
   const showStock = company?.posShowStock !== false
@@ -169,7 +173,7 @@ export function Pos() {
         searchRef.current?.focus()
       } else if (e.key === "F12") {
         e.preventDefault()
-        if (cart.length && !ticket && !charging && !askNegative && !discountFor && !priceFor && !pickingCustomer && !payingCustomer) startCharge()
+        if (cart.length && !ticket && !charging && !askNegative && !discountFor && !priceFor && !pickingCustomer && !payingCustomer && !findingSale && !returnSaleId) startCharge()
       }
     }
     window.addEventListener("keydown", onKey)
@@ -306,6 +310,10 @@ export function Pos() {
               <span className="hidden lg:inline">{t("pos.customerDisplay")}</span>
             </Button>
           )}
+          <Button variant="outline" size="sm" onClick={() => setFindingSale(true)} aria-label={t("sales.return.button")}>
+            <Undo2 />
+            <span className="hidden lg:inline">{t("sales.return.button")}</span>
+          </Button>
           <Button variant="outline" size="sm" onClick={() => setPickingCustomer("payment")} aria-label={t("receivables.pay.button")}>
             <HandCoins />
             <span className="hidden lg:inline">{t("receivables.pay.button")}</span>
@@ -590,6 +598,15 @@ export function Pos() {
         }}
       />
       <PaymentDialog customer={payingCustomer} inRegister onClose={() => setPayingCustomer(null)} />
+      <FindSaleDialog
+        open={findingSale}
+        onClose={() => setFindingSale(false)}
+        onPick={(id) => {
+          setFindingSale(false)
+          setReturnSaleId(id)
+        }}
+      />
+      <ReturnFlow saleId={returnSaleId} onClose={() => setReturnSaleId(null)} />
 
       <NegativeDialog
         items={askNegative}

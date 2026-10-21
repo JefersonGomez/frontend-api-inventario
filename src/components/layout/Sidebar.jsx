@@ -25,7 +25,7 @@ import {
   Box,
   ScanBarcode,
   Building2,
-  Contact, Monitor, AlertTriangle, Calculator, HandCoins } from "lucide-react";
+  Contact, Monitor, AlertTriangle, Calculator, HandCoins, Receipt } from "lucide-react";
 
 const ICON = { className: "w-[18px] h-[18px]", strokeWidth: 1.7, "aria-hidden": true };
 
@@ -42,6 +42,7 @@ export function Sidebar() {
     { to: "/", label: t("sidebar.dashboard"), icon: LayoutDashboard },
     ...(can("sales.sell") && can("cash.manage") ? [{ to: "/pos/abrir", label: t("sidebar.pos"), icon: Monitor }] : []),
     ...(can("cash.reconcile") ? [{ to: "/cash-closings", label: t("sidebar.cashClosings"), icon: Calculator }] : []),
+    ...(can("sales.sell") || can("sales.void") || can("reports.view") ? [{ to: "/sales", label: t("sidebar.sales"), icon: Receipt }] : []),
     { to: "/products", label: t("sidebar.products"), icon: Package },
     { to: "/categories", label: t("sidebar.categories"), icon: FolderTree },
     { to: "/movements", label: t("sidebar.movements"), icon: ArrowLeftRight },

@@ -32,6 +32,7 @@ import { PosClose } from "@/pages/pos/PosClose"
 import { CustomerDisplay } from "@/pages/pos/CustomerDisplay"
 import { Negatives } from "@/pages/Negatives"
 import { ReceivableAccount, Receivables } from "@/pages/Receivables"
+import { SaleDetail, Sales } from "@/pages/Sales"
 import { CashClosings } from "@/pages/CashClosings"
 import { CashClosing } from "@/pages/CashClosing"
 
@@ -82,6 +83,8 @@ const router = createBrowserRouter([
       { path: "users", element: <PermissionRoute perm="users.manage"><Users /></PermissionRoute> },
       { path: "suppliers", element: <Suppliers /> },
       { path: "customers", element: <Customers /> },
+      { path: "sales", element: <PermissionRoute perm={["sales.sell", "sales.void", "reports.view"]}><Sales /></PermissionRoute> },
+      { path: "sales/:id", element: <PermissionRoute perm={["sales.sell", "sales.void", "reports.view"]}><SaleDetail /></PermissionRoute> },
       { path: "receivables", element: <PermissionRoute perm="receivables.manage"><Receivables /></PermissionRoute> },
       { path: "receivables/:id", element: <PermissionRoute perm="receivables.manage"><ReceivableAccount /></PermissionRoute> },
       {path:"purchase-requests", element:<PurchaseRequests />},

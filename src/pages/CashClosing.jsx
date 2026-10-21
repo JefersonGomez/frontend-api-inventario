@@ -95,7 +95,7 @@ export function CashClosing() {
   const counted = sumDenominations(counts)
   const diff = round2(counted - report.expectedCash)
   // el datáfono cobra ventas y abonos con tarjeta
-  const cardCharged = round2((s.payments.CARD ?? 0) + (s.collections?.CARD ?? 0))
+  const cardCharged = round2((s.payments.CARD ?? 0) + (s.collections?.CARD ?? 0) - (s.refunds?.CARD ?? 0))
   const cardDiff = card === "" ? null : round2(Number(card) - cardCharged)
 
   return (
@@ -111,6 +111,7 @@ export function CashClosing() {
               <Row label={t("pos.close.opening")} value={money.format(s.openingAmount)} />
               <Row label={t("pos.close.cashSales")} value={money.format(s.payments.CASH ?? 0)} />
               {s.collections?.CASH > 0 && <Row label={t("pos.close.cashCollections")} value={money.format(s.collections.CASH)} />}
+              {s.refunds?.CASH > 0 && <Row label={t("pos.close.cashRefunds")} value={`− ${money.format(s.refunds.CASH)}`} />}
               <Row label={t("pos.cashIn")} value={money.format(s.cashIn)} />
               <Row label={t("pos.cashOut")} value={`− ${money.format(s.cashOut)}`} />
               <Row label={t("pos.close.expected")} value={money.format(report.expectedCash)} className="border-t border-border pt-2 font-semibold" />

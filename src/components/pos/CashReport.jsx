@@ -42,6 +42,9 @@ export function CashReport({ report }) {
       <Row label={t("pos.methods.CASH")} value={money.format(s.payments.CASH ?? 0)} />
       <Row label={t("pos.methods.CARD")} value={money.format(s.payments.CARD ?? 0)} />
       <Row label={t("pos.methods.SINPE")} value={money.format(s.payments.SINPE ?? 0)} />
+      {s.refundsCount > 0 && (
+        <Row label={t("pos.report.refunds", { count: s.refundsCount })} value={`− ${money.format(Object.values(s.refunds).reduce((a, v) => a + v, 0))}`} />
+      )}
       {s.collectionsCount > 0 && (
         <Row
           label={t("pos.report.collections", { count: s.collectionsCount })}

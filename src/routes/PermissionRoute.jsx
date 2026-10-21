@@ -5,6 +5,7 @@ import { usePermissions } from "@/hoocks/usePermissions"
 export function PermissionRoute({ perm, children }) {
   const { ready, can } = usePermissions()
   if (!ready) return null
-  if (!can(perm)) return <Navigate to="/" replace />
+  // perm: uno o varios (alcanza con cualquiera)
+  if (![perm].flat().some(can)) return <Navigate to="/" replace />
   return children
 }

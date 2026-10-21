@@ -34,7 +34,8 @@
     "pos": "Register",
     "negatives": "Negatives",
     "cashClosings": "Cash counts",
-    "receivables": "Receivables"
+    "receivables": "Receivables",
+    "sales": "Sales"
   },
   "topbar": {
     "search": "Search product or SKU",
@@ -835,7 +836,8 @@
       "transferReceived": "Received transfers",
       "aiBudgetAlert": "AI budget",
       "stockNegative": "Negatives to review",
-      "installmentOverdue": "Overdue installments"
+      "installmentOverdue": "Overdue installments",
+      "returnDamaged": "Damaged returns"
     },
     "detail": {
       "requestExpiring": "{{requester}} · {{quantity}} · expires {{when}}",
@@ -860,7 +862,8 @@
       "aiBudgetAlert": "US$ {{spent}} of {{budget}} spent this month ({{percent}} %)",
       "stockNegative": "{{quantity}} without stock at {{location}} · sold by {{cashier}}",
       "installmentOverdue_one": "{{count}} overdue installment · {{amount}}",
-      "installmentOverdue_other": "{{count}} overdue installments · {{amount}}"
+      "installmentOverdue_other": "{{count}} overdue installments · {{amount}}",
+      "returnDamaged": "{{quantity}} returned damaged · {{reason}}"
     },
     "when": {
       "today": "today",
@@ -1456,7 +1459,10 @@
     "showStock": "Show the stock quantity at the register",
     "showStockHint": "If off, the cashier only sees Available, Few left or Out of stock.",
     "customerDisplay": "Customer display",
-    "customerDisplayHint": "Turn on if this register has a second monitor facing the customer: they see each product, the total and their change."
+    "customerDisplayHint": "Turn on if this register has a second monitor facing the customer: they see each product, the total and their change.",
+    "returnDays": "Return window (days)",
+    "returnDaysHint": "How many days after the sale a return is allowed. Always with a manager's code.",
+    "returnDaysError": "Couldn't save the window (1 to 365 days)"
   },
   "pos": {
     "backToApp": "Back to Stockly",
@@ -1566,7 +1572,12 @@
       "credit": "CREDIT SALE",
       "installment": "Installment {{n}} · {{date}}",
       "creditBy": "Credit approved by {{name}}",
-      "signature": "Customer signature"
+      "signature": "Customer signature",
+      "creditNote": "CREDIT NOTE",
+      "reference_doc": "Corrects: {{number}}",
+      "reason": "Reason: {{reason}}",
+      "refund": "Refund {{method}}",
+      "returnBy": "Return approved by {{name}}"
     },
     "close": {
       "title": "Close register",
@@ -1601,7 +1612,8 @@
       "cardDeclared": "Card terminal closing total (optional)",
       "cardDeclaredHint": "The one the terminal printed on paper; only to compare with what was charged.",
       "cardMismatch": "The card terminal doesn't match what was charged: difference of {{amount}}",
-      "cashCollections": "Cash credit payments"
+      "cashCollections": "Cash credit payments",
+      "cashRefunds": "Cash refunds"
     },
     "counters": {
       "label": "Shift counters",
@@ -1646,7 +1658,9 @@
       "signSupervisor": "Head cashier signature",
       "pending": "Pending cash count",
       "collections_one": "{{count}} credit payment",
-      "collections_other": "{{count}} credit payments"
+      "collections_other": "{{count}} credit payments",
+      "refunds_one": "{{count}} return refund",
+      "refunds_other": "{{count}} return refunds"
     },
     "discount": {
       "label": "Discount",
@@ -1859,6 +1873,72 @@
       "amount": "Payment ({{method}})",
       "after": "New balance",
       "reprint": "View and print the receipt"
+    }
+  },
+  "sales": {
+    "title": "Sales",
+    "subtitle": "Tickets, invoices and credit notes. Open one to reprint it or process a return.",
+    "search": "Ticket number or customer",
+    "kind": "Type",
+    "kinds": {
+      "all": "All",
+      "SALE": "Sales",
+      "CREDIT_NOTE": "Credit notes"
+    },
+    "from": "From",
+    "to": "To",
+    "date": "Date",
+    "number": "Number",
+    "customer": "Customer",
+    "register": "Register",
+    "cashier": "Cashier",
+    "total": "Total",
+    "empty": "No sales match those filters",
+    "types": {
+      "TICKET": "Ticket",
+      "INVOICE": "Invoice",
+      "CREDIT_NOTE": "Credit note"
+    },
+    "withReturns": "Returned",
+    "fixes": "corrects",
+    "returnExpired": "The return window has passed",
+    "returnUntil": "Returnable until {{date}}",
+    "product": "Product",
+    "sold": "Sold",
+    "returnedQty": "Returned",
+    "creditNotes": "Returns",
+    "authorizedBy": "approved by {{name}}",
+    "condition": {
+      "GOOD": "Good",
+      "DAMAGED": "Damaged"
+    },
+    "return": {
+      "button": "Return",
+      "title": "Return of ticket {{number}}",
+      "expired": "The return window for this sale ended on {{date}}.",
+      "what": "What is being returned?",
+      "all": "Return everything (void)",
+      "sold": "Sold {{sold}} · {{left}} left",
+      "quantity": "Quantity of {{name}} to return",
+      "condition": "Product condition",
+      "conditionHint": "Good goes back to stock; damaged doesn't, and inventory gets notified.",
+      "reason": "Reason",
+      "creditFirst": "First reduces this sale's credit",
+      "toRefund": "To refund the customer",
+      "methodIfAny": "Any leftover is refunded by",
+      "method": "Refund by",
+      "error": "Couldn't process the return",
+      "submit": "Approve and return",
+      "done": "Return done",
+      "credited": "{{amount}} taken off the credit.",
+      "refunded": "Give the customer {{amount}}."
+    },
+    "find": {
+      "title": "Which sale is being returned?",
+      "placeholder": "Ticket number (or scan it)",
+      "search": "Search",
+      "none": "No sales with that number",
+      "noCustomer": "No customer"
     }
   }
 }

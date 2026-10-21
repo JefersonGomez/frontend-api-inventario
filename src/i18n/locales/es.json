@@ -34,7 +34,8 @@
     "pos": "Caja",
     "negatives": "Negativas",
     "cashClosings": "Arqueos",
-    "receivables": "Cuentas por cobrar"
+    "receivables": "Cuentas por cobrar",
+    "sales": "Ventas"
   },
   "topbar": {
     "search": "Buscar producto o SKU",
@@ -835,7 +836,8 @@
       "transferReceived": "Transferencias recibidas",
       "aiBudgetAlert": "Presupuesto de IA",
       "stockNegative": "Negativas por revisar",
-      "installmentOverdue": "Cuotas vencidas"
+      "installmentOverdue": "Cuotas vencidas",
+      "returnDamaged": "Devoluciones dañadas"
     },
     "detail": {
       "requestExpiring": "{{requester}} · {{quantity}} · vence {{when}}",
@@ -860,7 +862,8 @@
       "aiBudgetAlert": "Llevas US$ {{spent}} de {{budget}} este mes ({{percent}} %)",
       "stockNegative": "{{quantity}} sin stock en {{location}} · vendió {{cashier}}",
       "installmentOverdue_one": "{{count}} cuota vencida · {{amount}}",
-      "installmentOverdue_other": "{{count}} cuotas vencidas · {{amount}}"
+      "installmentOverdue_other": "{{count}} cuotas vencidas · {{amount}}",
+      "returnDamaged": "{{quantity}} devuelto dañado · {{reason}}"
     },
     "when": {
       "today": "hoy",
@@ -1456,7 +1459,10 @@
     "showStock": "Mostrar la cantidad en stock en la caja",
     "showStockHint": "Si lo apagas, el cajero solo ve Disponible, Pocas unidades o Agotado.",
     "customerDisplay": "Pantalla del cliente",
-    "customerDisplayHint": "Activa si esta caja tiene un segundo monitor mirando al cliente: ve cada producto, el total y su vuelto."
+    "customerDisplayHint": "Activa si esta caja tiene un segundo monitor mirando al cliente: ve cada producto, el total y su vuelto.",
+    "returnDays": "Plazo para devoluciones (días)",
+    "returnDaysHint": "Hasta cuántos días después de la venta se puede devolver. Siempre con el código del encargado.",
+    "returnDaysError": "No se pudo guardar el plazo (de 1 a 365 días)"
   },
   "pos": {
     "backToApp": "Volver a Stockly",
@@ -1566,7 +1572,12 @@
       "credit": "VENTA A CRÉDITO",
       "installment": "Cuota {{n}} · {{date}}",
       "creditBy": "Crédito autorizado por {{name}}",
-      "signature": "Firma del cliente"
+      "signature": "Firma del cliente",
+      "creditNote": "NOTA DE CRÉDITO",
+      "reference_doc": "Corrige: {{number}}",
+      "reason": "Motivo: {{reason}}",
+      "refund": "Reembolso {{method}}",
+      "returnBy": "Devolución autorizada por {{name}}"
     },
     "close": {
       "title": "Cierre de caja",
@@ -1601,7 +1612,8 @@
       "cardDeclared": "Total del cierre del datáfono (opcional)",
       "cardDeclaredHint": "El que imprimió el datáfono en papel; solo para comparar con lo cobrado.",
       "cardMismatch": "El datáfono no coincide con lo cobrado: diferencia de {{amount}}",
-      "cashCollections": "Abonos en efectivo"
+      "cashCollections": "Abonos en efectivo",
+      "cashRefunds": "Devoluciones en efectivo"
     },
     "counters": {
       "label": "Contadores del turno",
@@ -1646,7 +1658,9 @@
       "signSupervisor": "Firma de la jefa de caja",
       "pending": "Pendiente de arqueo",
       "collections_one": "{{count}} abono a crédito",
-      "collections_other": "{{count}} abonos a crédito"
+      "collections_other": "{{count}} abonos a crédito",
+      "refunds_one": "{{count}} reembolso por devolución",
+      "refunds_other": "{{count}} reembolsos por devolución"
     },
     "discount": {
       "label": "Descuento",
@@ -1859,6 +1873,72 @@
       "amount": "Abono ({{method}})",
       "after": "Saldo nuevo",
       "reprint": "Ver e imprimir el recibo"
+    }
+  },
+  "sales": {
+    "title": "Ventas",
+    "subtitle": "Tiquetes, facturas y notas de crédito. Abre una para reimprimirla o hacer una devolución.",
+    "search": "N.º de tiquete o cliente",
+    "kind": "Tipo",
+    "kinds": {
+      "all": "Todo",
+      "SALE": "Ventas",
+      "CREDIT_NOTE": "Notas de crédito"
+    },
+    "from": "Desde",
+    "to": "Hasta",
+    "date": "Fecha",
+    "number": "Número",
+    "customer": "Cliente",
+    "register": "Caja",
+    "cashier": "Cajero",
+    "total": "Total",
+    "empty": "No hay ventas con esos filtros",
+    "types": {
+      "TICKET": "Tiquete",
+      "INVOICE": "Factura",
+      "CREDIT_NOTE": "Nota de crédito"
+    },
+    "withReturns": "Con devolución",
+    "fixes": "corrige",
+    "returnExpired": "Ya pasó el plazo para devolverla",
+    "returnUntil": "Se puede devolver hasta el {{date}}",
+    "product": "Producto",
+    "sold": "Vendido",
+    "returnedQty": "Devuelto",
+    "creditNotes": "Devoluciones",
+    "authorizedBy": "autorizó {{name}}",
+    "condition": {
+      "GOOD": "Buen estado",
+      "DAMAGED": "Dañado"
+    },
+    "return": {
+      "button": "Devolución",
+      "title": "Devolución del tiquete {{number}}",
+      "expired": "El plazo para devolver esta venta venció el {{date}}.",
+      "what": "¿Qué devuelve?",
+      "all": "Devolver todo (anular)",
+      "sold": "Vendido {{sold}} · quedan {{left}}",
+      "quantity": "Cantidad a devolver de {{name}}",
+      "condition": "Estado del producto",
+      "conditionHint": "Buen estado vuelve al inventario; dañado no vuelve y se le avisa a inventario.",
+      "reason": "Motivo",
+      "creditFirst": "Se rebaja primero del crédito de esta venta",
+      "toRefund": "A devolver al cliente",
+      "methodIfAny": "Si sobra, se devuelve por",
+      "method": "Se le devuelve por",
+      "error": "No se pudo hacer la devolución",
+      "submit": "Autorizar y devolver",
+      "done": "Devolución hecha",
+      "credited": "Se rebajaron {{amount}} del crédito.",
+      "refunded": "Devuélvele al cliente {{amount}}."
+    },
+    "find": {
+      "title": "¿Qué venta se devuelve?",
+      "placeholder": "N.º del tiquete (o escanéalo)",
+      "search": "Buscar",
+      "none": "No hay ventas con ese número",
+      "noCustomer": "Sin cliente"
     }
   }
 }

@@ -49,6 +49,15 @@ export function RegistersCard() {
     mutationFn: (posShowStock) => updateCompany({ posShowStock }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["company"] }),
   })
+  // plazo para devolver una venta (se guarda al salir del campo)
+  const returnDays = useMutation({
+    mutationFn: (days) => updateCompany({ returnDays: days }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["company"] }),
+  })
+  const saveDays = (e) => {
+    const days = Number(e.target.value)
+    if (Number.isInteger(days) && days >= 1 && days <= 365 && days !== company?.returnDays) returnDays.mutate(days)
+  }
 
   function open(register) {
     setEditing(register ?? {})
@@ -85,6 +94,27 @@ export function RegistersCard() {
             onCheckedChange={(v) => showStock.mutate(v)}
             aria-label={t("registers.showStock")}
           />
+        </div>
+        <div className="mb-4 flex items-start justify-between gap-4 rounded-xl border border-border p-3">
+          <div>
+            <label htmlFor="return-days" className="text-sm font-medium">{t("registers.returnDays")}</label>
+            <p className="text-xs text-muted-foreground">{t("registers.returnDaysHint")}</p>
+            {returnDays.isError && <p role="alert" className="text-xs text-destructive">{t("registers.returnDaysError")}</p>}
+          </div>
+          {company && (
+            <Input
+              id="return-days"
+              key={company.returnDays}
+              type="number"
+              min={1}
+              max={365}
+              step={1}
+              className="w-24 font-mono"
+              defaultValue={company.returnDays ?? 30}
+              disabled={returnDays.isPending}
+              onBlur={saveDays}
+            />
+          )}
         </div>
         {registers.length === 0 ? (
           <div className="rounded-xl border border-dashed border-border p-8 text-center">
