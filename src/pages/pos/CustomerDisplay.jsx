@@ -63,10 +63,19 @@ export function CustomerDisplay() {
                     {i.quantity} × {money.format(i.price)}
                   </span>
                 </span>
-                <span className="font-mono text-2xl font-semibold">{money.format(i.total)}</span>
+                <span className="text-right font-mono text-2xl font-semibold">
+                  {i.discount > 0 && <span className="block text-base font-normal text-[var(--stk-ok)]">−{money.format(i.discount)}</span>}
+                  {money.format(i.total)}
+                </span>
               </li>
             ))}
           </ol>
+          {state.discount > 0 && (
+            <p className="flex items-baseline justify-between bg-[var(--stk-ok-bg)] px-8 py-3 text-xl text-[var(--stk-ok)]">
+              <span>{t("pos.display.savings")}</span>
+              <span className="font-mono font-semibold">−{money.format(state.discount)}</span>
+            </p>
+          )}
           <footer className="flex items-baseline justify-between bg-[var(--stk-kpi-dark)] px-8 py-6 text-white">
             <span className="text-2xl uppercase tracking-wide opacity-70">{t("pos.total")}</span>
             <span className="font-mono text-6xl font-semibold">{money.format(state.total)}</span>

@@ -1555,7 +1555,10 @@
       "reference": "Ref. {{ref}}",
       "tendered": "Recibido",
       "thanks": "¡Gracias por tu compra!",
-      "notFiscal": "Comprobante interno, sin validez fiscal."
+      "notFiscal": "Comprobante interno, sin validez fiscal.",
+      "internalInvoice": "FACTURA INTERNA",
+      "discount": "Desc. {{label}}",
+      "authorizedBy": "Descuento autorizado por {{name}}"
     },
     "close": {
       "title": "Cierre de caja",
@@ -1615,7 +1618,8 @@
     "negativesSent_other": "Se registraron {{count}} negativas y se avisó a inventario.",
     "display": {
       "welcome": "¡Bienvenido!",
-      "thanks": "¡Gracias por tu compra!"
+      "thanks": "¡Gracias por tu compra!",
+      "savings": "Ahorras"
     },
     "report": {
       "closeTitle": "CIERRE DE CAJA",
@@ -1632,6 +1636,40 @@
       "signCashier": "Firma del cajero",
       "signSupervisor": "Firma de la jefa de caja",
       "pending": "Pendiente de arqueo"
+    },
+    "discount": {
+      "label": "Descuento",
+      "line": "Descuento a la línea",
+      "lineAria": "Descuento a {{name}}",
+      "total": "Descuento",
+      "lineTitle": "Descuento a {{name}}",
+      "totalTitle": "Descuento al total",
+      "pinTitle": "Autorizar descuentos",
+      "pinAgain": "El código no autorizó los descuentos. Pide al encargado que lo escriba de nuevo.",
+      "none": "No hay tipos de descuento activos. El administrador los crea en Configuración → Cajas.",
+      "type": "Tipo de descuento",
+      "percent": "Porcentaje",
+      "amount": "Monto",
+      "max": "Máximo: {{max}}",
+      "remains": "Queda en {{amount}}",
+      "pin": "Código del encargado",
+      "apply": "Autorizar y aplicar",
+      "remove": "Quitar descuento"
+    },
+    "customer": {
+      "add": "Cliente (opcional)",
+      "remove": "Quitar el cliente",
+      "title": "Cliente de la venta",
+      "search": "Buscar por nombre o cédula",
+      "notFound": "No hay clientes con eso",
+      "noId": "Sin identificación",
+      "new": "Registrar cliente nuevo",
+      "newTitle": "Cliente nuevo",
+      "invoiceHint": "Con identificación, la venta sale como factura a su nombre.",
+      "saveAndUse": "Guardar y usar",
+      "back": "Volver",
+      "invoice": "Sale factura · {{id}}",
+      "ticketNoId": "Sin identificación: sale tiquete con su nombre"
     }
   },
   "negatives": {
@@ -1688,5 +1726,39 @@
     "printActa": "Imprimir acta",
     "save": "Guardar arqueo",
     "confirmTitle": "¿Guardar el arqueo?"
+  },
+  "discounts": {
+    "title": "Tipos de descuento",
+    "hint": "El cajero elige uno en la caja y siempre lo autoriza el encargado con su código. No se borran: se desactivan.",
+    "new": "Nuevo descuento",
+    "newTitle": "Nuevo tipo de descuento",
+    "editTitle": "Editar tipo de descuento",
+    "edit": "Editar {{name}}",
+    "name": "Nombre",
+    "namePlaceholder": "Ej.: Adulto mayor",
+    "amount": "Descuento",
+    "appliesTo": "Se aplica a",
+    "active": "Activo",
+    "activeAria": "Descuento {{name}} activo",
+    "kind": "Tipo",
+    "kinds": {
+      "PERCENT": "Porcentaje (%)",
+      "AMOUNT": "Monto fijo"
+    },
+    "scopes": {
+      "BOTH": "Línea o total",
+      "LINE": "Solo por línea",
+      "TOTAL": "Solo al total"
+    },
+    "free": "Libre",
+    "freeHint": "El cajero escribe cuánto descontar, hasta un tope.",
+    "freeUpTo": "Libre, hasta {{pct}} %",
+    "maxPercent": "Tope (%)",
+    "maxPercentHint": "Lo máximo que se puede descontar con este tipo, sobre lo que se descuenta.",
+    "valuePercent": "Porcentaje",
+    "valueAmount": "Monto",
+    "emptyTitle": "Todavía no hay descuentos",
+    "emptyHint": "Crea los que usa tu negocio: adulto mayor, empleado, promociones…",
+    "error": "No se pudo guardar el descuento"
   }
 }

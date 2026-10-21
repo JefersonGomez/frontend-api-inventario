@@ -3,19 +3,23 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { Link, Navigate } from "react-router-dom"
 import {
-  AlertTriangle, ArrowDownToLine, ArrowUpFromLine, LogOut, Minus, MonitorUp, Plus, Printer, Search, ShoppingCart, Trash2, Wallet, X,
+  AlertTriangle, ArrowDownToLine, ArrowUpFromLine, LogOut, Minus, MonitorUp, Percent, Plus, Printer, Search, ShoppingCart, Trash2, UserRound,
+  Wallet, X,
 } from "lucide-react"
-import { addCashMovement, getSession, sell } from "@/api/pos"
+import { addCashMovement, getDiscountTypes, getSession, sell } from "@/api/pos"
 import { getProductByBarcode, getProducts } from "@/api/products"
 import { getCategories } from "@/api/categories"
 import { getCompany } from "@/api/company"
 import { useMoney } from "@/hoocks/useMoney"
 import { useRegisterLocation } from "@/hoocks/useRegisterLocation"
-import { cartTotals } from "@/lib/pos"
+import { applyDiscounts, cartTotals } from "@/lib/pos"
+import { formatFiscalId } from "@/lib/fiscal"
 import { openChannel, openCustomerWindow } from "@/lib/customer-display"
 import { apiErrorMessage } from "@/lib/api-error"
 import { BarcodeScanner } from "@/components/BarcodeScanner"
 import { ChargeDialog } from "@/components/pos/ChargeDialog"
+import { CustomerPicker } from "@/components/pos/CustomerPicker"
+import { DiscountDialog } from "@/components/pos/DiscountDialog"
 import { Ticket } from "@/components/pos/Ticket"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -29,6 +33,7 @@ const MULT = /^(\d+(?:[.,]\d+)?)\s*\*\s*(.*)$/
 // /pos: caja a pantalla completa (fuera del Layout). Buscar o escanear → venta → Cobrar (F12) → tiquete.
 // La venta es lo principal (el cliente la va viendo); con pantalla del cliente se refleja en otro monitor.
 // Sin stock en el sistema se puede vender igual como negativa, con el código del encargado (no con lotes).
+// Descuentos por línea o al total: siempre con el código del encargado. Con cliente identificado: factura.
 export function Pos() {
   const { t } = useTranslation()
   const money = useMoney()
@@ -49,6 +54,11 @@ export function Pos() {
   const [notice, setNotice] = useState(null)
   const [negativePin, setNegativePin] = useState(null)
   const [askNegative, setAskNegative] = useState(null) // lista de faltantes a autorizar
+  const [totalDiscount, setTotalDiscount] = useState(null) // { typeId, value? }
+  const [discountPin, setDiscountPin] = useState(null)
+  const [discountFor, setDiscountFor] = useState(null) // target del DiscountDialog
+  const [customer, setCustomer] = useState(null)
+  const [pickingCustomer, setPickingCustomer] = useState(false)
 
   const locationId = session?.register.location.id
   const showStock = company?.posShowStock !== false
@@ -63,10 +73,12 @@ export function Pos() {
     placeholderData: (prev) => prev,
   })
   const { data: categories = [] } = useQuery({ queryKey: ["categories"], queryFn: getCategories })
+  const { data: discountTypes = [] } = useQuery({ queryKey: ["discount-types"], queryFn: getDiscountTypes })
   // agotados al final
   const tiles = [...(products?.items ?? [])].sort((a, b) => (Number(a.stock) > 0 ? 0 : 1) - (Number(b.stock) > 0 ? 0 : 1))
 
-  const totals = cartTotals(cart)
+  const discounts = applyDiscounts(cart, discountTypes, totalDiscount)
+  const totals = cartTotals(cart.map((i, n) => ({ ...i, discountAmount: discounts.lines[n].amount })))
   const items = cart.reduce((s, i) => s + i.quantity, 0)
   const negatives = cart.filter((i) => i.quantity > i.stock)
 
@@ -74,7 +86,11 @@ export function Pos() {
   const display = useRef(null)
   const displayState = {
     company: company?.name ?? "",
-    items: cart.map((i) => ({ id: i.id, name: i.name, quantity: i.quantity, price: i.price, total: i.price * i.quantity })),
+    items: cart.map((i, n) => ({
+      id: i.id, name: i.name, quantity: i.quantity, price: i.price,
+      discount: discounts.lines[n].amount, total: i.price * i.quantity - discounts.lines[n].amount,
+    })),
+    discount: discounts.discount,
     total: totals.total,
     rates: totals.rates,
     lastId,
@@ -93,15 +109,20 @@ export function Pos() {
   }, [session?.register.customerDisplay])
   useEffect(() => {
     display.current?.post(stateRef.current)
-  }, [cart, ticket, lastId, company?.name])
+  }, [cart, ticket, lastId, company?.name, totalDiscount, discountTypes])
 
   const sale = useMutation({
     mutationFn: (payments) =>
-      sell({ lines: cart.map((i) => ({ productId: i.id, quantity: i.quantity })), payments, ...(negativePin && { negativePin }) }),
+      sell({
+        lines: cart.map((i) => ({ productId: i.id, quantity: i.quantity, ...(i.discount && { discount: i.discount }) })),
+        payments,
+        ...(totalDiscount && { discount: totalDiscount }),
+        ...(customer && { customerId: customer.id }),
+        ...(negativePin && { negativePin }),
+        ...(discountPin && { discountPin }),
+      }),
     onSuccess: (data) => {
-      setCart([])
-      setLastId(null)
-      setNegativePin(null)
+      resetSale()
       setCharging(false)
       setTicket(data)
       queryClient.invalidateQueries({ queryKey: ["products"] })
@@ -113,6 +134,11 @@ export function Pos() {
         // el stock cambió mientras se cobraba: pedir la autorización con lo que dice el servidor
         setCharging(false)
         setAskNegative(body.shortages.map((s) => ({ name: s.name, stock: s.stock, quantity: s.wanted })))
+      } else if (body?.code === "DISCOUNT_NEEDS_AUTH" || body?.code === "DISCOUNT_PIN") {
+        // código del encargado incorrecto o vencido: pedirlo otra vez (los descuentos quedan)
+        setCharging(false)
+        setDiscountPin(null)
+        setDiscountFor({ scope: "PIN" })
       } else if (e.response?.status === 403) setNegativePin(null)
     },
   })
@@ -125,7 +151,7 @@ export function Pos() {
         searchRef.current?.focus()
       } else if (e.key === "F12") {
         e.preventDefault()
-        if (cart.length && !ticket && !charging && !askNegative) startCharge()
+        if (cart.length && !ticket && !charging && !askNegative && !discountFor && !pickingCustomer) startCharge()
       }
     }
     window.addEventListener("keydown", onKey)
@@ -135,6 +161,28 @@ export function Pos() {
   if (isLoading) return null
   if (!session) return <Navigate to="/pos/abrir" replace />
   const s = session.summary
+
+  function resetSale() {
+    setCart([])
+    setLastId(null)
+    setNegativePin(null)
+    setTotalDiscount(null)
+    setDiscountPin(null)
+    setCustomer(null)
+  }
+  // el descuento elegido en el diálogo (o null = solo el código otra vez)
+  function applyDiscount(pick, pin) {
+    setDiscountPin(pin)
+    if (discountFor.scope === "LINE") setCart(cart.map((i) => (i.id === discountFor.id ? { ...i, discount: pick } : i)))
+    else if (discountFor.scope === "TOTAL") setTotalDiscount(pick)
+    setDiscountFor(null)
+    if (!pick) openCharge()
+  }
+  function removeDiscount() {
+    if (discountFor.scope === "LINE") setCart(cart.map((i) => (i.id === discountFor.id ? { ...i, discount: undefined } : i)))
+    else setTotalDiscount(null)
+    setDiscountFor(null)
+  }
 
   function openCharge() {
     sale.reset()
@@ -170,7 +218,9 @@ export function Pos() {
       quantity = item.stock
     }
     setLastId(id)
-    setCart(quantity > 0 ? cart.map((i) => (i.id === id ? { ...i, quantity } : i)) : cart.filter((i) => i.id !== id))
+    const next = quantity > 0 ? cart.map((i) => (i.id === id ? { ...i, quantity } : i)) : cart.filter((i) => i.id !== id)
+    setCart(next)
+    if (!next.length) resetSale()
   }
 
   // Enter en el buscador (lector de código de barras): código exacto, o el único resultado. "3*" multiplica.
@@ -347,14 +397,7 @@ export function Pos() {
               {items > 0 && <span className="rounded-full bg-[var(--stk-accent-soft)] px-2 text-sm text-[var(--stk-accent-strong)]">{t("pos.itemsCount", { count: items })}</span>}
             </h2>
             {cart.length > 0 && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setCart([])
-                  setNegativePin(null)
-                }}
-              >
+              <Button variant="ghost" size="sm" onClick={resetSale}>
                 <Trash2 />
                 {t("pos.clear")}
               </Button>
@@ -365,6 +408,8 @@ export function Pos() {
             {cart.map((i, n) => {
               const negative = i.quantity > i.stock
               const last = i.id === lastId
+              const lineDiscount = discounts.lines[n]
+              const gross = i.price * i.quantity
               return (
                 <li
                   key={i.id}
@@ -376,8 +421,16 @@ export function Pos() {
                       <span className="mr-2 font-mono text-xs text-muted-foreground">{n + 1}</span>
                       {i.name}
                     </span>
-                    <span className="font-mono text-lg font-semibold">{money.format(i.price * i.quantity)}</span>
+                    <span className="text-right font-mono text-lg font-semibold">
+                      {lineDiscount.amount > 0 && <s className="block text-xs font-normal text-muted-foreground">{money.format(gross)}</s>}
+                      {money.format(gross - lineDiscount.amount)}
+                    </span>
                   </div>
+                  {lineDiscount.amount > 0 && (
+                    <p className="mt-0.5 text-sm text-[var(--stk-ok)]">
+                      {lineDiscount.label} −{money.format(lineDiscount.amount)}
+                    </p>
+                  )}
                   <div className="mt-1 flex items-center justify-between gap-2">
                     <span className="flex items-center gap-2 font-mono text-sm text-muted-foreground">
                       {i.quantity} × {money.format(i.price)}
@@ -389,6 +442,15 @@ export function Pos() {
                       )}
                     </span>
                     <div className="flex items-center gap-1">
+                      <Button
+                        variant={i.discount ? "secondary" : "ghost"}
+                        size="icon-sm"
+                        aria-label={t("pos.discount.lineAria", { name: i.name })}
+                        title={t("pos.discount.line")}
+                        onClick={() => setDiscountFor({ scope: "LINE", id: i.id, name: i.name, base: gross, pick: i.discount })}
+                      >
+                        <Percent />
+                      </Button>
                       <Button variant="outline" size="icon-sm" aria-label={t("pos.less", { name: i.name })} onClick={() => setQuantity(i.id, i.quantity - 1)}>
                         <Minus />
                       </Button>
@@ -411,7 +473,38 @@ export function Pos() {
             })}
           </ol>
           <div className="border-t border-border p-4">
+            <div className="mb-3 flex gap-2">
+              <Button variant="outline" size="sm" className="min-w-0 flex-1 justify-start" onClick={() => setPickingCustomer(true)}>
+                <UserRound />
+                <span className="truncate">{customer ? customer.name : t("pos.customer.add")}</span>
+              </Button>
+              {customer && (
+                <Button variant="ghost" size="icon-sm" aria-label={t("pos.customer.remove")} onClick={() => setCustomer(null)}>
+                  <X />
+                </Button>
+              )}
+              <Button
+                variant={totalDiscount ? "secondary" : "outline"}
+                size="sm"
+                disabled={!cart.length}
+                onClick={() => setDiscountFor({ scope: "TOTAL", base: discounts.totalBase, pick: totalDiscount })}
+              >
+                <Percent />
+                {t("pos.discount.total")}
+              </Button>
+            </div>
+            {customer && (
+              <p className="-mt-1 mb-2 px-1 text-xs text-muted-foreground">
+                {customer.idType && customer.idNumber ? t("pos.customer.invoice", { id: formatFiscalId(t, customer.idType, customer.idNumber) }) : t("pos.customer.ticketNoId")}
+              </p>
+            )}
             <div className="space-y-1 px-1 pb-3 text-sm text-muted-foreground">
+              {discounts.discount > 0 && (
+                <p className="flex justify-between text-[var(--stk-ok)]">
+                  <span>{t("pos.discount.label")}</span>
+                  <span className="font-mono">−{money.format(discounts.discount)}</span>
+                </p>
+              )}
               <p className="flex justify-between">
                 <span>{t("pos.subtotal")}</span>
                 <span className="font-mono">{money.format(totals.subtotal)}</span>
@@ -443,6 +536,17 @@ export function Pos() {
         onCharge={(payments) => sale.mutate(payments)}
         pending={sale.isPending}
         error={sale.error}
+      />
+
+      <DiscountDialog target={discountFor} types={discountTypes} onApply={applyDiscount} onRemove={removeDiscount} onClose={() => setDiscountFor(null)} />
+
+      <CustomerPicker
+        open={pickingCustomer}
+        onClose={() => setPickingCustomer(false)}
+        onPick={(c) => {
+          setCustomer(c)
+          setPickingCustomer(false)
+        }}
       />
 
       <NegativeDialog

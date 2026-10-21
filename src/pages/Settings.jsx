@@ -16,6 +16,7 @@ import { getCompany, updateCompany } from "@/api/company"
 import { FiscalDataCard } from "@/components/settings/FiscalDataCard"
 import { LocationsCard } from "@/components/settings/LocationsCard"
 import { RegistersCard } from "@/components/settings/RegistersCard"
+import { DiscountTypesCard } from "@/components/settings/DiscountTypesCard"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useSearchParams } from "react-router-dom"
 const languageItems = [
@@ -241,6 +242,7 @@ export function Settings() {
         {showCompany && (
           <TabsContent value="registers">
             <RegistersCard />
+            <DiscountTypesCard />
           </TabsContent>
         )}
         {showCompany && (

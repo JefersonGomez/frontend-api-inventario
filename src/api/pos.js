@@ -20,6 +20,12 @@ export const getSessionReport = (id) => api.get(`/pos/sessions/${id}/report`).th
 // { denominations, cardDeclared?, note? }
 export const reconcileSession = (id, data) => api.post(`/pos/sessions/${id}/reconcile`, data).then((res) => res.data)
 
+// tipos de descuento (7B): los crea el admin; { name, kind: PERCENT|AMOUNT, value|null (libre), maxPercent, appliesTo, isActive }
+export const getDiscountTypes = () => api.get("/pos/discount-types").then((res) => res.data)
+export const createDiscountType = (data) => api.post("/pos/discount-types", data).then((res) => res.data)
+export const updateDiscountType = (id, data) => api.put(`/pos/discount-types/${id}`, data).then((res) => res.data)
+
 // → datos del tiquete { document, company, register, location, cashier }
+// lines[].discount / discount = { typeId, value? }; discountPin = código del encargado (409 DISCOUNT_NEEDS_AUTH sin él)
 export const sell = (data) => api.post("/pos/sales", data).then((res) => res.data)
 export const getTicket = (documentId) => api.get(`/pos/tickets/${documentId}`).then((res) => res.data)

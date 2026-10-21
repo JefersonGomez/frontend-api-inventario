@@ -10,12 +10,12 @@ export const TAX_PERCENT = { EXEMPT: 0, RATE_1: 1, RATE_2: 2, RATE_4: 4, RATE_13
 
 const round2 = (v) => Math.round(v * 100) / 100
 
-// Totales del carrito (precios con IVA incluido): total y el IVA separado por tarifa
+// Totales del carrito (precios con IVA incluido, menos el descuento de cada línea): total e IVA por tarifa
 export function cartTotals(cart) {
   const byRate = {}
   let total = 0
   for (const item of cart) {
-    const gross = Number(item.price) * item.quantity
+    const gross = Number(item.price) * item.quantity - (item.discountAmount ?? 0)
     total += gross
     const pct = TAX_PERCENT[item.taxRate ?? "RATE_13"]
     const r = (byRate[pct] ??= { base: 0, tax: 0 })
@@ -27,6 +27,49 @@ export function cartTotals(cart) {
     .map(([pct, v]) => ({ pct: Number(pct), base: round2(v.base), tax: round2(v.tax) }))
     .sort((a, b) => b.pct - a.pct)
   return { total: round2(total), subtotal: round2(rates.reduce((s, r) => s + r.base, 0)), tax: round2(rates.reduce((s, r) => s + r.tax, 0)), rates }
+}
+
+// Descuentos: la misma cuenta que el backend (pos.service computeDiscounts). pick = { typeId, value? };
+// los tipos libres (value null) llevan el valor que escribe el cajero.
+export function discountAmount(type, pick, base) {
+  const value = type.value != null ? Number(type.value) : Number(pick?.value) || 0
+  return type.kind === "PERCENT" ? round2((base * value) / 100) : value
+}
+// lo máximo que se puede escribir en un libre: % o monto, según el tipo
+export const discountMax = (type, base) => (type.kind === "PERCENT" ? Number(type.maxPercent) : round2((base * Number(type.maxPercent)) / 100))
+
+// Descuento de cada línea; el del total se reparte en proporción y la línea más grande se lleva el redondeo
+export function applyDiscounts(cart, types, totalPick) {
+  const byId = new Map(types.map((t) => [t.id, t]))
+  const lines = cart.map((i) => {
+    const gross = i.price * i.quantity
+    const type = i.discount && byId.get(i.discount.typeId)
+    return type ? { amount: Math.min(discountAmount(type, i.discount, gross), gross), labels: [type.name] } : { amount: 0, labels: [] }
+  })
+  let total = 0
+  const totalType = totalPick && byId.get(totalPick.typeId)
+  const after = cart.map((i, n) => i.price * i.quantity - lines[n].amount)
+  const base = after.reduce((s, v) => s + v, 0)
+  if (totalType && base > 0) {
+    total = Math.min(discountAmount(totalType, totalPick, base), base)
+    const biggest = after.reduce((b, v, n) => (v > after[b] ? n : b), 0)
+    let given = 0
+    after.forEach((v, n) => {
+      if (n === biggest || v === 0) return
+      const share = round2((total * v) / base)
+      lines[n].amount += share
+      lines[n].labels.push(totalType.name)
+      given += share
+    })
+    lines[biggest].amount += total - given
+    lines[biggest].labels.push(totalType.name)
+  }
+  return {
+    lines: lines.map((l) => ({ amount: round2(l.amount), label: l.labels.join(" + ") })),
+    totalDiscount: round2(total),
+    totalBase: round2(base), // sobre lo que se aplica el descuento del total
+    discount: round2(lines.reduce((s, l) => s + l.amount, 0)),
+  }
 }
 
 // IVA del comprobante emitido, por tarifa (para el tiquete): de las líneas ya calculadas por el backend

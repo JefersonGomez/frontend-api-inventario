@@ -1555,7 +1555,10 @@
       "reference": "Ref. {{ref}}",
       "tendered": "Received",
       "thanks": "Thank you for your purchase!",
-      "notFiscal": "Internal receipt, not a tax document."
+      "notFiscal": "Internal receipt, not a tax document.",
+      "internalInvoice": "INTERNAL INVOICE",
+      "discount": "Disc. {{label}}",
+      "authorizedBy": "Discount approved by {{name}}"
     },
     "close": {
       "title": "Close register",
@@ -1615,7 +1618,8 @@
     "negativesSent_other": "{{count}} negatives were recorded and inventory was notified.",
     "display": {
       "welcome": "Welcome!",
-      "thanks": "Thank you for your purchase!"
+      "thanks": "Thank you for your purchase!",
+      "savings": "You save"
     },
     "report": {
       "closeTitle": "REGISTER CLOSING",
@@ -1632,6 +1636,40 @@
       "signCashier": "Cashier signature",
       "signSupervisor": "Head cashier signature",
       "pending": "Pending cash count"
+    },
+    "discount": {
+      "label": "Discount",
+      "line": "Line discount",
+      "lineAria": "Discount on {{name}}",
+      "total": "Discount",
+      "lineTitle": "Discount on {{name}}",
+      "totalTitle": "Discount on the total",
+      "pinTitle": "Approve discounts",
+      "pinAgain": "The code didn't approve the discounts. Ask the manager to type it again.",
+      "none": "No active discount types. The admin creates them in Settings → Registers.",
+      "type": "Discount type",
+      "percent": "Percentage",
+      "amount": "Amount",
+      "max": "Max: {{max}}",
+      "remains": "Now {{amount}}",
+      "pin": "Manager code",
+      "apply": "Approve and apply",
+      "remove": "Remove discount"
+    },
+    "customer": {
+      "add": "Customer (optional)",
+      "remove": "Remove customer",
+      "title": "Sale customer",
+      "search": "Search by name or ID",
+      "notFound": "No matching customers",
+      "noId": "No ID",
+      "new": "Register new customer",
+      "newTitle": "New customer",
+      "invoiceHint": "With an ID, the sale is issued as an invoice in their name.",
+      "saveAndUse": "Save and use",
+      "back": "Back",
+      "invoice": "Invoice · {{id}}",
+      "ticketNoId": "No ID: issued as a ticket with their name"
     }
   },
   "negatives": {
@@ -1688,5 +1726,39 @@
     "printActa": "Print record",
     "save": "Save count",
     "confirmTitle": "Save the cash count?"
+  },
+  "discounts": {
+    "title": "Discount types",
+    "hint": "The cashier picks one at the register and a manager always approves it with their code. They're deactivated, not deleted.",
+    "new": "New discount",
+    "newTitle": "New discount type",
+    "editTitle": "Edit discount type",
+    "edit": "Edit {{name}}",
+    "name": "Name",
+    "namePlaceholder": "E.g. Senior citizen",
+    "amount": "Discount",
+    "appliesTo": "Applies to",
+    "active": "Active",
+    "activeAria": "Discount {{name}} active",
+    "kind": "Type",
+    "kinds": {
+      "PERCENT": "Percentage (%)",
+      "AMOUNT": "Fixed amount"
+    },
+    "scopes": {
+      "BOTH": "Line or total",
+      "LINE": "Line only",
+      "TOTAL": "Total only"
+    },
+    "free": "Open",
+    "freeHint": "The cashier types how much to discount, up to a cap.",
+    "freeUpTo": "Open, up to {{pct}} %",
+    "maxPercent": "Cap (%)",
+    "maxPercentHint": "The most this type can take off what it applies to.",
+    "valuePercent": "Percentage",
+    "valueAmount": "Amount",
+    "emptyTitle": "No discounts yet",
+    "emptyHint": "Create the ones your business uses: seniors, staff, promotions…",
+    "error": "Couldn't save the discount"
   }
 }
