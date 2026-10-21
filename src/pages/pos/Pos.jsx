@@ -20,6 +20,7 @@ import { BarcodeScanner } from "@/components/BarcodeScanner"
 import { ChargeDialog } from "@/components/pos/ChargeDialog"
 import { CustomerPicker } from "@/components/pos/CustomerPicker"
 import { DiscountDialog } from "@/components/pos/DiscountDialog"
+import { PriceDialog } from "@/components/pos/PriceDialog"
 import { Ticket } from "@/components/pos/Ticket"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -57,6 +58,7 @@ export function Pos() {
   const [totalDiscount, setTotalDiscount] = useState(null) // { typeId, value? }
   const [discountPin, setDiscountPin] = useState(null)
   const [discountFor, setDiscountFor] = useState(null) // target del DiscountDialog
+  const [priceFor, setPriceFor] = useState(null) // línea a la que se le ajusta el precio
   const [customer, setCustomer] = useState(null)
   const [pickingCustomer, setPickingCustomer] = useState(false)
 
@@ -114,7 +116,11 @@ export function Pos() {
   const sale = useMutation({
     mutationFn: (payments) =>
       sell({
-        lines: cart.map((i) => ({ productId: i.id, quantity: i.quantity, ...(i.discount && { discount: i.discount }) })),
+        lines: cart.map((i) => ({
+          productId: i.id, quantity: i.quantity,
+          ...(i.discount && { discount: i.discount }),
+          ...(i.newPrice != null && { price: i.newPrice, priceReason: i.priceReason }),
+        })),
         payments,
         ...(totalDiscount && { discount: totalDiscount }),
         ...(customer && { customerId: customer.id }),
@@ -151,7 +157,7 @@ export function Pos() {
         searchRef.current?.focus()
       } else if (e.key === "F12") {
         e.preventDefault()
-        if (cart.length && !ticket && !charging && !askNegative && !discountFor && !pickingCustomer) startCharge()
+        if (cart.length && !ticket && !charging && !askNegative && !discountFor && !priceFor && !pickingCustomer) startCharge()
       }
     }
     window.addEventListener("keydown", onKey)
@@ -177,6 +183,12 @@ export function Pos() {
     else if (discountFor.scope === "TOTAL") setTotalDiscount(pick)
     setDiscountFor(null)
     if (!pick) openCharge()
+  }
+  // ajuste de precio de una línea (null = quitarlo); usa el mismo código del encargado que los descuentos
+  function applyPrice(adjust, pin) {
+    if (pin) setDiscountPin(pin)
+    setCart(cart.map((i) => (i.id === priceFor.id ? { ...i, newPrice: adjust?.newPrice, priceReason: adjust?.priceReason } : i)))
+    setPriceFor(null)
   }
   function removeDiscount() {
     if (discountFor.scope === "LINE") setCart(cart.map((i) => (i.id === discountFor.id ? { ...i, discount: undefined } : i)))
@@ -433,7 +445,17 @@ export function Pos() {
                   )}
                   <div className="mt-1 flex items-center justify-between gap-2">
                     <span className="flex items-center gap-2 font-mono text-sm text-muted-foreground">
-                      {i.quantity} × {money.format(i.price)}
+                      {i.quantity} ×{" "}
+                      <button
+                        type="button"
+                        className="rounded px-1 underline decoration-dotted underline-offset-4 hover:bg-muted"
+                        aria-label={t("pos.price.aria", { name: i.name })}
+                        title={t("pos.price.change")}
+                        onClick={() => setPriceFor(i)}
+                      >
+                        {i.newPrice != null && <s className="mr-1">{money.format(i.price)}</s>}
+                        {money.format(i.newPrice ?? i.price)}
+                      </button>
                       {negative && (
                         <span className="inline-flex items-center gap-1 rounded bg-[var(--stk-warn-bg)] px-1.5 font-sans text-xs font-medium text-[var(--stk-warn)]">
                           <AlertTriangle className="h-3 w-3" aria-hidden />
@@ -447,7 +469,7 @@ export function Pos() {
                         size="icon-sm"
                         aria-label={t("pos.discount.lineAria", { name: i.name })}
                         title={t("pos.discount.line")}
-                        onClick={() => setDiscountFor({ scope: "LINE", id: i.id, name: i.name, base: gross, pick: i.discount })}
+                        onClick={() => setDiscountFor({ scope: "LINE", id: i.id, name: i.name, base: (i.newPrice ?? i.price) * i.quantity, pick: i.discount })}
                       >
                         <Percent />
                       </Button>
@@ -538,6 +560,7 @@ export function Pos() {
         error={sale.error}
       />
 
+      <PriceDialog item={priceFor} onApply={applyPrice} onRemove={() => applyPrice(null)} onClose={() => setPriceFor(null)} />
       <DiscountDialog target={discountFor} types={discountTypes} onApply={applyDiscount} onRemove={removeDiscount} onClose={() => setDiscountFor(null)} />
 
       <CustomerPicker

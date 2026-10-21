@@ -1670,6 +1670,17 @@
       "back": "Back",
       "invoice": "Invoice · {{id}}",
       "ticketNoId": "No ID: issued as a ticket with their name"
+    },
+    "price": {
+      "change": "Change the price",
+      "aria": "Change the price of {{name}}",
+      "title": "Price of {{name}}",
+      "catalog": "System price: {{price}}. It can only go down, with the manager's code.",
+      "new": "New price (tax included)",
+      "onlyLower": "It must be lower than the system price",
+      "reason": "Reason",
+      "shelf": "Shelf price",
+      "remove": "Back to the system price"
     }
   },
   "negatives": {

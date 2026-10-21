@@ -38,13 +38,20 @@ export function discountAmount(type, pick, base) {
 // lo máximo que se puede escribir en un libre: % o monto, según el tipo
 export const discountMax = (type, base) => (type.kind === "PERCENT" ? Number(type.maxPercent) : round2((base * Number(type.maxPercent)) / 100))
 
-// Descuento de cada línea; el del total se reparte en proporción y la línea más grande se lleva el redondeo
+// Descuento de cada línea; el del total se reparte en proporción y la línea más grande se lleva el redondeo.
+// El ajuste de precio (i.newPrice, i.priceReason) va primero, como descuento, y los demás se calculan sobre el precio nuevo.
 export function applyDiscounts(cart, types, totalPick) {
   const byId = new Map(types.map((t) => [t.id, t]))
   const lines = cart.map((i) => {
-    const gross = i.price * i.quantity
+    const adjust = i.newPrice != null ? round2((i.price - i.newPrice) * i.quantity) : 0
+    const out = { amount: adjust, labels: adjust ? [`Ajuste de precio: ${i.priceReason}`] : [] }
+    const gross = (i.newPrice ?? i.price) * i.quantity
     const type = i.discount && byId.get(i.discount.typeId)
-    return type ? { amount: Math.min(discountAmount(type, i.discount, gross), gross), labels: [type.name] } : { amount: 0, labels: [] }
+    if (type) {
+      out.amount += Math.min(discountAmount(type, i.discount, gross), gross)
+      out.labels.push(type.name)
+    }
+    return out
   })
   let total = 0
   const totalType = totalPick && byId.get(totalPick.typeId)

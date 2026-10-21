@@ -1670,6 +1670,17 @@
       "back": "Volver",
       "invoice": "Sale factura · {{id}}",
       "ticketNoId": "Sin identificación: sale tiquete con su nombre"
+    },
+    "price": {
+      "change": "Cambiar el precio",
+      "aria": "Cambiar el precio de {{name}}",
+      "title": "Precio de {{name}}",
+      "catalog": "Precio del sistema: {{price}}. Solo se puede bajar, con el código del encargado.",
+      "new": "Precio nuevo (con IVA)",
+      "onlyLower": "Tiene que ser menor que el del sistema",
+      "reason": "Motivo",
+      "shelf": "Precio de góndola",
+      "remove": "Volver al precio del sistema"
     }
   },
   "negatives": {
