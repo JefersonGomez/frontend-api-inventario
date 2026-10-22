@@ -15,8 +15,12 @@ export function useRealtime() {
   useEffect(() => {
     if (!userId) return
 
-    // función: cada (re)conexión lee el token más reciente (el interceptor de axios lo renueva)
-    const socket = io(API_URL, {
+    // con la API detrás de un prefijo (producción: "/api") el socket va a <prefijo>/socket.io del mismo
+    // servidor; si se pasara la URL con el prefijo, socket.io lo tomaría como "namespace"
+    const url = new URL(API_URL, window.location.origin)
+    const socket = io(url.origin, {
+      path: `${url.pathname.replace(/\/$/, "")}/socket.io`,
+      // función: cada (re)conexión lee el token más reciente (el interceptor de axios lo renueva)
       auth: (cb) => cb({ token: getToken() }),
     })
 
