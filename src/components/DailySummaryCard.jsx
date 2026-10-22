@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next"
 import { History, Loader2, RefreshCw, Sparkles, X } from "lucide-react"
 import { getDailySummary, generateDailySummary } from "@/api/reports"
 import { usePermissions } from "@/hoocks/usePermissions"
+import { useMoney } from "@/hoocks/useMoney"
 import { apiErrorMessage } from "@/lib/api-error"
 import { Button } from "@/components/ui/button"
 
@@ -30,6 +31,7 @@ const readHidden = (date) => {
 // se guarda cada uno (historial) y se puede volver a generar. Si la IA no está disponible, se ven los números.
 export function DailySummaryCard() {
   const { t } = useTranslation()
+  const money = useMoney()
   const queryClient = useQueryClient()
   const { can } = usePermissions()
   const enabled = can("reports.view")
@@ -103,6 +105,15 @@ export function DailySummaryCard() {
           {[
             ["in", d.movements.in], ["out", d.movements.out], ["lowStock", d.lowStock], ["expiringSoon", d.expiringSoon],
             ["pendingRequests", d.pendingRequests], ["openOrders", d.openOrders], ["transfersInTransit", d.transfersInTransit], ["openCounts", d.openCounts],
+            // ventas (7D-2): solo si hubo, para no llenar de ceros a quien no usa la caja (resúmenes viejos no las traen)
+            ...(d.sales?.tickets > 0 || d.sales?.returns > 0 || d.sales?.collections > 0
+              ? [
+                  ["salesNet", money.format(d.sales.net)], ["tickets", d.sales.tickets], ["returns", money.format(d.sales.returns)],
+                  ["collections", money.format(d.sales.collections)],
+                ]
+              : []),
+            ...(d.sales?.overdueInstallments > 0 ? [["overdueInstallments", d.sales.overdueInstallments]] : []),
+            ...(d.sales?.cashDifferences > 0 ? [["cashDifferences", d.sales.cashDifferences]] : []),
           ].map(([key, value]) => (
             <li key={key} className="rounded-md border border-border px-2 py-0.5">
               {t(`dailySummary.numbers.${key}`)}: <span className="font-semibold tabular-nums">{value}</span>

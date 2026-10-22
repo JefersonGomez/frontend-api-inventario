@@ -153,6 +153,7 @@ export function Platform() {
               <TableHead className="hidden lg:table-cell">{t("platform.table.created")}</TableHead>
               <TableHead className="hidden xl:table-cell">{t("platform.table.lastSeen")}</TableHead>
               <TableHead className="hidden xl:table-cell text-right">{t("platform.table.movementsWeek")}</TableHead>
+              <TableHead className="hidden lg:table-cell text-right">{t("platform.table.salesMonth")}</TableHead>
               <TableHead className="text-right">{t("platform.table.status")}</TableHead>
             </TableRow>
           </TableHeader>
@@ -206,6 +207,21 @@ export function Platform() {
                   {activity.get(c.id)?.lastSeenAt ? new Date(activity.get(c.id).lastSeenAt).toLocaleDateString() : "—"}
                 </TableCell>
                 <TableCell className="hidden xl:table-cell text-right tabular-nums">{activity.get(c.id)?.movementsWeek ?? 0}</TableCell>
+                {/* solo cifras generales: neto de 30 días en su moneda, tiquetes y cajas activas */}
+                <TableCell className="hidden lg:table-cell text-right tabular-nums">
+                  {activity.get(c.id)?.ticketsMonth ? (
+                    <>
+                      {c.currency} {Number(activity.get(c.id).salesMonth).toLocaleString("es-CR", { maximumFractionDigits: 0 })}
+                      <span className="block text-xs text-muted-foreground">
+                        {t("platform.table.salesDetail", { tickets: activity.get(c.id).ticketsMonth, registers: activity.get(c.id).registers })}
+                      </span>
+                    </>
+                  ) : activity.get(c.id)?.registers ? (
+                    <span className="text-xs text-muted-foreground">{t("platform.table.noSales", { registers: activity.get(c.id).registers })}</span>
+                  ) : (
+                    "—"
+                  )}
+                </TableCell>
                 <TableCell className="text-right">
                   <div className="flex items-center justify-end gap-2">
                     {c.suspendedAt && <Badge variant="destructive">{t("platform.suspended")}</Badge>}

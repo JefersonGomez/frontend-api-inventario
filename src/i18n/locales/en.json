@@ -1028,7 +1028,10 @@
       "created": "Created",
       "status": "Status",
       "lastSeen": "Last seen",
-      "movementsWeek": "Movements (7 days)"
+      "movementsWeek": "Movements (7 days)",
+      "salesMonth": "Sales 30 days",
+      "salesDetail": "{{tickets}} tickets · {{registers}} register(s)",
+      "noSales": "{{registers}} register(s), no sales"
     },
     "suspended": "Suspended",
     "suspend": "Suspend",
@@ -1396,6 +1399,10 @@
       "cashCodes": {
         "title": "Assign register codes",
         "hint": "Used to open the register and authorize discounts"
+      },
+      "firstRegister": {
+        "title": "Create your first register and open it",
+        "hint": "In Settings → Registers; it checks itself when someone opens the first shift"
       }
     }
   },
@@ -1414,7 +1421,13 @@
       "pendingRequests": "Pending requests",
       "openOrders": "Open orders",
       "transfersInTransit": "Transfers in transit",
-      "openCounts": "Open counts"
+      "openCounts": "Open counts",
+      "salesNet": "Net sales",
+      "tickets": "Tickets",
+      "returns": "Returns",
+      "collections": "Credit payments",
+      "overdueInstallments": "Overdue installments",
+      "cashDifferences": "Cash counts off"
     },
     "regenerate": "Regenerate",
     "regenerateHint": "Generate another summary with current numbers; the previous one stays in the history",

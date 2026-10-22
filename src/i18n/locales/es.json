@@ -1028,7 +1028,10 @@
       "created": "Creada",
       "status": "Estado",
       "lastSeen": "Última entrada",
-      "movementsWeek": "Movimientos (7 días)"
+      "movementsWeek": "Movimientos (7 días)",
+      "salesMonth": "Ventas 30 días",
+      "salesDetail": "{{tickets}} tiquetes · {{registers}} caja(s)",
+      "noSales": "{{registers}} caja(s), sin ventas"
     },
     "suspended": "Suspendida",
     "suspend": "Suspender",
@@ -1396,6 +1399,10 @@
       "cashCodes": {
         "title": "Asigna los códigos de caja",
         "hint": "Con ellos se abre caja y se autorizan descuentos"
+      },
+      "firstRegister": {
+        "title": "Crea tu primera caja y ábrela",
+        "hint": "En Configuración → Cajas; se marca sola cuando alguien abre el primer turno"
       }
     }
   },
@@ -1414,7 +1421,13 @@
       "pendingRequests": "Solicitudes pendientes",
       "openOrders": "Órdenes abiertas",
       "transfersInTransit": "Transferencias en camino",
-      "openCounts": "Conteos abiertos"
+      "openCounts": "Conteos abiertos",
+      "salesNet": "Venta neta",
+      "tickets": "Tiquetes",
+      "returns": "Devoluciones",
+      "collections": "Abonos",
+      "overdueInstallments": "Cuotas vencidas",
+      "cashDifferences": "Arqueos con diferencia"
     },
     "regenerate": "Volver a generar",
     "regenerateHint": "Genera otro resumen con los números de ahora; el anterior queda en el historial",
