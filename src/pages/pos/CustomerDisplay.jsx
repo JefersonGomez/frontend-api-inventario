@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { moneyFormatter } from "@/lib/money"
 import { openChannel } from "@/lib/customer-display"
+import { formatSinpe } from "@/lib/pos"
 import { cn } from "@/lib/utils"
 
 // /pos/cliente: segunda pantalla mirando al cliente. Solo muestra lo que le manda la caja
@@ -74,6 +75,15 @@ export function CustomerDisplay() {
             <p className="flex items-baseline justify-between bg-[var(--stk-ok-bg)] px-8 py-3 text-xl text-[var(--stk-ok)]">
               <span>{t("pos.display.savings")}</span>
               <span className="font-mono font-semibold">−{money.format(state.discount)}</span>
+            </p>
+          )}
+          {state.sinpe && (
+            <p className="flex flex-wrap items-baseline justify-between gap-x-6 bg-[var(--stk-accent-soft)] px-8 py-4 text-[var(--stk-accent-strong)]">
+              <span className="text-xl">{t("pos.display.sinpe")}</span>
+              <span>
+                <span className="font-mono text-4xl font-semibold">{formatSinpe(state.sinpe.number)}</span>
+                {state.sinpe.name && <span className="ml-3 text-xl">{state.sinpe.name}</span>}
+              </span>
             </p>
           )}
           <footer className="flex items-baseline justify-between bg-[var(--stk-kpi-dark)] px-8 py-6 text-white">

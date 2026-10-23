@@ -33,6 +33,7 @@ export function CashClosing() {
   const { data: report, isLoading, isError } = useQuery({ queryKey: ["cash-sessions", "report", id], queryFn: () => getSessionReport(id) })
   const [counts, setCounts] = useState({})
   const [card, setCard] = useState("")
+  const [sinpe, setSinpe] = useState("") // total de SINPE que entró según la app del banco
   const [note, setNote] = useState("")
   const [confirm, setConfirm] = useState(false)
 
@@ -41,6 +42,7 @@ export function CashClosing() {
       reconcileSession(id, {
         denominations: Object.fromEntries(Object.entries(counts).filter(([, n]) => n > 0)),
         ...(card !== "" && { cardDeclared: Number(card) }),
+        ...(sinpe !== "" && { sinpeDeclared: Number(sinpe) }),
         ...(note.trim() && { note: note.trim() }),
       }),
     onSuccess: (r) => {
@@ -97,6 +99,9 @@ export function CashClosing() {
   // el datáfono cobra ventas y abonos con tarjeta
   const cardCharged = round2((s.payments.CARD ?? 0) + (s.collections?.CARD ?? 0) - (s.refunds?.CARD ?? 0))
   const cardDiff = card === "" ? null : round2(Number(card) - cardCharged)
+  // SINPE: ventas y abonos que entraron, menos las devoluciones que se enviaron por SINPE
+  const sinpeCharged = round2((s.payments.SINPE ?? 0) + (s.collections?.SINPE ?? 0) - (s.refunds?.SINPE ?? 0))
+  const sinpeDiff = sinpe === "" ? null : round2(Number(sinpe) - sinpeCharged)
 
   return (
     <div>
@@ -126,13 +131,24 @@ export function CashClosing() {
           <div className="stk-card space-y-2 text-sm">
             <dl className="space-y-1">
               <Row label={t("pos.close.cardCharged")} value={money.format(cardCharged)} />
-              <Row label={t("pos.methods.SINPE")} value={money.format((s.payments.SINPE ?? 0) + (s.collections?.SINPE ?? 0))} />
             </dl>
             <Label htmlFor="card-declared">{t("pos.close.cardDeclared")}</Label>
             <Input id="card-declared" type="number" min={0} step="any" className="font-mono" value={card} onChange={(e) => setCard(e.target.value)} />
             <p className="text-xs text-muted-foreground">{t("pos.close.cardDeclaredHint")}</p>
             {cardDiff !== null && cardDiff !== 0 && (
               <p className="text-sm font-medium text-[var(--stk-warn)]">{t("pos.close.cardMismatch", { amount: money.format(cardDiff) })}</p>
+            )}
+          </div>
+
+          <div className="stk-card space-y-2 text-sm">
+            <dl className="space-y-1">
+              <Row label={t("pos.close.sinpeCharged")} value={money.format(sinpeCharged)} />
+            </dl>
+            <Label htmlFor="sinpe-declared">{t("pos.close.sinpeDeclared")}</Label>
+            <Input id="sinpe-declared" type="number" min={0} step="any" className="font-mono" value={sinpe} onChange={(e) => setSinpe(e.target.value)} />
+            <p className="text-xs text-muted-foreground">{t("pos.close.sinpeDeclaredHint")}</p>
+            {sinpeDiff !== null && sinpeDiff !== 0 && (
+              <p className="text-sm font-medium text-[var(--stk-warn)]">{t("pos.close.sinpeMismatch", { amount: money.format(sinpeDiff) })}</p>
             )}
           </div>
 

@@ -82,6 +82,14 @@ export function CashReport({ report }) {
               )}
             </>
           )}
+          {report.sinpeDeclared != null && (
+            <>
+              <Row label={t("pos.report.sinpeDeclared")} value={money.format(report.sinpeDeclared)} />
+              {report.sinpeDifference != null && report.sinpeDifference !== 0 && (
+                <Row label={t("pos.report.sinpeDifference")} value={money.format(report.sinpeDifference)} />
+              )}
+            </>
+          )}
           {report.reconcileNote && <p>{t("pos.report.note", { note: report.reconcileNote })}</p>}
           <p>{t("pos.report.reconciledBy", { name: report.reconciledBy?.name, at: at(report.reconciledAt) })}</p>
           <div className="stk-ticket-sign">

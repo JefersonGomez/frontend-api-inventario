@@ -5,6 +5,7 @@ import { Pencil, Plus, Store, Warehouse } from "lucide-react"
 import { getLocations, createLocation, updateLocation } from "@/api/locations"
 import { getCompany } from "@/api/company"
 import { apiErrorMessage } from "@/lib/api-error"
+import { formatSinpe } from "@/lib/pos"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -15,7 +16,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
-const empty = { name: "", type: "BRANCH", address: "" }
+const empty = { name: "", type: "BRANCH", address: "", sinpeNumber: "", sinpeName: "" }
 
 // Sucursales (venden: cajas y código en los comprobantes) y bodegas (solo almacenan). No se borran:
 // se desactivan, y solo sin stock. El plan limita las sucursales; las bodegas no.
@@ -30,7 +31,12 @@ export function LocationsCard() {
   const refresh = () => queryClient.invalidateQueries({ queryKey: ["locations"] })
   const save = useMutation({
     mutationFn: () => {
-      const data = { name: form.name.trim(), type: form.type, address: form.address.trim() || null }
+      const data = {
+        name: form.name.trim(), type: form.type, address: form.address.trim() || null,
+        // SINPE propio de la sucursal (vacío = la caja usa el general de la empresa)
+        sinpeNumber: form.type === "BRANCH" ? form.sinpeNumber.trim() : "",
+        sinpeName: form.type === "BRANCH" ? form.sinpeName.trim() : "",
+      }
       return editing?.id ? updateLocation(editing.id, data) : createLocation(data)
     },
     onSuccess: () => {
@@ -49,7 +55,11 @@ export function LocationsCard() {
 
   function open(location) {
     setEditing(location ?? {})
-    setForm(location ? { name: location.name, type: location.type, address: location.address ?? "" } : empty)
+    setForm(
+      location
+        ? { name: location.name, type: location.type, address: location.address ?? "", sinpeNumber: formatSinpe(location.sinpeNumber), sinpeName: location.sinpeName ?? "" }
+        : empty
+    )
     save.reset()
   }
 
@@ -151,6 +161,19 @@ export function LocationsCard() {
               <Label htmlFor="location-address">{t("locations.address")}</Label>
               <Input id="location-address" value={form.address} maxLength={250} onChange={(e) => setForm({ ...form, address: e.target.value })} />
             </div>
+            {form.type === "BRANCH" && (
+              <div className="grid gap-3 sm:grid-cols-[10rem_1fr]">
+                <div className="space-y-2">
+                  <Label htmlFor="location-sinpe">{t("registers.sinpeNumber")}</Label>
+                  <Input id="location-sinpe" inputMode="numeric" maxLength={10} placeholder="8888-8888" className="font-mono" value={form.sinpeNumber} onChange={(e) => setForm({ ...form, sinpeNumber: e.target.value })} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="location-sinpe-name">{t("registers.sinpeName")}</Label>
+                  <Input id="location-sinpe-name" maxLength={80} value={form.sinpeName} onChange={(e) => setForm({ ...form, sinpeName: e.target.value })} />
+                </div>
+                <p className="text-xs text-muted-foreground sm:col-span-2">{t("locations.sinpeHint")}</p>
+              </div>
+            )}
             {save.isError && <p role="alert" className="text-sm text-destructive">{apiErrorMessage(save.error, t("locations.error"))}</p>}
             <div className="flex justify-end gap-2">
               <Button type="button" variant="outline" onClick={() => setEditing(null)}>{t("common.cancel")}</Button>

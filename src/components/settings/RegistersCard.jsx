@@ -6,6 +6,7 @@ import { createRegister, getRegisters, updateRegister } from "@/api/pos"
 import { getLocations } from "@/api/locations"
 import { getCompany, updateCompany } from "@/api/company"
 import { apiErrorMessage } from "@/lib/api-error"
+import { formatSinpe } from "@/lib/pos"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -58,6 +59,16 @@ export function RegistersCard() {
     const days = Number(e.target.value)
     if (Number.isInteger(days) && days >= 1 && days <= 365 && days !== company?.returnDays) returnDays.mutate(days)
   }
+  // tarjeta y SINPE: pedir la referencia (autorización del voucher / comprobante del SINPE)
+  const requireRef = useMutation({
+    mutationFn: (requirePaymentRef) => updateCompany({ requirePaymentRef }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["company"] }),
+  })
+  // SINPE Móvil general (cada sucursal puede tener el suyo en Ubicaciones)
+  const sinpe = useMutation({
+    mutationFn: (form) => updateCompany({ sinpeNumber: form.get("sinpeNumber").trim(), sinpeName: form.get("sinpeName").trim() }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["company"] }),
+  })
 
   function open(register) {
     setEditing(register ?? {})
@@ -116,6 +127,46 @@ export function RegistersCard() {
             />
           )}
         </div>
+        <div className="mb-4 flex items-start justify-between gap-4 rounded-xl border border-border p-3">
+          <div>
+            <p className="text-sm font-medium">{t("registers.requireRef")}</p>
+            <p className="text-xs text-muted-foreground">{t("registers.requireRefHint")}</p>
+          </div>
+          <Switch
+            checked={company?.requirePaymentRef !== false}
+            disabled={!company || requireRef.isPending}
+            onCheckedChange={(v) => requireRef.mutate(v)}
+            aria-label={t("registers.requireRef")}
+          />
+        </div>
+        {company && (
+          <form
+            key={`${company.sinpeNumber}-${company.sinpeName}`}
+            className="mb-4 space-y-3 rounded-xl border border-border p-3"
+            onSubmit={(e) => {
+              e.preventDefault()
+              sinpe.mutate(new FormData(e.currentTarget))
+            }}
+          >
+            <div>
+              <p className="text-sm font-medium">{t("registers.sinpe")}</p>
+              <p className="text-xs text-muted-foreground">{t("registers.sinpeHint")}</p>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-[10rem_1fr_auto] sm:items-end">
+              <div className="space-y-1">
+                <Label htmlFor="sinpe-number">{t("registers.sinpeNumber")}</Label>
+                <Input id="sinpe-number" name="sinpeNumber" inputMode="numeric" maxLength={10} placeholder="8888-8888" className="font-mono" defaultValue={formatSinpe(company.sinpeNumber)} />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="sinpe-name">{t("registers.sinpeName")}</Label>
+                <Input id="sinpe-name" name="sinpeName" maxLength={80} defaultValue={company.sinpeName ?? ""} />
+              </div>
+              <Button type="submit" variant="outline" disabled={sinpe.isPending}>{t("common.save")}</Button>
+            </div>
+            {sinpe.isError && <p role="alert" className="text-xs text-destructive">{apiErrorMessage(sinpe.error, t("registers.sinpeError"))}</p>}
+            {sinpe.isSuccess && <p role="status" className="text-xs text-[var(--stk-ok)]">{t("registers.sinpeSaved")}</p>}
+          </form>
+        )}
         {registers.length === 0 ? (
           <div className="rounded-xl border border-dashed border-border p-8 text-center">
             <Monitor className="mx-auto mb-2 h-8 w-8 text-muted-foreground" aria-hidden />

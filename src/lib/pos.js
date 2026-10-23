@@ -106,3 +106,6 @@ export function quickCash(total, currency = "CRC") {
 }
 
 export const sumDenominations = (counts) => round2(Object.entries(counts).reduce((s, [v, n]) => s + Number(v) * (Number(n) || 0), 0))
+
+// SINPE Móvil para mostrar: 88887777 → 8888-7777
+export const formatSinpe = (n) => (n ? String(n).replace(/^(\d{4})(\d{4})$/, "$1-$2") : "")

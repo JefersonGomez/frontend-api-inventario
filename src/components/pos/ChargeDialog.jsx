@@ -2,7 +2,7 @@ import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Banknote, CreditCard, HandCoins, Plus, Smartphone, Split, X } from "lucide-react"
 import { useMoney } from "@/hoocks/useMoney"
-import { quickCash } from "@/lib/pos"
+import { formatSinpe, quickCash } from "@/lib/pos"
 import { apiErrorMessage } from "@/lib/api-error"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -21,14 +21,16 @@ const round2 = (v) => Math.round(v * 100) / 100
 
 // Cobrar: arma los pagos y llama a onCharge(payments, credit?). Crédito solo si el cliente lo tiene
 // (account = su estado de cuenta): prima opcional, plan quincenal o mensual hasta 6 meses y código del encargado.
-export function ChargeDialog({ open, onOpenChange, total, onCharge, pending, error, account }) {
+// sinpe = { number, name } donde el cliente envía (el de la sucursal o el general); requireRef = tarjeta y SINPE
+// exigen la referencia (autorización del voucher / comprobante del SINPE), según Configuración → Cajas.
+export function ChargeDialog({ open, onOpenChange, total, onCharge, pending, error, account, sinpe, requireRef }) {
   const { t } = useTranslation()
   const money = useMoney()
   const [mode, setMode] = useState("CASH")
   const [received, setReceived] = useState("")
   const [reference, setReference] = useState("")
   const [split, setSplit] = useState([{ method: "CASH", amount: "" }, { method: "CARD", amount: "", reference: "" }])
-  const [credit, setCredit] = useState({ down: "", downMethod: "CASH", frequency: "MONTHLY", installments: 1, pin: "" })
+  const [credit, setCredit] = useState({ down: "", downMethod: "CASH", downRef: "", frequency: "MONTHLY", installments: 1, pin: "" })
   const modes = MODES.filter((m) => m.id !== "CREDIT" || account?.creditLimit != null)
 
   const cash = Number(received) || 0
@@ -61,8 +63,14 @@ export function ChargeDialog({ open, onOpenChange, total, onCharge, pending, err
     : financed <= 0 ? t("pos.credit.nothing")
     : null
   if (mode === "CREDIT" && !creditProblem && credit.pin.length >= 4) {
-    payments = down > 0 ? [{ method: credit.downMethod, amount: down, ...(credit.downMethod === "CASH" && { tendered: down }) }] : []
+    payments = down > 0
+      ? [{ method: credit.downMethod, amount: down, ...(credit.downMethod === "CASH" ? { tendered: down } : credit.downRef.trim() && { reference: credit.downRef.trim() }) }]
+      : []
   }
+  // sin la referencia que pide la empresa no se cobra (el servidor igual lo valida)
+  if (payments && requireRef && payments.some((p) => p.method !== "CASH" && !p.reference)) payments = null
+  const showSinpe =
+    sinpe?.number && (mode === "SINPE" || (mode === "MIXED" && split.some((p) => p.method === "SINPE")) || (mode === "CREDIT" && credit.downMethod === "SINPE"))
   const charge = (e) => {
     e.preventDefault()
     if (!payments || pending) return
@@ -101,6 +109,14 @@ export function ChargeDialog({ open, onOpenChange, total, onCharge, pending, err
             ))}
           </div>
 
+          {showSinpe && (
+            <p className="rounded-xl border border-[var(--stk-accent)] bg-[var(--stk-accent-soft)] px-4 py-3 text-[var(--stk-accent-strong)]">
+              <span className="block text-xs uppercase tracking-wide">{t("pos.charge.sinpeTo")}</span>
+              <span className="font-mono text-2xl font-semibold">{formatSinpe(sinpe.number)}</span>
+              {sinpe.name && <span className="block text-sm">{sinpe.name}</span>}
+            </p>
+          )}
+
           {mode === "CASH" && (
             <div className="space-y-3">
               <div className="space-y-2">
@@ -138,8 +154,11 @@ export function ChargeDialog({ open, onOpenChange, total, onCharge, pending, err
 
           {(mode === "CARD" || mode === "SINPE") && (
             <div className="space-y-2">
-              <Label htmlFor="pay-reference">{t(`pos.charge.reference${mode}`)}</Label>
-              <Input id="pay-reference" autoFocus maxLength={60} className="font-mono" value={reference} onChange={(e) => setReference(e.target.value)} />
+              <Label htmlFor="pay-reference">
+                {t(`pos.charge.reference${mode}`)}
+                {requireRef && <span className="text-destructive"> *</span>}
+              </Label>
+              <Input id="pay-reference" autoFocus required={requireRef} maxLength={60} className="font-mono" value={reference} onChange={(e) => setReference(e.target.value)} />
               <p className="text-xs text-muted-foreground">{t(`pos.charge.hint${mode}`)}</p>
             </div>
           )}
@@ -172,7 +191,8 @@ export function ChargeDialog({ open, onOpenChange, total, onCharge, pending, err
                   {p.method !== "CASH" && (
                     <Input
                       aria-label={t("pos.charge.referenceShort")}
-                      placeholder={t("pos.charge.referenceShort")}
+                      placeholder={t("pos.charge.referenceShort") + (requireRef ? " *" : "")}
+                      required={requireRef}
                       maxLength={60}
                       value={p.reference ?? ""}
                       onChange={(e) => updateSplit(i, { reference: e.target.value })}
@@ -220,6 +240,15 @@ export function ChargeDialog({ open, onOpenChange, total, onCharge, pending, err
                   </select>
                 </div>
               </div>
+              {down > 0 && credit.downMethod !== "CASH" && (
+                <div className="space-y-2">
+                  <Label htmlFor="credit-down-ref">
+                    {t(`pos.charge.reference${credit.downMethod}`)}
+                    {requireRef && <span className="text-destructive"> *</span>}
+                  </Label>
+                  <Input id="credit-down-ref" required={requireRef} maxLength={60} className="font-mono" value={credit.downRef} onChange={(e) => setCredit({ ...credit, downRef: e.target.value })} />
+                </div>
+              )}
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-2">
                   <Label htmlFor="credit-frequency">{t("pos.credit.frequency")}</Label>
@@ -262,7 +291,7 @@ export function ChargeDialog({ open, onOpenChange, total, onCharge, pending, err
                   maxLength={6}
                   className="font-mono text-lg tracking-widest"
                   value={credit.pin}
-                  onChange={(e) => setCredit({ ...credit, pin: e.target.value.replace(/D/g, "") })}
+                  onChange={(e) => setCredit({ ...credit, pin: e.target.value.replace(/\D/g, "") })}
                 />
               </div>
             </div>

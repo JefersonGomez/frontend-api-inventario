@@ -1251,7 +1251,8 @@
       "BRANCH": "Vende al público: tendrá cajas y un código de 3 dígitos para sus comprobantes.",
       "WAREHOUSE": "Solo almacena: recibe compras y transfiere a las sucursales."
     },
-    "error": "No se pudo guardar la ubicación"
+    "error": "No se pudo guardar la ubicación",
+    "sinpeHint": "SINPE Móvil de esta sucursal. Si lo dejas vacío, la caja usa el de la empresa (Configuración → Cajas)."
   },
   "transfers": {
     "title": "Transferencias",
@@ -1488,7 +1489,15 @@
     "customerDisplayHint": "Activa si esta caja tiene un segundo monitor mirando al cliente: ve cada producto, el total y su vuelto.",
     "returnDays": "Plazo para devoluciones (días)",
     "returnDaysHint": "Hasta cuántos días después de la venta se puede devolver. Siempre con el código del encargado.",
-    "returnDaysError": "No se pudo guardar el plazo (de 1 a 365 días)"
+    "returnDaysError": "No se pudo guardar el plazo (de 1 a 365 días)",
+    "requireRef": "Pedir la referencia de tarjeta y SINPE",
+    "requireRefHint": "El cajero no puede cobrar con tarjeta o SINPE sin anotar el n.º de autorización del voucher o el comprobante del SINPE. Un comprobante SINPE ya usado nunca se acepta.",
+    "sinpe": "SINPE Móvil de la empresa",
+    "sinpeHint": "Se muestra en la caja y en la pantalla del cliente al cobrar por SINPE. Cada sucursal puede tener el suyo (Ubicaciones).",
+    "sinpeNumber": "Número SINPE",
+    "sinpeName": "A nombre de",
+    "sinpeError": "No se pudo guardar el SINPE",
+    "sinpeSaved": "SINPE guardado"
   },
   "pos": {
     "backToApp": "Volver a Stockly",
@@ -1570,17 +1579,18 @@
       "exact": "Exacto",
       "missing": "Falta",
       "amount": "Monto",
-      "referenceCARD": "N.º de autorización (opcional)",
-      "referenceSINPE": "N.º de comprobante (opcional)",
+      "referenceCARD": "N.º de autorización del voucher",
+      "referenceSINPE": "N.º de comprobante del SINPE",
       "referenceShort": "Referencia",
       "hintCARD": "Cobra en el datáfono y anota la autorización del voucher.",
-      "hintSINPE": "Revisa que el SINPE haya entrado antes de confirmar.",
+      "hintSINPE": "Revisa en la app del banco que el SINPE entró (monto y nombre) y anota el n.º de comprobante. Un comprobante que ya se usó en otra venta no se acepta.",
       "addPayment": "Agregar pago",
       "complete": "Pagos completos",
       "left": "Faltan {{amount}}",
       "over": "Sobran {{amount}}",
       "confirm": "Confirmar cobro",
-      "charging": "Cobrando…"
+      "charging": "Cobrando…",
+      "sinpeTo": "El cliente envía el SINPE Móvil a"
     },
     "ticket": {
       "internal": "TIQUETE INTERNO",
@@ -1642,7 +1652,11 @@
       "cashCollections": "Abonos en efectivo",
       "cashRefunds": "Devoluciones en efectivo",
       "unsentSales_one": "Hay {{count}} venta sin conexión sin enviar o con problema. Vuelve a la caja y resuélvela antes de cerrar.",
-      "unsentSales_other": "Hay {{count}} ventas sin conexión sin enviar o con problema. Vuelve a la caja y resuélvelas antes de cerrar."
+      "unsentSales_other": "Hay {{count}} ventas sin conexión sin enviar o con problema. Vuelve a la caja y resuélvelas antes de cerrar.",
+      "sinpeCharged": "Cobrado por SINPE Móvil",
+      "sinpeDeclared": "SINPE que entró según el banco (opcional)",
+      "sinpeDeclaredHint": "El total de SINPE de este turno en la app o el estado de cuenta del banco; solo para comparar con lo cobrado.",
+      "sinpeMismatch": "El banco no coincide con lo cobrado por SINPE: diferencia de {{amount}}"
     },
     "counters": {
       "label": "Contadores del turno",
@@ -1669,7 +1683,8 @@
     "display": {
       "welcome": "¡Bienvenido!",
       "thanks": "¡Gracias por tu compra!",
-      "savings": "Ahorras"
+      "savings": "Ahorras",
+      "sinpe": "Pago por SINPE Móvil al"
     },
     "report": {
       "closeTitle": "CIERRE DE CAJA",
@@ -1689,7 +1704,9 @@
       "collections_one": "{{count}} abono a crédito",
       "collections_other": "{{count}} abonos a crédito",
       "refunds_one": "{{count}} reembolso por devolución",
-      "refunds_other": "{{count}} reembolsos por devolución"
+      "refunds_other": "{{count}} reembolsos por devolución",
+      "sinpeDeclared": "SINPE (banco)",
+      "sinpeDifference": "Diferencia SINPE"
     },
     "discount": {
       "label": "Descuento",

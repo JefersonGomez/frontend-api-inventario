@@ -130,6 +130,14 @@ export function Pos() {
   const items = cart.reduce((s, i) => s + i.quantity, 0)
   const negatives = cart.filter((i) => i.quantity > i.stock)
 
+  // SINPE donde paga el cliente: el de la sucursal de la caja o, si no tiene, el general de la empresa
+  const branch = session?.register.location
+  const sinpe = branch?.sinpeNumber
+    ? { number: branch.sinpeNumber, name: branch.sinpeName }
+    : company?.sinpeNumber
+      ? { number: company.sinpeNumber, name: company.sinpeName }
+      : null
+
   // pantalla del cliente: se le manda la venta en cada cambio y cuando la pide al abrirse
   const display = useRef(null)
   const displayState = {
@@ -143,6 +151,7 @@ export function Pos() {
     rates: totals.rates,
     lastId,
     currency: money.currency,
+    sinpe: charging ? sinpe : null, // mientras se cobra, el cliente ve a qué número enviar
     paid: ticket && {
       total: Number(ticket.document.total),
       change: ticket.document.payments.reduce((s, p) => s + (p.tendered != null ? Number(p.tendered) - Number(p.amount) : 0), 0),
@@ -159,7 +168,7 @@ export function Pos() {
   }, [session?.register.customerDisplay])
   useEffect(() => {
     display.current?.post(stateRef.current)
-  }, [cart, ticket, lastId, company?.name, totalDiscount, discountTypes])
+  }, [cart, ticket, lastId, company?.name, totalDiscount, discountTypes, charging])
 
   // cliente con crédito: su estado de cuenta para cobrar a crédito (disponible, vencidas)
   const { data: account } = useQuery({
@@ -655,6 +664,8 @@ export function Pos() {
         total={totals.total}
         onCharge={(payments, credit) => sale.mutate({ payments, credit })}
         account={customer?.creditLimit != null ? account : null}
+        sinpe={sinpe}
+        requireRef={company?.requirePaymentRef !== false}
         pending={sale.isPending}
         error={sale.error}
       />
