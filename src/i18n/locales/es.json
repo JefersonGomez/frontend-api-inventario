@@ -848,7 +848,8 @@
       "aiBudgetAlert": "Presupuesto de IA",
       "stockNegative": "Negativas por revisar",
       "installmentOverdue": "Cuotas vencidas",
-      "returnDamaged": "Devoluciones dañadas"
+      "returnDamaged": "Devoluciones dañadas",
+      "offlineSaleFailed": "Ventas sin conexión rechazadas"
     },
     "detail": {
       "requestExpiring": "{{requester}} · {{quantity}} · vence {{when}}",
@@ -874,7 +875,8 @@
       "stockNegative": "{{quantity}} sin stock en {{location}} · vendió {{cashier}}",
       "installmentOverdue_one": "{{count}} cuota vencida · {{amount}}",
       "installmentOverdue_other": "{{count}} cuotas vencidas · {{amount}}",
-      "returnDamaged": "{{quantity}} devuelto dañado · {{reason}}"
+      "returnDamaged": "{{quantity}} devuelto dañado · {{reason}}",
+      "offlineSaleFailed": "{{total}} · {{reason}} · vendió {{cashier}}"
     },
     "when": {
       "today": "hoy",
@@ -1638,7 +1640,9 @@
       "cardDeclaredHint": "El que imprimió el datáfono en papel; solo para comparar con lo cobrado.",
       "cardMismatch": "El datáfono no coincide con lo cobrado: diferencia de {{amount}}",
       "cashCollections": "Abonos en efectivo",
-      "cashRefunds": "Devoluciones en efectivo"
+      "cashRefunds": "Devoluciones en efectivo",
+      "unsentSales_one": "Hay {{count}} venta sin conexión sin enviar o con problema. Vuelve a la caja y resuélvela antes de cerrar.",
+      "unsentSales_other": "Hay {{count}} ventas sin conexión sin enviar o con problema. Vuelve a la caja y resuélvelas antes de cerrar."
     },
     "counters": {
       "label": "Contadores del turno",
@@ -1751,7 +1755,15 @@
       "pending_other": "{{count}} ventas por enviar",
       "failed_one": "{{count}} con problema",
       "failed_other": "{{count}} con problema",
-      "saved": "Venta guardada sin conexión: se envía sola cuando vuelva la red."
+      "saved": "Venta guardada sin conexión: se envía sola cuando vuelva la red.",
+      "review": "Revisar",
+      "failedTitle": "Ventas sin conexión con problema",
+      "failedHint": "Se cobraron sin conexión pero el sistema no las aceptó. El encargado ya recibió el aviso. Arregla la causa y reintenta, o descártala: esa plata va a salir como sobrante en el arqueo.",
+      "noneFailed": "No hay ventas con problema.",
+      "retry": "Reintentar",
+      "discard": "Descartar",
+      "discardTitle": "¿Descartar esta venta?",
+      "discardHint": "La venta de {{total}} no va a entrar al sistema ni va a sacar stock. El dinero cobrado sale como sobrante en el arqueo."
     }
   },
   "negatives": {

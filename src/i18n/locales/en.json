@@ -848,7 +848,8 @@
       "aiBudgetAlert": "AI budget",
       "stockNegative": "Negatives to review",
       "installmentOverdue": "Overdue installments",
-      "returnDamaged": "Damaged returns"
+      "returnDamaged": "Damaged returns",
+      "offlineSaleFailed": "Rejected offline sales"
     },
     "detail": {
       "requestExpiring": "{{requester}} · {{quantity}} · expires {{when}}",
@@ -874,7 +875,8 @@
       "stockNegative": "{{quantity}} without stock at {{location}} · sold by {{cashier}}",
       "installmentOverdue_one": "{{count}} overdue installment · {{amount}}",
       "installmentOverdue_other": "{{count}} overdue installments · {{amount}}",
-      "returnDamaged": "{{quantity}} returned damaged · {{reason}}"
+      "returnDamaged": "{{quantity}} returned damaged · {{reason}}",
+      "offlineSaleFailed": "{{total}} · {{reason}} · sold by {{cashier}}"
     },
     "when": {
       "today": "today",
@@ -1638,7 +1640,9 @@
       "cardDeclaredHint": "The one the terminal printed on paper; only to compare with what was charged.",
       "cardMismatch": "The card terminal doesn't match what was charged: difference of {{amount}}",
       "cashCollections": "Cash credit payments",
-      "cashRefunds": "Cash refunds"
+      "cashRefunds": "Cash refunds",
+      "unsentSales_one": "There is {{count}} offline sale not sent or with a problem. Go back to the register and resolve it before closing.",
+      "unsentSales_other": "There are {{count}} offline sales not sent or with a problem. Go back to the register and resolve them before closing."
     },
     "counters": {
       "label": "Shift counters",
@@ -1751,7 +1755,15 @@
       "pending_other": "{{count}} sales to send",
       "failed_one": "{{count}} with a problem",
       "failed_other": "{{count}} with a problem",
-      "saved": "Sale saved offline: it will be sent automatically when the connection is back."
+      "saved": "Sale saved offline: it will be sent automatically when the connection is back.",
+      "review": "Review",
+      "failedTitle": "Offline sales with a problem",
+      "failedHint": "They were charged offline but the system rejected them. The manager was already notified. Fix the cause and retry, or discard it: that money will show up as a surplus in the cash count.",
+      "noneFailed": "No sales with a problem.",
+      "retry": "Retry",
+      "discard": "Discard",
+      "discardTitle": "Discard this sale?",
+      "discardHint": "The {{total}} sale will not enter the system or take stock out. The money charged shows up as a surplus in the cash count."
     }
   },
   "negatives": {

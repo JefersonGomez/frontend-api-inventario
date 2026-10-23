@@ -1,6 +1,6 @@
 // Caja sin conexión (Bloque 8B): lo último que respondió el servidor queda guardado, el catálogo se
 // busca en local y las ventas sin red esperan en una cola hasta que vuelva la conexión.
-import { sell } from "@/api/pos"
+import { reportOfflineFailure, sell } from "@/api/pos"
 import { getSession } from "@/lib/session"
 import { TAX_PERCENT } from "@/lib/pos"
 import { kvGet, kvSet, salesAll, salesDelete, salesPut } from "./offline-db"
@@ -50,6 +50,20 @@ export async function findInCatalog(code) {
 // --- cola de ventas ---
 const mine = async () => (await salesAll()).filter((s) => s.account === account())
 
+export const failedSales = async () => (await mine()).filter((s) => s.error).sort((a, b) => a.soldAt.localeCompare(b.soldAt))
+export const saleTotal = (s) => s.payments.reduce((t, p) => t + p.amount, 0)
+
+// reintentar (después de arreglar la causa, p. ej. entró stock de un producto con lotes) o descartar (no entra
+// al sistema: el encargado ya recibió el aviso y esa plata sale como sobrante en el arqueo)
+export async function retrySale(sale) {
+  const again = { ...sale }
+  delete again.error
+  delete again.reported
+  await salesPut(again)
+  return flushSales()
+}
+export const discardSale = (sale) => salesDelete(sale.clientSaleId)
+
 export async function pendingSales() {
   const list = await mine()
   return { pending: list.filter((s) => !s.error).length, failed: list.filter((s) => s.error).length }
@@ -83,6 +97,15 @@ async function flush() {
     } catch (e) {
       if (isNetworkError(e)) break
       await salesPut({ ...sale, account: owner, error: e.response?.data?.error ?? e.message })
+    }
+  }
+  // cada rechazo se reporta una vez (auditoría + aviso a quien hace arqueos); sin red, en el próximo intento
+  for (const s of (await mine()).filter((s) => s.error && !s.reported)) {
+    try {
+      await reportOfflineFailure({ clientSaleId: s.clientSaleId, error: s.error.slice(0, 300), total: saleTotal(s), soldAt: s.soldAt })
+      await salesPut({ ...s, reported: true })
+    } catch {
+      break
     }
   }
   return sent

@@ -28,6 +28,8 @@ export const updateDiscountType = (id, data) => api.put(`/pos/discount-types/${i
 // → datos del tiquete { document, company, register, location, cashier }
 // lines[].discount / discount = { typeId, value? }; discountPin = código del encargado (409 DISCOUNT_NEEDS_AUTH sin él)
 export const sell = (data) => api.post("/pos/sales", data).then((res) => res.data)
+// venta sin conexión que el servidor rechazó: { clientSaleId, error, total, soldAt } → auditoría + aviso (8C)
+export const reportOfflineFailure = (data) => api.post("/pos/offline-failures", data).then((res) => res.data)
 // catálogo de la caja para vender sin conexión (8B): { sessionId, products[] con stock de la sucursal, categories, at }
 export const getCatalog = () => api.get("/pos/catalog").then((res) => res.data)
 export const getTicket = (documentId) => api.get(`/pos/tickets/${documentId}`).then((res) => res.data)

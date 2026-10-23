@@ -68,6 +68,9 @@ api.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${newToken}`
         return api(originalRequest)
       } catch (refreshError) {
+        // sin red no se sabe si la sesión sigue valiendo: no se cierra (la caja trabaja sin conexión, 8C).
+        // Solo se cierra cuando el servidor rechaza la renovación (o no hay refresh token)
+        if (refreshError.isAxiosError && !refreshError.response) return Promise.reject(refreshError)
         endSession()
         window.location.href = "/login"
         return Promise.reject(refreshError)

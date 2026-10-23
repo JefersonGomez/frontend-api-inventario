@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { Link, Navigate } from "react-router-dom"
@@ -6,6 +6,7 @@ import { ArrowLeft, CheckCircle2, Printer } from "lucide-react"
 import { closeSession, getSession } from "@/api/pos"
 import { useMoney } from "@/hoocks/useMoney"
 import { apiErrorMessage } from "@/lib/api-error"
+import { flushSales, pendingSales } from "@/lib/offline-sales"
 import { CashReport } from "@/components/pos/CashReport"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -25,6 +26,16 @@ export function PosClose() {
   const [note, setNote] = useState("")
   const [confirm, setConfirm] = useState(false)
   const [report, setReport] = useState(null)
+  // no se cierra con ventas sin conexión sin enviar o rechazadas: el arqueo saldría mal (8C)
+  const [queue, setQueue] = useState(null)
+  useEffect(() => {
+    flushSales()
+      .catch(() => 0)
+      .then(pendingSales)
+      .then(setQueue)
+      .catch(() => setQueue({ pending: 0, failed: 0 }))
+  }, [])
+  const unsent = queue ? queue.pending + queue.failed : 0
 
   const close = useMutation({
     mutationFn: () => closeSession(session.id, note.trim() ? { note: note.trim() } : {}),
@@ -93,7 +104,12 @@ export function PosClose() {
             <Input id="close-note" maxLength={500} value={note} onChange={(e) => setNote(e.target.value)} placeholder={t("pos.close.notePlaceholder")} />
           </div>
           {close.isError && <p role="alert" className="text-sm text-destructive">{apiErrorMessage(close.error, t("pos.error"))}</p>}
-          <Button size="lg" className="w-full" onClick={() => setConfirm(true)} disabled={close.isPending}>
+          {unsent > 0 && (
+            <p role="alert" className="rounded-lg bg-[var(--stk-warn-bg)] px-3 py-2 text-sm text-[var(--stk-warn)]">
+              {t("pos.close.unsentSales", { count: unsent })}
+            </p>
+          )}
+          <Button size="lg" className="w-full" onClick={() => setConfirm(true)} disabled={close.isPending || !queue || unsent > 0}>
             {t("pos.close.submit")}
           </Button>
         </div>

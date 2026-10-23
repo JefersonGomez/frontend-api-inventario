@@ -20,6 +20,7 @@ const SECTIONS = [
   { type: "cashCodeExpired", icon: LockKeyhole, tone: "crit" },
   { type: "cashCodeExpiring", icon: LockKeyhole, tone: "warn" },
   { type: "cashCodeAssigned", icon: LockKeyhole, tone: "info" },
+  { type: "offlineSaleFailed", icon: XCircle, tone: "crit" },
   { type: "stockNegative", icon: AlertTriangle, tone: "warn" },
   { type: "installmentOverdue", icon: AlertTriangle, tone: "crit" },
   { type: "returnDamaged", icon: AlertTriangle, tone: "warn" },
@@ -89,6 +90,8 @@ function useDetail() {
           : t("notifications.detail.requestRejected", m);
       case "installmentOverdue":
         return t("notifications.detail.installmentOverdue", { count: raw.count, amount: Number(raw.amount).toLocaleString("es-CR", { minimumFractionDigits: 2 }) });
+      case "offlineSaleFailed":
+        return t("notifications.detail.offlineSaleFailed", { ...m, total: Number(raw.total).toLocaleString("es-CR", { minimumFractionDigits: 2 }) });
       case "lowStock":
         return raw.stock <= 0
           ? t("notifications.detail.lowStockOut", m)

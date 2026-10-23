@@ -23,6 +23,7 @@ import { ChargeDialog } from "@/components/pos/ChargeDialog"
 import { CustomerPicker } from "@/components/pos/CustomerPicker"
 import { DiscountDialog } from "@/components/pos/DiscountDialog"
 import { PriceDialog } from "@/components/pos/PriceDialog"
+import { FailedSales } from "@/components/pos/FailedSales"
 import { PaymentDialog } from "@/components/pos/PaymentDialog"
 import { FindSaleDialog } from "@/components/sales/FindSaleDialog"
 import { ReturnFlow } from "@/components/sales/ReturnFlow"
@@ -60,6 +61,7 @@ export function Pos() {
   const { data: company } = useQuery({ queryKey: ["company"], queryFn: cached("company", getCompany), networkMode: "always" })
   const online = useSyncExternalStore(subscribeOnline, () => navigator.onLine)
   const [queue, setQueue] = useState({ pending: 0, failed: 0 }) // ventas sin conexión por enviar / rechazadas
+  const [showFailed, setShowFailed] = useState(false)
   const saleId = useRef(null) // id de la venta que se está cobrando: si llega dos veces, el servidor no la duplica
   const [q, setQ] = useState("")
   const [mult, setMult] = useState(null)
@@ -360,6 +362,11 @@ export function Pos() {
               .filter(Boolean)
               .join(" · ")}
           </p>
+        )}
+        {queue.failed > 0 && (
+          <Button variant="outline" size="sm" onClick={() => setShowFailed(true)}>
+            {t("pos.offline.review")}
+          </Button>
         )}
         {/* contadores del turno (cierre ciego: sin el efectivo en caja) */}
         <dl className="flex flex-wrap gap-2" aria-label={t("pos.counters.label")}>
@@ -706,6 +713,15 @@ export function Pos() {
       </Dialog>
 
       <CashMoveDialog type={cashMove} onClose={() => setCashMove(null)} />
+      <FailedSales
+        open={showFailed}
+        onClose={() => setShowFailed(false)}
+        onChange={() => {
+          refreshQueue()
+          queryClient.invalidateQueries({ queryKey: ["products"] })
+          queryClient.invalidateQueries({ queryKey: ["cash-session"] })
+        }}
+      />
     </div>
   )
 }
