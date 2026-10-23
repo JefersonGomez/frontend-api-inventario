@@ -1,12 +1,12 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState, useSyncExternalStore } from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { Link, Navigate } from "react-router-dom"
 import {
   AlertTriangle, ArrowDownToLine, ArrowUpFromLine, HandCoins, LogOut, Undo2, Minus, MonitorUp, Percent, Plus, Printer, Search, ShoppingCart, Trash2, UserRound,
-  Wallet, X,
+  Wallet, WifiOff, X,
 } from "lucide-react"
-import { addCashMovement, getDiscountTypes, getSession, sell } from "@/api/pos"
+import { addCashMovement, getCatalog, getDiscountTypes, getSession, sell } from "@/api/pos"
 import { getAccount } from "@/api/receivables"
 import { getProductByBarcode, getProducts } from "@/api/products"
 import { getCategories } from "@/api/categories"
@@ -17,6 +17,7 @@ import { applyDiscounts, cartTotals } from "@/lib/pos"
 import { formatFiscalId } from "@/lib/fiscal"
 import { openChannel, openCustomerWindow } from "@/lib/customer-display"
 import { apiErrorMessage } from "@/lib/api-error"
+import { cached, findInCatalog, flushSales, isNetworkError, pendingSales, provisionalTicket, queueSale, searchCatalog } from "@/lib/offline-sales"
 import { BarcodeScanner } from "@/components/BarcodeScanner"
 import { ChargeDialog } from "@/components/pos/ChargeDialog"
 import { CustomerPicker } from "@/components/pos/CustomerPicker"
@@ -35,6 +36,16 @@ import { cn } from "@/lib/utils"
 // "3*" o "3*750123" en el buscador: multiplica la próxima línea
 const MULT = /^(\d+(?:[.,]\d+)?)\s*\*\s*(.*)$/
 
+// navigator.onLine como estado de React (cambia con los eventos online/offline)
+const subscribeOnline = (cb) => {
+  window.addEventListener("online", cb)
+  window.addEventListener("offline", cb)
+  return () => {
+    window.removeEventListener("online", cb)
+    window.removeEventListener("offline", cb)
+  }
+}
+
 // /pos: caja a pantalla completa (fuera del Layout). Buscar o escanear → venta → Cobrar (F12) → tiquete.
 // La venta es lo principal (el cliente la va viendo); con pantalla del cliente se refleja en otro monitor.
 // Sin stock en el sistema se puede vender igual como negativa, con el código del encargado (no con lotes).
@@ -45,8 +56,11 @@ export function Pos() {
   const queryClient = useQueryClient()
   const pinLocation = useRegisterLocation()
   const searchRef = useRef(null)
-  const { data: session, isLoading } = useQuery({ queryKey: ["cash-session"], queryFn: getSession })
-  const { data: company } = useQuery({ queryKey: ["company"], queryFn: getCompany })
+  const { data: session, isLoading } = useQuery({ queryKey: ["cash-session"], queryFn: cached("cash-session", getSession), networkMode: "always" })
+  const { data: company } = useQuery({ queryKey: ["company"], queryFn: cached("company", getCompany), networkMode: "always" })
+  const online = useSyncExternalStore(subscribeOnline, () => navigator.onLine)
+  const [queue, setQueue] = useState({ pending: 0, failed: 0 }) // ventas sin conexión por enviar / rechazadas
+  const saleId = useRef(null) // id de la venta que se está cobrando: si llega dos veces, el servidor no la duplica
   const [q, setQ] = useState("")
   const [mult, setMult] = useState(null)
   const [categoryId, setCategoryId] = useState(null)
@@ -77,12 +91,35 @@ export function Pos() {
 
   const { data: products } = useQuery({
     queryKey: ["products", "pos", q, categoryId, locationId],
-    queryFn: () => getProducts({ view: "flat", pageSize: 60, ...(q.trim() && !MULT.test(q) && { q: q.trim() }), ...(categoryId && { categoryId }) }),
+    queryFn: () => {
+      const params = { view: "flat", pageSize: 60, ...(q.trim() && !MULT.test(q) && { q: q.trim() }), ...(categoryId && { categoryId }) }
+      return getProducts(params).catch((e) => (isNetworkError(e) ? searchCatalog(params) : Promise.reject(e)))
+    },
     enabled: !!locationId,
     placeholderData: (prev) => prev,
+    networkMode: "always",
   })
-  const { data: categories = [] } = useQuery({ queryKey: ["categories"], queryFn: getCategories })
-  const { data: discountTypes = [] } = useQuery({ queryKey: ["discount-types"], queryFn: getDiscountTypes })
+  const { data: categories = [] } = useQuery({ queryKey: ["categories"], queryFn: cached("categories", getCategories), networkMode: "always" })
+  const { data: discountTypes = [] } = useQuery({ queryKey: ["discount-types"], queryFn: cached("discount-types", getDiscountTypes), networkMode: "always" })
+  // catálogo completo guardado en el navegador para buscar y vender sin conexión
+  useQuery({ queryKey: ["pos-catalog"], queryFn: cached("catalog", getCatalog), enabled: !!locationId, refetchInterval: 5 * 60_000, networkMode: "always" })
+
+  // cola de ventas sin conexión: se envía al abrir la caja, al volver la red y cada 30 s
+  const refreshQueue = () => pendingSales().then(setQueue).catch(() => {})
+  useEffect(() => {
+    const sync = async () => {
+      const sent = await flushSales().catch(() => 0)
+      refreshQueue()
+      if (sent) for (const key of ["products", "cash-session", "pos-catalog"]) queryClient.invalidateQueries({ queryKey: [key] })
+    }
+    sync()
+    window.addEventListener("online", sync)
+    const timer = setInterval(sync, 30_000)
+    return () => {
+      window.removeEventListener("online", sync)
+      clearInterval(timer)
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
   // agotados al final
   const tiles = [...(products?.items ?? [])].sort((a, b) => (Number(a.stock) > 0 ? 0 : 1) - (Number(b.stock) > 0 ? 0 : 1))
 
@@ -110,7 +147,9 @@ export function Pos() {
     },
   }
   const stateRef = useRef(displayState)
-  stateRef.current = displayState
+  useEffect(() => {
+    stateRef.current = displayState // lo último que se dibujó (la pantalla del cliente lo pide al abrirse)
+  })
   useEffect(() => {
     if (!session?.register.customerDisplay) return
     display.current = openChannel((m) => m === "hello" && display.current?.post(stateRef.current))
@@ -128,8 +167,10 @@ export function Pos() {
   })
 
   const sale = useMutation({
-    mutationFn: ({ payments, credit }) =>
-      sell({
+    networkMode: "always",
+    mutationFn: ({ payments, credit }) => {
+      const body = {
+        clientSaleId: saleId.current,
         lines: cart.map((i) => ({
           productId: i.id, quantity: i.quantity,
           ...(i.discount && { discount: i.discount }),
@@ -141,8 +182,21 @@ export function Pos() {
         ...(negativePin && { negativePin }),
         ...(discountPin && { discountPin }),
         ...credit, // { credit: { frequency, installments }, creditPin }
-      }),
+      }
+      // sin red: el contado simple se guarda y se envía solo al volver la conexión (con el precio que se cobró)
+      const simple = !credit?.credit && !totalDiscount && cart.every((i) => !i.discount && i.newPrice == null)
+      const offline = {
+        clientSaleId: body.clientSaleId,
+        lines: cart.map((i) => ({ productId: i.id, quantity: i.quantity, seenPrice: i.price })),
+        payments,
+        ...(customer && { customerId: customer.id }),
+      }
+      return sell(body).catch((e) =>
+        isNetworkError(e) && simple ? queueSale(offline).then((queued) => provisionalTicket({ sale: queued, cart, company, session })) : Promise.reject(e)
+      )
+    },
     onSuccess: (data) => {
+      refreshQueue()
       resetSale()
       setCharging(false)
       setTicket(data)
@@ -164,6 +218,18 @@ export function Pos() {
       } else if (e.response?.status === 403) setNegativePin(null)
     },
   })
+
+  function openCharge() {
+    saleId.current = crypto.randomUUID()
+    sale.reset()
+    setSaleKey((k) => k + 1)
+    setCharging(true)
+  }
+  function startCharge() {
+    // sin conexión la negativa se acepta y se revisa después (no se puede validar el código del encargado)
+    if (negatives.length && !negativePin && online) setAskNegative(negatives)
+    else openCharge()
+  }
 
   // atajos: F2 buscar, F12 cobrar
   useEffect(() => {
@@ -212,15 +278,6 @@ export function Pos() {
     setDiscountFor(null)
   }
 
-  function openCharge() {
-    sale.reset()
-    setSaleKey((k) => k + 1)
-    setCharging(true)
-  }
-  function startCharge() {
-    if (negatives.length && !negativePin) setAskNegative(negatives)
-    else openCharge()
-  }
 
   function add(p, qty = mult ?? 1) {
     const stock = Number(p.stock)
@@ -273,7 +330,7 @@ export function Pos() {
       return
     }
     try {
-      add(await getProductByBarcode(value), qty)
+      add(await getProductByBarcode(value).catch((e) => (isNetworkError(e) ? findInCatalog(value) : Promise.reject(e))), qty)
       setQ("")
     } catch {
       setNotice(t("pos.notFound", { code: value }))
@@ -296,6 +353,14 @@ export function Pos() {
             {session.register.location.name} · {session.openedBy.name}
           </p>
         </div>
+        {(!online || queue.pending > 0 || queue.failed > 0) && (
+          <p role="status" className="flex items-center gap-1.5 rounded-full bg-[var(--stk-warn-bg)] px-3 py-1 text-xs font-medium text-[var(--stk-warn)]">
+            {!online && <WifiOff className="h-3.5 w-3.5" aria-hidden />}
+            {[!online && t("pos.offline.status"), queue.pending > 0 && t("pos.offline.pending", { count: queue.pending }), queue.failed > 0 && t("pos.offline.failed", { count: queue.failed })]
+              .filter(Boolean)
+              .join(" · ")}
+          </p>
+        )}
         {/* contadores del turno (cierre ciego: sin el efectivo en caja) */}
         <dl className="flex flex-wrap gap-2" aria-label={t("pos.counters.label")}>
           <Counter label={t("pos.counters.sales")} value={s.salesCount} />
@@ -310,23 +375,23 @@ export function Pos() {
               <span className="hidden lg:inline">{t("pos.customerDisplay")}</span>
             </Button>
           )}
-          <Button variant="outline" size="sm" onClick={() => setFindingSale(true)} aria-label={t("sales.return.button")}>
+          <Button variant="outline" size="sm" disabled={!online} onClick={() => setFindingSale(true)} aria-label={t("sales.return.button")}>
             <Undo2 />
             <span className="hidden lg:inline">{t("sales.return.button")}</span>
           </Button>
-          <Button variant="outline" size="sm" onClick={() => setPickingCustomer("payment")} aria-label={t("receivables.pay.button")}>
+          <Button variant="outline" size="sm" disabled={!online} onClick={() => setPickingCustomer("payment")} aria-label={t("receivables.pay.button")}>
             <HandCoins />
             <span className="hidden lg:inline">{t("receivables.pay.button")}</span>
           </Button>
-          <Button variant="outline" size="sm" onClick={() => setCashMove("IN")} aria-label={t("pos.cashIn")}>
+          <Button variant="outline" size="sm" disabled={!online} onClick={() => setCashMove("IN")} aria-label={t("pos.cashIn")}>
             <ArrowDownToLine />
             <span className="hidden lg:inline">{t("pos.cashIn")}</span>
           </Button>
-          <Button variant="outline" size="sm" onClick={() => setCashMove("OUT")} aria-label={t("pos.cashOut")}>
+          <Button variant="outline" size="sm" disabled={!online} onClick={() => setCashMove("OUT")} aria-label={t("pos.cashOut")}>
             <ArrowUpFromLine />
             <span className="hidden lg:inline">{t("pos.cashOut")}</span>
           </Button>
-          <Button variant="outline" size="sm" render={<Link to="/pos/cierre" />}>
+          <Button variant="outline" size="sm" disabled={!online} render={<Link to="/pos/cierre" />}>
             <Wallet />
             {t("pos.closeRegister")}
           </Button>
@@ -472,7 +537,8 @@ export function Pos() {
                       {i.quantity} ×{" "}
                       <button
                         type="button"
-                        className="rounded px-1 underline decoration-dotted underline-offset-4 hover:bg-muted"
+                        disabled={!online}
+                        className="rounded px-1 underline decoration-dotted underline-offset-4 hover:bg-muted disabled:no-underline disabled:hover:bg-transparent"
                         aria-label={t("pos.price.aria", { name: i.name })}
                         title={t("pos.price.change")}
                         onClick={() => setPriceFor(i)}
@@ -493,6 +559,7 @@ export function Pos() {
                         size="icon-sm"
                         aria-label={t("pos.discount.lineAria", { name: i.name })}
                         title={t("pos.discount.line")}
+                        disabled={!online}
                         onClick={() => setDiscountFor({ scope: "LINE", id: i.id, name: i.name, base: (i.newPrice ?? i.price) * i.quantity, pick: i.discount })}
                       >
                         <Percent />
@@ -520,7 +587,7 @@ export function Pos() {
           </ol>
           <div className="border-t border-border p-4">
             <div className="mb-3 flex gap-2">
-              <Button variant="outline" size="sm" className="min-w-0 flex-1 justify-start" onClick={() => setPickingCustomer("sale")}>
+              <Button variant="outline" size="sm" className="min-w-0 flex-1 justify-start" disabled={!online} onClick={() => setPickingCustomer("sale")}>
                 <UserRound />
                 <span className="truncate">{customer ? customer.name : t("pos.customer.add")}</span>
               </Button>
@@ -532,7 +599,7 @@ export function Pos() {
               <Button
                 variant={totalDiscount ? "secondary" : "outline"}
                 size="sm"
-                disabled={!cart.length}
+                disabled={!cart.length || !online}
                 onClick={() => setDiscountFor({ scope: "TOTAL", base: discounts.totalBase, pick: totalDiscount })}
               >
                 <Percent />
@@ -623,6 +690,7 @@ export function Pos() {
           <DialogHeader>
             <DialogTitle>{t("pos.saleDone")}</DialogTitle>
           </DialogHeader>
+          {ticket?.document.provisional && <p className="text-sm text-[var(--stk-warn)]">{t("pos.offline.saved")}</p>}
           {ticket?.negatives > 0 && <p className="text-sm text-[var(--stk-warn)]">{t("pos.negativesSent", { count: ticket.negatives })}</p>}
           {ticket && <Ticket data={ticket} />}
           <div className="flex gap-2">

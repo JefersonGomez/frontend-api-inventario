@@ -97,7 +97,7 @@ export function Negatives() {
                 <TableCell className="hidden md:table-cell">{n.location.name}</TableCell>
                 <TableCell className="hidden lg:table-cell font-mono text-xs">{n.document.consecutive}</TableCell>
                 <TableCell className="hidden sm:table-cell">{n.reportedBy.name}</TableCell>
-                <TableCell className="hidden lg:table-cell">{n.authorizedBy.name}</TableCell>
+                <TableCell className="hidden lg:table-cell">{n.authorizedBy?.name ?? t("negatives.offline")}</TableCell>
                 <TableCell className="text-right">
                   {n.status === "OPEN" ? (
                     <Button size="sm" onClick={() => setResolving(n)}>{t("negatives.resolve")}</Button>

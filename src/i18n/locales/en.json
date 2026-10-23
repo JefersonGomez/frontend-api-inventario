@@ -1601,7 +1601,8 @@
       "reference_doc": "Corrects: {{number}}",
       "reason": "Reason: {{reason}}",
       "refund": "Refund {{method}}",
-      "returnBy": "Return approved by {{name}}"
+      "returnBy": "Return approved by {{name}}",
+      "provisional": "Offline sale · Ref. {{number}}"
     },
     "close": {
       "title": "Close register",
@@ -1743,6 +1744,14 @@
       "overdue": "Has overdue installments for {{amount}}: no credit sales until they catch up.",
       "overLimit": "Over the limit: only {{amount}} available. Raise the down payment or charge in full.",
       "nothing": "The down payment covers everything: charge it in full."
+    },
+    "offline": {
+      "status": "Offline",
+      "pending_one": "{{count}} sale to send",
+      "pending_other": "{{count}} sales to send",
+      "failed_one": "{{count}} with a problem",
+      "failed_other": "{{count}} with a problem",
+      "saved": "Sale saved offline: it will be sent automatically when the connection is back."
     }
   },
   "negatives": {
@@ -1771,7 +1780,8 @@
     "countedHint": "If you count it now, the branch stock is set to that quantity.",
     "resolution": "What was found or done?",
     "resolutionPlaceholder": "E.g. the goods arrived and the entry wasn't recorded",
-    "error": "Couldn't resolve the negative"
+    "error": "Couldn't resolve the negative",
+    "offline": "No one (offline sale)"
   },
   "cashClosings": {
     "title": "Cash counts",

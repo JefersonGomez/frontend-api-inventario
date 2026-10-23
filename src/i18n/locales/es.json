@@ -1601,7 +1601,8 @@
       "reference_doc": "Corrige: {{number}}",
       "reason": "Motivo: {{reason}}",
       "refund": "Reembolso {{method}}",
-      "returnBy": "Devolución autorizada por {{name}}"
+      "returnBy": "Devolución autorizada por {{name}}",
+      "provisional": "Venta sin conexión · Ref. {{number}}"
     },
     "close": {
       "title": "Cierre de caja",
@@ -1743,6 +1744,14 @@
       "overdue": "Tiene cuotas vencidas por {{amount}}: no se le puede vender a crédito hasta que se ponga al día.",
       "overLimit": "Pasa el límite: solo tiene {{amount}} disponibles. Sube la prima o cobra de contado.",
       "nothing": "Con la prima no queda nada a crédito: cobra de contado."
+    },
+    "offline": {
+      "status": "Sin conexión",
+      "pending_one": "{{count}} venta por enviar",
+      "pending_other": "{{count}} ventas por enviar",
+      "failed_one": "{{count}} con problema",
+      "failed_other": "{{count}} con problema",
+      "saved": "Venta guardada sin conexión: se envía sola cuando vuelva la red."
     }
   },
   "negatives": {
@@ -1771,7 +1780,8 @@
     "countedHint": "Si la cuentas ahora, el stock de la sucursal queda en esa cantidad.",
     "resolution": "¿Qué se encontró o qué se hizo?",
     "resolutionPlaceholder": "Ej.: la mercadería llegó y no se registró la entrada",
-    "error": "No se pudo resolver la negativa"
+    "error": "No se pudo resolver la negativa",
+    "offline": "Nadie (venta sin conexión)"
   },
   "cashClosings": {
     "title": "Arqueos de caja",
