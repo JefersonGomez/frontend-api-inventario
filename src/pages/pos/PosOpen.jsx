@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 import { useRegisterLocation } from "@/hoocks/useRegisterLocation"
+import { DemoBanner } from "@/components/DemoBanner"
 
 // /pos/abrir: elegir caja, monto inicial y código de caja propio. Código vencido = caja bloqueada,
 // se renueva desde el perfil o en el momento con el código del encargado.
@@ -66,6 +67,8 @@ export function PosOpen() {
           <ArrowLeft />
           {t("pos.backToApp")}
         </Button>
+        {/* en la demo, quien prueba necesita el código para abrir caja */}
+        <DemoBanner />
         <h1 className="text-2xl font-semibold">{t("pos.open.title")}</h1>
         <p className="mb-6 text-sm text-muted-foreground">{t("pos.open.subtitle")}</p>
 

@@ -85,6 +85,13 @@
       "artLabel": "Inventory boxes with a barcode",
       "inStock": "In stock",
       "units": "{{count}} units"
+    },
+    "demo": {
+      "title": "Here to see the project?",
+      "hint": "Enter the demo of a hardware store with sample data. It resets every night, so try anything.",
+      "admin": "Enter as admin",
+      "cashier": "Enter as cashier",
+      "error": "Couldn't enter the demo"
     }
   },
   "dashboard": {
@@ -2033,5 +2040,9 @@
     "sold": "Sold",
     "returnsLabel": "Returned",
     "ticketsLabel": "Tickets"
+  },
+  "demo": {
+    "banner": "You're in the demo: sample data that resets every night.",
+    "codes": "Register codes: cashier {{cashier}} · manager {{manager}} (approves discounts, credit and returns)."
   }
 }

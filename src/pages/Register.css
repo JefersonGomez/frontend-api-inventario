@@ -239,3 +239,29 @@
   font-size: 0.9rem;
   color: var(--stk-muted);
 }
+
+/* Demo pública en el login: caja aparte, debajo del formulario */
+.stk-demo {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px dashed var(--stk-accent-strong);
+  border-radius: 12px;
+}
+.stk-demo-title { margin: 0; font-weight: 600; color: var(--stk-ink); }
+.stk-demo-hint { margin: 0; font-size: 0.82rem; color: var(--stk-muted); }
+.stk-demo-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.stk-btn-outline {
+  min-height: 42px;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--stk-ink);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--stk-ink);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.stk-btn-outline:hover { background: var(--stk-accent-soft); }
+.stk-btn-outline:disabled { opacity: 0.6; cursor: progress; }
+.stk-btn-outline:focus-visible { outline: 2px solid var(--stk-accent-strong); outline-offset: 2px; }

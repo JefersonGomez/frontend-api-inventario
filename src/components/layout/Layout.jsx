@@ -6,6 +6,7 @@ import { useRealtime } from "@/hoocks/useRealtime"
 import { useQuery } from "@tanstack/react-query"
 import { getCompany } from "@/api/company"
 import { SuspendedScreen } from "@/components/SuspendedScreen"
+import { DemoBanner } from "@/components/DemoBanner"
 import { usePlatformOwner } from "@/hoocks/usePlatformOwner"
 import { usePermissions } from "@/hoocks/usePermissions"
 
@@ -30,6 +31,7 @@ export function Layout() {
         <div>
           <Topbar />
           <main key={pathname} className="stk-page-enter">
+            <DemoBanner />
             {company?.suspendedAt ? <SuspendedScreen reason={company.suspensionReason} /> : <Outlet />}
           </main>
         </div>

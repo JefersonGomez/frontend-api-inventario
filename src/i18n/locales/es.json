@@ -85,6 +85,13 @@
       "artLabel": "Cajas de inventario con código de barras",
       "inStock": "En stock",
       "units": "{{count}} uds"
+    },
+    "demo": {
+      "title": "¿Vienes a ver el proyecto?",
+      "hint": "Entra a la demo de una ferretería con datos de ejemplo. Se reinicia cada noche, puedes probar todo.",
+      "admin": "Entrar como administrador",
+      "cashier": "Entrar como cajero",
+      "error": "No se pudo entrar a la demo"
     }
   },
   "dashboard": {
@@ -2033,5 +2040,9 @@
     "sold": "Vendido",
     "returnsLabel": "Devuelto",
     "ticketsLabel": "Tiquetes"
+  },
+  "demo": {
+    "banner": "Estás en la demo: los datos son de ejemplo y se reinician cada noche.",
+    "codes": "Códigos de caja: cajero {{cashier}} · encargada {{manager}} (autoriza descuentos, crédito y devoluciones)."
   }
 }
