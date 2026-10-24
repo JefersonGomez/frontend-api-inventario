@@ -124,7 +124,7 @@
 /* ---------- Marco Stockly (Layout) ---------- */
 .stk-app {
   --stk-rail: 68px;
-  --stk-panel: 236px;
+  --stk-panel: 248px;
   --stk-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   min-height: 100dvh;
   overflow-x: hidden;
@@ -157,7 +157,7 @@
    El panel siempre mide su ancho completo; plegado, una máscara (clip-path) deja ver solo el riel y la
    superficie (::before) mide lo mismo. Al desplegarse, máscara y superficie se abren juntas desde el
    borde del riel y las etiquetas salen de su ícono una tras otra. Los íconos nunca se mueven. */
-.stk-side { position: sticky; top: 16px; z-index: 40; width: var(--stk-rail); }
+.stk-side { position: sticky; top: 16px; z-index: 40; width: var(--stk-rail); color: var(--card-foreground); }
 .stk-side[data-wide="true"] { width: var(--stk-panel); }
 .stk-mobile-bar, .stk-backdrop { display: none; }
 .stk-panel {
@@ -195,7 +195,7 @@
 .stk-head-btn[aria-pressed="true"] { color: var(--stk-accent-strong); background: var(--stk-accent-soft); }
 
 .stk-nav-list, .stk-nav-foot { position: relative; display: flex; flex-direction: column; }
-.stk-nav-list { min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+.stk-nav-list { min-height: 0; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
 .stk-nav-foot { border-top: 1px solid var(--border); margin-top: 8px; padding-top: 8px; }
 .stk-group { display: flex; flex-direction: column; }
 /* título del grupo: plegado es una rayita en el riel; desplegado, el nombre. Misma altura siempre */
@@ -234,7 +234,7 @@
 .stk-side:not([data-expanded="true"]) .stk-glide { right: calc(var(--stk-panel) - var(--stk-rail)); }
 
 /* etiquetas: salen de su ícono una tras otra al desplegar; al plegar se van todas juntas y rápido */
-.stk-label { opacity: 0; transform: translateX(-8px); transition: opacity 0.12s ease, transform 0.12s ease; }
+.stk-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; opacity: 0; transform: translateX(-8px); transition: opacity 0.12s ease, transform 0.12s ease; }
 .stk-side[data-expanded="true"] .stk-label {
   opacity: 1; transform: none;
   transition: opacity 0.28s ease, transform 0.4s var(--stk-ease-out);
