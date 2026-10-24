@@ -299,11 +299,11 @@
   .stk-side, .stk-side[data-wide="true"] { position: static; width: auto; }
   .stk-mobile-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   .stk-backdrop {
-    display: block; position: fixed; inset: 0; z-index: 50;
+    display: block; position: fixed; inset: 0; z-index: 60; /* encima del asistente (z-50) */
     background: color-mix(in oklab, var(--stk-ink) 40%, transparent); animation: stk-fade-in 0.2s ease;
   }
   .stk-navpanel {
-    position: fixed; z-index: 51; inset: 8px auto 8px 8px; width: min(300px, calc(100vw - 48px)); max-height: none;
+    position: fixed; z-index: 61; inset: 8px auto 8px 8px; width: min(300px, calc(100vw - 48px)); max-height: none;
     clip-path: inset(0 100% 0 0 round 14px); visibility: hidden;
     transition: clip-path 0.2s var(--stk-ease-out), visibility 0s linear 0.2s;
   }
