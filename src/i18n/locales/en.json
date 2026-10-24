@@ -35,7 +35,17 @@
     "negatives": "Negatives",
     "cashClosings": "Cash counts",
     "receivables": "Receivables",
-    "sales": "Sales"
+    "sales": "Sales",
+    "groups": {
+      "sales": "Sales",
+      "inventory": "Inventory",
+      "purchases": "Purchasing",
+      "admin": "Administration"
+    },
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "pin": "Keep the menu open",
+    "unpin": "Collapse the menu"
   },
   "topbar": {
     "search": "Search product or SKU",

@@ -123,6 +123,9 @@
 
 /* ---------- Marco Stockly (Layout) ---------- */
 .stk-app {
+  --stk-rail: 68px;
+  --stk-panel: 236px;
+  --stk-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   min-height: 100dvh;
   overflow-x: hidden;
   background: var(--background);
@@ -134,10 +137,13 @@
   margin: 0 auto;
   padding: 16px 20px;
   display: grid;
-  grid-template-columns: 224px minmax(0, 1fr);
+  grid-template-columns: var(--stk-rail) minmax(0, 1fr);
   gap: 20px;
   align-items: start;
+  transition: grid-template-columns 0.34s var(--stk-ease-out);
 }
+/* fijado abierto (o tablet sin mouse): el menú ocupa su ancho y empuja el contenido */
+.stk-shell:has(.stk-side[data-wide="true"]) { grid-template-columns: var(--stk-panel) minmax(0, 1fr); }
 .stk-shell > * { min-width: 0; }
 .stk-card {
   background: var(--card);
@@ -147,35 +153,94 @@
   padding: 18px;
 }
 
-/* Navegación */
-.stk-side { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 16px; }
-.stk-nav { display: flex; flex-direction: column; gap: 2px; padding: 14px 10px; }
-.stk-logo { display: flex; align-items: center; gap: 10px; margin: 0 6px 12px; text-decoration: none; color: inherit; }
+/* Navegación: riel de íconos que se despliega como una cortina.
+   El panel siempre mide su ancho completo; plegado, una máscara (clip-path) deja ver solo el riel y la
+   superficie (::before) mide lo mismo. Al desplegarse, máscara y superficie se abren juntas desde el
+   borde del riel y las etiquetas salen de su ícono una tras otra. Los íconos nunca se mueven. */
+.stk-side { position: sticky; top: 16px; z-index: 40; width: var(--stk-rail); }
+.stk-side[data-wide="true"] { width: var(--stk-panel); }
+.stk-mobile-bar, .stk-backdrop { display: none; }
+.stk-panel {
+  position: relative; width: var(--stk-panel); max-height: calc(100dvh - 32px);
+  display: flex; flex-direction: column; padding: 12px 10px;
+  clip-path: inset(0 calc(100% - var(--stk-rail)) 0 0 round 14px);
+  transition: clip-path 0.22s var(--stk-ease-out);
+}
+.stk-panel::before {
+  content: ""; position: absolute; inset: 0 auto 0 0; width: var(--stk-rail); z-index: -1;
+  background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+  transition: width 0.22s var(--stk-ease-out), box-shadow 0.22s ease;
+}
+.stk-side[data-expanded="true"] .stk-panel { clip-path: inset(0 0 0 0 round 14px); transition-duration: 0.36s; }
+.stk-side[data-expanded="true"] .stk-panel::before { width: 100%; transition-duration: 0.36s; }
+/* desplegado encima del contenido: la sombra lo separa de la página */
+.stk-side[data-expanded="true"][data-wide="false"] .stk-panel::before {
+  box-shadow: 0 18px 40px -12px color-mix(in oklab, var(--stk-ink) 28%, transparent), 0 2px 6px color-mix(in oklab, var(--stk-ink) 8%, transparent);
+}
+
+.stk-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0 0 10px; padding-left: 7px; }
+.stk-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; min-width: 0; }
 .stk-logo-mark {
   flex: none; width: 34px; height: 34px; border-radius: 9px;
   background: var(--stk-accent); color: var(--stk-accent-fg);
   display: grid; place-items: center;
 }
-.stk-logo-text { font-weight: 600; font-size: 1.25rem; letter-spacing: -0.02em; }
+.stk-logo-text { font-weight: 600; font-size: 1.25rem; letter-spacing: -0.02em; white-space: nowrap; }
+.stk-head-btn {
+  flex: none; width: 32px; height: 32px; border-radius: 8px; border: 0; background: none; cursor: pointer;
+  display: grid; place-items: center; color: var(--muted-foreground);
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.stk-head-btn:hover { background: var(--muted); color: var(--foreground); }
+.stk-head-btn[aria-pressed="true"] { color: var(--stk-accent-strong); background: var(--stk-accent-soft); }
+
+.stk-nav-list, .stk-nav-foot { position: relative; display: flex; flex-direction: column; }
+.stk-nav-list { min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+.stk-nav-foot { border-top: 1px solid var(--border); margin-top: 8px; padding-top: 8px; }
+.stk-group { display: flex; flex-direction: column; }
+/* título del grupo: plegado es una rayita en el riel; desplegado, el nombre. Misma altura siempre */
+.stk-group-title {
+  position: relative; height: 26px; margin: 6px 0 0; padding: 0 15px; display: flex; align-items: center;
+  font-size: 0.68rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-foreground);
+}
+.stk-group-title::before {
+  content: ""; position: absolute; left: 16px; top: 50%; width: 16px; height: 1px; background: var(--border);
+  transition: opacity 0.2s ease, transform 0.3s var(--stk-ease-out);
+}
+.stk-side[data-expanded="true"] .stk-group-title::before { opacity: 0; transform: scaleX(0.2); }
+
 .stk-link {
-  display: flex; align-items: center; gap: 10px;
-  min-height: 40px; padding: 0 12px; border-radius: 10px;
+  position: relative; z-index: 1; display: flex; align-items: center; gap: 12px;
+  min-height: 36px; padding: 0 15px; border-radius: 10px;
   font-size: 0.9rem; font-weight: 500; color: var(--muted-foreground);
   text-decoration: none; line-height: 1.2; background: none; border: 0; cursor: pointer; width: 100%;
-  font-family: inherit; text-align: left;
+  font-family: inherit; text-align: left; white-space: nowrap;
+  transition: color 0.15s ease;
 }
-.stk-link { transition: background-color 0.15s ease, color 0.15s ease; }
-.stk-link:hover { color: var(--foreground); background: var(--muted); }
-.stk-link[aria-current="page"] { background: var(--stk-accent-soft); color: var(--stk-accent-strong); font-weight: 600; }
-.stk-link svg { flex: none; }
-.stk-sep { height: 1px; background: var(--border); margin: 8px 4px; }
+.stk-link:hover { color: var(--foreground); }
+.stk-link[aria-current="page"] { color: var(--stk-accent-strong); font-weight: 600; }
+.stk-link svg { flex: none; transition: transform 0.3s var(--stk-ease-out); }
+.stk-link[aria-current="page"] svg { transform: scale(1.08); }
 
-.stk-promo { display: flex; flex-direction: column; gap: 10px; }
-.stk-promo-icon {
-  width: 40px; height: 40px; border-radius: 50%;
-  background: var(--stk-accent-soft); color: var(--stk-accent); display: grid; place-items: center;
+/* las pastillas que viajan: la del mouse (gris) y la de la página actual (acento) */
+.stk-glide {
+  position: absolute; left: 0; right: 0; top: 0; height: 36px; border-radius: 10px; pointer-events: none;
+  opacity: 0; transition: transform 0.26s var(--stk-ease-out), height 0.26s var(--stk-ease-out), opacity 0.15s ease;
 }
-.stk-promo p { margin: 0; font-size: 0.85rem; line-height: 1.45; color: var(--muted-foreground); }
+.stk-glide[data-on="1"] { opacity: 1; }
+.stk-glide-hover { background: var(--muted); }
+.stk-glide-active { background: var(--stk-accent-soft); transition-duration: 0.42s, 0.42s, 0.2s; }
+/* plegado, las pastillas son del tamaño del riel */
+.stk-side:not([data-expanded="true"]) .stk-glide { right: calc(var(--stk-panel) - var(--stk-rail)); }
+
+/* etiquetas: salen de su ícono una tras otra al desplegar; al plegar se van todas juntas y rápido */
+.stk-label { opacity: 0; transform: translateX(-8px); transition: opacity 0.12s ease, transform 0.12s ease; }
+.stk-side[data-expanded="true"] .stk-label {
+  opacity: 1; transform: none;
+  transition: opacity 0.28s ease, transform 0.4s var(--stk-ease-out);
+  transition-delay: calc(min(var(--i), 14) * 14ms + 50ms);
+}
+
 .stk-btn-accent {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   min-height: 40px; padding: 0 16px; border-radius: 10px; border: 0;
@@ -210,6 +275,8 @@
 
 .stk-app :focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
 
+@keyframes stk-fade-in { from { opacity: 0; } }
+
 /* Transición al cambiar de página (Layout pone key={pathname} en main) */
 @keyframes stk-page-in {
   from { opacity: 0; transform: translateY(6px); }
@@ -218,19 +285,31 @@
 .stk-page-enter { animation: stk-page-in 0.22s ease-out; }
 @media (prefers-reduced-motion: reduce) {
   .stk-page-enter { animation: none; }
-  .stk-link { transition: none; }
+  .stk-shell, .stk-panel, .stk-panel::before, .stk-glide, .stk-link svg { transition: none !important; }
+  .stk-label, .stk-side[data-expanded="true"] .stk-label { transform: none; transition: opacity 0.15s ease; transition-delay: 0s; }
 }
 
 @media (max-width: 1100px) {
-  .stk-shell { grid-template-columns: 200px minmax(0, 1fr); gap: 16px; padding: 14px 16px; }
+  .stk-shell { gap: 16px; padding: 14px 16px; }
 }
 @media (max-width: 760px) {
   .stk-shell { grid-template-columns: minmax(0, 1fr); gap: 10px; padding: 10px 12px; }
-  .stk-side { position: static; gap: 10px; }
-  .stk-nav { flex-direction: row; align-items: center; overflow-x: auto; scrollbar-width: none; padding: 8px; }
-  .stk-logo { margin: 0 8px 0 4px; }
-  .stk-link { width: auto; white-space: nowrap; }
-  .stk-sep, .stk-promo { display: none; }
+  /* celular: barra con el logo y el botón de menú; el panel entra como cajón desde la izquierda */
+  .stk-shell, .stk-shell:has(.stk-side[data-wide]) { grid-template-columns: minmax(0, 1fr); }
+  .stk-side, .stk-side[data-wide="true"] { position: static; width: auto; }
+  .stk-mobile-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .stk-backdrop {
+    display: block; position: fixed; inset: 0; z-index: 50;
+    background: color-mix(in oklab, var(--stk-ink) 40%, transparent); animation: stk-fade-in 0.2s ease;
+  }
+  .stk-panel {
+    position: fixed; z-index: 51; inset: 8px auto 8px 8px; width: min(300px, calc(100vw - 48px)); max-height: none;
+    clip-path: inset(0 100% 0 0 round 14px); visibility: hidden;
+    transition: clip-path 0.2s var(--stk-ease-out), visibility 0s linear 0.2s;
+  }
+  .stk-panel::before { width: 100%; }
+  .stk-side[data-expanded="true"] .stk-panel { visibility: visible; transition: clip-path 0.38s var(--stk-ease-out); }
+  .stk-side[data-expanded="true"] .stk-panel::before { box-shadow: 0 24px 48px -16px color-mix(in oklab, var(--stk-ink) 40%, transparent); }
   .stk-company-btn { max-width: 140px; }
   .stk-top { margin-bottom: 10px; }
   .stk-card { padding: 14px; }

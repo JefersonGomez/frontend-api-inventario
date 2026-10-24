@@ -35,7 +35,17 @@
     "negatives": "Negativas",
     "cashClosings": "Arqueos",
     "receivables": "Cuentas por cobrar",
-    "sales": "Ventas"
+    "sales": "Ventas",
+    "groups": {
+      "sales": "Ventas",
+      "inventory": "Inventario",
+      "purchases": "Compras",
+      "admin": "Administración"
+    },
+    "openMenu": "Abrir el menú",
+    "closeMenu": "Cerrar el menú",
+    "pin": "Dejar el menú abierto",
+    "unpin": "Plegar el menú"
   },
   "topbar": {
     "search": "Buscar producto o SKU",

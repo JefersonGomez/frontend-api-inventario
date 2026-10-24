@@ -4,9 +4,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Camera } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-export function BarcodeScanner({ onScan }) {
+// autoStart: abre la cámara apenas aparece (p. ej. desde "Escanear producto" del menú)
+export function BarcodeScanner({ onScan, autoStart = false }) {
   const { t } = useTranslation();
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(autoStart);
   const scannerRef = useRef(null);
 
   useEffect(() => {

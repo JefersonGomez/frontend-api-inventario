@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useSearchParams } from "react-router-dom"
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { getMovements, createMovement } from "@/api/movements"
@@ -36,6 +37,14 @@ export function Movements() {
   const { can, activeLocationId } = usePermissions()
   const queryClient = useQueryClient()
   const [dialogOpen, setDialogOpen] = useState(false)
+  // desde el menú "Escanear producto" (?scan=1): el registro se abre con la cámara lista
+  const [params, setParams] = useSearchParams()
+  const scanning = can("stock.move") && params.get("scan") === "1"
+  const showDialog = dialogOpen || scanning
+  const closeDialog = (open) => {
+    setDialogOpen(open)
+    if (!open && scanning) setParams((p) => { p.delete("scan"); return p }, { replace: true })
+  }
   const [form, setForm] = useState(emptyForm)
   const [isSearching, setIsSearching] = useState(false) // Estado para feedback visual
 
@@ -86,7 +95,7 @@ export function Movements() {
       queryClient.invalidateQueries({ queryKey: ["movements"] })
       queryClient.invalidateQueries({ queryKey: ["products"] })
       queryClient.invalidateQueries({ queryKey: ["reports"] })
-      setDialogOpen(false)
+      closeDialog(false)
       setForm(emptyForm)
     },
   })
@@ -228,7 +237,7 @@ export function Movements() {
       </div>
       <Pagination data={movementsQuery.data} onPage={list.setPage} />
 
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+      <Dialog open={showDialog} onOpenChange={closeDialog}>
         <DialogContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <DialogHeader>
@@ -250,7 +259,7 @@ export function Movements() {
                 </div>
 
                 {/* Botón de escaneo integrado */}
-                <BarcodeScanner onScan={handleScan} />
+                <BarcodeScanner onScan={handleScan} autoStart={scanning} />
               </div>
               
               {isSearching && (
