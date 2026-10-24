@@ -233,7 +233,7 @@ export function Sidebar() {
       </div>
       {isMobile && mobileOpen && <div className="stk-backdrop" onClick={() => setMobileOpen(false)} aria-hidden />}
 
-      <nav id="stk-nav" className="stk-panel" aria-label={t("sidebar.mainMenu")} inert={(isMobile && !mobileOpen) || undefined}>
+      <nav id="stk-nav" className="stk-navpanel" aria-label={t("sidebar.mainMenu")} inert={(isMobile && !mobileOpen) || undefined}>
         <div className="stk-panel-head">
           <Link to={isPlatformOwner ? "/platform" : "/"} className="stk-logo">
             <span className="stk-logo-mark">
