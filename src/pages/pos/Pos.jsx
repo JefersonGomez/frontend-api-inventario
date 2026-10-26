@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { Link, Navigate } from "react-router-dom"
 import {
-  AlertTriangle, ArrowDownToLine, ArrowUpFromLine, HandCoins, LogOut, Undo2, Minus, MonitorUp, Percent, Plus, Printer, Search, ShoppingCart, Trash2, UserRound,
+  AlertTriangle, ArrowDownToLine, Check, ArrowUpFromLine, HandCoins, LogOut, Undo2, Minus, MonitorUp, Percent, Plus, Printer, Search, ShoppingCart, Trash2, UserRound,
   Wallet, WifiOff, X,
 } from "lucide-react"
 import { addCashMovement, getCatalog, getDiscountTypes, getSession, sell } from "@/api/pos"
@@ -706,6 +706,10 @@ export function Pos() {
       <Dialog open={!!ticket} onOpenChange={(o) => !o && setTicket(null)}>
         <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-sm">
           <DialogHeader>
+            <div className="stk-cart-done" aria-hidden>
+              <ShoppingCart className="stk-cart-icon" strokeWidth={1.7} />
+              <Check className="stk-cart-check" strokeWidth={3} />
+            </div>
             <DialogTitle>{t("pos.saleDone")}</DialogTitle>
           </DialogHeader>
           {ticket?.document.provisional && <p className="text-sm text-[var(--stk-warn)]">{t("pos.offline.saved")}</p>}

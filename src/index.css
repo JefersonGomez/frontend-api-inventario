@@ -185,6 +185,10 @@
   background: var(--stk-accent); color: var(--stk-accent-fg);
   display: grid; place-items: center;
 }
+/* la caja da una vuelta al abrir la barra y vuelve girando al cerrarla (transición: no corre al cargar) */
+.stk-logo-mark { perspective: 120px; }
+.stk-logo-mark svg { transition: transform 0.75s cubic-bezier(0.34, 1.45, 0.64, 1); }
+.stk-side[data-expanded="true"] .stk-logo-mark svg { transform: rotateY(360deg) rotateZ(-8deg); }
 .stk-logo-text { font-weight: 600; font-size: 1.25rem; letter-spacing: -0.02em; white-space: nowrap; }
 .stk-head-btn {
   flex: none; width: 32px; height: 32px; border-radius: 8px; border: 0; background: none; cursor: pointer;
@@ -283,9 +287,22 @@
   to { opacity: 1; transform: none; }
 }
 .stk-page-enter { animation: stk-page-in 0.22s ease-out; }
+
+/* POS, venta realizada: el carrito entra rodando, frena con un rebote y aparece el check */
+.stk-cart-done { position: relative; width: 56px; height: 56px; margin: 0 auto 4px; border-radius: 50%; background: var(--stk-ok-bg); color: var(--stk-ok); display: grid; place-items: center; overflow: hidden; }
+.stk-cart-icon { width: 28px; height: 28px; animation: stk-cart-in 0.7s cubic-bezier(0.2, 0.8, 0.3, 1) both; }
+.stk-cart-check { position: absolute; top: 9px; right: 9px; width: 16px; height: 16px; padding: 2px; border-radius: 50%; background: var(--stk-ok); color: var(--stk-ok-bg); animation: stk-check-pop 0.35s 0.6s cubic-bezier(0.34, 1.6, 0.64, 1) both; }
+@keyframes stk-cart-in {
+  0% { transform: translateX(-48px) rotate(0); }
+  60% { transform: translateX(4px) rotate(-6deg); }
+  80% { transform: translateX(-2px) rotate(3deg); }
+  100% { transform: translateX(0) rotate(0); }
+}
+@keyframes stk-check-pop { from { transform: scale(0); } to { transform: scale(1); } }
+
 @media (prefers-reduced-motion: reduce) {
-  .stk-page-enter { animation: none; }
-  .stk-shell, .stk-navpanel, .stk-navpanel::before, .stk-glide, .stk-link svg { transition: none !important; }
+  .stk-page-enter, .stk-cart-icon, .stk-cart-check { animation: none; }
+  .stk-shell, .stk-navpanel, .stk-navpanel::before, .stk-glide, .stk-link svg, .stk-logo-mark svg { transition: none !important; }
   .stk-label, .stk-side[data-expanded="true"] .stk-label { transform: none; transition: opacity 0.15s ease; transition-delay: 0s; }
 }
 

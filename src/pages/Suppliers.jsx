@@ -269,7 +269,7 @@ export function Suppliers() {
             </DialogContent>
           </Dialog>
 
-          <AlertDialog open={!!deletingSupplier} onOpenChange={(open) => !open && setDeletingSupplier(null)}>
+          <AlertDialog open={!!deletingSupplier} onOpenChange={(open) => { if (!open) { setDeletingSupplier(null); deleteMutation.reset() } }}>
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>¿Eliminar este proveedor?</AlertDialogTitle>
@@ -277,6 +277,9 @@ export function Suppliers() {
                   Esta acción no se puede deshacer. "{deletingSupplier?.name}" se eliminará permanentemente.
                 </AlertDialogDescription>
               </AlertDialogHeader>
+              {deleteMutation.isError && (
+                <p role="alert" className="text-sm text-destructive">{apiErrorMessage(deleteMutation.error, "No se pudo eliminar el proveedor.")}</p>
+              )}
               <AlertDialogFooter>
                 <AlertDialogCancel disabled={deleteMutation.isPending}>Cancelar</AlertDialogCancel>
                 <AlertDialogAction
