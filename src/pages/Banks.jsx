@@ -1,13 +1,14 @@
 import { useState } from "react"
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
-import { FileUp, Landmark, Pencil, Plus } from "lucide-react"
-import { classifyBankTransaction, createBankAccount, getBankTransactions, getCashDeposits, importBankStatement, updateBankAccount } from "@/api/banks"
+import { FileUp, Landmark, Pencil, Plus, Undo2 } from "lucide-react"
+import { classifyBankTransaction, undoBankMatch, createBankAccount, getBankTransactions, getCashDeposits, importBankStatement, updateBankAccount } from "@/api/banks"
 import { getLocations } from "@/api/locations"
 import { useListParams } from "@/hoocks/useListParams"
 import { apiErrorMessage } from "@/lib/api-error"
 import { buildBankRows, detectBankColumns, FIELDS, missingBankFields, readStatement } from "@/lib/bank-import"
 import { DepositDialog } from "@/components/banks/DepositDialog"
+import { ItemText, Reconcile } from "@/components/banks/Reconcile"
 import { useBankAccounts } from "@/hoocks/useBankAccounts"
 import { Pagination } from "@/components/Pagination"
 import { SearchInput } from "@/components/SearchInput"
@@ -38,7 +39,7 @@ export function Banks() {
   const [depositing, setDepositing] = useState(false)
   const active = accounts.filter((a) => a.isActive)
   const account = accounts.find((a) => a.id === list.get("account")) ?? active[0] ?? accounts[0]
-  const tab = list.get("tab") === "deposits" ? "deposits" : "movements"
+  const tab = ["deposits", "reconcile"].includes(list.get("tab")) ? list.get("tab") : "movements"
 
   if (isLoading) return <p className="text-muted-foreground">{t("common.loading")}</p>
 
@@ -98,20 +99,22 @@ export function Banks() {
           {account && <AccountRouting account={account} />}
 
           <div className="mb-4 inline-flex rounded-lg border border-border p-0.5" role="tablist">
-            {["movements", "deposits"].map((v) => (
+            {["movements", "reconcile", "deposits"].map((v) => (
               <button
                 key={v}
                 type="button"
                 role="tab"
                 aria-selected={tab === v}
                 className={cn("rounded-md px-3 py-1.5 text-sm", tab === v ? "bg-[var(--stk-accent)] text-[var(--stk-accent-fg)]" : "text-muted-foreground hover:text-foreground")}
-                onClick={() => list.set({ tab: v === "deposits" ? v : "" })}
+                onClick={() => list.set({ tab: v === "movements" ? "" : v })}
               >
                 {t(`banks.tabs.${v}`)}
               </button>
             ))}
           </div>
-          {account && (tab === "movements" ? <Movements account={account} list={list} /> : <Deposits account={account} list={list} />)}
+          {account && tab === "movements" && <Movements account={account} list={list} />}
+          {account && tab === "reconcile" && <Reconcile key={account.id} account={account} money={fmt(account.currency)} />}
+          {account && tab === "deposits" && <Deposits account={account} list={list} />}
         </>
       )}
 
@@ -147,6 +150,10 @@ function Movements({ account, list }) {
   })
   const classify = useMutation({
     mutationFn: ({ id, category }) => classifyBankTransaction(id, { category: category || null }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["banks"] }),
+  })
+  const undo = useMutation({
+    mutationFn: (id) => undoBankMatch(id),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["banks"] }),
   })
 
@@ -194,16 +201,32 @@ function Movements({ account, list }) {
                   {money(Math.abs(Number(m.amount)))}
                 </TableCell>
                 <TableCell>
-                  <select
-                    aria-label={t("banks.category.of", { description: m.description })}
-                    className={selectClass}
-                    value={m.category ?? ""}
-                    disabled={classify.isPending}
-                    onChange={(e) => classify.mutate({ id: m.id, category: e.target.value })}
-                  >
-                    <option value="">{t("banks.category.none")}</option>
-                    {CATEGORIES.map((c) => <option key={c} value={c}>{t(`banks.category.${c}`)}</option>)}
-                  </select>
+                  {m.matches?.length ? (
+                    // conciliado: con qué, la comisión de tarjeta y deshacer
+                    <div className="flex items-start gap-1">
+                      <div className="min-w-0 flex-1 text-xs">
+                        <p className="font-medium text-[var(--stk-ok)]">{t("banks.match.matched")}</p>
+                        {m.matches.map((x) => (
+                          <ItemText key={x.sourceType + x.sourceId} item={{ type: x.sourceType, id: x.sourceId, label: x.label, amount: Number(x.amount) }} money={money} />
+                        ))}
+                        {m.fee && <p className="text-muted-foreground">{t("banks.match.fee", { amount: money(m.fee) })}</p>}
+                      </div>
+                      <Button variant="ghost" size="icon-sm" disabled={undo.isPending} aria-label={t("banks.match.undo")} title={t("banks.match.undo")} onClick={() => undo.mutate(m.id)}>
+                        <Undo2 />
+                      </Button>
+                    </div>
+                  ) : (
+                    <select
+                      aria-label={t("banks.category.of", { description: m.description })}
+                      className={selectClass}
+                      value={m.category ?? ""}
+                      disabled={classify.isPending}
+                      onChange={(e) => classify.mutate({ id: m.id, category: e.target.value })}
+                    >
+                      <option value="">{t("banks.category.none")}</option>
+                      {CATEGORIES.map((c) => <option key={c} value={c}>{t(`banks.category.${c}`)}</option>)}
+                    </select>
+                  )}
                 </TableCell>
               </TableRow>
             ))}
@@ -211,6 +234,7 @@ function Movements({ account, list }) {
         </Table>
       </div>
       {classify.isError && <p role="alert" className="mt-2 text-sm text-destructive">{apiErrorMessage(classify.error, t("banks.category.error"))}</p>}
+      {undo.isError && <p role="alert" className="mt-2 text-sm text-destructive">{apiErrorMessage(undo.error, t("banks.match.error"))}</p>}
       <Pagination data={data} onPage={list.setPage} />
     </>
   )

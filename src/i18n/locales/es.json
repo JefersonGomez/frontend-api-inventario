@@ -2207,7 +2207,8 @@
     "emptyList": "No hay movimientos",
     "tabs": {
       "movements": "Movimientos del banco",
-      "deposits": "Depósitos de efectivo"
+      "deposits": "Depósitos de efectivo",
+      "reconcile": "Conciliar"
     },
     "status": {
       "label": "Mostrar",
@@ -2289,6 +2290,33 @@
       "error": "No se pudo registrar el depósito",
       "empty": "No hay depósitos registrados",
       "noAccounts": "Primero hay que agregar una cuenta bancaria en Bancos."
+    },
+    "match": {
+      "from": "Desde",
+      "to": "Hasta",
+      "confirm": "Confirmar",
+      "undo": "Deshacer la conciliación",
+      "matched": "Conciliado con:",
+      "confirmAll_one": "Confirmar {{count}} pareja",
+      "confirmAll_other": "Confirmar {{count}} parejas",
+      "hint": "Para cada movimiento del banco, el sistema propone lo que registró con el mismo monto y fecha cercana (la referencia manda). Revisá y confirmá; lo que no tiene pareja se clasifica en Movimientos.",
+      "pendingTitle": "Por conciliar: {{count}} ({{paired}} con pareja posible)",
+      "nothing": "No hay movimientos pendientes en estas fechas. Importá el estado del banco primero.",
+      "pick": "Pareja para {{description}}",
+      "none": "Ninguna (clasificarlo después)",
+      "noCandidates": "Nada del sistema coincide: clasificalo en Movimientos.",
+      "fee": "Comisión de tarjeta: {{amount}}",
+      "error": "No se pudo conciliar",
+      "missingTitle_one": "En el sistema y no en el banco ({{count}})",
+      "missingTitle_other": "En el sistema y no en el banco ({{count}})",
+      "missingHint": "Ya pasó el plazo y el banco no los muestra. Revisá que el estado esté completo; si sigue sin aparecer, puede ser un comprobante SINPE falso o un pago que no se hizo.",
+      "types": {
+        "SALE_PAYMENT": "Venta / reembolso",
+        "CUSTOMER_PAYMENT": "Abono de cliente",
+        "SUPPLIER_PAYMENT": "Pago a proveedor",
+        "CASH_DEPOSIT": "Depósito de efectivo",
+        "CARD_BATCH": "Tarjeta del día"
+      }
     }
   }
 }

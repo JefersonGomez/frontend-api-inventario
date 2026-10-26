@@ -14,3 +14,9 @@ export const classifyBankTransaction = (id, data) => api.patch(`/banks/transacti
 // { bankAccountId, locationId?, amount, depositedAt, reference, note? }
 export const createCashDeposit = (data) => api.post("/banks/deposits", data).then((res) => res.data)
 export const getCashDeposits = (params = {}) => api.get("/banks/deposits", { params }).then((res) => res.data)
+// conciliación (53B): { from, to } → { transactions: [{ ...movimiento, suggestion, candidates }], missing }
+export const getReconcile = (id, params) => api.get(`/banks/accounts/${id}/reconcile`, { params }).then((res) => res.data)
+// { items: [{ type, id }] } = lo del sistema que es este movimiento del banco
+export const matchBankTransaction = (id, data) => api.post(`/banks/transactions/${id}/match`, data).then((res) => res.data)
+// deshace la conciliación o la clasificación: vuelve a pendiente
+export const undoBankMatch = (id) => api.delete(`/banks/transactions/${id}/match`).then((res) => res.data)

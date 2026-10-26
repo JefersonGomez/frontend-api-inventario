@@ -2207,7 +2207,8 @@
     "emptyList": "No movements",
     "tabs": {
       "movements": "Bank movements",
-      "deposits": "Cash deposits"
+      "deposits": "Cash deposits",
+      "reconcile": "Reconcile"
     },
     "status": {
       "label": "Show",
@@ -2289,6 +2290,33 @@
       "error": "Could not record the deposit",
       "empty": "No deposits recorded",
       "noAccounts": "Add a bank account in Banks first."
+    },
+    "match": {
+      "from": "From",
+      "to": "To",
+      "confirm": "Confirm",
+      "undo": "Undo reconciliation",
+      "matched": "Matched with:",
+      "confirmAll_one": "Confirm {{count}} match",
+      "confirmAll_other": "Confirm {{count}} matches",
+      "hint": "For each bank movement the system proposes what it recorded with the same amount and a close date (the reference wins). Review and confirm; anything without a match is classified in Movements.",
+      "pendingTitle": "To reconcile: {{count}} ({{paired}} with a possible match)",
+      "nothing": "Nothing pending in these dates. Import the bank statement first.",
+      "pick": "Match for {{description}}",
+      "none": "None (classify later)",
+      "noCandidates": "Nothing in the system matches: classify it in Movements.",
+      "fee": "Card fee: {{amount}}",
+      "error": "Could not reconcile",
+      "missingTitle_one": "In the system but not in the bank ({{count}})",
+      "missingTitle_other": "In the system but not in the bank ({{count}})",
+      "missingHint": "The wait is over and the bank doesn't show them. Check the statement is complete; if they still don't appear, it may be a fake SINPE receipt or a payment that wasn't made.",
+      "types": {
+        "SALE_PAYMENT": "Sale / refund",
+        "CUSTOMER_PAYMENT": "Customer payment",
+        "SUPPLIER_PAYMENT": "Supplier payment",
+        "CASH_DEPOSIT": "Cash deposit",
+        "CARD_BATCH": "Card day total"
+      }
     }
   }
 }
