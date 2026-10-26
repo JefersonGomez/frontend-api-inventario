@@ -2159,12 +2159,15 @@
       "dueHint_one": "Sin vencimiento: la fecha + {{count}} día de crédito del proveedor.",
       "dueHint_other": "Sin vencimiento: la fecha + {{count}} días de crédito del proveedor.",
       "save": "Registrar factura",
-      "error": "No se pudo registrar la factura"
+      "error": "No se pudo registrar la factura",
+      "creditable": "Da crédito fiscal (acreditable)",
+      "creditableHint": "Desmarcalo si es un gasto personal, si la factura no está a nombre del negocio o si es una compra que no da derecho a crédito (no se resta en el IVA del mes).",
+      "notCreditable": "No acreditable"
     },
     "receive": {
       "toggle": "Registrar la factura del proveedor",
-      "hint_one": "Montos vacíos = lo que llega a costo de la orden + IVA. Sin vencimiento: la fecha + {{count}} día de crédito.",
-      "hint_other": "Montos vacíos = lo que llega a costo de la orden + IVA. Sin vencimiento: la fecha + {{count}} días de crédito."
+      "hint_one": "Sin montos: lo que llega a costo de la orden, por tarifa. Sin vencimiento: la fecha + {{count}} día de crédito.",
+      "hint_other": "Sin montos: lo que llega a costo de la orden, por tarifa. Sin vencimiento: la fecha + {{count}} días de crédito."
     },
     "pay": {
       "button": "Pagar",
@@ -2188,6 +2191,15 @@
       "reason": "Motivo",
       "submit": "Anular",
       "error": "No se pudo anular la factura"
+    },
+    "taxes": {
+      "rate": "Tarifa",
+      "base": "Base sin IVA",
+      "tax": "IVA",
+      "baseOf": "Base sin IVA al {{rate}}",
+      "taxOf": "IVA al {{rate}}",
+      "add": "Agregar tarifa",
+      "remove": "Quitar tarifa"
     }
   },
   "banks": {

@@ -4,9 +4,9 @@ import { useTranslation } from "react-i18next"
 import { cancelPurchaseOrder, closePurchaseOrder, receivePurchaseOrder } from "@/api/purchaseOrders"
 import { apiErrorMessage } from "@/lib/api-error"
 import { formatQty, qtyStep } from "@/lib/units"
-import { TAX_PERCENT } from "@/lib/pos"
-import { useMoney } from "@/hoocks/useMoney"
 import { Switch } from "@/components/ui/switch"
+import { TaxLinesEditor } from "@/components/payables/TaxLinesEditor"
+import { toTaxLines } from "@/lib/tax-lines"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -23,10 +23,10 @@ export function ReceiveOrderDialog({ order, onClose }) {
   const [lots, setLots] = useState({}) // itemId → { code, expires } (productos con lotes)
   const [ending, setEnding] = useState(null) // "cancel" | "close"
   const [reason, setReason] = useState("")
-  const money = useMoney()
   // factura del proveedor (Cuentas por pagar): montos vacíos = los calcula el servidor con lo que llega
   const [withInvoice, setWithInvoice] = useState(false)
-  const [invoice, setInvoice] = useState({ number: "", issueDate: new Date().toLocaleDateString("en-CA"), dueDate: "", subtotal: "", tax: "" })
+  const [invoice, setInvoice] = useState({ number: "", issueDate: new Date().toLocaleDateString("en-CA"), dueDate: "", creditable: true })
+  const [taxEdits, setTaxEdits] = useState({}) // tarifa → { base, tax } corregidos a mano
   const setInv = (k) => (e) => setInvoice({ ...invoice, [k]: e.target.value })
 
   const done = () => {
@@ -51,8 +51,11 @@ export function ReceiveOrderDialog({ order, onClose }) {
               number: invoice.number.trim(),
               issueDate: invoice.issueDate,
               ...(invoice.dueDate && { dueDate: invoice.dueDate }),
-              ...(invoice.subtotal !== "" && { subtotal: Number(invoice.subtotal) }),
-              ...(invoice.tax !== "" && { tax: Number(invoice.tax) }),
+              creditable: invoice.creditable,
+              // solo si se corrigió algún monto; si no, el servidor arma las tarifas con lo que llega
+              ...(taxRows.some((r) => r.base !== "" || r.tax !== "") && {
+                lines: toTaxLines(taxRows.map((r) => ({ ...r, base: r.base !== "" ? r.base : String(calcBase[r.rate]) }))),
+              }),
             }
           : undefined
       ),
@@ -66,10 +69,16 @@ export function ReceiveOrderDialog({ order, onClose }) {
   const total = order.items.reduce((s, i) => s + (pendingOf(i) > 0 ? Number(arriving[i.id] || 0) : 0), 0)
   const invalid = order.items.some((i) => Number(arriving[i.id] || 0) > pendingOf(i) || Number(arriving[i.id] || 0) < 0)
   const error = receive.error || end.error
-  // lo que llega, a costo de la orden, con el IVA de cada producto (lo mismo que calcula el servidor)
-  const arrivingCost = order.items.map((i) => (pendingOf(i) > 0 ? Number(arriving[i.id] || 0) : 0) * Number(i.unitCost))
-  const calcSubtotal = arrivingCost.reduce((s, c) => s + c, 0)
-  const calcTax = order.items.reduce((s, i, n) => s + (arrivingCost[n] * TAX_PERCENT[i.product.taxRate ?? "RATE_13"]) / 100, 0)
+  // lo que llega, a costo de la orden, por la tarifa de cada producto (lo mismo que calcula el servidor)
+  const calcBase = {}
+  for (const i of order.items) {
+    const cost = (pendingOf(i) > 0 ? Number(arriving[i.id] || 0) : 0) * Number(i.unitCost)
+    const rate = i.product.taxRate ?? "RATE_13"
+    if (cost > 0) calcBase[rate] = Math.round(((calcBase[rate] ?? 0) + cost) * 100) / 100
+  }
+  // una fila por tarifa de lo que llega; vacía = lo calculado
+  const taxRows = Object.keys(calcBase).map((rate) => ({ rate, base: taxEdits[rate]?.base ?? "", tax: taxEdits[rate]?.tax ?? "" }))
+  const setTaxRows = (rows) => setTaxEdits(Object.fromEntries(rows.map((r) => [r.rate, { base: r.base, tax: r.tax }])))
 
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
@@ -163,22 +172,15 @@ export function ReceiveOrderDialog({ order, onClose }) {
                   <Label htmlFor="inv-due">{t("payables.invoice.dueDate")}</Label>
                   <Input id="inv-due" type="date" value={invoice.dueDate} onChange={setInv("dueDate")} />
                 </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="inv-subtotal">{t("payables.invoice.subtotal")}</Label>
-                  <Input id="inv-subtotal" type="number" min={0} step="0.01" placeholder={calcSubtotal.toFixed(2)} value={invoice.subtotal} onChange={setInv("subtotal")} />
+                <div className="sm:col-span-3">
+                  <TaxLinesEditor rows={taxRows} onChange={setTaxRows} placeholders={calcBase} fixedRates />
                 </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="inv-tax">{t("payables.invoice.tax")}</Label>
-                  <Input id="inv-tax" type="number" min={0} step="0.01" placeholder={calcTax.toFixed(2)} value={invoice.tax} onChange={setInv("tax")} />
-                </div>
-                <div className="space-y-1.5">
-                  <span className="text-sm font-medium">{t("payables.invoice.total")}</span>
-                  <p className="font-mono text-lg">
-                    {money.format((invoice.subtotal === "" ? calcSubtotal : Number(invoice.subtotal)) + (invoice.tax === "" ? calcTax : Number(invoice.tax)))}
-                  </p>
+                <div className="flex items-center gap-2 sm:col-span-3">
+                  <Switch id="inv-creditable" checked={invoice.creditable} onCheckedChange={(v) => setInvoice({ ...invoice, creditable: v })} />
+                  <Label htmlFor="inv-creditable">{t("payables.invoice.creditable")}</Label>
                 </div>
                 <p className="text-xs text-muted-foreground sm:col-span-3">
-                  {t("payables.receive.hint", { days: order.supplier.creditDays ?? 0 })}
+                  {t("payables.receive.hint", { count: order.supplier.creditDays ?? 0 })}
                 </p>
               </div>
             )}

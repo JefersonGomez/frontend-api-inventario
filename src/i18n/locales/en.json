@@ -2159,12 +2159,15 @@
       "dueHint_one": "No due date: the date + the supplier's {{count}} credit day.",
       "dueHint_other": "No due date: the date + the supplier's {{count}} credit days.",
       "save": "Record invoice",
-      "error": "Could not record the invoice"
+      "error": "Could not record the invoice",
+      "creditable": "Gives tax credit (creditable)",
+      "creditableHint": "Turn it off for personal expenses, invoices not issued to the business or purchases without the right to credit (not deducted in the month's VAT).",
+      "notCreditable": "Not creditable"
     },
     "receive": {
       "toggle": "Record the supplier's invoice",
-      "hint_one": "Empty amounts = what arrives at order cost + VAT. No due date: the date + {{count}} credit day.",
-      "hint_other": "Empty amounts = what arrives at order cost + VAT. No due date: the date + {{count}} credit days."
+      "hint_one": "No amounts: what arrives at order cost, by rate. No due date: the date + {{count}} credit day.",
+      "hint_other": "No amounts: what arrives at order cost, by rate. No due date: the date + {{count}} credit days."
     },
     "pay": {
       "button": "Pay",
@@ -2188,6 +2191,15 @@
       "reason": "Reason",
       "submit": "Void",
       "error": "Could not void the invoice"
+    },
+    "taxes": {
+      "rate": "Rate",
+      "base": "Base before VAT",
+      "tax": "VAT",
+      "baseOf": "Base before VAT at {{rate}}",
+      "taxOf": "VAT at {{rate}}",
+      "add": "Add rate",
+      "remove": "Remove rate"
     }
   },
   "banks": {

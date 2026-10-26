@@ -6,6 +6,8 @@ import { AlertTriangle, ArrowLeft, Ban, FilePlus2, Wallet } from "lucide-react"
 import { createSupplierInvoice, getPayables, getSupplierAccount, getSupplierInvoices, paySupplier, voidSupplierInvoice } from "@/api/payables"
 import { getSuppliers } from "@/api/suppliers"
 import { BankAccountSelect } from "@/components/banks/DepositDialog"
+import { TaxLinesEditor } from "@/components/payables/TaxLinesEditor"
+import { toTaxLines } from "@/lib/tax-lines"
 import { useListParams } from "@/hoocks/useListParams"
 import { useMoney } from "@/hoocks/useMoney"
 import { apiErrorMessage } from "@/lib/api-error"
@@ -289,6 +291,7 @@ function InvoiceTable({ invoices, loading, showSupplier, canVoid }) {
               <TableCell>
                 <span className={cn("font-mono text-sm", i.voidedAt && "line-through")}>{i.number}</span>
                 {(i.voidReason || i.note) && <span className="block text-xs text-muted-foreground">{i.voidReason || i.note}</span>}
+                {i.creditable === false && <Badge variant="outline" className="mt-0.5 text-[10px]">{t("payables.invoice.notCreditable")}</Badge>}
               </TableCell>
               {showSupplier && (
                 <TableCell><Link to={`/payables/${i.supplier.id}`} className="hover:underline">{i.supplier.name}</Link></TableCell>
@@ -327,21 +330,21 @@ function InvoiceDialog({ open, supplier, onClose }) {
 
 function InvoiceForm({ supplier, onClose }) {
   const { t } = useTranslation()
-  const money = useMoney()
   const queryClient = useQueryClient()
   const { data: suppliers = [] } = useQuery({ queryKey: ["suppliers", "all"], queryFn: () => getSuppliers(), enabled: !supplier })
-  const [form, setForm] = useState({ supplierId: supplier?.id ?? "", number: "", issueDate: today(), dueDate: "", subtotal: "", tax: "", note: "" })
+  const [form, setForm] = useState({ supplierId: supplier?.id ?? "", number: "", issueDate: today(), dueDate: "", note: "", creditable: true })
+  const [taxRows, setTaxRows] = useState([{ rate: "RATE_13", base: "", tax: "" }])
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value })
   const chosen = supplier ?? suppliers.find((s) => s.id === form.supplierId)
-  const total = (Number(form.subtotal) || 0) + (Number(form.tax) || 0)
+  const lines = toTaxLines(taxRows)
   const save = useMutation({
     mutationFn: () =>
       createSupplierInvoice({
         supplierId: form.supplierId,
         number: form.number.trim(),
         issueDate: form.issueDate,
-        subtotal: Number(form.subtotal) || 0,
-        tax: Number(form.tax) || 0,
+        lines,
+        creditable: form.creditable,
         ...(form.dueDate && { dueDate: form.dueDate }),
         ...(form.note.trim() && { note: form.note.trim() }),
       }),
@@ -350,7 +353,7 @@ function InvoiceForm({ supplier, onClose }) {
       onClose()
     },
   })
-  const valid = form.supplierId && form.number.trim() && form.issueDate && total > 0
+  const valid = form.supplierId && form.number.trim() && form.issueDate && lines.length > 0
   return (
     <form
       className="space-y-4"
@@ -385,23 +388,21 @@ function InvoiceForm({ supplier, onClose }) {
           <Input id="inv-due" type="date" min={form.issueDate} value={form.dueDate} onChange={set("dueDate")} />
         </div>
         <p className="col-span-2 -mt-1 text-xs text-muted-foreground">{t("payables.invoice.dueHint", { count: chosen?.creditDays ?? 0 })}</p>
-        <div className="space-y-2">
-          <Label htmlFor="inv-subtotal">{t("payables.invoice.subtotal")}</Label>
-          <Input id="inv-subtotal" type="number" min={0} step="0.01" required className="font-mono" value={form.subtotal} onChange={set("subtotal")} />
+        <div className="col-span-2">
+          <TaxLinesEditor rows={taxRows} onChange={setTaxRows} />
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="inv-tax">{t("payables.invoice.tax")}</Label>
-          <Input id="inv-tax" type="number" min={0} step="0.01" className="font-mono" value={form.tax} onChange={set("tax")} />
+        <div className="col-span-2 space-y-1">
+          <div className="flex items-center gap-2">
+            <Switch id="inv-creditable" checked={form.creditable} onCheckedChange={(v) => setForm({ ...form, creditable: v })} />
+            <Label htmlFor="inv-creditable">{t("payables.invoice.creditable")}</Label>
+          </div>
+          <p className="text-xs text-muted-foreground">{t("payables.invoice.creditableHint")}</p>
         </div>
         <div className="col-span-2 space-y-2">
           <Label htmlFor="inv-note">{t("payables.pay.note")}</Label>
           <Input id="inv-note" maxLength={200} value={form.note} onChange={set("note")} />
         </div>
       </div>
-      <p className="flex justify-between rounded-lg bg-muted px-3 py-2">
-        <span>{t("payables.invoice.total")}</span>
-        <span className="font-mono font-semibold">{money.format(total)}</span>
-      </p>
       {save.isError && <p role="alert" className="text-sm text-destructive">{apiErrorMessage(save.error, t("payables.invoice.error"))}</p>}
       <div className="flex justify-end gap-2">
         <Button type="button" variant="outline" onClick={onClose}>{t("common.cancel")}</Button>
