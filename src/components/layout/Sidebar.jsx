@@ -9,7 +9,7 @@ import { getLocations } from "@/api/locations";
 import {
   LayoutDashboard, Package, FolderTree, ArrowLeftRight, Route, ClipboardCheck, Tag, BarChart3, ClipboardList, ShoppingCart,
   Settings as SettingsIcon, Users as UsersIcon, Truck, ShieldCheck, UserRound, LogOut, Box, ScanBarcode, Building2, Contact,
-  Monitor, AlertTriangle, Calculator, HandCoins, Receipt, Menu, X, Pin, PinOff,
+  Monitor, AlertTriangle, Calculator, HandCoins, Receipt, Menu, X, Pin, PinOff, Wallet,
 } from "lucide-react";
 
 const ICON = { className: "w-[18px] h-[18px]", strokeWidth: 1.7, "aria-hidden": true };
@@ -176,6 +176,7 @@ export function Sidebar() {
             { to: "/purchase-requests", label: t("sidebar.purchaseRequests"), icon: ClipboardList },
             can("purchases.manage") && { to: "/purchase-orders", label: t("sidebar.purchaseOrders"), icon: ShoppingCart },
             { to: "/suppliers", label: t("sidebar.suppliers"), icon: Truck },
+            can("payables.manage") && { to: "/payables", label: t("sidebar.payables"), icon: Wallet },
           ),
         },
         {

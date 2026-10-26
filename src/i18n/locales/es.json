@@ -45,7 +45,8 @@
     "openMenu": "Abrir el menú",
     "closeMenu": "Cerrar el menú",
     "pin": "Dejar el menú abierto",
-    "unpin": "Plegar el menú"
+    "unpin": "Plegar el menú",
+    "payables": "Cuentas por pagar"
   },
   "topbar": {
     "search": "Buscar producto o SKU",
@@ -859,7 +860,8 @@
       "stockNegative": "Negativas por revisar",
       "installmentOverdue": "Cuotas vencidas",
       "returnDamaged": "Devoluciones dañadas",
-      "offlineSaleFailed": "Ventas sin conexión rechazadas"
+      "offlineSaleFailed": "Ventas sin conexión rechazadas",
+      "payableDue": "Facturas por vencer"
     },
     "detail": {
       "requestExpiring": "{{requester}} · {{quantity}} · vence {{when}}",
@@ -886,7 +888,10 @@
       "installmentOverdue_one": "{{count}} cuota vencida · {{amount}}",
       "installmentOverdue_other": "{{count}} cuotas vencidas · {{amount}}",
       "returnDamaged": "{{quantity}} devuelto dañado · {{reason}}",
-      "offlineSaleFailed": "{{total}} · {{reason}} · vendió {{cashier}}"
+      "offlineSaleFailed": "{{total}} · {{reason}} · vendió {{cashier}}",
+      "payableDue_one": "{{count}} factura · {{amount}} · {{when}}",
+      "payableDue_other": "{{count}} facturas · {{amount}} · {{when}}",
+      "payableDueWhen": "vence {{when}}"
     },
     "when": {
       "today": "hoy",
@@ -1235,7 +1240,8 @@
     "cash.reconcile": "Hacer arqueos de caja (jefa de caja)",
     "sales.credit": "Autorizar ventas a crédito (con PIN)",
     "credit.manage": "Dar crédito a clientes y fijar su límite",
-    "receivables.manage": "Cuentas por cobrar y abonos sin caja"
+    "receivables.manage": "Cuentas por cobrar y abonos sin caja",
+    "payables.manage": "Cuentas por pagar: facturas de proveedores y pagos"
   },
   "locations": {
     "label": "Ubicación",
@@ -2093,5 +2099,93 @@
   "demo": {
     "banner": "Estás en la demo: los datos son de ejemplo y se reinician cada noche.",
     "codes": "Códigos de caja: cajero {{cashier}} · encargada {{manager}} (autoriza descuentos, crédito y devoluciones)."
+  },
+  "payables": {
+    "title": "Cuentas por pagar",
+    "subtitle": "Facturas de proveedores: saldos, vencimientos y pagos.",
+    "totalBalance": "Por pagar",
+    "totalOverdue": "Vencido",
+    "search": "Buscar proveedor",
+    "searchInvoices": "Buscar por número o proveedor",
+    "onlyOverdue": "Solo con facturas vencidas",
+    "supplier": "Proveedor",
+    "invoices": "Facturas",
+    "balance": "Saldo",
+    "overdue": "Vencido",
+    "nextDue": "Próximo vencimiento",
+    "pending": "Pendiente",
+    "amount": "Monto",
+    "date": "Fecha",
+    "by": "Registró",
+    "payments": "Pagos",
+    "empty": "No hay saldos pendientes con proveedores",
+    "noInvoices": "No hay facturas",
+    "noPayments": "Todavía no hay pagos",
+    "creditDays": "Días de crédito",
+    "creditDaysHint": "El plazo que te da el proveedor para pagar (0 = contado). Calcula el vencimiento de sus facturas.",
+    "daysShort_one": "{{count}} día de crédito",
+    "daysShort_other": "{{count}} días de crédito",
+    "view": {
+      "suppliers": "Por proveedor",
+      "invoices": "Facturas"
+    },
+    "status": {
+      "label": "Estado",
+      "open": "Por pagar",
+      "overdue": "Vencida",
+      "paid": "Pagada",
+      "void": "Anulada"
+    },
+    "aging": {
+      "title": "Antigüedad",
+      "current": "Al día",
+      "d30": "1–30 días",
+      "d60": "31–60 días",
+      "d90": "61–90 días",
+      "over90": "Más de 90 días"
+    },
+    "invoice": {
+      "new": "Registrar factura",
+      "titleFor": "Factura de {{name}}",
+      "pickSupplier": "Elegí el proveedor",
+      "number": "N.º de factura",
+      "issueDate": "Fecha",
+      "dueDate": "Vence",
+      "subtotal": "Subtotal (sin IVA)",
+      "tax": "IVA",
+      "total": "Total",
+      "dueHint_one": "Sin vencimiento: la fecha + {{count}} día de crédito del proveedor.",
+      "dueHint_other": "Sin vencimiento: la fecha + {{count}} días de crédito del proveedor.",
+      "save": "Registrar factura",
+      "error": "No se pudo registrar la factura"
+    },
+    "receive": {
+      "toggle": "Registrar la factura del proveedor",
+      "hint_one": "Montos vacíos = lo que llega a costo de la orden + IVA. Sin vencimiento: la fecha + {{count}} día de crédito.",
+      "hint_other": "Montos vacíos = lo que llega a costo de la orden + IVA. Sin vencimiento: la fecha + {{count}} días de crédito."
+    },
+    "pay": {
+      "button": "Pagar",
+      "title": "Pago a {{name}}",
+      "which": "Facturas",
+      "whichHint": "Sin marcar ninguna, el pago se aplica de la que vence primero.",
+      "allOverdue": "Todo lo vencido",
+      "all": "Todo el saldo",
+      "allPicked": "Lo de las marcadas",
+      "reference": "Referencia (transferencia, cheque…)",
+      "note": "Nota (opcional)",
+      "newBalance": "Saldo nuevo",
+      "appliedTo": "Aplicado a",
+      "error": "No se pudo registrar el pago",
+      "submit": "Registrar pago"
+    },
+    "void": {
+      "button": "Anular factura {{number}}",
+      "title": "Anular factura {{number}}",
+      "hint": "Solo si se registró por error y no tiene pagos. Queda en el historial y el número se puede volver a usar.",
+      "reason": "Motivo",
+      "submit": "Anular",
+      "error": "No se pudo anular la factura"
+    }
   }
 }

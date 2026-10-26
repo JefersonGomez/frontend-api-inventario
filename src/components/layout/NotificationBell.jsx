@@ -23,6 +23,7 @@ const SECTIONS = [
   { type: "offlineSaleFailed", icon: XCircle, tone: "crit" },
   { type: "stockNegative", icon: AlertTriangle, tone: "warn" },
   { type: "installmentOverdue", icon: AlertTriangle, tone: "crit" },
+  { type: "payableDue", icon: CalendarClock, tone: "warn" },
   { type: "returnDamaged", icon: AlertTriangle, tone: "warn" },
   { type: "transferIncoming", icon: Truck, tone: "info" },
   { type: "transferReceived", icon: Truck, tone: "ok" },
@@ -88,6 +89,14 @@ function useDetail() {
         return m.reason
           ? t("notifications.detail.requestRejectedReason", m)
           : t("notifications.detail.requestRejected", m);
+      case "payableDue": {
+        const days = daysUntil(raw.dueDate, true);
+        return t("notifications.detail.payableDue", {
+          count: raw.count,
+          amount: Number(raw.amount).toLocaleString("es-CR", { minimumFractionDigits: 2 }),
+          when: days < 0 ? t("notifications.when.past") : t("notifications.detail.payableDueWhen", { when: when(days) }),
+        });
+      }
       case "installmentOverdue":
         return t("notifications.detail.installmentOverdue", { count: raw.count, amount: Number(raw.amount).toLocaleString("es-CR", { minimumFractionDigits: 2 }) });
       case "offlineSaleFailed":

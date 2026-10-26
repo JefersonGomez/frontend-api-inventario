@@ -27,9 +27,14 @@ import { FiscalIdFields } from "@/components/FiscalIdFields"
 import { cleanIdNumber, formatFiscalId, isValidId } from "@/lib/fiscal"
 import { apiErrorMessage } from "@/lib/api-error"
 
-const emptyForm = { name: "", email: "", phone: "", address: "", idType: "", idNumber: "" }
+const emptyForm = { name: "", email: "", phone: "", address: "", idType: "", idNumber: "", creditDays: "0" }
 // la identificación va sin guiones y solo si hay tipo
-const toPayload = (form) => ({ ...form, idType: form.idType || null, idNumber: form.idType ? cleanIdNumber(form.idNumber) : null })
+const toPayload = (form) => ({
+  ...form,
+  idType: form.idType || null,
+  idNumber: form.idType ? cleanIdNumber(form.idNumber) : null,
+  creditDays: Number(form.creditDays || 0),
+})
 
 export function Suppliers() {
   const { t } = useTranslation()
@@ -91,6 +96,7 @@ export function Suppliers() {
       address: supplier.address ?? "",
       idType: supplier.idType ?? "",
       idNumber: supplier.idNumber ?? "",
+      creditDays: String(supplier.creditDays ?? 0),
     })
     setDialogOpen(true)
   }
@@ -251,6 +257,20 @@ export function Suppliers() {
                     value={form.address}
                     onChange={(e) => setForm({ ...form, address: e.target.value })}
                   />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="supplier-credit-days">{t("payables.creditDays")}</Label>
+                  <Input
+                    id="supplier-credit-days"
+                    type="number"
+                    min={0}
+                    max={365}
+                    step={1}
+                    className="w-32"
+                    value={form.creditDays}
+                    onChange={(e) => setForm({ ...form, creditDays: e.target.value })}
+                  />
+                  <p className="text-xs text-muted-foreground">{t("payables.creditDaysHint")}</p>
                 </div>
 
                 {saveError && (

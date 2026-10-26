@@ -45,7 +45,8 @@
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
     "pin": "Keep the menu open",
-    "unpin": "Collapse the menu"
+    "unpin": "Collapse the menu",
+    "payables": "Payables"
   },
   "topbar": {
     "search": "Search product or SKU",
@@ -859,7 +860,8 @@
       "stockNegative": "Negatives to review",
       "installmentOverdue": "Overdue installments",
       "returnDamaged": "Damaged returns",
-      "offlineSaleFailed": "Rejected offline sales"
+      "offlineSaleFailed": "Rejected offline sales",
+      "payableDue": "Invoices coming due"
     },
     "detail": {
       "requestExpiring": "{{requester}} · {{quantity}} · expires {{when}}",
@@ -886,7 +888,10 @@
       "installmentOverdue_one": "{{count}} overdue installment · {{amount}}",
       "installmentOverdue_other": "{{count}} overdue installments · {{amount}}",
       "returnDamaged": "{{quantity}} returned damaged · {{reason}}",
-      "offlineSaleFailed": "{{total}} · {{reason}} · sold by {{cashier}}"
+      "offlineSaleFailed": "{{total}} · {{reason}} · sold by {{cashier}}",
+      "payableDue_one": "{{count}} invoice · {{amount}} · {{when}}",
+      "payableDue_other": "{{count}} invoices · {{amount}} · {{when}}",
+      "payableDueWhen": "due {{when}}"
     },
     "when": {
       "today": "today",
@@ -1235,7 +1240,8 @@
     "cash.reconcile": "Do cash counts (head cashier)",
     "sales.credit": "Approve credit sales (with PIN)",
     "credit.manage": "Give customers credit and set their limit",
-    "receivables.manage": "Receivables and off-register payments"
+    "receivables.manage": "Receivables and off-register payments",
+    "payables.manage": "Payables: supplier invoices and payments"
   },
   "locations": {
     "label": "Location",
@@ -2093,5 +2099,93 @@
   "demo": {
     "banner": "You're in the demo: sample data that resets every night.",
     "codes": "Register codes: cashier {{cashier}} · manager {{manager}} (approves discounts, credit and returns)."
+  },
+  "payables": {
+    "title": "Payables",
+    "subtitle": "Supplier invoices: balances, due dates and payments.",
+    "totalBalance": "To pay",
+    "totalOverdue": "Overdue",
+    "search": "Search supplier",
+    "searchInvoices": "Search by number or supplier",
+    "onlyOverdue": "Only with overdue invoices",
+    "supplier": "Supplier",
+    "invoices": "Invoices",
+    "balance": "Balance",
+    "overdue": "Overdue",
+    "nextDue": "Next due date",
+    "pending": "Pending",
+    "amount": "Amount",
+    "date": "Date",
+    "by": "Recorded by",
+    "payments": "Payments",
+    "empty": "No pending balances with suppliers",
+    "noInvoices": "No invoices",
+    "noPayments": "No payments yet",
+    "creditDays": "Credit days",
+    "creditDaysHint": "Days the supplier gives you to pay (0 = cash). Sets the due date of their invoices.",
+    "daysShort_one": "{{count}} credit day",
+    "daysShort_other": "{{count}} credit days",
+    "view": {
+      "suppliers": "By supplier",
+      "invoices": "Invoices"
+    },
+    "status": {
+      "label": "Status",
+      "open": "To pay",
+      "overdue": "Overdue",
+      "paid": "Paid",
+      "void": "Voided"
+    },
+    "aging": {
+      "title": "Aging",
+      "current": "Current",
+      "d30": "1–30 days",
+      "d60": "31–60 days",
+      "d90": "61–90 days",
+      "over90": "Over 90 days"
+    },
+    "invoice": {
+      "new": "Record invoice",
+      "titleFor": "Invoice from {{name}}",
+      "pickSupplier": "Choose the supplier",
+      "number": "Invoice no.",
+      "issueDate": "Date",
+      "dueDate": "Due",
+      "subtotal": "Subtotal (before VAT)",
+      "tax": "VAT",
+      "total": "Total",
+      "dueHint_one": "No due date: the date + the supplier's {{count}} credit day.",
+      "dueHint_other": "No due date: the date + the supplier's {{count}} credit days.",
+      "save": "Record invoice",
+      "error": "Could not record the invoice"
+    },
+    "receive": {
+      "toggle": "Record the supplier's invoice",
+      "hint_one": "Empty amounts = what arrives at order cost + VAT. No due date: the date + {{count}} credit day.",
+      "hint_other": "Empty amounts = what arrives at order cost + VAT. No due date: the date + {{count}} credit days."
+    },
+    "pay": {
+      "button": "Pay",
+      "title": "Payment to {{name}}",
+      "which": "Invoices",
+      "whichHint": "With none checked, the payment goes to the earliest due first.",
+      "allOverdue": "All overdue",
+      "all": "Full balance",
+      "allPicked": "Checked ones",
+      "reference": "Reference (transfer, check…)",
+      "note": "Note (optional)",
+      "newBalance": "New balance",
+      "appliedTo": "Applied to",
+      "error": "Could not record the payment",
+      "submit": "Record payment"
+    },
+    "void": {
+      "button": "Void invoice {{number}}",
+      "title": "Void invoice {{number}}",
+      "hint": "Only if it was recorded by mistake and has no payments. It stays in the history and the number can be reused.",
+      "reason": "Reason",
+      "submit": "Void",
+      "error": "Could not void the invoice"
+    }
   }
 }
