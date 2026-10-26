@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { PaymentReceipt } from "./PaymentReceipt"
+import { BankAccountSelect } from "@/components/banks/DepositDialog"
 
 // Abono a crédito de un cliente. inRegister = en la caja abierta (efectivo/tarjeta/SINPE, entra al arqueo);
 // si no, desde Cuentas por cobrar con referencia obligatoria. Al terminar muestra el recibo para imprimir.
@@ -30,7 +31,7 @@ function PaymentBody({ customer, inRegister, onClose }) {
   const money = useMoney()
   const queryClient = useQueryClient()
   const { data: account } = useQuery({ queryKey: ["receivables", customer.id], queryFn: () => getAccount(customer.id) })
-  const [form, setForm] = useState({ amount: "", method: inRegister ? "CASH" : "TRANSFER", tendered: "", reference: "", note: "" })
+  const [form, setForm] = useState({ amount: "", method: inRegister ? "CASH" : "TRANSFER", tendered: "", reference: "", note: "", bankAccountId: "" })
   const pay = useMutation({
     mutationFn: () =>
       registerPayment({
@@ -40,6 +41,7 @@ function PaymentBody({ customer, inRegister, onClose }) {
         inRegister,
         ...(form.reference.trim() && { reference: form.reference.trim() }),
         ...(form.note.trim() && { note: form.note.trim() }),
+        ...(!inRegister && form.method !== "CASH" && form.bankAccountId && { bankAccountId: form.bankAccountId }),
         ...(form.method === "CASH" && inRegister && Number(form.tendered) > 0 && { tendered: Number(form.tendered) }),
       }),
     onSuccess: () => {
@@ -156,6 +158,9 @@ function PaymentBody({ customer, inRegister, onClose }) {
               <span>{t("pos.change")}</span>
               <span className="font-mono font-semibold">{money.format(round2(tendered - amount))}</span>
             </p>
+          )}
+          {!inRegister && form.method !== "CASH" && (
+            <BankAccountSelect id="pay-bank" value={form.bankAccountId} onChange={(v) => setForm({ ...form, bankAccountId: v })} />
           )}
           {!inRegister && (
             <div className="space-y-2">

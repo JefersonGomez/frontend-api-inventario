@@ -46,7 +46,8 @@
     "closeMenu": "Close menu",
     "pin": "Keep the menu open",
     "unpin": "Collapse the menu",
-    "payables": "Payables"
+    "payables": "Payables",
+    "banks": "Banks"
   },
   "topbar": {
     "search": "Search product or SKU",
@@ -1241,7 +1242,8 @@
     "sales.credit": "Approve credit sales (with PIN)",
     "credit.manage": "Give customers credit and set their limit",
     "receivables.manage": "Receivables and off-register payments",
-    "payables.manage": "Payables: supplier invoices and payments"
+    "payables.manage": "Payables: supplier invoices and payments",
+    "banks.manage": "Banks: accounts, statements and reconciliation"
   },
   "locations": {
     "label": "Location",
@@ -2186,6 +2188,107 @@
       "reason": "Reason",
       "submit": "Void",
       "error": "Could not void the invoice"
+    }
+  },
+  "banks": {
+    "title": "Banks",
+    "subtitle": "Bank accounts, statement movements and cash deposits.",
+    "account": "Bank account",
+    "noAccount": "Not specified",
+    "amount": "Amount",
+    "date": "Date",
+    "reference": "Reference",
+    "description": "Description",
+    "note": "Note (optional)",
+    "by": "Recorded by",
+    "search": "Search description or reference",
+    "reviewedBy": "Reviewed by {{name}}",
+    "emptyPending": "Nothing left to review",
+    "emptyList": "No movements",
+    "tabs": {
+      "movements": "Bank movements",
+      "deposits": "Cash deposits"
+    },
+    "status": {
+      "label": "Show",
+      "pending": "To review",
+      "reviewed": "Reviewed",
+      "all": "All"
+    },
+    "empty": {
+      "title": "No bank accounts yet",
+      "hint": "Add the company's accounts to import their movements and record deposits."
+    },
+    "category": {
+      "label": "Category",
+      "of": "Category of {{description}}",
+      "none": "Not classified",
+      "error": "Could not classify the movement",
+      "BANK_FEE": "Bank fee",
+      "INTEREST": "Interest earned",
+      "OWNER_WITHDRAWAL": "Owner withdrawal",
+      "OWNER_CONTRIBUTION": "Owner contribution",
+      "EXPENSE": "Expense",
+      "OTHER_INCOME": "Other income",
+      "OTHER": "Other"
+    },
+    "accounts": {
+      "new": "Add account",
+      "edit": "Edit {{name}}",
+      "name": "Name",
+      "namePlaceholder": "BN colones",
+      "bank": "Bank",
+      "currency": "Currency",
+      "number": "IBAN (optional)",
+      "active": "Active account",
+      "inactive": "inactive",
+      "general": "The company (main SINPE and branches without their own account)",
+      "receivesTitle": "Receives SINPE and card payments from",
+      "receivesHint": "So the system knows which account to expect each payment in when reconciling.",
+      "receives": "Receives SINPE and card payments from: {{from}}",
+      "receivesNothing": "Receives no SINPE or card payments",
+      "error": "Could not save the account"
+    },
+    "import": {
+      "button": "Import statement",
+      "title": "Import statement for {{name}}",
+      "hint": "Download the movements from online banking as CSV or Excel (Banco Nacional: \"ConsultaSaldos.csv\"). Anything imported before is not repeated.",
+      "file": "Bank file",
+      "empty": "The file has no movements",
+      "unreadable": "Could not read the file. Use the CSV or Excel your bank exports.",
+      "fields": {
+        "date": "Date",
+        "reference": "Reference",
+        "description": "Description",
+        "debit": "Debit (out)",
+        "credit": "Credit (in)",
+        "amount": "Signed amount",
+        "amounts": "Amounts"
+      },
+      "missing": "Choose the column for: {{fields}}",
+      "rows": "Movements",
+      "credits_one": "{{count}} in",
+      "credits_other": "{{count}} in",
+      "debits_one": "{{count}} out",
+      "debits_other": "{{count}} out",
+      "skipped_one": "{{count}} row without date or amount is skipped (totals, balances).",
+      "skipped_other": "{{count}} rows without date or amount are skipped (totals, balances).",
+      "submit_one": "Import {{count}} movement",
+      "submit_other": "Import {{count}} movements",
+      "done": "Statement imported",
+      "result": "New: {{inserted}} · already there: {{duplicates}}",
+      "close": "Done",
+      "error": "Could not import"
+    },
+    "deposit": {
+      "button": "Record deposit",
+      "title": "Cash deposit",
+      "location": "Branch (where the cash comes from)",
+      "reference": "Slip number",
+      "submit": "Record deposit",
+      "error": "Could not record the deposit",
+      "empty": "No deposits recorded",
+      "noAccounts": "Add a bank account in Banks first."
     }
   }
 }

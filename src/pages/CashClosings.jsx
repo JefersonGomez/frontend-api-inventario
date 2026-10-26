@@ -1,7 +1,9 @@
 import { useQuery, keepPreviousData } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
-import { Calculator } from "lucide-react"
+import { useState } from "react"
+import { Calculator, Landmark } from "lucide-react"
+import { DepositDialog } from "@/components/banks/DepositDialog"
 import { getSessions } from "@/api/pos"
 import { useListParams } from "@/hoocks/useListParams"
 import { useMoney } from "@/hoocks/useMoney"
@@ -21,6 +23,7 @@ export function CashClosings() {
   const money = useMoney()
   const list = useListParams()
   const pending = list.get("pending") || "1"
+  const [depositing, setDepositing] = useState(false)
   const sessions = useQuery({
     queryKey: ["cash-sessions", list.page, pending],
     queryFn: () => getSessions({ page: list.page, ...(pending !== "all" && { pending }) }),
@@ -35,10 +38,17 @@ export function CashClosings() {
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold">{t("cashClosings.title")}</h1>
-        <p className="text-sm text-muted-foreground">{t("cashClosings.subtitle")}</p>
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold">{t("cashClosings.title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("cashClosings.subtitle")}</p>
+        </div>
+        <Button variant="outline" onClick={() => setDepositing(true)}>
+          <Landmark />
+          {t("banks.deposit.button")}
+        </Button>
       </div>
+      <DepositDialog open={depositing} onClose={() => setDepositing(false)} />
 
       <div className="mb-4 flex flex-wrap items-center gap-3">
         <Select items={filterItems} value={pending} onValueChange={(v) => list.set({ pending: v === "1" ? "" : v })}>

@@ -46,7 +46,8 @@
     "closeMenu": "Cerrar el menú",
     "pin": "Dejar el menú abierto",
     "unpin": "Plegar el menú",
-    "payables": "Cuentas por pagar"
+    "payables": "Cuentas por pagar",
+    "banks": "Bancos"
   },
   "topbar": {
     "search": "Buscar producto o SKU",
@@ -1241,7 +1242,8 @@
     "sales.credit": "Autorizar ventas a crédito (con PIN)",
     "credit.manage": "Dar crédito a clientes y fijar su límite",
     "receivables.manage": "Cuentas por cobrar y abonos sin caja",
-    "payables.manage": "Cuentas por pagar: facturas de proveedores y pagos"
+    "payables.manage": "Cuentas por pagar: facturas de proveedores y pagos",
+    "banks.manage": "Bancos: cuentas, estado bancario y conciliación"
   },
   "locations": {
     "label": "Ubicación",
@@ -2186,6 +2188,107 @@
       "reason": "Motivo",
       "submit": "Anular",
       "error": "No se pudo anular la factura"
+    }
+  },
+  "banks": {
+    "title": "Bancos",
+    "subtitle": "Cuentas bancarias, movimientos del estado del banco y depósitos de efectivo.",
+    "account": "Cuenta bancaria",
+    "noAccount": "Sin indicar",
+    "amount": "Monto",
+    "date": "Fecha",
+    "reference": "Referencia",
+    "description": "Descripción",
+    "note": "Nota (opcional)",
+    "by": "Registró",
+    "search": "Buscar en la descripción o referencia",
+    "reviewedBy": "Revisó {{name}}",
+    "emptyPending": "No hay movimientos por revisar",
+    "emptyList": "No hay movimientos",
+    "tabs": {
+      "movements": "Movimientos del banco",
+      "deposits": "Depósitos de efectivo"
+    },
+    "status": {
+      "label": "Mostrar",
+      "pending": "Por revisar",
+      "reviewed": "Revisados",
+      "all": "Todos"
+    },
+    "empty": {
+      "title": "Todavía no hay cuentas bancarias",
+      "hint": "Agregá las cuentas de la empresa para importar sus movimientos y registrar depósitos."
+    },
+    "category": {
+      "label": "Clasificación",
+      "of": "Clasificación de {{description}}",
+      "none": "Sin clasificar",
+      "error": "No se pudo clasificar el movimiento",
+      "BANK_FEE": "Comisión bancaria",
+      "INTEREST": "Intereses ganados",
+      "OWNER_WITHDRAWAL": "Retiro del dueño",
+      "OWNER_CONTRIBUTION": "Aporte del dueño",
+      "EXPENSE": "Gasto",
+      "OTHER_INCOME": "Otro ingreso",
+      "OTHER": "Otro"
+    },
+    "accounts": {
+      "new": "Agregar cuenta",
+      "edit": "Editar {{name}}",
+      "name": "Nombre",
+      "namePlaceholder": "BN colones",
+      "bank": "Banco",
+      "currency": "Moneda",
+      "number": "IBAN (opcional)",
+      "active": "Cuenta activa",
+      "inactive": "inactiva",
+      "general": "La empresa (SINPE general y sucursales sin cuenta propia)",
+      "receivesTitle": "Recibe el SINPE y la tarjeta de",
+      "receivesHint": "Así el sistema sabe en qué cuenta esperar cada cobro al conciliar.",
+      "receives": "Recibe el SINPE y la tarjeta de: {{from}}",
+      "receivesNothing": "No recibe SINPE ni tarjeta de ninguna sucursal",
+      "error": "No se pudo guardar la cuenta"
+    },
+    "import": {
+      "button": "Importar estado",
+      "title": "Importar estado de {{name}}",
+      "hint": "Descargá los movimientos de la Banca en Línea en CSV o Excel (en el Banco Nacional: \"ConsultaSaldos.csv\"). Lo que ya importaste antes no se repite.",
+      "file": "Archivo del banco",
+      "empty": "El archivo no tiene movimientos",
+      "unreadable": "No se pudo leer el archivo. Usá el CSV o Excel que descarga el banco.",
+      "fields": {
+        "date": "Fecha",
+        "reference": "Referencia",
+        "description": "Descripción",
+        "debit": "Débito (sale)",
+        "credit": "Crédito (entra)",
+        "amount": "Monto con signo",
+        "amounts": "Montos"
+      },
+      "missing": "Indicá qué columna es: {{fields}}",
+      "rows": "Movimientos",
+      "credits_one": "{{count}} entrada",
+      "credits_other": "{{count}} entradas",
+      "debits_one": "{{count}} salida",
+      "debits_other": "{{count}} salidas",
+      "skipped_one": "Se salta {{count}} fila sin fecha o sin monto (totales, saldos).",
+      "skipped_other": "Se saltan {{count}} filas sin fecha o sin monto (totales, saldos).",
+      "submit_one": "Importar {{count}} movimiento",
+      "submit_other": "Importar {{count}} movimientos",
+      "done": "Estado importado",
+      "result": "Nuevos: {{inserted}} · ya estaban: {{duplicates}}",
+      "close": "Listo",
+      "error": "No se pudo importar"
+    },
+    "deposit": {
+      "button": "Registrar depósito",
+      "title": "Depósito de efectivo",
+      "location": "Sucursal (de dónde viene el efectivo)",
+      "reference": "N.º de comprobante",
+      "submit": "Registrar depósito",
+      "error": "No se pudo registrar el depósito",
+      "empty": "No hay depósitos registrados",
+      "noAccounts": "Primero hay que agregar una cuenta bancaria en Bancos."
     }
   }
 }

@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next"
 import { AlertTriangle, ArrowLeft, Ban, FilePlus2, Wallet } from "lucide-react"
 import { createSupplierInvoice, getPayables, getSupplierAccount, getSupplierInvoices, paySupplier, voidSupplierInvoice } from "@/api/payables"
 import { getSuppliers } from "@/api/suppliers"
+import { BankAccountSelect } from "@/components/banks/DepositDialog"
 import { useListParams } from "@/hoocks/useListParams"
 import { useMoney } from "@/hoocks/useMoney"
 import { apiErrorMessage } from "@/lib/api-error"
@@ -425,7 +426,7 @@ function PayForm({ account, onClose }) {
   const queryClient = useQueryClient()
   const open = account.invoices.filter((i) => !i.voidedAt && pendingOf(i) > 0).sort((a, b) => a.dueDate.localeCompare(b.dueDate))
   const [picked, setPicked] = useState([])
-  const [form, setForm] = useState({ amount: "", method: "TRANSFER", reference: "", paidAt: today(), note: "" })
+  const [form, setForm] = useState({ amount: "", method: "TRANSFER", reference: "", paidAt: today(), note: "", bankAccountId: "" })
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value })
   const selection = picked.length ? open.filter((i) => picked.includes(i.id)) : open
   const max = round2(selection.reduce((s, i) => s + pendingOf(i), 0))
@@ -440,6 +441,7 @@ function PayForm({ account, onClose }) {
         ...(form.reference.trim() && { reference: form.reference.trim() }),
         ...(form.note.trim() && { note: form.note.trim() }),
         ...(picked.length && { invoiceIds: picked }),
+        ...(form.method !== "CASH" && form.bankAccountId && { bankAccountId: form.bankAccountId }),
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["payables"] })
@@ -507,6 +509,11 @@ function PayForm({ account, onClose }) {
           <Label htmlFor="pay-date">{t("payables.date")}</Label>
           <Input id="pay-date" type="date" max={today()} required value={form.paidAt} onChange={set("paidAt")} />
         </div>
+        {form.method !== "CASH" && (
+          <div className="col-span-2">
+            <BankAccountSelect id="pay-bank" value={form.bankAccountId} onChange={(v) => setForm({ ...form, bankAccountId: v })} />
+          </div>
+        )}
         <div className="col-span-2 space-y-2">
           <Label htmlFor="pay-reference">{t("payables.pay.reference")}</Label>
           <Input id="pay-reference" required={form.method !== "CASH"} maxLength={60} className="font-mono" value={form.reference} onChange={set("reference")} />

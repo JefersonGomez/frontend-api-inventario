@@ -9,7 +9,7 @@ import { getLocations } from "@/api/locations";
 import {
   LayoutDashboard, Package, FolderTree, ArrowLeftRight, Route, ClipboardCheck, Tag, BarChart3, ClipboardList, ShoppingCart,
   Settings as SettingsIcon, Users as UsersIcon, Truck, ShieldCheck, UserRound, LogOut, Box, ScanBarcode, Building2, Contact,
-  Monitor, AlertTriangle, Calculator, HandCoins, Receipt, Menu, X, Pin, PinOff, Wallet,
+  Monitor, AlertTriangle, Calculator, HandCoins, Receipt, Menu, X, Pin, PinOff, Wallet, Landmark,
 } from "lucide-react";
 
 const ICON = { className: "w-[18px] h-[18px]", strokeWidth: 1.7, "aria-hidden": true };
@@ -184,6 +184,7 @@ export function Sidebar() {
           title: t("sidebar.groups.admin"),
           items: all(
             can("reports.view") && { to: "/reports", label: t("sidebar.reports"), icon: BarChart3 },
+            can("banks.manage") && { to: "/banks", label: t("sidebar.banks"), icon: Landmark },
             can("users.manage") && { to: "/users", label: t("sidebar.users"), icon: UsersIcon },
             can("audit.view") && { to: "/audit-log", label: t("sidebar.auditLog"), icon: ShieldCheck },
           ),
