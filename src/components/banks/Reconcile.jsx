@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next"
 import { AlertTriangle, Check, CheckCheck } from "lucide-react"
 import { getReconcile, matchBankTransaction } from "@/api/banks"
 import { apiErrorMessage } from "@/lib/api-error"
+import { Pagination } from "@/components/Pagination"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -35,9 +36,10 @@ export function Reconcile({ account, money }) {
   const queryClient = useQueryClient()
   const [range, setRange] = useState({ from: local(-30), to: local() })
   const [picked, setPicked] = useState({}) // movimiento → clave del elegido ("" = ninguno)
+  const [page, setPage] = useState(1)
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["banks", "reconcile", account.id, range.from, range.to],
-    queryFn: () => getReconcile(account.id, range),
+    queryKey: ["banks", "reconcile", account.id, range.from, range.to, page],
+    queryFn: () => getReconcile(account.id, { ...range, page }),
     enabled: !!range.from && !!range.to,
   })
   const match = useMutation({
@@ -51,24 +53,23 @@ export function Reconcile({ account, money }) {
     },
   })
 
-  const rows = data?.transactions ?? []
+  const rows = data?.items ?? []
   const chosen = (row) => {
     const k = picked[row.id] ?? (row.suggestion ? keyOf(row.suggestion) : "")
     return row.candidates.find((c) => keyOf(c) === k) ?? null
   }
   const ready = rows.map((r) => [r.id, chosen(r)]).filter(([, item]) => item)
-  const withPair = rows.filter((r) => r.candidates.length)
 
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-end gap-3">
         <div className="space-y-1">
           <Label htmlFor="rec-from" className="text-xs">{t("banks.match.from")}</Label>
-          <Input id="rec-from" type="date" className="w-40" value={range.from} max={range.to} onChange={(e) => setRange({ ...range, from: e.target.value })} />
+          <Input id="rec-from" type="date" className="w-40" value={range.from} max={range.to} onChange={(e) => { setRange({ ...range, from: e.target.value }); setPage(1) }} />
         </div>
         <div className="space-y-1">
           <Label htmlFor="rec-to" className="text-xs">{t("banks.match.to")}</Label>
-          <Input id="rec-to" type="date" className="w-40" value={range.to} min={range.from} onChange={(e) => setRange({ ...range, to: e.target.value })} />
+          <Input id="rec-to" type="date" className="w-40" value={range.to} min={range.from} onChange={(e) => { setRange({ ...range, to: e.target.value }); setPage(1) }} />
         </div>
         <Button className="ml-auto" disabled={!ready.length || match.isPending} onClick={() => match.mutate(ready)}>
           <CheckCheck />
@@ -80,7 +81,7 @@ export function Reconcile({ account, money }) {
       {isError && <p role="alert" className="text-sm text-destructive">{apiErrorMessage(error, t("banks.match.error"))}</p>}
 
       <section>
-        <h2 className="mb-2 text-lg font-semibold">{t("banks.match.pendingTitle", { count: rows.length, paired: withPair.length })}</h2>
+        <h2 className="mb-2 text-lg font-semibold">{t("banks.match.pendingTitle", { count: data?.total ?? 0, paired: data?.suggested ?? 0 })}</h2>
         {isLoading && <p className="text-muted-foreground">{t("common.loading")}</p>}
         {!isLoading && !rows.length && <p className="rounded-xl border border-dashed border-border p-6 text-center text-muted-foreground">{t("banks.match.nothing")}</p>}
         <ul className="divide-y divide-border rounded-xl border border-border">
@@ -128,6 +129,7 @@ export function Reconcile({ account, money }) {
             )
           })}
         </ul>
+        <Pagination data={data} onPage={setPage} />
       </section>
 
       {data?.missing.length > 0 && (
