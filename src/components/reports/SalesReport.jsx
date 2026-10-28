@@ -254,7 +254,7 @@ export function SalesReport() {
   )
 }
 
-function Kpi({ label, value, change, strong }) {
+export function Kpi({ label, value, change, strong }) {
   const up = change > 0
   return (
     <div className={cn("rounded-xl border border-border px-4 py-3", strong && "bg-[var(--stk-kpi-dark)] text-white")}>
@@ -270,7 +270,7 @@ function Kpi({ label, value, change, strong }) {
   )
 }
 
-const Line = ({ label, value, strong }) => (
+export const Line = ({ label, value, strong }) => (
   <p className={cn("flex justify-between", strong && "border-t border-border pt-1 font-semibold")}>
     <span>{label}</span>
     <span className="font-mono">{value}</span>

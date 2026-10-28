@@ -20,20 +20,24 @@ import {
 import { ImmobilizedCapitalReport } from "@/components/reports/ImmobilizedCapitalReport"
 import { StockForecastReport } from "@/components/reports/StockForecastReport"
 import { SalesReport } from "@/components/reports/SalesReport"
+import { VatReport } from "@/components/reports/VatReport"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { formatQty } from "@/lib/units"
 import { usePermissions } from "@/hoocks/usePermissions"
 
-// Reportes: pestañas de inventario y de ventas (?tab=sales)
+// Reportes: pestañas de inventario, de ventas (?tab=sales) y de IVA del mes (?tab=vat, accounting.view)
 export function Reports() {
   const { t } = useTranslation()
   const [params, setParams] = useSearchParams()
-  const tab = params.get("tab") === "sales" ? "sales" : "inventory"
+  const canVat = usePermissions().can("accounting.view")
+  const tabs = ["inventory", "sales", ...(canVat ? ["vat"] : [])]
+  const tab = tabs.includes(params.get("tab")) ? params.get("tab") : "inventory"
   return (
-    <Tabs value={tab} onValueChange={(v) => setParams(v === "sales" ? { tab: v } : {}, { replace: true })} className="gap-4">
+    <Tabs value={tab} onValueChange={(v) => setParams(v === "inventory" ? {} : { tab: v }, { replace: true })} className="gap-4">
       <TabsList className="print:hidden">
         <TabsTrigger value="inventory">{t("reports.tabs.inventory")}</TabsTrigger>
         <TabsTrigger value="sales">{t("reports.tabs.sales")}</TabsTrigger>
+        {canVat && <TabsTrigger value="vat">{t("reports.tabs.vat")}</TabsTrigger>}
       </TabsList>
       <TabsContent value="inventory">
         <InventoryReports />
@@ -45,6 +49,15 @@ export function Reports() {
         </div>
         <SalesReport />
       </TabsContent>
+      {canVat && (
+        <TabsContent value="vat" className="space-y-5">
+          <div>
+            <h1 className="text-2xl font-semibold">{t("vatReport.title")}</h1>
+            <p className="text-sm text-muted-foreground">{t("vatReport.subtitle")}</p>
+          </div>
+          <VatReport />
+        </TabsContent>
+      )}
     </Tabs>
   )
 }
