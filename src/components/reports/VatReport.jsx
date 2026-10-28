@@ -2,8 +2,8 @@ import { useState } from "react"
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { Link } from "react-router-dom"
-import { FileSpreadsheet, Info } from "lucide-react"
-import { getVatReport, saveVatPeriod } from "@/api/reports"
+import { FileSpreadsheet, FolderDown, Info } from "lucide-react"
+import { getAccountantPackage, getVatReport, saveVatPeriod } from "@/api/reports"
 import { useMoney } from "@/hoocks/useMoney"
 import { apiErrorMessage } from "@/lib/api-error"
 import { downloadXlsx } from "@/lib/xlsx"
@@ -36,57 +36,10 @@ export function VatReport() {
     placeholderData: keepPreviousData,
   })
   const rate = (k) => t(`taxRates.${k}`)
-
-  function exportExcel() {
-    const x = (k, o) => t(`vatReport.${k}`, o)
-    const l = r.liquidation
-    downloadXlsx(`${x("fileName")}-${month}.xlsx`, [
-      {
-        name: x("summary"),
-        rows: [
-          [x("concept"), x("amount")],
-          [x("month"), month],
-          [x("debit"), l.debit],
-          [x("creditableTax"), l.creditableTax],
-          [x("prorata"), r.prorata.value == null ? x("prorataNone") : `${r.prorata.value} %`],
-          [x("credit"), l.credit],
-          [x("cardWithholding"), l.cardWithholding],
-          [l.balance >= 0 ? x("toPay") : x("inFavor"), Math.abs(l.balance)],
-          ...(r.period?.note ? [[x("note"), r.period.note]] : []),
-          [],
-          [x("disclaimer")],
-        ],
-      },
-      {
-        name: x("salesSheet"),
-        rows: [
-          [x("rate"), x("grossBase"), x("returnsBase"), x("base"), x("tax")],
-          ...r.sales.rows.map((s) => [rate(s.rate), s.grossBase, s.returnsBase, s.base, s.tax]),
-          [x("total"), r.sales.totals.grossBase, r.sales.totals.returnsBase, r.sales.totals.base, r.sales.totals.tax],
-        ],
-      },
-      {
-        name: x("purchasesSheet"),
-        rows: [
-          [x("rate"), x("creditableBase"), x("creditableTaxCol"), x("nonCreditableBase"), x("nonCreditableTax")],
-          ...r.purchases.creditable.rows.map((c, i) => {
-            const n = r.purchases.nonCreditable.rows[i]
-            return [rate(c.rate), c.base, c.tax, n.base, n.tax]
-          }),
-          [x("total"), r.purchases.creditable.totals.base, r.purchases.creditable.totals.tax, r.purchases.nonCreditable.totals.base, r.purchases.nonCreditable.totals.tax],
-        ],
-      },
-      {
-        name: x("invoicesSheet"),
-        rows: [
-          [x("date"), x("supplier"), x("number"), x("rate"), x("base"), x("tax"), x("creditableCol")],
-          ...r.purchases.invoices.flatMap((i) =>
-            i.taxes.map((tx) => [i.issueDate, i.supplier.name, i.number, rate(tx.rate), tx.base, tx.tax, i.creditable ? x("yes") : x("no")]),
-          ),
-        ],
-      },
-    ])
-  }
+  const pkg = useMutation({
+    mutationFn: () => getAccountantPackage(month),
+    onSuccess: (p) => downloadAccountantPackage(p, t),
+  })
 
   return (
     <div className="space-y-5">
@@ -103,11 +56,19 @@ export function VatReport() {
           <Label htmlFor="vat-month" className="text-xs">{t("vatReport.month")}</Label>
           <Input id="vat-month" type="month" className="w-44" value={month} onChange={(e) => setMonth(e.target.value)} />
         </div>
-        <Button variant="outline" size="sm" className="ml-auto" disabled={!r} onClick={exportExcel}>
-          <FileSpreadsheet />
-          {t("reports.export.excel")}
-        </Button>
+        <div className="ml-auto flex flex-wrap gap-2">
+          <Button variant="outline" size="sm" disabled={!r} onClick={() => downloadXlsx(`${t("vatReport.fileName")}-${month}.xlsx`, vatSheets(r, t))}>
+            <FileSpreadsheet />
+            {t("reports.export.excel")}
+          </Button>
+          <Button size="sm" disabled={pkg.isPending} onClick={() => pkg.mutate()}>
+            <FolderDown />
+            {pkg.isPending ? t("reports.export.exporting") : t("accountantPackage.button")}
+          </Button>
+        </div>
       </div>
+      {pkg.isError && <p role="alert" className="text-sm text-destructive">{apiErrorMessage(pkg.error, t("accountantPackage.error"))}</p>}
+      <p className="-mt-2 text-xs text-muted-foreground">{t("accountantPackage.hint")}</p>
 
       <p className="flex items-start gap-2 rounded-lg border border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
         <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />
@@ -145,6 +106,60 @@ export function VatReport() {
       )}
     </div>
   )
+}
+
+// Hojas del IVA del mes (las usa el botón Excel y el paquete para el contador)
+function vatSheets(r, t) {
+  const rate = (k) => t(`taxRates.${k}`)
+  const x = (k, o) => t(`vatReport.${k}`, o)
+  const l = r.liquidation
+  const month = r.month
+  return [
+    {
+      name: x("summary"),
+      rows: [
+        [x("concept"), x("amount")],
+        [x("month"), month],
+        [x("debit"), l.debit],
+        [x("creditableTax"), l.creditableTax],
+        [x("prorata"), r.prorata.value == null ? x("prorataNone") : `${r.prorata.value} %`],
+        [x("credit"), l.credit],
+        [x("cardWithholding"), l.cardWithholding],
+        [l.balance >= 0 ? x("toPay") : x("inFavor"), Math.abs(l.balance)],
+        ...(r.period?.note ? [[x("note"), r.period.note]] : []),
+        [],
+        [x("disclaimer")],
+      ],
+    },
+    {
+      name: x("salesSheet"),
+      rows: [
+        [x("rate"), x("grossBase"), x("returnsBase"), x("base"), x("tax")],
+        ...r.sales.rows.map((s) => [rate(s.rate), s.grossBase, s.returnsBase, s.base, s.tax]),
+        [x("total"), r.sales.totals.grossBase, r.sales.totals.returnsBase, r.sales.totals.base, r.sales.totals.tax],
+      ],
+    },
+    {
+      name: x("purchasesSheet"),
+      rows: [
+        [x("rate"), x("creditableBase"), x("creditableTaxCol"), x("nonCreditableBase"), x("nonCreditableTax")],
+        ...r.purchases.creditable.rows.map((c, i) => {
+          const n = r.purchases.nonCreditable.rows[i]
+          return [rate(c.rate), c.base, c.tax, n.base, n.tax]
+        }),
+        [x("total"), r.purchases.creditable.totals.base, r.purchases.creditable.totals.tax, r.purchases.nonCreditable.totals.base, r.purchases.nonCreditable.totals.tax],
+      ],
+    },
+    {
+      name: x("invoicesSheet"),
+      rows: [
+        [x("date"), x("supplier"), x("number"), x("rate"), x("base"), x("tax"), x("creditableCol")],
+        ...r.purchases.invoices.flatMap((i) =>
+          i.taxes.map((tx) => [i.issueDate, i.supplier.name, i.number, rate(tx.rate), tx.base, tx.tax, i.creditable ? x("yes") : x("no")]),
+        ),
+      ],
+    },
+  ]
 }
 
 function SalesPart({ r, money, t, rate }) {
@@ -373,4 +388,68 @@ function InvoicesTable({ r, money, t, rate }) {
       </CardContent>
     </Card>
   )
+}
+
+const RATES = ["RATE_13", "RATE_4", "RATE_2", "RATE_1", "EXEMPT"]
+const METHODS = ["CASH", "CARD", "SINPE", "TRANSFER", "OTHER"]
+
+// Paquete para el contador: un Excel con los datos de la empresa, el IVA del mes, cada comprobante y los bancos
+function downloadAccountantPackage(p, t) {
+  const x = (k, o) => t(`accountantPackage.${k}`, o)
+  const rate = (k) => t(`taxRates.${k}`)
+  const c = p.company
+  const status = (tx) =>
+    tx.status === "MATCHED" ? x("matched") : tx.status === "CLASSIFIED" ? x("classified") : x("pending")
+  downloadXlsx(`${x("fileName")}-${p.month}.xlsx`, [
+    {
+      name: x("info"),
+      rows: [
+        [x("field"), x("value")],
+        [x("company"), c.name],
+        ...(c.legalName ? [[x("legalName"), c.legalName]] : []),
+        ...(c.idNumber ? [[x("idNumber"), c.idNumber]] : []),
+        [x("month"), p.month],
+        [x("currency"), c.currency],
+        [x("generatedAt"), new Date().toLocaleString()],
+        [],
+        [x("contents")],
+      ],
+    },
+    ...vatSheets(p.vat, t),
+    {
+      name: x("documents"),
+      rows: [
+        [
+          x("date"), x("type"), x("consecutive"), x("customer"), x("customerId"), x("condition"),
+          ...RATES.flatMap((r) => (r === "EXEMPT" ? [`${x("base")} ${rate(r)}`] : [`${x("base")} ${rate(r)}`, `${x("tax")} ${rate(r)}`])),
+          x("discount"), x("total"), ...METHODS.map((m) => t(`pos.methods.${m}`)), x("corrects"), x("reason"),
+        ],
+        ...p.sales.documents.map((d) => [
+          new Date(d.issuedAt).toLocaleString(), t(`sales.types.${d.type}`), d.consecutive, d.customer?.name ?? "", d.customer?.idNumber ?? "",
+          t(`pos.modes.${d.saleCondition}`),
+          ...RATES.flatMap((r) => (r === "EXEMPT" ? [d.byRate[r]?.base ?? ""] : [d.byRate[r]?.base ?? "", d.byRate[r]?.tax ?? ""])),
+          d.discount || "", d.total, ...METHODS.map((m) => d.payments[m] ?? ""), d.reference ?? "", d.referenceReason ?? "",
+        ]),
+        [],
+        [x("totalDocuments", { count: p.sales.totals.count }), "", "", "", "", "", ...RATES.flatMap((r) => (r === "EXEMPT" ? [""] : ["", ""])), "", p.sales.totals.total],
+      ],
+    },
+    {
+      name: x("banks"),
+      rows: [
+        [x("account"), x("date"), x("reference"), x("description"), x("amount"), x("status"), x("detail"), x("fee"), x("note")],
+        ...p.banks.flatMap((b) =>
+          b.transactions.map((tx) => [
+            b.account.name, tx.date, tx.reference, tx.description, tx.amount, status(tx),
+            tx.status === "MATCHED" ? tx.matchedWith.join(" · ") : tx.category ? t(`banks.category.${tx.category}`) : "",
+            tx.fee ?? "", tx.note ?? "",
+          ]),
+        ),
+        [],
+        [x("account"), x("credits"), x("debits"), x("pendingCount")],
+        ...p.banks.map((b) => [`${b.account.name} (${b.account.currency})`, b.totals.credits, b.totals.debits, b.totals.pending]),
+        ...(p.banks.length === 0 ? [[x("noBanks")]] : []),
+      ],
+    },
+  ])
 }

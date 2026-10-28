@@ -47,3 +47,5 @@ export const getMySales = (month) => api.get("/reports/my-sales", { params: mont
 // IVA del mes (54B): Formulario 150 del mes (AAAA-MM) y lo que se anota a mano { prorata, cardWithholding, note }
 export const getVatReport = (month) => api.get("/reports/vat", { params: { month } }).then((res) => res.data)
 export const saveVatPeriod = (month, body) => api.put("/reports/vat", body, { params: { month } }).then((res) => res.data)
+// Paquete para el contador: todo el mes (IVA, ventas por comprobante, compras y bancos) para bajarlo en Excel
+export const getAccountantPackage = (month) => api.get("/reports/accountant-package", { params: { month } }).then((res) => res.data)
