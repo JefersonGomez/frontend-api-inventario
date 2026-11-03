@@ -109,3 +109,6 @@ export const sumDenominations = (counts) => round2(Object.entries(counts).reduce
 
 // SINPE Móvil para mostrar: 88887777 → 8888-7777
 export const formatSinpe = (n) => (n ? String(n).replace(/^(\d{4})(\d{4})$/, "$1-$2") : "")
+
+// filtro "Más vendidos" del catálogo del POS (el otro valor posible es el id de una categoría)
+export const TOP_SELLING = "top"

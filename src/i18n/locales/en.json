@@ -1556,7 +1556,6 @@
     "closeRegister": "Close register",
     "searchPlaceholder": "Search or scan a product",
     "categories": "Categories",
-    "allCategories": "All",
     "inStock": "{{stock}} in stock",
     "outOfStock": "Out of stock",
     "noResults": "No products match that search",
@@ -1801,6 +1800,11 @@
       "discard": "Discard",
       "discardTitle": "Discard this sale?",
       "discardHint": "The {{total}} sale will not enter the system or take stock out. The money charged shows up as a surplus in the cash count."
+    },
+    "filter": {
+      "label": "Filter products",
+      "top": "Best sellers",
+      "topHint": "What sold most at this branch (30 days)"
     }
   },
   "negatives": {

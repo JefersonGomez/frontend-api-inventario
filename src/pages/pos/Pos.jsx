@@ -13,7 +13,7 @@ import { getCategories } from "@/api/categories"
 import { getCompany } from "@/api/company"
 import { useMoney } from "@/hoocks/useMoney"
 import { useRegisterLocation } from "@/hoocks/useRegisterLocation"
-import { applyDiscounts, cartTotals } from "@/lib/pos"
+import { applyDiscounts, cartTotals, TOP_SELLING } from "@/lib/pos"
 import { formatFiscalId } from "@/lib/fiscal"
 import { openChannel, openCustomerWindow } from "@/lib/customer-display"
 import { apiErrorMessage } from "@/lib/api-error"
@@ -34,6 +34,7 @@ import { Label } from "@/components/ui/label"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
 import { CubivoMark } from "@/components/CubivoMark"
+import { CategoryMenu } from "@/components/pos/CategoryMenu"
 
 // "3*" o "3*750123" en el buscador: multiplica la próxima línea
 const MULT = /^(\d+(?:[.,]\d+)?)\s*\*\s*(.*)$/
@@ -66,7 +67,7 @@ export function Pos() {
   const saleId = useRef(null) // id de la venta que se está cobrando: si llega dos veces, el servidor no la duplica
   const [q, setQ] = useState("")
   const [mult, setMult] = useState(null)
-  const [categoryId, setCategoryId] = useState(null)
+  const [filter, setFilter] = useState(TOP_SELLING) // "Más vendidos" o el id de una categoría
   const [cart, setCart] = useState([])
   const [lastId, setLastId] = useState(null)
   const [charging, setCharging] = useState(false)
@@ -93,9 +94,14 @@ export function Pos() {
   }, [locationId]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const { data: products } = useQuery({
-    queryKey: ["products", "pos", q, categoryId, locationId],
+    queryKey: ["products", "pos", q, filter, locationId],
     queryFn: () => {
-      const params = { view: "flat", pageSize: 60, ...(q.trim() && !MULT.test(q) && { q: q.trim() }), ...(categoryId && { categoryId }) }
+      const text = q.trim() && !MULT.test(q) ? q.trim() : ""
+      // al buscar, "Más vendidos" no limita: se busca en todo el catálogo (una categoría sí sigue filtrando)
+      const params = {
+        view: "flat", pageSize: 60, ...(text && { q: text }),
+        ...(filter === TOP_SELLING ? !text && { topSelling: 1 } : { categoryId: filter }),
+      }
       return getProducts(params).catch((e) => (isNetworkError(e) ? searchCatalog(params) : Promise.reject(e)))
     },
     enabled: !!locationId,
@@ -462,23 +468,7 @@ export function Pos() {
               </button>
             </p>
           )}
-          <div className="flex gap-2 overflow-x-auto pb-1" role="tablist" aria-label={t("pos.categories")}>
-            {[{ id: null, name: t("pos.allCategories") }, ...categories].map((c) => (
-              <button
-                key={c.id ?? "all"}
-                type="button"
-                role="tab"
-                aria-selected={categoryId === c.id}
-                onClick={() => setCategoryId(c.id)}
-                className={cn(
-                  "flex-none rounded-full border px-3 py-1 text-sm transition-colors",
-                  categoryId === c.id ? "border-[var(--stk-accent)] bg-[var(--stk-accent-soft)] text-[var(--stk-accent-strong)]" : "border-border bg-card hover:bg-muted"
-                )}
-              >
-                {c.name}
-              </button>
-            ))}
-          </div>
+          <CategoryMenu value={filter} onChange={setFilter} categories={categories} />
           <div className="grid min-h-0 flex-1 auto-rows-min grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-2 overflow-y-auto">
             {tiles.map((p) => {
               const stock = Number(p.stock)

@@ -1556,7 +1556,6 @@
     "closeRegister": "Cerrar caja",
     "searchPlaceholder": "Buscar o escanear producto",
     "categories": "Categorías",
-    "allCategories": "Todas",
     "inStock": "{{stock}} en stock",
     "outOfStock": "Sin stock",
     "noResults": "No hay productos con esa búsqueda",
@@ -1801,6 +1800,11 @@
       "discard": "Descartar",
       "discardTitle": "¿Descartar esta venta?",
       "discardHint": "La venta de {{total}} no va a entrar al sistema ni va a sacar stock. El dinero cobrado sale como sobrante en el arqueo."
+    },
+    "filter": {
+      "label": "Filtrar productos",
+      "top": "Más vendidos",
+      "topHint": "Lo que más se vendió en esta sucursal (30 días)"
     }
   },
   "negatives": {

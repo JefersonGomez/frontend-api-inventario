@@ -30,13 +30,20 @@ export const cached = (name, fn) => async () => {
 
 const norm = (s) => String(s ?? "").normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase()
 
-// búsqueda en el catálogo guardado, con la misma forma que GET /products
-export async function searchCatalog({ q, categoryId }) {
-  const products = (await kvGet(key("catalog")))?.products ?? []
+// búsqueda en el catálogo guardado, con la misma forma que GET /products (topSelling: los más vendidos
+// que trajo el catálogo, en su orden; sin ventas todavía, la lista normal, igual que el servidor)
+export async function searchCatalog({ q, categoryId, topSelling }) {
+  const catalog = await kvGet(key("catalog"))
+  const products = catalog?.products ?? []
+  const top = topSelling ? (catalog?.topSellers ?? []) : []
   const text = norm(q?.trim())
   const items = products.filter(
-    (p) => (!categoryId || p.categoryId === categoryId) && (!text || norm(p.name).includes(text) || norm(p.sku).includes(text) || p.barcode === q.trim())
+    (p) =>
+      (!categoryId || p.categoryId === categoryId) &&
+      (!top.length || top.includes(p.id)) &&
+      (!text || norm(p.name).includes(text) || norm(p.sku).includes(text) || p.barcode === q.trim())
   )
+  if (top.length) items.sort((a, b) => top.indexOf(a.id) - top.indexOf(b.id))
   return { items: items.slice(0, 60), total: items.length }
 }
 

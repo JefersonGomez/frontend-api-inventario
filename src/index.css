@@ -301,8 +301,12 @@
 }
 @keyframes stk-check-pop { from { transform: scale(0); } to { transform: scale(1); } }
 
+/* POS, menú de categorías: las opciones entran escalonadas (--i = posición) */
+.stk-menu-in { animation: stk-menu-in 0.22s var(--stk-ease-out, ease-out) both; animation-delay: calc(var(--i, 0) * 18ms); }
+@keyframes stk-menu-in { from { opacity: 0; transform: translateY(-4px); } }
+
 @media (prefers-reduced-motion: reduce) {
-  .stk-page-enter, .stk-cart-icon, .stk-cart-check { animation: none; }
+  .stk-page-enter, .stk-cart-icon, .stk-cart-check, .stk-menu-in { animation: none; }
   .stk-shell, .stk-navpanel, .stk-navpanel::before, .stk-glide, .stk-link svg, .stk-logo-mark .cbv-cube { transition: none !important; }
   .stk-label, .stk-side[data-expanded="true"] .stk-label { transform: none; transition: opacity 0.15s ease; transition-delay: 0s; }
 }
