@@ -1,4 +1,4 @@
-// Términos y condiciones y Política de privacidad de Stockly.
+// Términos y condiciones y Política de privacidad de Cubivo.
 //
 // ESTADO: BORRADOR sin revisión legal. Mientras LEGAL_REVIEWED sea false, las páginas muestran un
 // aviso visible. Antes de abrir el registro a personas reales:
@@ -15,8 +15,8 @@ export const LEGAL_VERSION = "2026-10-13"
 export const LEGAL_REVIEWED = false
 
 export const ENTITY = {
-  name: "Stockly",
-  legalName: "[PENDIENTE: razón social y cédula jurídica de quien opera Stockly]",
+  name: "Cubivo",
+  legalName: "[PENDIENTE: razón social y cédula jurídica de quien opera Cubivo]",
   address: "[PENDIENTE: domicilio, Costa Rica]",
   email: "[PENDIENTE: correo de contacto y de derechos sobre datos personales]",
   servers: "[PENDIENTE: país donde están los servidores]",
@@ -28,24 +28,24 @@ export const LEGAL = {
   terms: {
     title: "Términos y condiciones de uso",
     intro:
-      "Estos términos regulan el uso de Stockly, un servicio en línea para administrar inventario, compras y equipos de trabajo. Al crear una cuenta o usar el servicio, aceptas lo que aquí se indica.",
+      "Estos términos regulan el uso de Cubivo, un servicio en línea para administrar inventario, compras y equipos de trabajo. Al crear una cuenta o usar el servicio, aceptas lo que aquí se indica.",
     sections: [
       {
         title: "1. Quién ofrece el servicio",
         paragraphs: [
-          `Stockly es operado por ${P.legalName}, con domicilio en ${P.address}. Puedes escribirnos a ${P.email}.`,
+          `Cubivo es operado por ${P.legalName}, con domicilio en ${P.address}. Puedes escribirnos a ${P.email}.`,
         ],
       },
       {
-        title: "2. Qué es Stockly",
+        title: "2. Qué es Cubivo",
         paragraphs: [
-          "Stockly es una plataforma para que una empresa lleve su inventario: productos, existencias, movimientos, proveedores, solicitudes y órdenes de compra, reportes y auditoría de cambios. Cada empresa tiene su propio espacio, separado del de las demás.",
+          "Cubivo es una plataforma para que una empresa lleve su inventario: productos, existencias, movimientos, proveedores, solicitudes y órdenes de compra, reportes y auditoría de cambios. Cada empresa tiene su propio espacio, separado del de las demás.",
         ],
       },
       {
         title: "3. Cuentas y empresas",
         paragraphs: [
-          "Para usar Stockly necesitas una cuenta. Al registrarte creas una empresa y quedas como su administrador y dueño. El administrador decide quién más entra a la empresa, con qué rol, y es responsable de las personas que invita.",
+          "Para usar Cubivo necesitas una cuenta. Al registrarte creas una empresa y quedas como su administrador y dueño. El administrador decide quién más entra a la empresa, con qué rol, y es responsable de las personas que invita.",
         ],
         items: [
           "Debes ser mayor de 18 años y tener capacidad para contratar.",
@@ -81,14 +81,14 @@ export const LEGAL = {
       {
         title: "7. Tus datos",
         paragraphs: [
-          "Los datos de inventario y demás información que cargas en Stockly son tuyos. Nos autorizas a almacenarlos y procesarlos únicamente para prestarte el servicio. No los vendemos ni los usamos para publicidad.",
+          "Los datos de inventario y demás información que cargas en Cubivo son tuyos. Nos autorizas a almacenarlos y procesarlos únicamente para prestarte el servicio. No los vendemos ni los usamos para publicidad.",
           "Eres responsable de la exactitud de lo que cargas y de contar con el derecho a tratar los datos personales de terceros que incluyas (por ejemplo, de tus empleados o proveedores). Puedes descargar tus reportes en cualquier momento.",
         ],
       },
       {
         title: "8. Asistente de inteligencia artificial",
         paragraphs: [
-          "Stockly incluye un asistente que responde preguntas sobre tu inventario. Para responder, envía tu consulta y los datos de inventario necesarios a un proveedor externo de inteligencia artificial (ver la Política de privacidad). El asistente solo lee información: no crea, modifica ni elimina datos.",
+          "Cubivo incluye un asistente que responde preguntas sobre tu inventario. Para responder, envía tu consulta y los datos de inventario necesarios a un proveedor externo de inteligencia artificial (ver la Política de privacidad). El asistente solo lee información: no crea, modifica ni elimina datos.",
           "Sus respuestas pueden contener errores. Verifica la información antes de tomar decisiones importantes.",
         ],
       },
@@ -108,13 +108,13 @@ export const LEGAL = {
       {
         title: "11. Propiedad intelectual",
         paragraphs: [
-          "El software, la marca y el diseño de Stockly son de su titular. Estos términos solo te dan un derecho de uso limitado, no exclusivo e intransferible mientras tengas una cuenta activa.",
+          "El software, la marca y el diseño de Cubivo son de su titular. Estos términos solo te dan un derecho de uso limitado, no exclusivo e intransferible mientras tengas una cuenta activa.",
         ],
       },
       {
         title: "12. Cambios a estos términos",
         paragraphs: [
-          "Podemos actualizar estos términos. Si el cambio es importante, te avisaremos dentro del servicio o por correo, y la fecha de actualización de arriba cambiará. Seguir usando Stockly después del aviso implica aceptar la nueva versión.",
+          "Podemos actualizar estos términos. Si el cambio es importante, te avisaremos dentro del servicio o por correo, y la fecha de actualización de arriba cambiará. Seguir usando Cubivo después del aviso implica aceptar la nueva versión.",
         ],
       },
       {
@@ -129,7 +129,7 @@ export const LEGAL = {
   privacy: {
     title: "Política de privacidad y protección de datos personales",
     intro:
-      "Esta política explica qué datos personales recopila Stockly, para qué los usa, con quién los comparte y cómo puedes ejercer tus derechos, conforme a la Ley N.º 8968, Protección de la Persona frente al tratamiento de sus datos personales, de Costa Rica.",
+      "Esta política explica qué datos personales recopila Cubivo, para qué los usa, con quién los comparte y cómo puedes ejercer tus derechos, conforme a la Ley N.º 8968, Protección de la Persona frente al tratamiento de sus datos personales, de Costa Rica.",
     sections: [
       {
         title: "1. Responsable del tratamiento",
@@ -155,7 +155,7 @@ export const LEGAL = {
           "Mantener la seguridad del sistema y prevenir accesos no autorizados.",
           "Enviar mensajes necesarios del servicio, como una orden de compra a un proveedor cuando tú lo solicitas, o invitaciones a tu equipo.",
           "Cumplir obligaciones legales y atender solicitudes de las autoridades competentes.",
-          "Mejorar el funcionamiento de Stockly, sin identificarte personalmente.",
+          "Mejorar el funcionamiento de Cubivo, sin identificarte personalmente.",
         ],
         paragraphs: ["No vendemos tus datos ni los usamos para publicidad."],
       },
@@ -168,7 +168,7 @@ export const LEGAL = {
       {
         title: "5. Con quién compartimos los datos",
         paragraphs: [
-          "Solo compartimos datos con proveedores que nos ayudan a operar Stockly, y únicamente lo necesario para su función:",
+          "Solo compartimos datos con proveedores que nos ayudan a operar Cubivo, y únicamente lo necesario para su función:",
         ],
         items: [
           "Proveedores de infraestructura y hospedaje, donde se almacenan los datos.",
@@ -210,12 +210,12 @@ export const LEGAL = {
       {
         title: "10. Almacenamiento en tu navegador",
         paragraphs: [
-          "Stockly guarda en tu navegador lo necesario para mantener tu sesión iniciada y recordar preferencias (idioma y tema). No usamos cookies de publicidad ni de seguimiento de terceros.",
+          "Cubivo guarda en tu navegador lo necesario para mantener tu sesión iniciada y recordar preferencias (idioma y tema). No usamos cookies de publicidad ni de seguimiento de terceros.",
         ],
       },
       {
         title: "11. Menores de edad",
-        paragraphs: ["Stockly no está dirigido a menores de 18 años y no recopilamos sus datos de forma intencional."],
+        paragraphs: ["Cubivo no está dirigido a menores de 18 años y no recopilamos sus datos de forma intencional."],
       },
       {
         title: "12. Cambios a esta política",

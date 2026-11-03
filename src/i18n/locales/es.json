@@ -58,7 +58,7 @@
   "auth": {
     "login": {
       "title": "Iniciar sesión",
-      "subtitle": "Accede a tu cuenta de Stockly",
+      "subtitle": "Accede a tu cuenta de Cubivo",
       "email": "Correo electrónico",
       "password": "Contraseña",
       "submit": "Ingresar",
@@ -71,7 +71,7 @@
     },
     "register": {
       "title": "Crear cuenta",
-      "subtitle": "Regístrate en Stockly",
+      "subtitle": "Regístrate en Cubivo",
       "name": "Nombre",
       "email": "Correo electrónico",
       "password": "Contraseña",
@@ -212,7 +212,7 @@
       "intro": "Sube el Excel con tus productos (puede ser el tuyo o nuestra plantilla). Antes de guardar verás qué se va a crear, y los problemas comunes se arreglan con un clic.",
       "downloadTemplate": "Descargar plantilla",
       "chooseFile": "Elegir archivo .xlsx",
-      "templateFile": "plantilla-productos-stockly",
+      "templateFile": "plantilla-productos-cubivo",
       "templateSheet": "Productos",
       "helpSheet": "Instrucciones",
       "helpTitle": "Cómo llenar la plantilla",
@@ -650,7 +650,7 @@
   },
   "settings": {
     "title": "Configuración",
-    "subtitle": "Personaliza tu experiencia en Stockly",
+    "subtitle": "Personaliza tu experiencia en Cubivo",
     "appearance": "Apariencia",
     "theme": "Tema",
     "themeDescription": "Elige el tema visual de la aplicación",
@@ -996,7 +996,7 @@
     }
   },
   "invite": {
-    "panelTitle": "Te invitaron a Stockly",
+    "panelTitle": "Te invitaron a Cubivo",
     "panelSubtitle": "Únete al inventario de tu equipo.",
     "title": "Únete a {{company}}",
     "subtitle": "{{inviter}} te invitó como {{role}}.",
@@ -1036,7 +1036,7 @@
   },
   "platform": {
     "title": "Plataforma",
-    "subtitle": "Todas las empresas de Stockly: plan, uso y estado. No ves sus datos de inventario.",
+    "subtitle": "Todas las empresas de Cubivo: plan, uso y estado. No ves sus datos de inventario.",
     "kpi": {
       "companies": "Empresas",
       "suspended": "Suspendidas",
@@ -1519,7 +1519,7 @@
     "sinpeSaved": "SINPE guardado"
   },
   "pos": {
-    "backToApp": "Volver a Stockly",
+    "backToApp": "Volver a Cubivo",
     "error": "No se pudo completar. Inténtalo de nuevo.",
     "open": {
       "title": "Abrir caja",

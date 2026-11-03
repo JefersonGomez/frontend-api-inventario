@@ -58,7 +58,7 @@
   "auth": {
     "login": {
       "title": "Sign in",
-      "subtitle": "Access your Stockly account",
+      "subtitle": "Access your Cubivo account",
       "email": "Email",
       "password": "Password",
       "submit": "Sign in",
@@ -71,7 +71,7 @@
     },
     "register": {
       "title": "Create account",
-      "subtitle": "Sign up for Stockly",
+      "subtitle": "Sign up for Cubivo",
       "name": "Name",
       "email": "Email",
       "password": "Password",
@@ -212,7 +212,7 @@
       "intro": "Upload the Excel file with your products (your own or our template). Before saving you'll see what will be created, and common problems can be fixed in one click.",
       "downloadTemplate": "Download template",
       "chooseFile": "Choose .xlsx file",
-      "templateFile": "stockly-products-template",
+      "templateFile": "cubivo-products-template",
       "templateSheet": "Productos",
       "helpSheet": "Instructions",
       "helpTitle": "How to fill in the template",
@@ -650,7 +650,7 @@
   },
   "settings": {
     "title": "Settings",
-    "subtitle": "Customize your Stockly experience",
+    "subtitle": "Customize your Cubivo experience",
     "appearance": "Appearance",
     "theme": "Theme",
     "themeDescription": "Choose the visual theme of the application",
@@ -996,7 +996,7 @@
     }
   },
   "invite": {
-    "panelTitle": "You were invited to Stockly",
+    "panelTitle": "You were invited to Cubivo",
     "panelSubtitle": "Join your team's inventory.",
     "title": "Join {{company}}",
     "subtitle": "{{inviter}} invited you as {{role}}.",
@@ -1036,7 +1036,7 @@
   },
   "platform": {
     "title": "Platform",
-    "subtitle": "All Stockly companies: plan, usage and status. You can't see their inventory data.",
+    "subtitle": "All Cubivo companies: plan, usage and status. You can't see their inventory data.",
     "kpi": {
       "companies": "Companies",
       "suspended": "Suspended",
@@ -1519,7 +1519,7 @@
     "sinpeSaved": "SINPE saved"
   },
   "pos": {
-    "backToApp": "Back to Stockly",
+    "backToApp": "Back to Cubivo",
     "error": "Couldn't complete it. Try again.",
     "open": {
       "title": "Open register",

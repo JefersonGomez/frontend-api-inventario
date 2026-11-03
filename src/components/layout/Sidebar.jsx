@@ -6,9 +6,10 @@ import { usePlatformOwner } from "@/hoocks/usePlatformOwner";
 import { usePermissions } from "@/hoocks/usePermissions";
 import { useQuery } from "@tanstack/react-query";
 import { getLocations } from "@/api/locations";
+import { CubivoMark } from "@/components/CubivoMark";
 import {
   LayoutDashboard, Package, FolderTree, ArrowLeftRight, Route, ClipboardCheck, Tag, BarChart3, ClipboardList, ShoppingCart,
-  Settings as SettingsIcon, Users as UsersIcon, Truck, ShieldCheck, UserRound, LogOut, Box, ScanBarcode, Building2, Contact,
+  Settings as SettingsIcon, Users as UsersIcon, Truck, ShieldCheck, UserRound, LogOut, ScanBarcode, Building2, Contact,
   Monitor, AlertTriangle, Calculator, HandCoins, Receipt, Menu, X, Pin, PinOff, Wallet, Landmark,
 } from "lucide-react";
 
@@ -215,11 +216,11 @@ export function Sidebar() {
       onKeyDown={(e) => e.key === "Escape" && !wide && !isMobile && setHovering(false)}
     >
       <div className="stk-mobile-bar">
-        <Link to={isPlatformOwner ? "/platform" : "/"} className="stk-logo">
+        <Link to={isPlatformOwner ? "/platform" : "/"} className="stk-logo" aria-label="Cubivo">
           <span className="stk-logo-mark">
-            <Box className="w-5 h-5" strokeWidth={1.7} aria-hidden />
+            <CubivoMark />
           </span>
-          <span className="stk-logo-text">Stockly</span>
+          <span className="stk-logo-text" aria-hidden>ubivo</span>
         </Link>
         <button
           ref={menuButton}
@@ -237,11 +238,11 @@ export function Sidebar() {
 
       <nav id="stk-nav" className="stk-navpanel" aria-label={t("sidebar.mainMenu")} inert={(isMobile && !mobileOpen) || undefined}>
         <div className="stk-panel-head">
-          <Link to={isPlatformOwner ? "/platform" : "/"} className="stk-logo">
+          <Link to={isPlatformOwner ? "/platform" : "/"} className="stk-logo" aria-label="Cubivo">
             <span className="stk-logo-mark">
-              <Box className="w-5 h-5" strokeWidth={1.7} aria-hidden />
+              <CubivoMark />
             </span>
-            <span className="stk-logo-text stk-label" style={{ "--i": 0 }}>Stockly</span>
+            <span className="stk-logo-text stk-label" style={{ "--i": 0 }} aria-hidden>ubivo</span>
           </Link>
           {isMobile ? (
             <button ref={closeButton} type="button" className="stk-head-btn" aria-label={t("sidebar.closeMenu")} onClick={() => setMobileOpen(false)}>

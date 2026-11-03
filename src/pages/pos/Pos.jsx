@@ -33,6 +33,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
+import { CubivoMark } from "@/components/CubivoMark"
 
 // "3*" o "3*750123" en el buscador: multiplica la próxima línea
 const MULT = /^(\d+(?:[.,]\d+)?)\s*\*\s*(.*)$/
@@ -357,7 +358,7 @@ export function Pos() {
   return (
     <div className="flex min-h-dvh flex-col bg-background md:h-dvh">
       <header className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-border bg-card px-4 py-2">
-        <span className="stk-logo-mark grid place-items-center" aria-hidden>S</span>
+        <span className="stk-logo-mark" aria-hidden><CubivoMark /></span>
         <div className="min-w-0">
           <p className="truncate font-semibold">{session.register.name}</p>
           <p className="truncate text-xs text-muted-foreground">

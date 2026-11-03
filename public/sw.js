@@ -1,7 +1,7 @@
 // Service worker (8A): la app abre sin internet. No toca la API: solo la página y sus archivos.
 // - Páginas: primero la red (cada despliegue se ve de inmediato); sin red, la copia guardada de index.html.
 // - /assets (llevan hash, nunca cambian) y las fuentes de Google: primero la copia; si no está, la red y se guarda.
-const CACHE = "stockly-v1"
+const CACHE = "stockly-v2" // v2: íconos de Cubivo (la caché vieja se borra al activar)
 
 // Al instalarse guarda index.html y los archivos que carga, para que el primer arranque sin red ya funcione
 self.addEventListener("install", (event) => {

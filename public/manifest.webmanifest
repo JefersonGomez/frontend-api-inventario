@@ -1,7 +1,7 @@
 {
-  "name": "Stockly",
-  "short_name": "Stockly",
-  "description": "Inventario y caja",
+  "name": "Cubivo",
+  "short_name": "Cubivo",
+  "description": "Inventario, POS y facturación",
   "lang": "es",
   "start_url": "/pos",
   "scope": "/",

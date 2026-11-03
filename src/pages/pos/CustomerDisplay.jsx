@@ -4,6 +4,7 @@ import { moneyFormatter } from "@/lib/money"
 import { openChannel } from "@/lib/customer-display"
 import { formatSinpe } from "@/lib/pos"
 import { cn } from "@/lib/utils"
+import { CubivoMark } from "@/components/CubivoMark"
 
 // /pos/cliente: segunda pantalla mirando al cliente. Solo muestra lo que le manda la caja
 // (misma computadora, BroadcastChannel); no pide nada al servidor.
@@ -23,7 +24,7 @@ export function CustomerDisplay() {
   return (
     <div className="flex h-dvh flex-col bg-background text-foreground">
       <header className="flex items-center gap-3 border-b border-border bg-card px-8 py-4">
-        <span className="stk-logo-mark grid place-items-center" aria-hidden>S</span>
+        <span className="stk-logo-mark" aria-hidden><CubivoMark /></span>
         <p className="text-2xl font-semibold">{state?.company || t("pos.display.welcome")}</p>
       </header>
 
