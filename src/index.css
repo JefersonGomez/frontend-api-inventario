@@ -327,8 +327,10 @@
   .stk-navpanel::before { width: 100%; }
   .stk-side[data-expanded="true"] .stk-navpanel { visibility: visible; transition: clip-path 0.38s var(--stk-ease-out); }
   .stk-side[data-expanded="true"] .stk-navpanel::before { box-shadow: 0 24px 48px -16px color-mix(in oklab, var(--stk-ink) 40%, transparent); }
-  .stk-company-btn { max-width: 140px; }
-  .stk-top { margin-bottom: 10px; }
+  /* barra superior en dos filas: el buscador a lo ancho; debajo ubicación, empresa y campana repartiendo el espacio */
+  .stk-top { margin-bottom: 10px; flex-wrap: wrap; gap: 8px; }
+  .stk-search { flex: 1 1 100%; }
+  .stk-company-btn { flex: 1 1 0; min-width: 0; max-width: none; }
   .stk-card { padding: 14px; }
 }
 /* Impresión / "Guardar como PDF": solo el contenido de la página, sin menú ni barra */

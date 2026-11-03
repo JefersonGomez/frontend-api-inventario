@@ -64,7 +64,7 @@ export function Negatives() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>{t("negatives.date")}</TableHead>
+              <TableHead className="max-md:hidden">{t("negatives.date")}</TableHead>
               <TableHead>{t("negatives.product")}</TableHead>
               <TableHead className="text-right">{t("negatives.quantity")}</TableHead>
               <TableHead className="hidden md:table-cell">{t("negatives.location")}</TableHead>
@@ -88,10 +88,11 @@ export function Negatives() {
             )}
             {items.map((n) => (
               <TableRow key={n.id}>
-                <TableCell className="whitespace-nowrap">{when(n.createdAt)}</TableCell>
+                <TableCell className="whitespace-nowrap max-md:hidden">{when(n.createdAt)}</TableCell>
                 <TableCell>
                   <span className="font-medium">{n.product.name}</span>
                   <span className="block text-xs text-muted-foreground">{t("negatives.systemHad", { stock: formatQty(n.stockBefore, n.product.unit, t) })}</span>
+                  <span className="block text-xs text-muted-foreground md:hidden">{when(n.createdAt)}</span>
                 </TableCell>
                 <TableCell className="text-right font-mono">{formatQty(n.quantity, n.product.unit, t)}</TableCell>
                 <TableCell className="hidden md:table-cell">{n.location.name}</TableCell>

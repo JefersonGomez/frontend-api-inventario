@@ -155,8 +155,8 @@ export function ReceivableAccount() {
           <TableHeader>
             <TableRow>
               <TableHead>{t("receivables.dueDate")}</TableHead>
-              <TableHead>{t("receivables.sale")}</TableHead>
-              <TableHead className="text-right">{t("receivables.amount")}</TableHead>
+              <TableHead className="max-sm:hidden">{t("receivables.sale")}</TableHead>
+              <TableHead className="text-right max-md:hidden">{t("receivables.amount")}</TableHead>
               <TableHead className="text-right">{t("receivables.pending")}</TableHead>
               <TableHead className="text-right">{t("receivables.status")}</TableHead>
             </TableRow>
@@ -169,12 +169,18 @@ export function ReceivableAccount() {
               const pending = Number(i.amount) - Number(i.paid)
               return (
                 <TableRow key={i.id}>
-                  <TableCell className="whitespace-nowrap">{day(i.dueDate)}</TableCell>
-                  <TableCell>
-                    <span className="font-mono text-xs">{i.document.consecutive}</span>
+                  <TableCell className="md:whitespace-nowrap">
+                    {day(i.dueDate)}
+                    <span className="block text-xs text-muted-foreground sm:hidden">
+                      <span className="font-mono">{i.document.consecutive.slice(-10)}</span> · {t("receivables.installment", { n: i.number })}
+                    </span>
+                  </TableCell>
+                  <TableCell className="max-sm:hidden">
+                    <span className="font-mono text-xs max-md:hidden">{i.document.consecutive}</span>
+                    <span className="font-mono text-xs md:hidden">{i.document.consecutive.slice(-10)}</span>
                     <span className="block text-xs text-muted-foreground">{t("receivables.installment", { n: i.number })} · {t(`pos.credit.${i.frequency}`)}</span>
                   </TableCell>
-                  <TableCell className="text-right font-mono">{money.format(i.amount)}</TableCell>
+                  <TableCell className="text-right font-mono max-md:hidden">{money.format(i.amount)}</TableCell>
                   <TableCell className="text-right font-mono">{money.format(pending)}</TableCell>
                   <TableCell className="text-right">
                     {pending <= 0 ? (

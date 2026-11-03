@@ -34,6 +34,7 @@
 .dash-card-head h2 { white-space: nowrap; }
 .dash-card-head {
   display: flex;
+  flex-wrap: wrap; /* en celular el selector baja debajo del título si no entra */
   align-items: center;
   justify-content: space-between;
   gap: 10px;

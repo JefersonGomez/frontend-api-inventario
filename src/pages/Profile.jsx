@@ -349,7 +349,7 @@ export function Profile() {
       </section>
 
       <Tabs value={tab} onValueChange={changeTab} className="prof-tabs">
-        <TabsList className="w-full sm:w-fit overflow-x-auto">
+        <TabsList className="w-full overflow-x-auto sm:w-fit max-sm:[&_svg]:hidden">
           <TabsTrigger value="account"><UserRound />{t("profile.tabs.account")}</TabsTrigger>
           <TabsTrigger value="security"><KeyRound />{t("profile.tabs.security")}</TabsTrigger>
           {showCash && <TabsTrigger value="cash"><LockKeyhole />{t("profile.tabs.cash")}</TabsTrigger>}

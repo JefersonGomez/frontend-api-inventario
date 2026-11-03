@@ -168,8 +168,8 @@ function SalesPart({ r, money, t, rate }) {
       <CardHeader>
         <CardTitle className="text-base">{t("vatReport.salesTitle")}</CardTitle>
       </CardHeader>
-      <CardContent className="overflow-x-auto">
-        <Table>
+      <CardContent className="overflow-x-auto max-md:px-3">
+        <Table className="max-sm:text-xs">
           <TableHeader>
             <TableRow>
               <TableHead>{t("vatReport.rate")}</TableHead>
@@ -212,8 +212,8 @@ function PurchasesPart({ r, money, t, rate }) {
       <CardHeader>
         <CardTitle className="text-base">{t("vatReport.purchasesTitle")}</CardTitle>
       </CardHeader>
-      <CardContent className="overflow-x-auto">
-        <Table>
+      <CardContent className="overflow-x-auto max-md:px-3">
+        <Table className="max-sm:text-xs">
           <TableHeader>
             <TableRow>
               <TableHead>{t("vatReport.rate")}</TableHead>
@@ -354,14 +354,14 @@ function InvoicesTable({ r, money, t, rate }) {
       <CardHeader>
         <CardTitle className="text-base">{t("vatReport.invoicesTitle", { count: invoices.length })}</CardTitle>
       </CardHeader>
-      <CardContent className="overflow-x-auto">
-        <Table>
+      <CardContent className="overflow-x-auto max-md:px-3">
+        <Table className="max-sm:text-xs">
           <TableHeader>
             <TableRow>
               <TableHead>{t("vatReport.date")}</TableHead>
               <TableHead>{t("vatReport.supplier")}</TableHead>
-              <TableHead>{t("vatReport.number")}</TableHead>
-              <TableHead>{t("vatReport.rates")}</TableHead>
+              <TableHead className="max-md:hidden">{t("vatReport.number")}</TableHead>
+              <TableHead className="max-md:hidden">{t("vatReport.rates")}</TableHead>
               <TableHead className="text-right">{t("vatReport.base")}</TableHead>
               <TableHead className="text-right">{t("vatReport.tax")}</TableHead>
             </TableRow>
@@ -376,9 +376,10 @@ function InvoicesTable({ r, money, t, rate }) {
                 <TableCell>
                   <Link to={`/payables/${i.supplier.id}`} className="hover:underline">{i.supplier.name}</Link>
                   {!i.creditable && <Badge variant="secondary" className="ml-2">{t("vatReport.nonCreditableBadge")}</Badge>}
+                  <span className="block font-mono text-xs text-muted-foreground md:hidden">{i.number}</span>
                 </TableCell>
-                <TableCell className="font-mono">{i.number}</TableCell>
-                <TableCell className="text-xs text-muted-foreground">{i.taxes.map((tx) => rate(tx.rate)).join(" · ")}</TableCell>
+                <TableCell className="font-mono max-md:hidden">{i.number}</TableCell>
+                <TableCell className="text-xs text-muted-foreground max-md:hidden">{i.taxes.map((tx) => rate(tx.rate)).join(" · ")}</TableCell>
                 <TableCell className="text-right font-mono">{money.format(i.subtotal)}</TableCell>
                 <TableCell className="text-right font-mono">{money.format(i.tax)}</TableCell>
               </TableRow>

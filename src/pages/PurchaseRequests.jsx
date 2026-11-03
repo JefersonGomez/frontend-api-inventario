@@ -123,7 +123,7 @@ export function PurchaseRequests() {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-semibold">{t("purchaseRequests.title")}</h1>
         <Dialog open={open} onOpenChange={setOpen}>
           {/* ✅ CORRECCIÓN: Usar la prop render en lugar de asChild */}

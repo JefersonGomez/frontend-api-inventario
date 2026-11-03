@@ -310,7 +310,7 @@ function Breakdown({ title, rows, money, t }) {
             <TableRow>
               <TableHead>{t("salesReport.name")}</TableHead>
               <TableHead className="text-right">{t("salesReport.tickets")}</TableHead>
-              <TableHead className="text-right">{t("salesReport.returns")}</TableHead>
+              <TableHead className="text-right max-md:hidden">{t("salesReport.returns")}</TableHead>
               <TableHead className="text-right">{t("salesReport.net")}</TableHead>
             </TableRow>
           </TableHeader>
@@ -320,7 +320,7 @@ function Breakdown({ title, rows, money, t }) {
               <TableRow key={r.id}>
                 <TableCell>{r.name}</TableCell>
                 <TableCell className="text-right font-mono">{r.tickets}</TableCell>
-                <TableCell className="text-right font-mono">{r.returns ? money.format(r.returns) : "—"}</TableCell>
+                <TableCell className="text-right font-mono max-md:hidden">{r.returns ? money.format(r.returns) : "—"}</TableCell>
                 <TableCell className="text-right font-mono">{money.format(r.net)}</TableCell>
               </TableRow>
             ))}

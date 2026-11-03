@@ -30,7 +30,7 @@ export function Layout() {
         <Sidebar />
         <div>
           <Topbar />
-          <main key={pathname} className="stk-page-enter">
+          <main key={pathname} className="stk-page-enter max-md:pb-20">
             <DemoBanner />
             {company?.suspendedAt ? <SuspendedScreen reason={company.suspensionReason} /> : <Outlet />}
           </main>

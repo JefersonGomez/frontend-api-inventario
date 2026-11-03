@@ -72,7 +72,7 @@ export function CashClosings() {
             <TableRow>
               <TableHead>{t("cashClosings.closedAt")}</TableHead>
               <TableHead>{t("cashClosings.register")}</TableHead>
-              <TableHead>{t("cashClosings.cashier")}</TableHead>
+              <TableHead className="max-md:hidden">{t("cashClosings.cashier")}</TableHead>
               <TableHead className="hidden md:table-cell text-right">{t("cashClosings.expected")}</TableHead>
               <TableHead className="hidden md:table-cell text-right">{t("cashClosings.difference")}</TableHead>
               <TableHead className="text-right">{t("cashClosings.status")}</TableHead>
@@ -90,12 +90,13 @@ export function CashClosings() {
               const tone = diff === null ? null : diff === 0 ? "ok" : diff > 0 ? "warn" : "crit"
               return (
                 <TableRow key={s.id}>
-                  <TableCell className="whitespace-nowrap">{at(s.closedAt)}</TableCell>
+                  <TableCell className="md:whitespace-nowrap">{at(s.closedAt)}</TableCell>
                   <TableCell>
                     {s.register.name}
                     <span className="block text-xs text-muted-foreground">{s.register.location.name}</span>
+                    <span className="block text-xs text-muted-foreground md:hidden">{s.openedBy.name}</span>
                   </TableCell>
-                  <TableCell>{s.openedBy.name}</TableCell>
+                  <TableCell className="max-md:hidden">{s.openedBy.name}</TableCell>
                   <TableCell className="hidden md:table-cell text-right font-mono">{money.format(s.expectedCash)}</TableCell>
                   <TableCell className={cn("hidden md:table-cell text-right font-mono", tone && DIFF[tone])}>
                     {diff === null ? "—" : money.format(diff)}

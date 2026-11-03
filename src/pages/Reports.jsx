@@ -289,7 +289,7 @@ function InventoryReports() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>{t("reports.tables.sku")}</TableHead>
+                  <TableHead className="max-md:hidden">{t("reports.tables.sku")}</TableHead>
                   <TableHead>{t("reports.tables.product")}</TableHead>
                   <TableHead>{t("reports.tables.current_stock")}</TableHead>
                   <TableHead>{t("reports.tables.min_stock")}</TableHead>
@@ -305,8 +305,11 @@ function InventoryReports() {
                 )}
                 {lowStockQuery.data?.map((product) => (
                   <TableRow key={product.id}>
-                    <TableCell className="text-muted-foreground">{product.sku}</TableCell>
-                    <TableCell className="font-medium">{product.name}</TableCell>
+                    <TableCell className="text-muted-foreground max-md:hidden">{product.sku}</TableCell>
+                    <TableCell className="font-medium">
+                      {product.name}
+                      <span className="block text-xs font-normal text-muted-foreground md:hidden">{product.sku}</span>
+                    </TableCell>
                     <TableCell>
                       <Badge variant="destructive">{formatQty(product.stock, product.unit, t)}</Badge>
                     </TableCell>
@@ -340,7 +343,7 @@ function InventoryReports() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>{t("reports.tables.date")}</TableHead>
+                  <TableHead className="max-md:hidden">{t("reports.tables.date")}</TableHead>
                   <TableHead>{t("reports.tables.product")}</TableHead>
                   <TableHead>{t("reports.tables.type")}</TableHead>
                   <TableHead>{t("reports.tables.quantity")}</TableHead>
@@ -358,10 +361,13 @@ function InventoryReports() {
                   const config = typeLabels[movement.type]
                   return (
                     <TableRow key={movement.id}>
-                      <TableCell className="text-muted-foreground">
+                      <TableCell className="text-muted-foreground max-md:hidden">
                         {new Date(movement.createdAt).toLocaleDateString()}
                       </TableCell>
-                      <TableCell className="font-medium">{movement.product?.name}</TableCell>
+                      <TableCell className="font-medium">
+                        {movement.product?.name}
+                        <span className="block text-xs font-normal text-muted-foreground md:hidden">{new Date(movement.createdAt).toLocaleDateString()}</span>
+                      </TableCell>
                       <TableCell>
                         <Badge variant={config?.variant}>{config?.label}</Badge>
                       </TableCell>

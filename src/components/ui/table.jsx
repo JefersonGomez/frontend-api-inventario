@@ -86,7 +86,7 @@ function TableHead({
     <th
       data-slot="table-head"
       className={cn(
-        "h-10 px-2 text-left align-middle font-medium whitespace-nowrap text-foreground [&:has([role=checkbox])]:pr-0",
+        "h-10 px-2 text-left align-middle font-medium text-foreground md:whitespace-nowrap [&:has([role=checkbox])]:pr-0", // en celular los títulos de dos palabras bajan de línea
         className
       )}
       {...props}
@@ -102,7 +102,7 @@ function TableCell({
     <td
       data-slot="table-cell"
       className={cn(
-        "p-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0",
+        "p-2 align-middle md:whitespace-nowrap [&:has([role=checkbox])]:pr-0", // en celular el texto baja de línea en vez de ensanchar la tabla
         className
       )}
       {...props}

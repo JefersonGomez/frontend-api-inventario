@@ -245,7 +245,7 @@ export function PurchaseOrders() {
         </div>
       )}
 
-      <div className="flex justify-between items-center">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-semibold">{t("purchaseOrders.title")}</h1>
 
         <Dialog open={open} onOpenChange={setOpen}>

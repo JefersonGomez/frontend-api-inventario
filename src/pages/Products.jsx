@@ -297,23 +297,30 @@ export function Products() {
   function renderProduct(product, nested) {
     return (
       <TableRow key={product.id} className={product.id === highlightId ? "bg-primary/10" : nested ? "bg-muted/30" : undefined}>
-        <TableCell className={`text-muted-foreground ${nested ? "pl-8" : ""}`}>{product.sku}</TableCell>
-        <TableCell className="font-medium">
+        <TableCell className={`text-muted-foreground max-md:hidden ${nested ? "pl-8" : ""}`}>{product.sku}</TableCell>
+        <TableCell className={`font-medium ${nested ? "max-md:pl-6" : ""}`}>
           {product.name}
           {variantLabel(product) && (
             <span className="block text-xs font-normal text-muted-foreground">{variantLabel(product)}</span>
           )}
+          <span className="block text-xs font-normal text-muted-foreground md:hidden">
+            {[product.sku, product.category?.name].filter(Boolean).join(" · ")}
+          </span>
         </TableCell>
-        <TableCell className="text-muted-foreground">{product.category?.name}</TableCell>
+        <TableCell className="text-muted-foreground max-md:hidden">{product.category?.name}</TableCell>
         <TableCell>
           {product.pendingReview ? <Badge variant="outline">{t("products.pending.badge")}</Badge> : money.format(product.price)}
+          {/* pantallas muy angostas: el stock va debajo del precio */}
+          <span className={`block text-xs whitespace-nowrap sm:hidden ${product.stock <= product.minStock ? "text-destructive" : "text-muted-foreground"}`}>
+            {formatQty(product.stock, product.unit, t)}
+          </span>
         </TableCell>
         {showCost && (
           <TableCell className="hidden md:table-cell text-muted-foreground">
             {product.cost == null ? "—" : money.format(product.cost)}
           </TableCell>
         )}
-        <TableCell className="whitespace-nowrap">
+        <TableCell className="whitespace-nowrap max-sm:hidden">
           {product.stock <= product.minStock ? (
             <Badge variant="destructive">{formatQty(product.stock, product.unit, t)}</Badge>
           ) : (
@@ -336,7 +343,7 @@ export function Products() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold">{t("products.title")}</h1>
           <p className="text-sm text-muted-foreground">{t("products.subtitle")}</p>
@@ -404,12 +411,12 @@ export function Products() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>{t("products.table.sku")}</TableHead>
+              <TableHead className="max-md:hidden">{t("products.table.sku")}</TableHead>
               <TableHead>{t("products.table.name")}</TableHead>
-              <TableHead>{t("products.table.category")}</TableHead>
+              <TableHead className="max-md:hidden">{t("products.table.category")}</TableHead>
               <TableHead>{t("products.table.price")}</TableHead>
               {showCost && <TableHead className="hidden md:table-cell">{t("products.table.cost")}</TableHead>}
-              <TableHead>{t("products.table.stock")}</TableHead>
+              <TableHead className="max-sm:hidden">{t("products.table.stock")}</TableHead>
               <TableHead className="text-right">{t("products.table.actions")}</TableHead>
             </TableRow>
           </TableHeader>
@@ -788,7 +795,7 @@ function GroupRows({ group, t, money, canManage, showCost, cols, open, variantPa
   return (
     <>
       <TableRow className="bg-muted/50">
-        <TableCell>
+        <TableCell className="max-md:hidden">
           <Button
             variant="ghost"
             size="icon"
@@ -803,6 +810,17 @@ function GroupRows({ group, t, money, canManage, showCost, cols, open, variantPa
         </TableCell>
         <TableCell className="font-semibold">
           <span className="inline-flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="-ml-1 size-7 md:hidden"
+              onClick={onToggle}
+              disabled={count === 0}
+              aria-expanded={open}
+              aria-label={t(open ? "products.variants.collapse" : "products.variants.expand", { name: group.name })}
+            >
+              <ChevronRight className={`h-4 w-4 transition-transform ${open ? "rotate-90" : ""}`} />
+            </Button>
             <Layers className="h-4 w-4 text-muted-foreground" aria-hidden />
             {group.name}
           </span>
@@ -810,12 +828,12 @@ function GroupRows({ group, t, money, canManage, showCost, cols, open, variantPa
             {count > 0 ? t("products.variants.summary", { count, attrs }) : t("products.variants.no_variants", { attrs })}
           </span>
         </TableCell>
-        <TableCell className="text-muted-foreground">
+        <TableCell className="text-muted-foreground max-md:hidden">
           <Badge variant="outline">{t("products.variants.base_badge")}</Badge>
         </TableCell>
         <TableCell className="whitespace-nowrap">{price}</TableCell>
         {showCost && <TableCell className="hidden md:table-cell text-muted-foreground">—</TableCell>}
-        <TableCell className="whitespace-nowrap">
+        <TableCell className="whitespace-nowrap max-sm:hidden">
           {totalStock != null && unit ? formatQty(totalStock, unit, t) : "—"}
           {low > 0 && <Badge variant="destructive" className="ml-2">{t("products.variants.low", { count: low })}</Badge>}
         </TableCell>

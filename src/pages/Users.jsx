@@ -130,7 +130,7 @@ export function Users() {
                       <div className="min-w-0">
                         <span>{u.name}</span>
                         {isSelf && <span className="text-xs text-muted-foreground"> ({t("users.you")})</span>}
-                        <span className="block text-xs font-normal text-muted-foreground sm:hidden">{u.email}</span>
+                        <span className="block text-xs font-normal break-all text-muted-foreground sm:hidden">{u.email}</span>
                       </div>
                     </div>
                   </TableCell>
@@ -143,6 +143,7 @@ export function Users() {
                       <Button
                         variant="outline"
                         size="sm"
+                        className="max-sm:[&_svg]:hidden"
                         onClick={() => setEditingAccess(u)}
                         aria-label={t("users.access.edit", { name: u.name })}
                         title={t("users.access.edit", { name: u.name })}
@@ -150,7 +151,7 @@ export function Users() {
                         <KeyRound />
                         {t(`companies.roles.${u.role}`)}
                         {(u.grantedPermissions?.length > 0 || u.revokedPermissions?.length > 0) && (
-                          <span className="text-xs text-[var(--stk-warn)]">· {t("users.access.changed")}</span>
+                          <span className="text-xs text-[var(--stk-warn)] max-md:hidden">· {t("users.access.changed")}</span>
                         )}
                       </Button>
                     )}

@@ -73,7 +73,7 @@ export function Sales() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>{t("sales.date")}</TableHead>
+              <TableHead className="max-md:hidden">{t("sales.date")}</TableHead>
               <TableHead>{t("sales.number")}</TableHead>
               <TableHead className="hidden md:table-cell">{t("sales.customer")}</TableHead>
               <TableHead className="hidden lg:table-cell">{t("sales.register")}</TableHead>
@@ -88,7 +88,7 @@ export function Sales() {
             )}
             {items.map((d) => (
               <TableRow key={d.id} className="cursor-pointer" onClick={() => navigate(`/sales/${d.id}`)}>
-                <TableCell className="whitespace-nowrap">{when(d.issuedAt)}</TableCell>
+                <TableCell className="whitespace-nowrap max-md:hidden">{when(d.issuedAt)}</TableCell>
                 <TableCell>
                   <Link to={`/sales/${d.id}`} className="font-mono text-xs hover:underline" onClick={(e) => e.stopPropagation()}>{d.consecutive.slice(-10)}</Link>
                   <span className="ml-2 inline-flex gap-1">
@@ -96,6 +96,7 @@ export function Sales() {
                     {d.saleCondition === "CREDIT" && <Badge variant="outline">{t("pos.modes.CREDIT")}</Badge>}
                     {d._count.referencedBy > 0 && <Badge variant="outline">{t("sales.withReturns")}</Badge>}
                   </span>
+                  <span className="block text-xs text-muted-foreground md:hidden">{when(d.issuedAt)}</span>
                 </TableCell>
                 <TableCell className="hidden md:table-cell">{d.customer?.name ?? "—"}</TableCell>
                 <TableCell className="hidden lg:table-cell">{d.cashSession ? `${d.cashSession.register.name} · ${d.cashSession.register.location.name}` : "—"}</TableCell>

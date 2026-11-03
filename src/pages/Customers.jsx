@@ -138,7 +138,7 @@ export function Customers() {
           <TableHeader>
             <TableRow>
               <TableHead>{t("customers.table.name")}</TableHead>
-              <TableHead>{t("customers.table.id")}</TableHead>
+              <TableHead className="max-md:hidden">{t("customers.table.id")}</TableHead>
               <TableHead className="hidden md:table-cell">{t("customers.table.email")}</TableHead>
               <TableHead className="hidden lg:table-cell">{t("customers.table.phone")}</TableHead>
               <TableHead>{t("customers.table.credit")}</TableHead>
@@ -158,8 +158,13 @@ export function Customers() {
             )}
             {visible.map((c) => (
               <TableRow key={c.id}>
-                <TableCell className="font-medium">{c.name}</TableCell>
-                <TableCell className="whitespace-nowrap text-muted-foreground">{formatFiscalId(t, c.idType, c.idNumber) ?? "—"}</TableCell>
+                <TableCell className="font-medium">
+                  {c.name}
+                  <span className="block text-xs font-normal text-muted-foreground md:hidden">
+                    {[formatFiscalId(t, c.idType, c.idNumber), c.phone].filter(Boolean).join(" · ")}
+                  </span>
+                </TableCell>
+                <TableCell className="whitespace-nowrap text-muted-foreground max-md:hidden">{formatFiscalId(t, c.idType, c.idNumber) ?? "—"}</TableCell>
                 <TableCell className="hidden text-muted-foreground md:table-cell">{c.email || "—"}</TableCell>
                 <TableCell className="hidden text-muted-foreground lg:table-cell">{c.phone || "—"}</TableCell>
                 <TableCell className="whitespace-nowrap">{credit(c)}</TableCell>

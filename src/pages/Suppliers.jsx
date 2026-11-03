@@ -132,7 +132,7 @@ export function Suppliers() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold">Proveedores</h1>
           <p className="text-sm text-muted-foreground">
@@ -161,9 +161,9 @@ export function Suppliers() {
             <TableRow>
               <TableHead>Nombre</TableHead>
               <TableHead className="hidden md:table-cell">{t("fiscal.idNumber")}</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Teléfono</TableHead>
-              <TableHead>Productos</TableHead>
+              <TableHead className="max-md:hidden">Email</TableHead>
+              <TableHead className="max-md:hidden">Teléfono</TableHead>
+              <TableHead className="max-md:hidden">Productos</TableHead>
               {isAdmin && <TableHead className="text-right">Acciones</TableHead>}
             </TableRow>
           </TableHeader>
@@ -186,13 +186,18 @@ export function Suppliers() {
 
             {suppliers.map((supplier) => (
               <TableRow key={supplier.id}>
-                <TableCell className="font-medium">{supplier.name}</TableCell>
+                <TableCell className="font-medium">
+                  {supplier.name}
+                  <span className="block text-xs font-normal text-muted-foreground md:hidden">
+                    {[supplier.phone, supplier.email].filter(Boolean).join(" · ")}
+                  </span>
+                </TableCell>
                 <TableCell className="hidden whitespace-nowrap text-muted-foreground md:table-cell">
                   {formatFiscalId(t, supplier.idType, supplier.idNumber) ?? "—"}
                 </TableCell>
-                <TableCell className="text-muted-foreground">{supplier.email || "—"}</TableCell>
-                <TableCell className="text-muted-foreground">{supplier.phone || "—"}</TableCell>
-                <TableCell>
+                <TableCell className="text-muted-foreground max-md:hidden">{supplier.email || "—"}</TableCell>
+                <TableCell className="text-muted-foreground max-md:hidden">{supplier.phone || "—"}</TableCell>
+                <TableCell className="max-md:hidden">
                   <Badge variant="secondary">{supplier._count?.products ?? 0}</Badge>
                 </TableCell>
                 {isAdmin && (

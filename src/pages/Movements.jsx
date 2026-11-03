@@ -131,7 +131,7 @@ export function Movements() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold">{t("movements.title")}</h1>
           <p className="text-sm text-muted-foreground">{t("movements.subtitle")}</p>
@@ -174,13 +174,13 @@ export function Movements() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>{t("movements.table.date")}</TableHead>
+              <TableHead className="max-md:hidden">{t("movements.table.date")}</TableHead>
               <TableHead>{t("movements.table.product")}</TableHead>
               <TableHead>{t("movements.table.type")}</TableHead>
               <TableHead>{t("movements.table.quantity")}</TableHead>
               <TableHead className="hidden md:table-cell">{t("movements.table.location")}</TableHead>
-              <TableHead>{t("movements.table.user")}</TableHead>
-              <TableHead>{t("movements.table.reason")}</TableHead>
+              <TableHead className="max-md:hidden">{t("movements.table.user")}</TableHead>
+              <TableHead className="max-md:hidden">{t("movements.table.reason")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -205,10 +205,15 @@ export function Movements() {
               const Icon = config.icon
               return (
                 <TableRow key={movement.id}>
-                  <TableCell className="text-muted-foreground">
+                  <TableCell className="text-muted-foreground max-md:hidden">
                     {new Date(movement.createdAt).toLocaleString()}
                   </TableCell>
-                  <TableCell className="font-medium">{movement.product?.name}</TableCell>
+                  <TableCell className="font-medium">
+                    {movement.product?.name}
+                    <span className="block text-xs font-normal text-muted-foreground md:hidden">
+                      {new Date(movement.createdAt).toLocaleString()}{movement.user?.name && ` · ${movement.user.name}`}
+                    </span>
+                  </TableCell>
                   <TableCell>
                     <Badge variant={config.variant} className="gap-1">
                       <Icon className="w-3 h-3" />
@@ -217,8 +222,8 @@ export function Movements() {
                   </TableCell>
                   <TableCell className="whitespace-nowrap">{formatQty(movement.quantity, movement.product?.unit, t)}</TableCell>
                   <TableCell className="hidden md:table-cell text-muted-foreground">{movement.location?.name}</TableCell>
-                  <TableCell className="text-muted-foreground">{movement.user?.name}</TableCell>
-                  <TableCell className="text-muted-foreground">
+                  <TableCell className="text-muted-foreground max-md:hidden">{movement.user?.name}</TableCell>
+                  <TableCell className="min-w-48 text-muted-foreground max-md:hidden md:whitespace-normal">
                     {movement.source && movement.source !== "MANUAL" && (
                       <Badge variant="outline" className="mr-2">{t(`movements.sources.${movement.source}`)}</Badge>
                     )}

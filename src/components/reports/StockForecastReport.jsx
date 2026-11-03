@@ -67,7 +67,7 @@ export function StockForecastReport() {
               <TableRow>
                 <TableHead>{t("reports.stockForecast.product")}</TableHead>
                 <TableHead className="text-right">{t("reports.stockForecast.currentStock")}</TableHead>
-                <TableHead className="text-right">{t("reports.stockForecast.dailyVelocity")}</TableHead>
+                <TableHead className="text-right max-md:hidden">{t("reports.stockForecast.dailyVelocity")}</TableHead>
                 <TableHead className="text-right">{t("reports.stockForecast.daysRemaining")}</TableHead>
               </TableRow>
             </TableHeader>
@@ -76,7 +76,7 @@ export function StockForecastReport() {
                 <TableRow key={item.productId}>
                   <TableCell className="font-medium">{item.productName}</TableCell>
                   <TableCell className="text-right">{item.currentStock}</TableCell>
-                  <TableCell className="text-right text-muted-foreground">{item.dailyVelocity}</TableCell>
+                  <TableCell className="text-right text-muted-foreground max-md:hidden">{item.dailyVelocity}</TableCell>
                   <TableCell className="text-right">
                     {item.willRunOutSoon ? (
                       <Badge variant="destructive">{item.daysRemaining}</Badge>

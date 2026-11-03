@@ -50,7 +50,7 @@ export function MySalesCard() {
     <article className="stk-card">
       <header className="dash-card-head">
         <h2>{t("salesCards.mineTitle")}</h2>
-        <Input type="month" aria-label={t("salesCards.month")} className="h-8 w-40" value={month} onChange={(e) => e.target.value && setMonth(e.target.value)} />
+        <Input type="month" aria-label={t("salesCards.month")} className="h-8 w-48" value={month} onChange={(e) => e.target.value && setMonth(e.target.value)} />
       </header>
       {data && (
         <div className="flex flex-wrap gap-x-8 gap-y-2">

@@ -355,7 +355,7 @@ export function Pos() {
   }
 
   return (
-    <div className="flex h-dvh flex-col bg-background">
+    <div className="flex min-h-dvh flex-col bg-background md:h-dvh">
       <header className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-border bg-card px-4 py-2">
         <span className="stk-logo-mark grid place-items-center" aria-hidden>S</span>
         <div className="min-w-0">
@@ -417,9 +417,9 @@ export function Pos() {
         </div>
       </header>
 
-      <div className="grid min-h-0 flex-1 grid-rows-[minmax(0,1fr)_minmax(0,1.2fr)] md:grid-cols-[minmax(0,1fr)_minmax(400px,42%)] md:grid-rows-1">
+      <div className="grid flex-1 grid-cols-[minmax(0,1fr)] md:min-h-0 md:grid-cols-[minmax(0,1fr)_minmax(400px,42%)] md:grid-rows-1">
         {/* Catálogo */}
-        <section className="flex min-h-0 flex-col gap-3 p-4">
+        <section className="flex min-h-0 flex-col gap-3 p-4 max-md:h-[52dvh]">
           <div className="flex gap-2">
             <div className="relative flex-1">
               <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
@@ -452,7 +452,7 @@ export function Pos() {
             </div>
             <BarcodeScanner onScan={onSearchEnter} />
           </div>
-          <p className="-mt-1 text-xs text-muted-foreground">{t("pos.multHint")}</p>
+          <p className="-mt-1 hidden text-xs text-muted-foreground sm:block">{t("pos.multHint")}</p>
           {notice && (
             <p role="status" className="flex items-center justify-between gap-2 rounded-lg bg-[var(--stk-warn-bg)] px-3 py-2 text-sm text-[var(--stk-warn)]">
               {notice}
@@ -506,7 +506,7 @@ export function Pos() {
         </section>
 
         {/* Venta actual: lo principal, el cliente la va viendo */}
-        <aside className="flex min-h-0 flex-col border-t border-border bg-card md:border-t-0 md:border-l">
+        <aside className="flex flex-col border-t border-border bg-card md:min-h-0 md:border-t-0 md:border-l">
           <div className="flex items-center justify-between border-b border-border px-5 py-3">
             <h2 className="flex items-center gap-2 text-lg font-semibold">
               <ShoppingCart className="h-5 w-5" aria-hidden />
@@ -520,7 +520,7 @@ export function Pos() {
               </Button>
             )}
           </div>
-          <ol className="min-h-0 flex-1 divide-y divide-border overflow-y-auto" aria-live="polite">
+          <ol className="divide-y divide-border md:min-h-0 md:flex-1 md:overflow-y-auto" aria-live="polite">
             {cart.length === 0 && <li className="px-5 py-12 text-center text-muted-foreground">{t("pos.emptyCart")}</li>}
             {cart.map((i, n) => {
               const negative = i.quantity > i.stock
@@ -601,7 +601,7 @@ export function Pos() {
               )
             })}
           </ol>
-          <div className="border-t border-border p-4">
+          <div className="sticky bottom-0 border-t border-border bg-card p-4 md:static">
             <div className="mb-3 flex gap-2">
               <Button variant="outline" size="sm" className="min-w-0 flex-1 justify-start" disabled={!online} onClick={() => setPickingCustomer("sale")}>
                 <UserRound />
