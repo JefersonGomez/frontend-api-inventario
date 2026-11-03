@@ -47,6 +47,12 @@
   display: flex;
   flex-direction: column;
 }
+/* marca arriba del panel: la C en blanco sobre el fondo oscuro (el cubo usa --stk-accent) */
+.stk-brand { margin: 0 0 1.75rem; }
+.stk-brand .stk-logo { margin: 0; }
+.stk-brand .stk-logo-mark, .stk-brand .stk-logo-mark svg { width: 44px; height: 44px; color: #fff; }
+.stk-brand .stk-logo-text { color: #fff; font-size: 1.85rem; }
+.stk-brand-tag { margin: 0.5rem 0 0; font-size: 0.7rem; letter-spacing: 0.22em; text-transform: uppercase; color: #9aa5b1; }
 .stk-title {
   margin: 0;
   font-weight: 500;

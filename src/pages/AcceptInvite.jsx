@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next"
 import { getInvitationByToken, acceptInvitation } from "@/api/invitations"
 import { useAuth } from "@/context/AuthContext"
 import { BoxesIllustration } from "@/components/BoxesIllustration"
+import { AuthBrand } from "@/components/auth/AuthBrand"
 import { TermsCheck } from "@/components/auth/TermsCheck"
 import "./Register.css"
 import { apiErrorMessage } from "@/lib/api-error"
@@ -127,6 +128,7 @@ export function AcceptInvite() {
     <div className="stk-page">
       <div className="stk-reg-card">
         <aside className="stk-panel">
+          <AuthBrand />
           <h1 className="stk-title">{t("invite.panelTitle")}</h1>
           <p className="stk-sub">{t("invite.panelSubtitle")}</p>
           <BoxesIllustration t={t} />

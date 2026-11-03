@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next"
 import { demoLogin, getDemoInfo, loginRequest } from "@/api/auth"
 import { useAuth } from "@/context/AuthContext"
 import { BoxesIllustration } from "@/components/BoxesIllustration"
+import { AuthBrand } from "@/components/auth/AuthBrand"
 import "./Register.css"
 import { apiErrorMessage } from "@/lib/api-error"
 
@@ -35,6 +36,7 @@ export function Login() {
     <div className="stk-page">
       <div className="stk-reg-card">
         <aside className="stk-panel">
+          <AuthBrand />
           <h1 className="stk-title">{t("auth.login.panelTitle")}</h1>
           <p className="stk-sub">{t("auth.login.panelSubtitle")}</p>
           <BoxesIllustration t={t} />

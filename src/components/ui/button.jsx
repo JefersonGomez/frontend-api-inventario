@@ -45,10 +45,13 @@ function Button({
   size = "default",
   ...props
 }) {
+  // render={<Link />} (o cualquier cosa que no sea <button>): Base UI debe saber que no es un botón nativo
+  const nativeButton = props.render && typeof props.render === "object" ? props.render.type === "button" : undefined
   return (
     <ButtonPrimitive
       data-slot="button"
       className={cn(buttonVariants({ variant, size, className }))}
+      nativeButton={nativeButton}
       {...props}
     />
   )

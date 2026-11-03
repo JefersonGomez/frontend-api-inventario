@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { registerRequest } from "@/api/auth"
 import { BoxesIllustration } from "@/components/BoxesIllustration"
+import { AuthBrand } from "@/components/auth/AuthBrand"
 import { TermsCheck } from "@/components/auth/TermsCheck"
 import "./Register.css"
 import { apiErrorMessage } from "@/lib/api-error"
@@ -51,6 +52,7 @@ export function Register() {
     <div className="stk-page">
       <div className="stk-reg-card">
         <aside className="stk-panel">
+          <AuthBrand />
           <h1 className="stk-title">{t("auth.register.panelTitle")}</h1>
           <p className="stk-sub">{t("auth.register.panelSubtitle")}</p>
           <BoxesIllustration t={t} />

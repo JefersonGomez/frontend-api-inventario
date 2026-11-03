@@ -56,6 +56,7 @@
     "platformMode": "Dueño de la plataforma"
   },
   "auth": {
+    "brandTagline": "Inventario · POS · Facturación",
     "login": {
       "title": "Iniciar sesión",
       "subtitle": "Accede a tu cuenta de Cubivo",
