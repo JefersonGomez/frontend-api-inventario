@@ -1,7 +1,9 @@
 import { useState } from "react"
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
-import { getProducts, getProduct, createProduct, updateProduct, deleteProduct } from "@/api/products"
+import { getProducts, getProduct, createProduct, updateProduct, deleteProduct, uploadProductImage } from "@/api/products"
+import { ProductImageField } from "@/components/products/ProductImageField"
+import { ProductThumb } from "@/components/products/ProductThumb"
 import { Pagination } from "@/components/Pagination"
 import { SearchInput } from "@/components/SearchInput"
 import { useListParams } from "@/hoocks/useListParams"
@@ -102,6 +104,7 @@ export function Products() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingProduct, setEditingProduct] = useState(null)
   const [form, setForm] = useState(emptyForm)
+  const [pendingImage, setPendingImage] = useState(null) // foto elegida al crear: se sube cuando el producto ya existe
   const [deletingProduct, setDeletingProduct] = useState(null)
 
   // vista agrupada del servidor: productos base (con su resumen) y después productos sueltos
@@ -146,8 +149,8 @@ export function Products() {
   ]
 
   const createMutation = useMutation({
-    mutationFn: () =>
-      createProduct({
+    mutationFn: async () => {
+      const product = await createProduct({
         ...form,
         price: Number(form.price),
         cost: form.cost === "" ? null : Number(form.cost),
@@ -161,11 +164,16 @@ export function Products() {
         expirationDate: form.expirationDate || undefined,
         cabys: form.cabys.trim() || null,
         ...variantPayload(),
-      }),
+      })
+      // ponytail: si la foto falla, el producto ya quedó creado; se le pone la foto al editarlo
+      if (pendingImage) await uploadProductImage(product.id, pendingImage).catch((e) => console.error("foto del producto", e))
+      return product
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] })
       queryClient.invalidateQueries({ queryKey: ["product-groups"] })
       queryClient.invalidateQueries({ queryKey: ["movements"] })
+      queryClient.invalidateQueries({ queryKey: ["pos-catalog"] })
       closeDialog()
     },
   })
@@ -267,6 +275,7 @@ export function Products() {
     setDialogOpen(false)
     setEditingProduct(null)
     setForm(emptyForm)
+    setPendingImage(null)
     createMutation.reset()
     updateMutation.reset()
   }
@@ -299,13 +308,18 @@ export function Products() {
       <TableRow key={product.id} className={product.id === highlightId ? "bg-primary/10" : nested ? "bg-muted/30" : undefined}>
         <TableCell className={`text-muted-foreground max-md:hidden ${nested ? "pl-8" : ""}`}>{product.sku}</TableCell>
         <TableCell className={`font-medium ${nested ? "max-md:pl-6" : ""}`}>
-          {product.name}
-          {variantLabel(product) && (
-            <span className="block text-xs font-normal text-muted-foreground">{variantLabel(product)}</span>
-          )}
-          <span className="block text-xs font-normal text-muted-foreground md:hidden">
-            {[product.sku, product.category?.name].filter(Boolean).join(" · ")}
-          </span>
+          <div className="flex items-center gap-3">
+            <ProductThumb url={product.imageUrl} className="h-9 w-9 max-sm:hidden" />
+            <div className="min-w-0">
+              {product.name}
+              {variantLabel(product) && (
+                <span className="block text-xs font-normal text-muted-foreground">{variantLabel(product)}</span>
+              )}
+              <span className="block text-xs font-normal text-muted-foreground md:hidden">
+                {[product.sku, product.category?.name].filter(Boolean).join(" · ")}
+              </span>
+            </div>
+          </div>
         </TableCell>
         <TableCell className="text-muted-foreground max-md:hidden">{product.category?.name}</TableCell>
         <TableCell>
@@ -476,6 +490,13 @@ export function Products() {
 
             <fieldset className="space-y-3">
               <legend className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("products.dialog.section_basic")}</legend>
+              <ProductImageField
+                key={editingProduct?.id ?? "new"}
+                productId={editingProduct?.id}
+                imageUrl={editingProduct?.imageUrl}
+                pending={pendingImage}
+                onPendingChange={setPendingImage}
+              />
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                 <div className="space-y-1.5 sm:col-span-2">
                   <Label htmlFor="product-name">{t("products.dialog.label_name")}</Label>

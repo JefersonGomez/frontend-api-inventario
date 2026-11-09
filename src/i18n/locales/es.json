@@ -194,7 +194,13 @@
       "section_variant": "Variante",
       "label_location": "¿A dónde entra el stock inicial?",
       "stock_by_location": "Stock por ubicación",
-      "in_transit": "En tránsito (enviado y sin recibir): {{qty}}"
+      "in_transit": "En tránsito (enviado y sin recibir): {{qty}}",
+      "label_image": "Foto",
+      "image_choose": "Elegir foto",
+      "image_change": "Cambiar",
+      "image_remove": "Quitar",
+      "image_hint": "JPEG, PNG o WEBP. Se ve en Productos y en la caja.",
+      "image_pending": "Se sube al guardar el producto."
     },
     "delete": {
       "title": "¿Eliminar este producto?",

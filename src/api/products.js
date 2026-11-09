@@ -39,3 +39,12 @@ export const generateBarcodes = (productIds) =>
 
 // importar con IA: se manda solo una muestra (máx. 25 filas); devuelve { headerRow, mapping, cached, remaining }
 export const aiMapColumns = (rows) => api.post("/products/import/ai-map", { rows }).then((res) => res.data)
+
+// foto del producto (Fase 5): multipart "image" → producto con imageUrl; quitarla → imageUrl null
+export async function uploadProductImage(id, file) {
+  const formData = new FormData()
+  formData.append("image", file)
+  const response = await api.post(`/products/${id}/image`, formData, { headers: { "Content-Type": "multipart/form-data" } })
+  return response.data
+}
+export const removeProductImage = (id) => api.delete(`/products/${id}/image`).then((res) => res.data)

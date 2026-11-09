@@ -20,6 +20,7 @@ import { openChannel, openCustomerWindow } from "@/lib/customer-display"
 import { apiErrorMessage } from "@/lib/api-error"
 import { cached, findInCatalog, flushSales, isNetworkError, pendingSales, provisionalTicket, queueSale, searchCatalog } from "@/lib/offline-sales"
 import { BarcodeScanner } from "@/components/BarcodeScanner"
+import { ProductThumb } from "@/components/products/ProductThumb"
 import { ChargeDialog } from "@/components/pos/ChargeDialog"
 import { CustomerPicker } from "@/components/pos/CustomerPicker"
 import { DiscountDialog } from "@/components/pos/DiscountDialog"
@@ -485,6 +486,7 @@ export function Pos() {
                     out && "opacity-60"
                   )}
                 >
+                  {p.imageUrl && <ProductThumb url={p.imageUrl} className="mb-2 aspect-[4/3] w-full rounded-lg" />}
                   <span className="line-clamp-2 text-sm font-medium">{p.name}</span>
                   <span className="mt-auto pt-2 font-mono text-base font-semibold">{money.format(p.price)}</span>
                   <span className={cn("text-xs", out ? "text-[var(--stk-crit)]" : stock <= Number(p.minStock) ? "text-[var(--stk-warn)]" : "text-muted-foreground")}>
