@@ -3,15 +3,16 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { Link, Navigate } from "react-router-dom"
 import {
-  AlertTriangle, ArrowDownToLine, Check, ArrowUpFromLine, HandCoins, LogOut, Undo2, Minus, MonitorUp, Percent, Plus, Printer, Search, ShoppingCart, Trash2, UserRound,
+  AlertTriangle, ArrowDownToLine, Calculator, Check, ArrowUpFromLine, HandCoins, LogOut, Undo2, Minus, MonitorUp, Percent, Plus, Printer, Search, ShoppingCart, Trash2, UserRound,
   Wallet, WifiOff, X,
 } from "lucide-react"
-import { addCashMovement, getCatalog, getDiscountTypes, getSession, sell } from "@/api/pos"
+import { addCashMovement, getCashAdvice, getCatalog, getDiscountTypes, getSession, sell } from "@/api/pos"
 import { getAccount } from "@/api/receivables"
 import { getProductByBarcode, getProducts } from "@/api/products"
 import { getCategories } from "@/api/categories"
 import { getCompany } from "@/api/company"
 import { useMoney } from "@/hoocks/useMoney"
+import { usePermissions } from "@/hoocks/usePermissions"
 import { useRegisterLocation } from "@/hoocks/useRegisterLocation"
 import { applyDiscounts, cartTotals, TOP_SELLING } from "@/lib/pos"
 import { formatFiscalId } from "@/lib/fiscal"
@@ -832,6 +833,7 @@ function CashMoveDialog({ type, onClose }) {
             save.mutate()
           }}
         >
+          {type === "OUT" && <CashAdvice onUse={(n) => setAmount(String(n))} />}
           <div className="space-y-2">
             <Label htmlFor="move-amount">{t("pos.charge.amount")}</Label>
             <Input id="move-amount" type="number" min={0} step="any" required autoFocus className="font-mono" value={amount} onChange={(e) => setAmount(e.target.value)} />
@@ -848,5 +850,107 @@ function CashMoveDialog({ type, onClose }) {
         </form>
       </DialogContent>
     </Dialog>
+  )
+}
+
+// "¿Cuánto retirar?" (Fase 4): efectivo de la caja y retiro sugerido (que quede el fondo y un poco más).
+// Quien hace arqueos lo ve directo; el cajero, con el código del encargado (el cierre sigue ciego).
+function CashAdvice({ onUse }) {
+  const { t } = useTranslation()
+  const money = useMoney()
+  const { can } = usePermissions()
+  const [asking, setAsking] = useState(false)
+  const [pin, setPin] = useState("")
+  const advice = useMutation({ mutationFn: (managerPin) => getCashAdvice(managerPin), onSuccess: () => setPin("") })
+  const a = advice.data
+
+  if (a) {
+    const over = a.cashLimit != null && a.expectedCash > a.cashLimit
+    return (
+      <div className="space-y-2 rounded-xl border border-border bg-muted/40 p-3 text-sm">
+        <dl className="space-y-1">
+          <div className="flex justify-between gap-3">
+            <dt className="text-muted-foreground">{t("pos.adviceCash")}</dt>
+            <dd className="font-mono font-semibold">{money.format(a.expectedCash)}</dd>
+          </div>
+          <div className="flex justify-between gap-3">
+            <dt className="text-muted-foreground">{t("pos.adviceOpening")}</dt>
+            <dd className="font-mono">{money.format(a.openingAmount)}</dd>
+          </div>
+          {a.suggested > 0 && (
+            <>
+              <div className="flex justify-between gap-3 border-t border-border pt-1">
+                <dt className="font-medium">{t("pos.adviceSuggested")}</dt>
+                <dd className="font-mono text-base font-semibold text-[var(--stk-accent)]">{money.format(a.suggested)}</dd>
+              </div>
+              <div className="flex justify-between gap-3">
+                <dt className="text-muted-foreground">{t("pos.adviceRemaining")}</dt>
+                <dd className="font-mono">{money.format(a.remaining)}</dd>
+              </div>
+            </>
+          )}
+        </dl>
+        {over && (
+          <p className="flex items-center gap-1.5 text-xs font-medium text-[var(--stk-warn)]">
+            <AlertTriangle className="h-3.5 w-3.5" aria-hidden />
+            {t("pos.adviceOver", { limit: money.format(a.cashLimit) })}
+          </p>
+        )}
+        {a.suggested > 0 ? (
+          <Button type="button" size="sm" className="w-full" onClick={() => onUse(a.suggested)}>{t("pos.adviceUse")}</Button>
+        ) : (
+          <p className="text-xs text-muted-foreground">{t("pos.adviceNothing")}</p>
+        )}
+        {a.authorizedBy && <p className="text-xs text-muted-foreground">{t("pos.adviceBy", { name: a.authorizedBy.name })}</p>}
+      </div>
+    )
+  }
+
+  if (!asking) {
+    return (
+      <div className="space-y-1">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          disabled={advice.isPending}
+          onClick={() => (can("cash.reconcile") ? advice.mutate() : setAsking(true))}
+        >
+          <Calculator className="h-4 w-4" aria-hidden />
+          {t("pos.adviceButton")}
+        </Button>
+        {advice.isError && <p role="alert" className="text-sm text-destructive">{apiErrorMessage(advice.error, t("pos.error"))}</p>}
+      </div>
+    )
+  }
+
+  // dentro del formulario del retiro: Enter pide la sugerencia en vez de guardar el retiro
+  const ask = () => pin.length >= 4 && advice.mutate(pin)
+  return (
+    <div className="space-y-2 rounded-xl border border-border p-3">
+      <p className="text-xs text-muted-foreground">{t("pos.adviceHint")}</p>
+      <Label htmlFor="advice-pin">{t("pos.advicePin")}</Label>
+      <div className="flex gap-2">
+        <Input
+          id="advice-pin"
+          type="password"
+          inputMode="numeric"
+          autoComplete="off"
+          autoFocus
+          maxLength={6}
+          className="font-mono tracking-widest"
+          value={pin}
+          onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault()
+              ask()
+            }
+          }}
+        />
+        <Button type="button" variant="outline" disabled={pin.length < 4 || advice.isPending} onClick={ask}>{t("pos.adviceShow")}</Button>
+      </div>
+      {advice.isError && <p role="alert" className="text-sm text-destructive">{apiErrorMessage(advice.error, t("pos.error"))}</p>}
+    </div>
   )
 }

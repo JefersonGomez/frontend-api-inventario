@@ -59,6 +59,19 @@ export function RegistersCard() {
     const days = Number(e.target.value)
     if (Number.isInteger(days) && days >= 1 && days <= 365 && days !== company?.returnDays) returnDays.mutate(days)
   }
+  // tope de efectivo por caja: al pasarlo se avisa a los encargados de caja (vacío = sin aviso)
+  const cashLimit = useMutation({
+    mutationFn: (limit) => updateCompany({ cashLimit: limit }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["company"] }),
+  })
+  const [limitInvalid, setLimitInvalid] = useState(false)
+  const saveLimit = (e) => {
+    const text = e.target.value.trim()
+    const limit = text === "" ? null : Number(text)
+    const valid = limit === null || (Number.isInteger(limit) && limit >= 1000)
+    setLimitInvalid(!valid)
+    if (valid && limit !== (company?.cashLimit ?? null)) cashLimit.mutate(limit)
+  }
   // tarjeta y SINPE: pedir la referencia (autorización del voucher / comprobante del SINPE)
   const requireRef = useMutation({
     mutationFn: (requirePaymentRef) => updateCompany({ requirePaymentRef }),
@@ -124,6 +137,26 @@ export function RegistersCard() {
               defaultValue={company.returnDays ?? 30}
               disabled={returnDays.isPending}
               onBlur={saveDays}
+            />
+          )}
+        </div>
+        <div className="mb-4 flex items-start justify-between gap-4 rounded-xl border border-border p-3">
+          <div>
+            <label htmlFor="cash-limit" className="text-sm font-medium">{t("registers.cashLimit")}</label>
+            <p className="text-xs text-muted-foreground">{t("registers.cashLimitHint")}</p>
+            {(limitInvalid || cashLimit.isError) && <p role="alert" className="text-xs text-destructive">{t("registers.cashLimitError")}</p>}
+          </div>
+          {company && (
+            <Input
+              id="cash-limit"
+              key={company.cashLimit ?? "none"}
+              type="number"
+              min={1000}
+              step={1000}
+              className="w-32 shrink-0 font-mono"
+              defaultValue={company.cashLimit ?? ""}
+              disabled={cashLimit.isPending}
+              onBlur={saveLimit}
             />
           )}
         </div>

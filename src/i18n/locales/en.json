@@ -864,7 +864,8 @@
       "installmentOverdue": "Overdue installments",
       "returnDamaged": "Damaged returns",
       "offlineSaleFailed": "Rejected offline sales",
-      "payableDue": "Invoices coming due"
+      "payableDue": "Invoices coming due",
+      "cashOverLimit": "Registers over the limit"
     },
     "detail": {
       "requestExpiring": "{{requester}} · {{quantity}} · expires {{when}}",
@@ -894,7 +895,8 @@
       "offlineSaleFailed": "{{total}} · {{reason}} · sold by {{cashier}}",
       "payableDue_one": "{{count}} invoice · {{amount}} · {{when}}",
       "payableDue_other": "{{count}} invoices · {{amount}} · {{when}}",
-      "payableDueWhen": "due {{when}}"
+      "payableDueWhen": "due {{when}}",
+      "cashOverLimit": "{{cash}} in register (limit {{limit}}) · {{cashier}} · {{location}}"
     },
     "when": {
       "today": "today",
@@ -1517,7 +1519,10 @@
     "sinpeNumber": "SINPE number",
     "sinpeName": "Account holder",
     "sinpeError": "Could not save the SINPE",
-    "sinpeSaved": "SINPE saved"
+    "sinpeSaved": "SINPE saved",
+    "cashLimit": "Cash limit per register",
+    "cashLimitHint": "When a register goes over this amount, the branch cash supervisors are notified to make a withdrawal. Empty = no alert.",
+    "cashLimitError": "Could not save the limit (minimum 1000)"
   },
   "pos": {
     "backToApp": "Back to Cubivo",
@@ -1805,7 +1810,19 @@
       "label": "Filter products",
       "top": "Best sellers",
       "topHint": "What sold most at this branch (30 days)"
-    }
+    },
+    "adviceButton": "How much to take out?",
+    "adviceHint": "Ask the cash supervisor to enter their code to see the cash in the register.",
+    "advicePin": "Supervisor code",
+    "adviceShow": "Show",
+    "adviceCash": "Cash in register",
+    "adviceOpening": "Opening amount",
+    "adviceSuggested": "Suggested withdrawal",
+    "adviceRemaining": "Left in register",
+    "adviceUse": "Use suggested",
+    "adviceNothing": "No need to take cash out: the register has its float and a little more.",
+    "adviceOver": "Over the {{limit}} limit",
+    "adviceBy": "Authorized by {{name}}"
   },
   "negatives": {
     "title": "Negatives",

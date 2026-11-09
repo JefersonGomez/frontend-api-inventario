@@ -5,10 +5,11 @@ import { useTranslation } from "react-i18next";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Popover } from "@base-ui/react/popover";
 import {
-  AlertTriangle, Bell, CalendarClock, CheckCheck, CheckCircle2, ChevronRight, Hourglass, Inbox, LockKeyhole, MessageSquare, PackageCheck, UserPlus,
+  AlertTriangle, Banknote, Bell, CalendarClock, CheckCheck, CheckCircle2, ChevronRight, Hourglass, Inbox, LockKeyhole, MessageSquare, PackageCheck, UserPlus,
   PackageMinus, ShoppingCart, Sparkles, Truck, XCircle,
 } from "lucide-react";
 import { useNotifications } from "@/hoocks/useNotifications";
+import { useMoney } from "@/hoocks/useMoney";
 import { markNotificationRead, markAllNotificationsRead } from "@/api/notifications";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
@@ -21,6 +22,7 @@ const SECTIONS = [
   { type: "cashCodeExpiring", icon: LockKeyhole, tone: "warn" },
   { type: "cashCodeAssigned", icon: LockKeyhole, tone: "info" },
   { type: "offlineSaleFailed", icon: XCircle, tone: "crit" },
+  { type: "cashOverLimit", icon: Banknote, tone: "warn" },
   { type: "stockNegative", icon: AlertTriangle, tone: "warn" },
   { type: "installmentOverdue", icon: AlertTriangle, tone: "crit" },
   { type: "payableDue", icon: CalendarClock, tone: "warn" },
@@ -62,6 +64,7 @@ function daysUntil(value, dateOnly) {
 
 function useDetail() {
   const { t } = useTranslation();
+  const money = useMoney();
   const when = (days) => {
     if (days < 0) return t("notifications.when.past");
     if (days === 0) return t("notifications.when.today");
@@ -101,6 +104,8 @@ function useDetail() {
         return t("notifications.detail.installmentOverdue", { count: raw.count, amount: Number(raw.amount).toLocaleString("es-CR", { minimumFractionDigits: 2 }) });
       case "offlineSaleFailed":
         return t("notifications.detail.offlineSaleFailed", { ...m, total: Number(raw.total).toLocaleString("es-CR", { minimumFractionDigits: 2 }) });
+      case "cashOverLimit":
+        return t("notifications.detail.cashOverLimit", { ...m, cash: money.format(raw.cash), limit: money.format(raw.limit) });
       case "lowStock":
         return raw.stock <= 0
           ? t("notifications.detail.lowStockOut", m)

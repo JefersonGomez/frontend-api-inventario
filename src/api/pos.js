@@ -12,6 +12,9 @@ export const openSession = (data) => api.post("/pos/session", data).then((res) =
 export const renewCode = (managerPin) => api.post("/pos/session/renew-code", { managerPin }).then((res) => res.data)
 export const getCashMovements = () => api.get("/pos/session/movements").then((res) => res.data)
 export const addCashMovement = (data) => api.post("/pos/session/movements", data).then((res) => res.data)
+// "¿Cuánto retirar?": { expectedCash, openingAmount, cashLimit, suggested, remaining, step, authorizedBy }
+// sin cash.reconcile necesita el código del encargado (409 ADVICE_NEEDS_AUTH sin él, 403 ADVICE_PIN si no sirve)
+export const getCashAdvice = (managerPin) => api.post("/pos/session/cash-advice", managerPin ? { managerPin } : {}).then((res) => res.data)
 // cierre ciego del cajero ({ note? }) → reporte del turno
 export const closeSession = (id, data) => api.post(`/pos/sessions/${id}/close`, data).then((res) => res.data)
 // arqueos (cash.reconcile): { page, pending: "1" | "0" } → página + pendingCount

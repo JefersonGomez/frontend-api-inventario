@@ -864,7 +864,8 @@
       "installmentOverdue": "Cuotas vencidas",
       "returnDamaged": "Devoluciones dañadas",
       "offlineSaleFailed": "Ventas sin conexión rechazadas",
-      "payableDue": "Facturas por vencer"
+      "payableDue": "Facturas por vencer",
+      "cashOverLimit": "Cajas sobre el tope"
     },
     "detail": {
       "requestExpiring": "{{requester}} · {{quantity}} · vence {{when}}",
@@ -894,7 +895,8 @@
       "offlineSaleFailed": "{{total}} · {{reason}} · vendió {{cashier}}",
       "payableDue_one": "{{count}} factura · {{amount}} · {{when}}",
       "payableDue_other": "{{count}} facturas · {{amount}} · {{when}}",
-      "payableDueWhen": "vence {{when}}"
+      "payableDueWhen": "vence {{when}}",
+      "cashOverLimit": "{{cash}} en caja (tope {{limit}}) · {{cashier}} · {{location}}"
     },
     "when": {
       "today": "hoy",
@@ -1517,7 +1519,10 @@
     "sinpeNumber": "Número SINPE",
     "sinpeName": "A nombre de",
     "sinpeError": "No se pudo guardar el SINPE",
-    "sinpeSaved": "SINPE guardado"
+    "sinpeSaved": "SINPE guardado",
+    "cashLimit": "Tope de efectivo por caja",
+    "cashLimitHint": "Cuando una caja pasa este monto se avisa a los encargados de caja de la sucursal para que hagan un retiro. Vacío = sin aviso.",
+    "cashLimitError": "No se pudo guardar el tope (mínimo 1000)"
   },
   "pos": {
     "backToApp": "Volver a Cubivo",
@@ -1805,7 +1810,19 @@
       "label": "Filtrar productos",
       "top": "Más vendidos",
       "topHint": "Lo que más se vendió en esta sucursal (30 días)"
-    }
+    },
+    "adviceButton": "¿Cuánto retirar?",
+    "adviceHint": "Pide al encargado de caja que escriba su código para ver el efectivo de la caja.",
+    "advicePin": "Código del encargado",
+    "adviceShow": "Ver",
+    "adviceCash": "Efectivo en caja",
+    "adviceOpening": "Monto inicial",
+    "adviceSuggested": "Retiro sugerido",
+    "adviceRemaining": "Queda en caja",
+    "adviceUse": "Usar el sugerido",
+    "adviceNothing": "No hace falta retirar: la caja tiene el fondo y poco más.",
+    "adviceOver": "Pasa el tope de {{limit}}",
+    "adviceBy": "Autorizó {{name}}"
   },
   "negatives": {
     "title": "Negativas",
