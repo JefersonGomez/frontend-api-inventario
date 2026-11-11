@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { Download, Loader2, RefreshCw, Send } from "lucide-react"
-import { downloadEInvoiceXml, refreshEInvoice, sendEInvoice } from "@/api/einvoice"
+import { Download, Loader2, Mail, RefreshCw, Send } from "lucide-react"
+import { downloadEInvoiceXml, emailEInvoice, refreshEInvoice, sendEInvoice } from "@/api/einvoice"
 import { apiErrorMessage } from "@/lib/api-error"
 import { usePermissions } from "@/hoocks/usePermissions"
 import { Badge } from "@/components/ui/badge"
@@ -35,14 +35,15 @@ export function EInvoicePanel({ documentId, type, einvoice }) {
   const send = useMutation({ mutationFn: () => sendEInvoice(documentId), onSettled: refresh })
   const check = useMutation({ mutationFn: () => refreshEInvoice(documentId), onSettled: refresh })
   const xml = useMutation({ mutationFn: () => downloadEInvoiceXml(documentId) })
+  const mail = useMutation({ mutationFn: () => emailEInvoice(documentId), onSettled: refresh })
   const manage = can("company.manage")
-  if (type !== "TICKET" && !einvoice) return null // facturas y notas llegan en la siguiente fase
+  if (!["TICKET", "INVOICE"].includes(type) && !einvoice) return null // las notas de crédito llegan en la siguiente parte
 
   const status = einvoice?.status
   const canSend = manage && (!einvoice || status === "PENDING" || status === "ERROR")
   const detail = einvoice?.message || einvoice?.lastError
   const when = (d) => new Date(d).toLocaleString(i18n.language, { dateStyle: "short", timeStyle: "short" })
-  const error = send.error || check.error || xml.error
+  const error = send.error || check.error || xml.error || mail.error
 
   return (
     <section aria-labelledby="einv-title" className="rounded-xl border border-border p-4">
@@ -65,6 +66,12 @@ export function EInvoicePanel({ documentId, type, einvoice }) {
               {t("einvoice.panel.check")}
             </Button>
           )}
+          {manage && status === "ACCEPTED" && (
+            <Button size="sm" variant="outline" disabled={mail.isPending} onClick={() => mail.mutate()}>
+              {mail.isPending ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Mail className="h-4 w-4" aria-hidden />}
+              {einvoice.emailedAt ? t("einvoice.panel.emailAgain") : t("einvoice.panel.email")}
+            </Button>
+          )}
           {manage && einvoice?.clave && (
             <Button size="sm" variant="ghost" disabled={xml.isPending} onClick={() => xml.mutate()}>
               <Download className="h-4 w-4" aria-hidden />
@@ -85,6 +92,15 @@ export function EInvoicePanel({ documentId, type, einvoice }) {
       {detail && status !== "ACCEPTED" && (
         <p className={cn("mt-2 whitespace-pre-line rounded-lg px-3 py-2 text-sm", status === "PENDING" ? "bg-muted" : "bg-destructive/5 text-destructive")}>{detail}</p>
       )}
+      {status === "ACCEPTED" && (einvoice.emailedAt || einvoice.emailError) && (
+        <p className={cn("mt-2 flex items-start gap-2 text-sm", einvoice.emailedAt ? "text-muted-foreground" : "text-amber-700 dark:text-amber-400")}>
+          <Mail className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+          {einvoice.emailedAt
+            ? t("einvoice.panel.emailedTo", { email: einvoice.emailedTo, date: when(einvoice.emailedAt) })
+            : einvoice.emailError}
+        </p>
+      )}
+      {mail.isSuccess && <p role="status" className="sr-only">{t("einvoice.panel.emailSent")}</p>}
       {error && <p role="alert" className="mt-2 text-sm text-destructive">{apiErrorMessage(error, t("einvoice.panel.error"))}</p>}
     </section>
   )

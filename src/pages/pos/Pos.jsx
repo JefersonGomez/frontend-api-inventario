@@ -619,6 +619,9 @@ export function Pos() {
             {customer && (
               <p className="-mt-1 mb-2 px-1 text-xs text-muted-foreground">
                 {customer.idType && customer.idNumber ? t("pos.customer.invoice", { id: formatFiscalId(t, customer.idType, customer.idNumber) }) : t("pos.customer.ticketNoId")}
+                {customer.idType && customer.idNumber && (
+                  <span className="block">{customer.email ? t("pos.customer.emailTo", { email: customer.email }) : t("pos.customer.noEmail")}</span>
+                )}
               </p>
             )}
             <div className="space-y-1 px-1 pb-3 text-sm text-muted-foreground">

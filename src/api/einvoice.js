@@ -30,3 +30,9 @@ export async function downloadEInvoiceXml(documentId) {
   a.click()
   URL.revokeObjectURL(url)
 }
+
+// reenviar al correo del cliente el comprobante aceptado
+export const emailEInvoice = (documentId) => api.post(`/einvoice/documents/${documentId}/email`).then((res) => res.data)
+
+// nombre y tipo de identificación de una cédula, desde la consulta pública de Hacienda
+export const lookupTaxpayer = (idNumber) => api.get(`/einvoice/taxpayer/${encodeURIComponent(idNumber)}`).then((res) => res.data)

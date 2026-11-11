@@ -205,7 +205,14 @@ export function Customers() {
               <Input id="customer-name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
             </div>
 
-            <FiscalIdFields idPrefix="customer" value={form} onChange={(patch) => setForm({ ...form, ...patch })} />
+            <FiscalIdFields
+              idPrefix="customer"
+              value={form}
+              onChange={(patch) => setForm({ ...form, ...patch })}
+              onFound={({ activities, ...found }) =>
+                setForm((f) => ({ ...f, ...found, ...(!f.economicActivity && activities?.[0] && { economicActivity: activities[0].code }) }))
+              }
+            />
 
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div className="space-y-2">

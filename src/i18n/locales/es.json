@@ -681,7 +681,7 @@
       "legalName": "Razón social o nombre completo",
       "legalName_hint": "Si eres persona física, tu nombre como aparece en la cédula.",
       "activity": "Actividad económica",
-      "activity_hint": "El código de tu actividad inscrita en Hacienda (ej. 620100).",
+      "activity_hint": "El código de tu actividad inscrita en Hacienda, con el punto (ej. 6201.0).",
       "invoiceEmail": "Correo para comprobantes",
       "phone": "Teléfono",
       "province": "Provincia",
@@ -1178,7 +1178,14 @@
       "NITE": "10 dígitos.",
       "EXTRANJERO": "Hasta 20 letras o números."
     },
-    "invalid": "El número no tiene el formato de este tipo de identificación."
+    "invalid": "El número no tiene el formato de este tipo de identificación.",
+    "lookup": {
+      "button": "Buscar el nombre en Hacienda",
+      "short": "Buscar",
+      "hint": "Con «Buscar» se trae el nombre exacto de Hacienda.",
+      "error": "No se pudo consultar a Hacienda: escribe el nombre a mano.",
+      "found": "Encontrado en Hacienda: {{name}}"
+    }
   },
   "customers": {
     "title": "Clientes",
@@ -1199,7 +1206,7 @@
     "fields": {
       "name": "Nombre o razón social",
       "email": "Correo electrónico",
-      "email_hint": "Ahí le llegarán sus comprobantes electrónicos.",
+      "email_hint": "Ahí le llega la factura electrónica cuando Hacienda la acepta.",
       "phone": "Teléfono",
       "address": "Dirección",
       "activity": "Actividad económica (opcional)",
@@ -1770,11 +1777,13 @@
       "noId": "Sin identificación",
       "new": "Registrar cliente nuevo",
       "newTitle": "Cliente nuevo",
-      "invoiceHint": "Con identificación, la venta sale como factura a su nombre.",
+      "invoiceHint": "Con cédula, la venta sale como factura electrónica a su nombre y le llega a su correo. Usa «Buscar» para traer el nombre exacto de Hacienda.",
       "saveAndUse": "Guardar y usar",
       "back": "Volver",
       "invoice": "Sale factura · {{id}}",
-      "ticketNoId": "Sin identificación: sale tiquete con su nombre"
+      "ticketNoId": "Sin identificación: sale tiquete con su nombre",
+      "emailTo": "Se le envía a {{email}}",
+      "noEmail": "Sin correo: la factura sale igual, pero no se le puede enviar"
     },
     "price": {
       "change": "Cambiar el precio",
@@ -2546,8 +2555,8 @@
       "env_pruebas": "Pruebas",
       "env_produccion": "Producción",
       "secret_missing": "El servidor no tiene EINVOICE_SECRET: no se pueden guardar credenciales hasta configurarlo.",
-      "auto_label": "Enviar los tiquetes a Hacienda automáticamente",
-      "auto_hint": "Al encenderlo, cada tiquete que se venda desde ese momento se envía solo. Las ventas anteriores no se mandan.",
+      "auto_label": "Enviar tiquetes y facturas a Hacienda automáticamente",
+      "auto_hint": "Al encenderlo, cada tiquete y factura que se venda desde ese momento se envía solo, y la factura aceptada le llega al cliente por correo. Las ventas anteriores no se mandan.",
       "auto_on_since": "Encendido desde el {{date}}. Si Hacienda no responde, se reintenta solo.",
       "environment": "Ambiente",
       "provider": "Proveedor del sistema (cédula)",
@@ -2588,7 +2597,11 @@
         "ACCEPTED": "Hacienda lo aceptó.",
         "REJECTED": "Hacienda lo rechazó. Se corrige con una nota de crédito.",
         "ERROR": "No se pudo armar el comprobante. Corrige el dato indicado y reintenta."
-      }
+      },
+      "email": "Enviar al cliente",
+      "emailAgain": "Reenviar al cliente",
+      "emailedTo": "Enviado por correo a {{email}} el {{date}}",
+      "emailSent": "Correo enviado"
     }
   }
 }

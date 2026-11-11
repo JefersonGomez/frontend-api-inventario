@@ -681,7 +681,7 @@
       "legalName": "Legal name or full name",
       "legalName_hint": "For individuals, your name as it appears on your ID.",
       "activity": "Economic activity",
-      "activity_hint": "The code of your registered activity (e.g. 620100).",
+      "activity_hint": "The code of your registered activity, with the dot (e.g. 6201.0).",
       "invoiceEmail": "Email for receipts",
       "phone": "Phone",
       "province": "Province",
@@ -1178,7 +1178,14 @@
       "NITE": "10 digits.",
       "EXTRANJERO": "Up to 20 letters or numbers."
     },
-    "invalid": "The number does not match this ID type."
+    "invalid": "The number does not match this ID type.",
+    "lookup": {
+      "button": "Look up the name at Hacienda",
+      "short": "Search",
+      "hint": "“Search” gets the exact name from Hacienda.",
+      "error": "Couldn't reach Hacienda: type the name by hand.",
+      "found": "Found at Hacienda: {{name}}"
+    }
   },
   "customers": {
     "title": "Customers",
@@ -1199,7 +1206,7 @@
     "fields": {
       "name": "Name or company name",
       "email": "Email",
-      "email_hint": "Their electronic receipts are sent here.",
+      "email_hint": "The electronic invoice is sent here once Hacienda accepts it.",
       "phone": "Phone",
       "address": "Address",
       "activity": "Economic activity (optional)",
@@ -1770,11 +1777,13 @@
       "noId": "No ID",
       "new": "Register new customer",
       "newTitle": "New customer",
-      "invoiceHint": "With an ID, the sale is issued as an invoice in their name.",
+      "invoiceHint": "With an ID, the sale is issued as an electronic invoice in their name and emailed to them. Use “Search” to get the exact name from Hacienda.",
       "saveAndUse": "Save and use",
       "back": "Back",
       "invoice": "Invoice · {{id}}",
-      "ticketNoId": "No ID: issued as a ticket with their name"
+      "ticketNoId": "No ID: issued as a ticket with their name",
+      "emailTo": "Will be emailed to {{email}}",
+      "noEmail": "No email: the invoice is still issued, but can't be sent to them"
     },
     "price": {
       "change": "Change the price",
@@ -2546,8 +2555,8 @@
       "env_pruebas": "Testing",
       "env_produccion": "Production",
       "secret_missing": "The server has no EINVOICE_SECRET: credentials can't be saved until it's configured.",
-      "auto_label": "Send tickets to Hacienda automatically",
-      "auto_hint": "Once on, every ticket sold from that moment is sent automatically. Earlier sales are not sent.",
+      "auto_label": "Send tickets and invoices to Hacienda automatically",
+      "auto_hint": "Once on, every ticket and invoice sold from that moment is sent automatically, and accepted invoices are emailed to the customer. Earlier sales are not sent.",
       "auto_on_since": "On since {{date}}. If Hacienda doesn't answer, it retries automatically.",
       "environment": "Environment",
       "provider": "System provider (ID)",
@@ -2588,7 +2597,11 @@
         "ACCEPTED": "Hacienda accepted it.",
         "REJECTED": "Hacienda rejected it. It's corrected with a credit note.",
         "ERROR": "The document couldn't be built. Fix the indicated data and retry."
-      }
+      },
+      "email": "Send to customer",
+      "emailAgain": "Resend to customer",
+      "emailedTo": "Emailed to {{email}} on {{date}}",
+      "emailSent": "Email sent"
     }
   }
 }

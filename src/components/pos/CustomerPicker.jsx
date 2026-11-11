@@ -66,7 +66,12 @@ function PickerBody({ onPick }) {
           <Label htmlFor="pos-customer-name">{t("customers.fields.name")}</Label>
           <Input id="pos-customer-name" required autoFocus maxLength={160} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
         </div>
-        <FiscalIdFields idPrefix="pos-customer" value={form} onChange={(patch) => setForm({ ...form, ...patch })} />
+        <FiscalIdFields
+          idPrefix="pos-customer"
+          value={form}
+          onChange={(patch) => setForm({ ...form, ...patch })}
+          onFound={({ name, idType, idNumber }) => setForm((f) => ({ ...f, name, idNumber, ...(idType && { idType }) }))}
+        />
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="pos-customer-email">{t("customers.fields.email")}</Label>
