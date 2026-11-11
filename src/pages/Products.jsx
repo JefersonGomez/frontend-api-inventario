@@ -36,6 +36,7 @@ import { UNITS, TAX_RATES, qtyStep, formatQty } from "@/lib/units"
 import { apiErrorMessage } from "@/lib/api-error"
 import { LocationSelect } from "@/components/LocationSelect"
 import { getProductGroups } from "@/api/productGroups"
+import { CabysField } from "@/components/products/CabysField"
 import { ProductGroupsDialog } from "@/components/products/ProductGroupsDialog"
 
 const emptyForm = { 
@@ -601,18 +602,14 @@ export function Products() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="product-cabys">{t("products.dialog.label_cabys")}</Label>
-                  <Input
-                    id="product-cabys"
-                    inputMode="numeric"
-                    maxLength={13}
-                    pattern="\d{13}"
-                    value={form.cabys}
-                    onChange={(e) => setForm({ ...form, cabys: e.target.value.replace(/\D/g, "") })}
-                    aria-describedby="price-hint"
-                  />
-                </div>
+                <CabysField
+                  value={form.cabys}
+                  onChange={(cabys) => setForm((f) => ({ ...f, cabys }))}
+                  taxRate={form.taxRate}
+                  onTaxRate={(taxRate) => setForm((f) => ({ ...f, taxRate }))}
+                  productName={form.name}
+                  describedBy="price-hint"
+                />
               </div>
               <p id="price-hint" className="text-xs text-muted-foreground">
                 {t("products.dialog.tax_hint")} {t("products.dialog.cost_hint")} {t("products.dialog.cabys_hint")}

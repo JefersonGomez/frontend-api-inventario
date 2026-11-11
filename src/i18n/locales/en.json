@@ -186,7 +186,7 @@
       "label_tax": "VAT",
       "tax_hint": "The sale price includes this VAT.",
       "label_cabys": "CABYS code (optional)",
-      "cabys_hint": "13 digits. Required for electronic invoicing; you can fill it in later.",
+      "cabys_hint": "Required for electronic invoices: use the magnifier to find it in Hacienda's catalog (it also sets its VAT).",
       "save_error": "The product could not be saved.",
       "section_basic": "Basic details",
       "section_price": "Price and taxes",
@@ -395,6 +395,20 @@
       "noDate": "no expiry",
       "short": "Lots",
       "movementHint": "Not needed for outflows: the lot that expires first is used."
+    },
+    "cabys": {
+      "search": "Search Hacienda's CABYS catalog",
+      "placeholder": "What is the product? E.g.: hammer, rice, cement",
+      "go": "Search",
+      "empty": "No codes match those words. Try saying it another way.",
+      "more": "There are {{count}} results: if yours isn't listed, be more specific.",
+      "tax": "VAT {{tax}}",
+      "exempt": "exempt",
+      "checking": "Checking the code with Hacienda…",
+      "notFound": "That code isn't in Hacienda's catalog: Hacienda would reject the sale. Find it with the magnifier.",
+      "taxMismatch": "Hacienda says VAT {{tax}} for this code.",
+      "useTax": "Use {{tax}}",
+      "unavailable": "Couldn't reach Hacienda right now."
     }
   },
   "categories": {
@@ -686,9 +700,9 @@
       "phone": "Phone",
       "province": "Province",
       "province_none": "Not set",
-      "canton": "Canton (code)",
-      "district": "District (code)",
-      "code_hint": "2-digit codes from the tax office's territorial division (e.g. 01).",
+      "canton": "Canton",
+      "district": "District",
+      "code_hint": "From Hacienda's official catalog. It must be the same location you're registered with at Hacienda.",
       "addressDetail": "Address details",
       "save": "Save tax details",
       "saved": "Tax details saved.",
@@ -701,7 +715,8 @@
         "5": "Guanacaste",
         "6": "Puntarenas",
         "7": "Limón"
-      }
+      },
+      "pick": "Choose…"
     },
     "tabs": {
       "general": "General",

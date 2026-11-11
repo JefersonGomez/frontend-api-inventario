@@ -36,3 +36,6 @@ export const emailEInvoice = (documentId) => api.post(`/einvoice/documents/${doc
 
 // nombre y tipo de identificación de una cédula, desde la consulta pública de Hacienda
 export const lookupTaxpayer = (idNumber) => api.get(`/einvoice/taxpayer/${encodeURIComponent(idNumber)}`).then((res) => res.data)
+
+// catálogo CABYS de Hacienda: q = texto o código de 13 dígitos → { items: [{ code, description, taxPercent, taxRate }], total }
+export const searchCabys = (q) => api.get("/einvoice/cabys", { params: { q } }).then((res) => res.data)

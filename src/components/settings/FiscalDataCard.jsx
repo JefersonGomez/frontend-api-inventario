@@ -10,13 +10,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { FiscalIdFields } from "@/components/FiscalIdFields"
 import { cleanIdNumber, isValidId } from "@/lib/fiscal"
 import { apiErrorMessage } from "@/lib/api-error"
+import TERRITORY from "@/lib/cr-territory.json"
 
 const FIELDS = ["legalName", "idType", "idNumber", "economicActivity", "invoiceEmail", "phone", "province", "canton", "district", "addressDetail"]
 const fromCompany = (c) => Object.fromEntries(FIELDS.map((k) => [k, c?.[k] ?? ""]))
 
 // Datos de la empresa como emisor de comprobantes (solo ADMIN). Opcionales hasta que facture.
-// ponytail: cantón y distrito como códigos escritos a mano; el selector con el catálogo territorial
-// oficial de Hacienda llega con la facturación (Bloque 9).
+// Provincia, cantón y distrito salen del catálogo territorial oficial de Hacienda (Codificación de
+// ubicación v4.4 → lib/cr-territory.json); se guardan los códigos de 2 dígitos que pide el comprobante.
+// "Buscar" junto a la cédula trae de Hacienda la razón social y la actividad.
 export function FiscalDataCard() {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
@@ -29,6 +31,11 @@ export function FiscalDataCard() {
     { value: "none", label: t("settings.fiscal.province_none") },
     ...["1", "2", "3", "4", "5", "6", "7"].map((p) => ({ value: p, label: `${p} · ${t(`settings.fiscal.provinces.${p}`)}` })),
   ]
+  const two = (v) => (v ? String(v).padStart(2, "0") : "")
+  const cantons = TERRITORY[form.province]?.cantons ?? {}
+  const districts = cantons[two(form.canton)]?.districts ?? {}
+  const cantonItems = Object.entries(cantons).map(([code, c]) => ({ value: code, label: `${code} · ${c.name}` }))
+  const districtItems = Object.entries(districts).map(([code, name]) => ({ value: code, label: `${code} · ${name}` }))
 
   const mutation = useMutation({
     mutationFn: () =>
@@ -67,7 +74,14 @@ export function FiscalDataCard() {
             <p id="fiscal-legalName-hint" className="text-xs text-muted-foreground">{t("settings.fiscal.legalName_hint")}</p>
           </div>
 
-          <FiscalIdFields idPrefix="fiscal" value={form} onChange={set} />
+          <FiscalIdFields
+            idPrefix="fiscal"
+            value={form}
+            onChange={set}
+            onFound={({ name, idType, idNumber, activities }) =>
+              set({ legalName: name, idNumber, ...(idType && { idType }), ...(!form.economicActivity && activities?.[0] && { economicActivity: activities[0].code }) })
+            }
+          />
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <div className="space-y-2">
@@ -88,7 +102,7 @@ export function FiscalDataCard() {
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <div className="space-y-2">
               <Label htmlFor="fiscal-province">{t("settings.fiscal.province")}</Label>
-              <Select items={provinceItems} value={form.province || "none"} onValueChange={(v) => set({ province: v === "none" ? "" : v })}>
+              <Select items={provinceItems} value={form.province || "none"} onValueChange={(v) => set({ province: v === "none" ? "" : v, canton: "", district: "" })}>
                 <SelectTrigger id="fiscal-province" className="w-full">
                   <SelectValue />
                 </SelectTrigger>
@@ -101,11 +115,25 @@ export function FiscalDataCard() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="fiscal-canton">{t("settings.fiscal.canton")}</Label>
-              {field("canton", { inputMode: "numeric", maxLength: 2, pattern: "\\d{2}", "aria-describedby": "fiscal-code-hint" })}
+              <Select items={cantonItems} value={two(form.canton) || null} onValueChange={(v) => set({ canton: v, district: "" })} disabled={!form.province}>
+                <SelectTrigger id="fiscal-canton" className="w-full" aria-describedby="fiscal-code-hint">
+                  <SelectValue placeholder={t("settings.fiscal.pick")} />
+                </SelectTrigger>
+                <SelectContent>
+                  {cantonItems.map((c) => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-2">
               <Label htmlFor="fiscal-district">{t("settings.fiscal.district")}</Label>
-              {field("district", { inputMode: "numeric", maxLength: 2, pattern: "\\d{2}", "aria-describedby": "fiscal-code-hint" })}
+              <Select items={districtItems} value={two(form.district) || null} onValueChange={(v) => set({ district: v })} disabled={!form.canton}>
+                <SelectTrigger id="fiscal-district" className="w-full" aria-describedby="fiscal-code-hint">
+                  <SelectValue placeholder={t("settings.fiscal.pick")} />
+                </SelectTrigger>
+                <SelectContent>
+                  {districtItems.map((d) => <SelectItem key={d.value} value={d.value}>{d.label}</SelectItem>)}
+                </SelectContent>
+              </Select>
             </div>
             <p id="fiscal-code-hint" className="text-xs text-muted-foreground sm:col-span-3">{t("settings.fiscal.code_hint")}</p>
           </div>

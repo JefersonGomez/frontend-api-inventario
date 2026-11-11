@@ -186,7 +186,7 @@
       "label_tax": "IVA",
       "tax_hint": "El precio de venta incluye este IVA.",
       "label_cabys": "Código CABYS (opcional)",
-      "cabys_hint": "13 dígitos. Lo exige la factura electrónica; puedes completarlo después.",
+      "cabys_hint": "Lo exige la factura electrónica: usa la lupa para buscarlo en el catálogo de Hacienda (pone también su IVA).",
       "save_error": "No se pudo guardar el producto.",
       "section_basic": "Datos básicos",
       "section_price": "Precio e impuestos",
@@ -395,6 +395,20 @@
       "noDate": "sin vencimiento",
       "short": "Lotes",
       "movementHint": "En una salida no hace falta: se toma primero el lote que vence antes."
+    },
+    "cabys": {
+      "search": "Buscar en el catálogo CABYS de Hacienda",
+      "placeholder": "¿Qué es el producto? Ej.: martillo, arroz, cemento",
+      "go": "Buscar",
+      "empty": "No hay códigos con esas palabras. Prueba con otra forma de decirlo (ej. «martillos» en vez de «martillo de uña»).",
+      "more": "Hay {{count}} resultados: si no ves el tuyo, escribe algo más específico.",
+      "tax": "IVA {{tax}}",
+      "exempt": "exento",
+      "checking": "Revisando el código en Hacienda…",
+      "notFound": "Ese código no existe en el catálogo de Hacienda: Hacienda rechazaría la venta. Búscalo con la lupa.",
+      "taxMismatch": "Hacienda indica IVA {{tax}} para este código.",
+      "useTax": "Usar {{tax}}",
+      "unavailable": "No se pudo consultar a Hacienda en este momento."
     }
   },
   "categories": {
@@ -686,9 +700,9 @@
       "phone": "Teléfono",
       "province": "Provincia",
       "province_none": "Sin indicar",
-      "canton": "Cantón (código)",
-      "district": "Distrito (código)",
-      "code_hint": "Códigos de 2 dígitos de la división territorial de Hacienda (ej. 01).",
+      "canton": "Cantón",
+      "district": "Distrito",
+      "code_hint": "Del catálogo oficial de Hacienda. Debe ser la misma ubicación con la que estás inscrito en Hacienda.",
       "addressDetail": "Otras señas",
       "save": "Guardar datos fiscales",
       "saved": "Datos fiscales guardados.",
@@ -701,7 +715,8 @@
         "5": "Guanacaste",
         "6": "Puntarenas",
         "7": "Limón"
-      }
+      },
+      "pick": "Elige…"
     },
     "tabs": {
       "general": "General",
