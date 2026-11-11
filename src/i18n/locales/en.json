@@ -2606,7 +2606,8 @@
         "pending": "This note is sent to Hacienda automatically as soon as Hacienda accepts the sale it corrects.",
         "invalid": "The original sale isn't valid at Hacienda (rejected or with an error), so this note isn't sent.",
         "notSent": "The original sale wasn't sent to Hacienda (e.g. sold before auto-send was on), so this note isn't sent either."
-      }
+      },
+      "offline": "Sold offline: sent to Hacienda marked as “no internet”, with the real time of the sale."
     }
   }
 }

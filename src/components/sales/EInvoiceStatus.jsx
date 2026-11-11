@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { Download, Loader2, Mail, RefreshCw, Send } from "lucide-react"
+import { Download, Loader2, Mail, RefreshCw, Send, WifiOff } from "lucide-react"
 import { downloadEInvoiceXml, emailEInvoice, refreshEInvoice, sendEInvoice } from "@/api/einvoice"
 import { apiErrorMessage } from "@/lib/api-error"
 import { usePermissions } from "@/hoocks/usePermissions"
@@ -25,7 +25,8 @@ export function EInvoiceBadge({ status, className }) {
 
 // Panel del detalle de la venta: estado, motivo y acciones (enviar o reintentar, consultar, XML)
 // referenceStatus (nota de crédito): estado ante Hacienda de la venta que corrige; la nota solo sale si está aceptada
-export function EInvoicePanel({ documentId, type, einvoice, referenceStatus }) {
+// offline: la caja la vendió sin conexión (va a Hacienda como "sin internet", con la hora real de la venta)
+export function EInvoicePanel({ documentId, type, einvoice, referenceStatus, offline }) {
   const { t, i18n } = useTranslation()
   const { can } = usePermissions()
   const queryClient = useQueryClient()
@@ -88,6 +89,12 @@ export function EInvoicePanel({ documentId, type, einvoice, referenceStatus }) {
           ? t(`einvoice.panel.noteWaiting.${["PENDING", "SENT"].includes(referenceStatus) ? "pending" : ["REJECTED", "ERROR"].includes(referenceStatus) ? "invalid" : "notSent"}`)
           : t(`einvoice.panel.explain.${status ?? "none"}`)}
       </p>
+      {offline && (
+        <p className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+          <WifiOff className="h-3.5 w-3.5" aria-hidden />
+          {t("einvoice.panel.offline")}
+        </p>
+      )}
       {einvoice?.clave && <p className="mt-1 break-all font-mono text-xs text-muted-foreground">{t("einvoice.panel.clave")}: {einvoice.clave}</p>}
       {einvoice && (
         <p className="mt-1 text-xs text-muted-foreground">

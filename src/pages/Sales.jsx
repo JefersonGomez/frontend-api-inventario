@@ -168,7 +168,7 @@ export function SaleDetail() {
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
         <div className="space-y-6">
-          <EInvoicePanel documentId={doc.id} type={doc.type} einvoice={sale.einvoice} referenceStatus={sale.referenceEInvoiceStatus} />
+          <EInvoicePanel documentId={doc.id} type={doc.type} einvoice={sale.einvoice} referenceStatus={sale.referenceEInvoiceStatus} offline={doc.offline} />
           {!isNote && (
             <div className="overflow-x-auto rounded-xl border border-border">
               <Table>
