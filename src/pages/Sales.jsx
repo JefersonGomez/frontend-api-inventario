@@ -4,6 +4,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { ArrowLeft, Printer, Undo2 } from "lucide-react"
 import { getSale, getSales } from "@/api/sales"
+import { saleDetailPoll, salesListPoll } from "@/lib/einvoice"
 import { useListParams } from "@/hoocks/useListParams"
 import { useMoney } from "@/hoocks/useMoney"
 import { usePermissions } from "@/hoocks/usePermissions"
@@ -34,6 +35,7 @@ export function Sales() {
   const { data, isLoading } = useQuery({
     queryKey: ["sales", "list", list.page, q, kind, from, to],
     queryFn: () => getSales({ page: list.page, ...(q && { q }), ...(kind !== "all" && { kind }), ...(from && { from }), ...(to && { to }) }),
+    refetchInterval: (query) => salesListPoll(query.state.data?.items), // estados de Hacienda en camino
     placeholderData: keepPreviousData,
   })
   const items = data?.items ?? []
@@ -121,7 +123,8 @@ export function SaleDetail() {
   const { can } = usePermissions()
   const { id } = useParams()
   const [returning, setReturning] = useState(false)
-  const { data: sale, isLoading } = useQuery({ queryKey: ["sales", id], queryFn: () => getSale(id) })
+  // mientras Hacienda no responde, el estado se actualiza solo (sin refrescar la página)
+  const { data: sale, isLoading } = useQuery({ queryKey: ["sales", id], queryFn: () => getSale(id), refetchInterval: (query) => saleDetailPoll(query.state.data) })
   if (isLoading || !sale) return <p className="text-muted-foreground">{t("common.loading")}</p>
   const doc = sale.document
   const isNote = doc.type === "CREDIT_NOTE"
