@@ -200,7 +200,8 @@
       "image_change": "Change",
       "image_remove": "Remove",
       "image_hint": "JPEG, PNG or WEBP. Shown in Products and at the register.",
-      "image_pending": "Uploaded when you save the product."
+      "image_pending": "Uploaded when you save the product.",
+      "image_failed": "The product was saved, but the photo couldn't be uploaded. Choose it again."
     },
     "delete": {
       "title": "Delete this product?",

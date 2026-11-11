@@ -12,7 +12,7 @@ import { ProductThumb } from "./ProductThumb"
 // Foto del producto en el diálogo de Productos (Fase 5).
 // Editando: se sube o se quita al momento. Creando: el archivo se guarda en `pending` y
 // Products lo sube después de crear el producto (todavía no tiene id).
-export function ProductImageField({ productId, imageUrl, pending, onPendingChange }) {
+export function ProductImageField({ productId, imageUrl, pending, onPendingChange, failedNotice }) {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
   const input = useRef(null)
@@ -70,6 +70,9 @@ export function ProductImageField({ productId, imageUrl, pending, onPendingChang
           <p className="text-xs text-muted-foreground">
             {!productId && pending ? t("products.dialog.image_pending") : t("products.dialog.image_hint")}
           </p>
+          {failedNotice && changed === undefined && !error && (
+            <p role="alert" className="text-xs text-destructive">{t("products.dialog.image_failed")}</p>
+          )}
           {error && <p role="alert" className="text-xs text-destructive">{apiErrorMessage(error, t("products.dialog.image_hint"))}</p>}
         </div>
       </div>

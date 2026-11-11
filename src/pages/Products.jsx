@@ -105,6 +105,7 @@ export function Products() {
   const [editingProduct, setEditingProduct] = useState(null)
   const [form, setForm] = useState(emptyForm)
   const [pendingImage, setPendingImage] = useState(null) // foto elegida al crear: se sube cuando el producto ya existe
+  const [imageFailed, setImageFailed] = useState(false) // se creó el producto pero la foto no subió
   const [deletingProduct, setDeletingProduct] = useState(null)
 
   // vista agrupada del servidor: productos base (con su resumen) y después productos sueltos
@@ -165,16 +166,24 @@ export function Products() {
         cabys: form.cabys.trim() || null,
         ...variantPayload(),
       })
-      // ponytail: si la foto falla, el producto ya quedó creado; se le pone la foto al editarlo
-      if (pendingImage) await uploadProductImage(product.id, pendingImage).catch((e) => console.error("foto del producto", e))
-      return product
+      // si la foto falla, el producto ya quedó creado: el diálogo pasa a editarlo para reintentar
+      if (!pendingImage) return { product }
+      try {
+        return { product: await uploadProductImage(product.id, pendingImage) }
+      } catch {
+        return { product, imageFailed: true }
+      }
     },
-    onSuccess: () => {
+    onSuccess: ({ product, imageFailed }) => {
       queryClient.invalidateQueries({ queryKey: ["products"] })
       queryClient.invalidateQueries({ queryKey: ["product-groups"] })
       queryClient.invalidateQueries({ queryKey: ["movements"] })
       queryClient.invalidateQueries({ queryKey: ["pos-catalog"] })
-      closeDialog()
+      if (!imageFailed) return closeDialog()
+      setPendingImage(null)
+      createMutation.reset()
+      openEditDialog(product)
+      setImageFailed(true)
     },
   })
 
@@ -276,6 +285,7 @@ export function Products() {
     setEditingProduct(null)
     setForm(emptyForm)
     setPendingImage(null)
+    setImageFailed(false)
     createMutation.reset()
     updateMutation.reset()
   }
@@ -496,6 +506,7 @@ export function Products() {
                 imageUrl={editingProduct?.imageUrl}
                 pending={pendingImage}
                 onPendingChange={setPendingImage}
+                failedNotice={imageFailed}
               />
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                 <div className="space-y-1.5 sm:col-span-2">

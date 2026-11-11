@@ -200,7 +200,8 @@
       "image_change": "Cambiar",
       "image_remove": "Quitar",
       "image_hint": "JPEG, PNG o WEBP. Se ve en Productos y en la caja.",
-      "image_pending": "Se sube al guardar el producto."
+      "image_pending": "Se sube al guardar el producto.",
+      "image_failed": "El producto se guardó, pero la foto no se pudo subir. Elígela de nuevo."
     },
     "delete": {
       "title": "¿Eliminar este producto?",
