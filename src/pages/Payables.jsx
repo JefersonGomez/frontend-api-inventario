@@ -2,11 +2,12 @@ import { useState } from "react"
 import { Link, useNavigate, useParams } from "react-router-dom"
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
-import { AlertTriangle, ArrowLeft, Ban, FilePlus2, Wallet } from "lucide-react"
+import { AlertTriangle, ArrowLeft, Ban, FileCode2, FilePlus2, Wallet } from "lucide-react"
 import { createSupplierInvoice, getPayables, getSupplierAccount, getSupplierInvoices, paySupplier, voidSupplierInvoice } from "@/api/payables"
 import { getSuppliers } from "@/api/suppliers"
 import { BankAccountSelect } from "@/components/banks/DepositDialog"
 import { TaxLinesEditor } from "@/components/payables/TaxLinesEditor"
+import { ImportXmlDialog } from "@/components/payables/ImportXmlDialog"
 import { toTaxLines } from "@/lib/tax-lines"
 import { useListParams } from "@/hoocks/useListParams"
 import { useMoney } from "@/hoocks/useMoney"
@@ -50,6 +51,7 @@ export function Payables() {
   const status = STATUSES.includes(list.get("status")) ? list.get("status") : "open"
   const overdue = list.get("overdue") === "1"
   const [creating, setCreating] = useState(false)
+  const [importing, setImporting] = useState(false)
 
   const suppliers = useQuery({
     queryKey: ["payables", "list", list.page, q, overdue],
@@ -71,10 +73,17 @@ export function Payables() {
           <h1 className="text-2xl font-semibold">{t("payables.title")}</h1>
           <p className="text-sm text-muted-foreground">{t("payables.subtitle")}</p>
         </div>
-        <Button onClick={() => setCreating(true)}>
-          <FilePlus2 />
-          {t("payables.invoice.new")}
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          {/* lo normal: la factura electrónica llega en XML */}
+          <Button onClick={() => setImporting(true)}>
+            <FileCode2 />
+            {t("payables.xml.button")}
+          </Button>
+          <Button variant="outline" onClick={() => setCreating(true)}>
+            <FilePlus2 />
+            {t("payables.invoice.new")}
+          </Button>
+        </div>
       </div>
 
       <div className="mb-4 grid grid-cols-2 gap-3 sm:max-w-md">
@@ -175,6 +184,7 @@ export function Payables() {
       )}
 
       <InvoiceDialog open={creating} onClose={() => setCreating(false)} />
+      <ImportXmlDialog open={importing} onClose={() => setImporting(false)} />
     </div>
   )
 }
