@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Popover } from "@base-ui/react/popover";
 import {
-  AlertTriangle, Banknote, Bell, CalendarClock, CheckCheck, CheckCircle2, ChevronRight, Hourglass, Inbox, LockKeyhole, MessageSquare, PackageCheck, UserPlus,
+  AlertTriangle, Banknote, Bell, FileWarning, CalendarClock, CheckCheck, CheckCircle2, ChevronRight, Hourglass, Inbox, LockKeyhole, MessageSquare, PackageCheck, UserPlus,
   PackageMinus, ShoppingCart, Sparkles, Truck, XCircle,
 } from "lucide-react";
 import { useNotifications } from "@/hoocks/useNotifications";
@@ -22,6 +22,7 @@ const SECTIONS = [
   { type: "cashCodeExpiring", icon: LockKeyhole, tone: "warn" },
   { type: "cashCodeAssigned", icon: LockKeyhole, tone: "info" },
   { type: "offlineSaleFailed", icon: XCircle, tone: "crit" },
+  { type: "einvoiceProblem", icon: FileWarning, tone: "crit" },
   { type: "cashOverLimit", icon: Banknote, tone: "warn" },
   { type: "stockNegative", icon: AlertTriangle, tone: "warn" },
   { type: "installmentOverdue", icon: AlertTriangle, tone: "crit" },
@@ -104,6 +105,8 @@ function useDetail() {
         return t("notifications.detail.installmentOverdue", { count: raw.count, amount: Number(raw.amount).toLocaleString("es-CR", { minimumFractionDigits: 2 }) });
       case "offlineSaleFailed":
         return t("notifications.detail.offlineSaleFailed", { ...m, total: Number(raw.total).toLocaleString("es-CR", { minimumFractionDigits: 2 }) });
+      case "einvoiceProblem":
+        return t("notifications.detail.einvoiceProblem", { status: t(`einvoice.status.${raw.status}`), message: raw.message || "" });
       case "cashOverLimit":
         return t("notifications.detail.cashOverLimit", { ...m, cash: money.format(raw.cash), limit: money.format(raw.limit) });
       case "lowStock":

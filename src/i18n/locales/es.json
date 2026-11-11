@@ -708,7 +708,8 @@
       "company": "Empresa",
       "fiscal": "Datos fiscales",
       "locations": "Sucursales y bodegas",
-      "registers": "Cajas"
+      "registers": "Cajas",
+      "einvoice": "Facturación electrónica"
     },
     "cashCodeDays": "Vigencia del código de caja (días)",
     "cashCodeDaysDescription": "Cada cuánto vence el código para abrir caja y autorizar. Tras cambiarlo, la persona no puede volver a cambiarlo hasta que vence. De 7 a 365 días."
@@ -872,7 +873,8 @@
       "returnDamaged": "Devoluciones dañadas",
       "offlineSaleFailed": "Ventas sin conexión rechazadas",
       "payableDue": "Facturas por vencer",
-      "cashOverLimit": "Cajas sobre el tope"
+      "cashOverLimit": "Cajas sobre el tope",
+      "einvoiceProblem": "Comprobantes con problema en Hacienda"
     },
     "detail": {
       "requestExpiring": "{{requester}} · {{quantity}} · vence {{when}}",
@@ -903,7 +905,8 @@
       "payableDue_one": "{{count}} factura · {{amount}} · {{when}}",
       "payableDue_other": "{{count}} facturas · {{amount}} · {{when}}",
       "payableDueWhen": "vence {{when}}",
-      "cashOverLimit": "{{cash}} en caja (tope {{limit}}) · {{cashier}} · {{location}}"
+      "cashOverLimit": "{{cash}} en caja (tope {{limit}}) · {{cashier}} · {{location}}",
+      "einvoiceProblem": "{{status}}: {{message}}"
     },
     "when": {
       "today": "hoy",
@@ -2524,5 +2527,68 @@
     "negativeStock_one": "{{count}} producto quedó en negativo al cierre: revisar.",
     "negativeStock_other": "{{count}} productos quedaron en negativo al cierre: revisar.",
     "costNote": "Costo: el costo promedio de la última venta hasta el cierre; si no se vendió, el costo promedio actual."
+  },
+  "einvoice": {
+    "status": {
+      "none": "Sin enviar",
+      "PENDING": "Por enviar",
+      "SENT": "En Hacienda",
+      "ACCEPTED": "Aceptado",
+      "REJECTED": "Rechazado",
+      "ERROR": "Con error"
+    },
+    "settings": {
+      "title": "Facturación electrónica",
+      "description": "Credenciales de Hacienda (TRIBU-CR) y llave criptográfica de la empresa. Se guardan cifradas y no se vuelven a mostrar.",
+      "status_on": "Envío automático encendido",
+      "status_ready": "Configurada",
+      "status_off": "Sin configurar",
+      "env_pruebas": "Pruebas",
+      "env_produccion": "Producción",
+      "secret_missing": "El servidor no tiene EINVOICE_SECRET: no se pueden guardar credenciales hasta configurarlo.",
+      "auto_label": "Enviar los tiquetes a Hacienda automáticamente",
+      "auto_hint": "Al encenderlo, cada tiquete que se venda desde ese momento se envía solo. Las ventas anteriores no se mandan.",
+      "auto_on_since": "Encendido desde el {{date}}. Si Hacienda no responde, se reintenta solo.",
+      "environment": "Ambiente",
+      "provider": "Proveedor del sistema (cédula)",
+      "provider_hint": "Opcional. Vacío = la identificación del titular de la llave.",
+      "username": "Usuario de Hacienda",
+      "password": "Clave de Hacienda",
+      "saved": "Guardada (escribe para cambiarla)",
+      "key_title": "Llave criptográfica",
+      "no_key": "Todavía no hay llave cargada.",
+      "key_file": "Archivo de la llave (.p12)",
+      "key_replace": "Reemplazar la llave (.p12)",
+      "pin": "PIN de la llave",
+      "key_hint": "La llave debe ser de la misma identificación que la empresa (Datos fiscales). Se revisa que abra con el PIN antes de guardarla.",
+      "expires": "vence el {{date}}",
+      "test": "Probar conexión",
+      "test_ok": "Conexión correcta con Hacienda ({{env}}).",
+      "test_error": "Hacienda no aceptó las credenciales.",
+      "save_error": "No se pudo guardar la configuración.",
+      "prod_title": "¿Pasar a producción?",
+      "prod_description": "En producción cada comprobante cuenta ante Hacienda y no se puede borrar. Usa las credenciales y la llave de producción.",
+      "prod_confirm": "Sí, pasar a producción"
+    },
+    "panel": {
+      "title": "Hacienda",
+      "send": "Enviar a Hacienda",
+      "retry": "Reintentar",
+      "check": "Consultar respuesta",
+      "clave": "Clave",
+      "sentAt": "Enviado el {{date}}",
+      "answeredAt": "respondido el {{date}}",
+      "nextAttempt_one": "Próximo intento el {{date}} ({{count}} intento fallido)",
+      "nextAttempt_other": "Próximo intento el {{date}} ({{count}} intentos fallidos)",
+      "error": "No se pudo completar la acción.",
+      "explain": {
+        "none": "Este comprobante no se ha enviado a Hacienda.",
+        "PENDING": "Firmado y listo; el envío falló y se reintenta solo.",
+        "SENT": "Hacienda lo recibió y lo está revisando.",
+        "ACCEPTED": "Hacienda lo aceptó.",
+        "REJECTED": "Hacienda lo rechazó. Se corrige con una nota de crédito.",
+        "ERROR": "No se pudo armar el comprobante. Corrige el dato indicado y reintenta."
+      }
+    }
   }
 }

@@ -14,6 +14,7 @@ import { usePermissions } from "@/hoocks/usePermissions"
 import { usePlatformOwner } from "@/hoocks/usePlatformOwner"
 import { getCompany, updateCompany } from "@/api/company"
 import { FiscalDataCard } from "@/components/settings/FiscalDataCard"
+import { EInvoiceCard } from "@/components/settings/EInvoiceCard"
 import { LocationsCard } from "@/components/settings/LocationsCard"
 import { RegistersCard } from "@/components/settings/RegistersCard"
 import { DiscountTypesCard } from "@/components/settings/DiscountTypesCard"
@@ -156,7 +157,7 @@ export function Settings() {
   const { t, i18n } = useTranslation()
   const [params, setParams] = useSearchParams()
   const showCompany = can("company.manage") && !isPlatformOwner
-  const tabs = ["general", ...(showCompany ? ["company", "locations", "registers", "fiscal"] : [])]
+  const tabs = ["general", ...(showCompany ? ["company", "locations", "registers", "fiscal", "einvoice"] : [])]
   const tab = tabs.includes(params.get("tab")) ? params.get("tab") : "general"
   const changeTab = (next) => setParams(next === "general" ? {} : { tab: next }, { replace: true })
 
@@ -175,12 +176,13 @@ export function Settings() {
       </div>
 
       <Tabs value={tab} onValueChange={changeTab} className="gap-4">
-        <TabsList className="w-full sm:w-fit">
+        <TabsList className="w-full overflow-x-auto sm:w-fit">
           <TabsTrigger value="general">{t("settings.tabs.general")}</TabsTrigger>
           {showCompany && <TabsTrigger value="company">{t("settings.tabs.company")}</TabsTrigger>}
           {showCompany && <TabsTrigger value="locations">{t("settings.tabs.locations")}</TabsTrigger>}
           {showCompany && <TabsTrigger value="registers">{t("settings.tabs.registers")}</TabsTrigger>}
           {showCompany && <TabsTrigger value="fiscal">{t("settings.tabs.fiscal")}</TabsTrigger>}
+          {showCompany && <TabsTrigger value="einvoice">{t("settings.tabs.einvoice")}</TabsTrigger>}
         </TabsList>
 
         <TabsContent value="general">
@@ -248,6 +250,11 @@ export function Settings() {
         {showCompany && (
           <TabsContent value="fiscal">
             <FiscalDataCard />
+          </TabsContent>
+        )}
+        {showCompany && (
+          <TabsContent value="einvoice">
+            <EInvoiceCard />
           </TabsContent>
         )}
       </Tabs>

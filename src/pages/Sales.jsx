@@ -11,6 +11,7 @@ import { Pagination } from "@/components/Pagination"
 import { SearchInput } from "@/components/SearchInput"
 import { Ticket } from "@/components/pos/Ticket"
 import { ReturnFlow } from "@/components/sales/ReturnFlow"
+import { EInvoiceBadge, EInvoicePanel } from "@/components/sales/EInvoiceStatus"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -95,6 +96,7 @@ export function Sales() {
                     <Badge variant={d.type === "CREDIT_NOTE" ? "destructive" : "secondary"}>{t(`sales.types.${d.type}`)}</Badge>
                     {d.saleCondition === "CREDIT" && <Badge variant="outline">{t("pos.modes.CREDIT")}</Badge>}
                     {d._count.referencedBy > 0 && <Badge variant="outline">{t("sales.withReturns")}</Badge>}
+                    <EInvoiceBadge status={d.einvoice?.status} />
                   </span>
                   <span className="block text-xs text-muted-foreground md:hidden">{when(d.issuedAt)}</span>
                 </TableCell>
@@ -163,6 +165,7 @@ export function SaleDetail() {
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
         <div className="space-y-6">
+          <EInvoicePanel documentId={doc.id} type={doc.type} einvoice={sale.einvoice} />
           {!isNote && (
             <div className="overflow-x-auto rounded-xl border border-border">
               <Table>

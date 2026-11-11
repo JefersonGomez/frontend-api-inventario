@@ -708,7 +708,8 @@
       "company": "Company",
       "fiscal": "Tax details",
       "locations": "Branches and warehouses",
-      "registers": "Registers"
+      "registers": "Registers",
+      "einvoice": "E-invoicing"
     },
     "cashCodeDays": "Register code validity (days)",
     "cashCodeDaysDescription": "How often the code to open the register and authorize expires. After changing it, the person can't change it again until it expires. 7 to 365 days."
@@ -872,7 +873,8 @@
       "returnDamaged": "Damaged returns",
       "offlineSaleFailed": "Rejected offline sales",
       "payableDue": "Invoices coming due",
-      "cashOverLimit": "Registers over the limit"
+      "cashOverLimit": "Registers over the limit",
+      "einvoiceProblem": "Documents with a Hacienda problem"
     },
     "detail": {
       "requestExpiring": "{{requester}} · {{quantity}} · expires {{when}}",
@@ -903,7 +905,8 @@
       "payableDue_one": "{{count}} invoice · {{amount}} · {{when}}",
       "payableDue_other": "{{count}} invoices · {{amount}} · {{when}}",
       "payableDueWhen": "due {{when}}",
-      "cashOverLimit": "{{cash}} in register (limit {{limit}}) · {{cashier}} · {{location}}"
+      "cashOverLimit": "{{cash}} in register (limit {{limit}}) · {{cashier}} · {{location}}",
+      "einvoiceProblem": "{{status}}: {{message}}"
     },
     "when": {
       "today": "today",
@@ -2524,5 +2527,68 @@
     "negativeStock_one": "{{count}} product was negative at close: review it.",
     "negativeStock_other": "{{count}} products were negative at close: review them.",
     "costNote": "Cost: the average cost at the last sale up to the close; if it wasn't sold, the current average cost."
+  },
+  "einvoice": {
+    "status": {
+      "none": "Not sent",
+      "PENDING": "To send",
+      "SENT": "At Hacienda",
+      "ACCEPTED": "Accepted",
+      "REJECTED": "Rejected",
+      "ERROR": "Error"
+    },
+    "settings": {
+      "title": "Electronic invoicing",
+      "description": "The company's Hacienda (TRIBU-CR) credentials and cryptographic key. They are stored encrypted and never shown again.",
+      "status_on": "Auto-send on",
+      "status_ready": "Configured",
+      "status_off": "Not configured",
+      "env_pruebas": "Testing",
+      "env_produccion": "Production",
+      "secret_missing": "The server has no EINVOICE_SECRET: credentials can't be saved until it's configured.",
+      "auto_label": "Send tickets to Hacienda automatically",
+      "auto_hint": "Once on, every ticket sold from that moment is sent automatically. Earlier sales are not sent.",
+      "auto_on_since": "On since {{date}}. If Hacienda doesn't answer, it retries automatically.",
+      "environment": "Environment",
+      "provider": "System provider (ID)",
+      "provider_hint": "Optional. Empty = the key holder's ID.",
+      "username": "Hacienda user",
+      "password": "Hacienda password",
+      "saved": "Saved (type to change it)",
+      "key_title": "Cryptographic key",
+      "no_key": "No key uploaded yet.",
+      "key_file": "Key file (.p12)",
+      "key_replace": "Replace key (.p12)",
+      "pin": "Key PIN",
+      "key_hint": "The key must belong to the company's ID (Tax details). It's checked to open with the PIN before saving.",
+      "expires": "expires {{date}}",
+      "test": "Test connection",
+      "test_ok": "Connected to Hacienda ({{env}}).",
+      "test_error": "Hacienda didn't accept the credentials.",
+      "save_error": "Could not save the settings.",
+      "prod_title": "Switch to production?",
+      "prod_description": "In production every document counts for Hacienda and can't be deleted. Use the production credentials and key.",
+      "prod_confirm": "Yes, switch to production"
+    },
+    "panel": {
+      "title": "Hacienda",
+      "send": "Send to Hacienda",
+      "retry": "Retry",
+      "check": "Check answer",
+      "clave": "Key",
+      "sentAt": "Sent {{date}}",
+      "answeredAt": "answered {{date}}",
+      "nextAttempt_one": "Next attempt {{date}} ({{count}} failed attempt)",
+      "nextAttempt_other": "Next attempt {{date}} ({{count}} failed attempts)",
+      "error": "The action could not be completed.",
+      "explain": {
+        "none": "This document hasn't been sent to Hacienda.",
+        "PENDING": "Signed and ready; sending failed and it retries automatically.",
+        "SENT": "Hacienda received it and is reviewing it.",
+        "ACCEPTED": "Hacienda accepted it.",
+        "REJECTED": "Hacienda rejected it. It's corrected with a credit note.",
+        "ERROR": "The document couldn't be built. Fix the indicated data and retry."
+      }
+    }
   }
 }
