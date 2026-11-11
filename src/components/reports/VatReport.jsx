@@ -410,6 +410,7 @@ function downloadAccountantPackage(p, t) {
         ...(c.legalName ? [[x("legalName"), c.legalName]] : []),
         ...(c.idNumber ? [[x("idNumber"), c.idNumber]] : []),
         [x("month"), p.month],
+        [x("closingDate"), p.closingDate],
         [x("currency"), c.currency],
         [x("generatedAt"), new Date().toLocaleString()],
         [],
@@ -452,5 +453,59 @@ function downloadAccountantPackage(p, t) {
         ...(p.banks.length === 0 ? [[x("noBanks")]] : []),
       ],
     },
+    ...closeSheets(p, t),
   ])
+}
+
+// Parte B: saldos al cierre del mes (cuentas por cobrar, por pagar e inventario valorizado)
+const AGING = ["current", "d1_30", "d31_60", "d61_90", "d90_plus"]
+function closeSheets(p, t) {
+  const x = (k, o) => t(`accountantPackage.${k}`, o)
+  const aging = AGING.map((k) => x(`aging.${k}`))
+  const { receivables: cxc, payables: cxp, inventory: inv } = p
+  return [
+    {
+      name: x("receivables"),
+      rows: [
+        [x("closingNote", { date: p.closingDate })],
+        [x("customer"), x("customerId"), x("balance"), x("overdue"), ...aging, x("oldestDue"), x("documents")],
+        ...cxc.customers.map((c) => [
+          c.customer.name, c.customer.idNumber ?? "", c.balance, c.overdue, ...AGING.map((k) => c.aging[k] || ""), c.oldestDue, c.documents.join(" · "),
+        ]),
+        [],
+        [x("totalCustomers", { count: cxc.totals.count }), "", cxc.totals.balance, cxc.totals.overdue, ...AGING.map((k) => cxc.totals.aging[k])],
+      ],
+    },
+    {
+      name: x("payables"),
+      rows: [
+        [x("closingNote", { date: p.closingDate })],
+        [x("supplier"), x("supplierId"), x("invoice"), x("issueDate"), x("dueDate"), x("total"), x("paidAtClose"), x("balance"), x("daysLate"), x("agingCol")],
+        ...cxp.invoices.map((i) => [
+          i.supplier.name, i.supplier.idNumber ?? "", i.number, i.issueDate, i.dueDate, i.total, i.paid, i.balance, i.daysLate || "", x(`aging.${i.bucket}`),
+        ]),
+        [],
+        [x("totalInvoices", { count: cxp.totals.count }), "", "", "", "", "", "", cxp.totals.balance],
+        [],
+        [x("agingCol"), x("balance")],
+        ...AGING.map((k) => [x(`aging.${k}`), cxp.totals.aging[k]]),
+      ],
+    },
+    {
+      name: x("inventory"),
+      rows: [
+        [x("closingNote", { date: p.closingDate })],
+        [x("category"), "SKU", x("product"), x("unit"), x("quantity"), x("inTransit"), x("byLocation"), x("unitCost"), x("costSource"), x("value")],
+        ...inv.items.map((i) => [
+          i.product.category, i.product.sku, i.product.name, t(`units.short.${i.product.unit}`), i.quantity, i.inTransit || "",
+          i.byLocation.map((l) => `${l.location}: ${l.quantity}`).join(" · "), i.unitCost ?? "", x(`cost.${i.costSource}`), i.value ?? "",
+        ]),
+        [],
+        [x("totalProducts", { count: inv.totals.count }), "", "", "", "", "", "", "", "", inv.totals.value],
+        ...(inv.totals.withoutCost ? [[x("withoutCost", { count: inv.totals.withoutCost })]] : []),
+        ...(inv.totals.negative ? [[x("negativeStock", { count: inv.totals.negative })]] : []),
+        [x("costNote")],
+      ],
+    },
+  ]
 }
