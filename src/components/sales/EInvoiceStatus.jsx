@@ -24,7 +24,8 @@ export function EInvoiceBadge({ status, className }) {
 }
 
 // Panel del detalle de la venta: estado, motivo y acciones (enviar o reintentar, consultar, XML)
-export function EInvoicePanel({ documentId, type, einvoice }) {
+// referenceStatus (nota de crédito): estado ante Hacienda de la venta que corrige; la nota solo sale si está aceptada
+export function EInvoicePanel({ documentId, type, einvoice, referenceStatus }) {
   const { t, i18n } = useTranslation()
   const { can } = usePermissions()
   const queryClient = useQueryClient()
@@ -37,10 +38,12 @@ export function EInvoicePanel({ documentId, type, einvoice }) {
   const xml = useMutation({ mutationFn: () => downloadEInvoiceXml(documentId) })
   const mail = useMutation({ mutationFn: () => emailEInvoice(documentId), onSettled: refresh })
   const manage = can("company.manage")
-  if (!["TICKET", "INVOICE"].includes(type) && !einvoice) return null // las notas de crédito llegan en la siguiente parte
+  if (!["TICKET", "INVOICE", "CREDIT_NOTE"].includes(type) && !einvoice) return null
 
   const status = einvoice?.status
-  const canSend = manage && (!einvoice || status === "PENDING" || status === "ERROR")
+  // una nota cuya venta original no está aceptada no se puede enviar todavía (o nunca)
+  const noteWaiting = type === "CREDIT_NOTE" && !einvoice && referenceStatus !== "ACCEPTED"
+  const canSend = manage && !noteWaiting && (!einvoice || status === "PENDING" || status === "ERROR")
   const detail = einvoice?.message || einvoice?.lastError
   const when = (d) => new Date(d).toLocaleString(i18n.language, { dateStyle: "short", timeStyle: "short" })
   const error = send.error || check.error || xml.error || mail.error
@@ -80,7 +83,11 @@ export function EInvoicePanel({ documentId, type, einvoice }) {
           )}
         </div>
       </div>
-      <p className="mt-2 text-sm text-muted-foreground">{t(`einvoice.panel.explain.${status ?? "none"}`)}</p>
+      <p className="mt-2 text-sm text-muted-foreground">
+        {noteWaiting
+          ? t(`einvoice.panel.noteWaiting.${["PENDING", "SENT"].includes(referenceStatus) ? "pending" : ["REJECTED", "ERROR"].includes(referenceStatus) ? "invalid" : "notSent"}`)
+          : t(`einvoice.panel.explain.${status ?? "none"}`)}
+      </p>
       {einvoice?.clave && <p className="mt-1 break-all font-mono text-xs text-muted-foreground">{t("einvoice.panel.clave")}: {einvoice.clave}</p>}
       {einvoice && (
         <p className="mt-1 text-xs text-muted-foreground">

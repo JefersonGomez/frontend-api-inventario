@@ -2595,13 +2595,18 @@
         "PENDING": "Signed and ready; sending failed and it retries automatically.",
         "SENT": "Hacienda received it and is reviewing it.",
         "ACCEPTED": "Hacienda accepted it.",
-        "REJECTED": "Hacienda rejected it. It's corrected with a credit note.",
+        "REJECTED": "Hacienda rejected it, so it isn't valid. Fix the reason and issue the sale again.",
         "ERROR": "The document couldn't be built. Fix the indicated data and retry."
       },
       "email": "Send to customer",
       "emailAgain": "Resend to customer",
       "emailedTo": "Emailed to {{email}} on {{date}}",
-      "emailSent": "Email sent"
+      "emailSent": "Email sent",
+      "noteWaiting": {
+        "pending": "This note is sent to Hacienda automatically as soon as Hacienda accepts the sale it corrects.",
+        "invalid": "The original sale isn't valid at Hacienda (rejected or with an error), so this note isn't sent.",
+        "notSent": "The original sale wasn't sent to Hacienda (e.g. sold before auto-send was on), so this note isn't sent either."
+      }
     }
   }
 }

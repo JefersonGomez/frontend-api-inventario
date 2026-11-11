@@ -165,7 +165,7 @@ export function SaleDetail() {
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
         <div className="space-y-6">
-          <EInvoicePanel documentId={doc.id} type={doc.type} einvoice={sale.einvoice} />
+          <EInvoicePanel documentId={doc.id} type={doc.type} einvoice={sale.einvoice} referenceStatus={sale.referenceEInvoiceStatus} />
           {!isNote && (
             <div className="overflow-x-auto rounded-xl border border-border">
               <Table>
@@ -200,7 +200,10 @@ export function SaleDetail() {
                       <Link to={`/sales/${n.id}`} className="font-mono text-xs hover:underline">{n.consecutive.slice(-10)}</Link>
                       <span className="ml-2 text-muted-foreground">{when(n.issuedAt)} · {n.referenceReason} · {t("sales.authorizedBy", { name: n.returnAuthorizedBy?.name })}</span>
                     </span>
-                    <span className="font-mono">−{money.format(n.total)}</span>
+                    <span className="flex items-center gap-2">
+                      <EInvoiceBadge status={n.einvoice?.status} />
+                      <span className="font-mono">−{money.format(n.total)}</span>
+                    </span>
                   </li>
                 ))}
               </ul>

@@ -2595,13 +2595,18 @@
         "PENDING": "Firmado y listo; el envío falló y se reintenta solo.",
         "SENT": "Hacienda lo recibió y lo está revisando.",
         "ACCEPTED": "Hacienda lo aceptó.",
-        "REJECTED": "Hacienda lo rechazó. Se corrige con una nota de crédito.",
+        "REJECTED": "Hacienda lo rechazó, así que no tiene validez. Corrige el motivo y vuelve a emitir la venta.",
         "ERROR": "No se pudo armar el comprobante. Corrige el dato indicado y reintenta."
       },
       "email": "Enviar al cliente",
       "emailAgain": "Reenviar al cliente",
       "emailedTo": "Enviado por correo a {{email}} el {{date}}",
-      "emailSent": "Correo enviado"
+      "emailSent": "Correo enviado",
+      "noteWaiting": {
+        "pending": "Esta nota se envía sola a Hacienda en cuanto Hacienda acepte la venta que corrige.",
+        "invalid": "La venta original no tiene validez en Hacienda (rechazada o con error), así que esta nota no se envía.",
+        "notSent": "La venta original no se envió a Hacienda (por ejemplo, se vendió antes de encender el envío), así que esta nota tampoco se envía."
+      }
     }
   }
 }
