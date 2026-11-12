@@ -30,7 +30,7 @@ import { LocationSelect } from "@/components/LocationSelect"
 import { getProduct } from "@/api/products"
 
 const emptyForm = { product: null, type: "IN", quantity: "", reason: "", locationId: "", lotCode: "", lotExpires: "" }
-const SOURCES = ["MANUAL", "INITIAL", "PURCHASE_RECEIPT", "SALE", "RETURN", "COUNT", "TRANSFER"]
+const SOURCES = ["MANUAL", "INITIAL", "PURCHASE_RECEIPT", "SUPPLIER_INVOICE", "SALE", "RETURN", "COUNT", "TRANSFER"]
 
 export function Movements() {
   const { t } = useTranslation()

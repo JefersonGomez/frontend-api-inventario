@@ -9,6 +9,7 @@ import { BankAccountSelect } from "@/components/banks/DepositDialog"
 import { TaxLinesEditor } from "@/components/payables/TaxLinesEditor"
 import { ImportXmlDialog } from "@/components/payables/ImportXmlDialog"
 import { ReceiverResponse } from "@/components/payables/ReceiverResponse"
+import { StockEntry } from "@/components/payables/StockEntry"
 import { toTaxLines } from "@/lib/tax-lines"
 import { useListParams } from "@/hoocks/useListParams"
 import { useMoney } from "@/hoocks/useMoney"
@@ -312,6 +313,7 @@ function InvoiceTable({ invoices, loading, showSupplier, canVoid }) {
                 {(i.voidReason || i.note) && <span className="block text-xs text-muted-foreground">{i.voidReason || i.note}</span>}
                 {i.creditable === false && <Badge variant="outline" className="mt-0.5 text-[10px]">{t("payables.invoice.notCreditable")}</Badge>}
                 <ReceiverResponse invoice={i} />
+                <StockEntry invoice={i} />
               </TableCell>
               {showSupplier && (
                 <TableCell><Link to={`/payables/${i.supplier.id}`} className="hover:underline">{i.supplier.name}</Link></TableCell>

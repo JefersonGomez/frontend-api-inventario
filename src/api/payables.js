@@ -30,3 +30,8 @@ export const importSupplierXml = (files, fields) => api.post("/payables/invoices
 export const respondSupplierInvoice = (id, data) => api.post(`/payables/invoices/${id}/respond`, data).then((res) => res.data)
 // reintentar el envío o consultar la respuesta de Hacienda
 export const retrySupplierResponse = (id) => api.post(`/payables/invoices/${id}/respond/retry`).then((res) => res.data)
+
+// Entrada al inventario desde la factura del proveedor: plan (líneas con el producto sugerido) y confirmar
+export const getInvoiceStockPlan = (id) => api.get(`/payables/invoices/${id}/stock`).then((res) => res.data)
+// { locationId?, lines: [{ line, productId? | newProduct? { name, price, categoryId } | skip?, factor? }] }
+export const receiveInvoiceStock = (id, data) => api.post(`/payables/invoices/${id}/stock`, data).then((res) => res.data)

@@ -478,7 +478,8 @@
       "SALE": "Venta",
       "RETURN": "Devolución",
       "COUNT": "Conteo",
-      "TRANSFER": "Traslado"
+      "TRANSFER": "Traslado",
+      "SUPPLIER_INVOICE": "Factura de proveedor"
     }
   },
   "reports": {
@@ -2324,6 +2325,38 @@
       "noCredit": "No da crédito fiscal: se acepta como gasto, sin IVA que acreditar.",
       "detail": "Motivo",
       "send": "Enviar a Hacienda"
+    },
+    "stock": {
+      "button": "Entrar al inventario",
+      "done": "Ya entró al inventario",
+      "title": "Entrar al inventario · factura {{number}} de {{supplier}}",
+      "subtitle": "Elige a qué producto tuyo va cada línea. La próxima factura de este proveedor ya lo recordará.",
+      "cost": "costo {{amount}} c/u",
+      "code": "código {{code}}",
+      "what": "Qué hacer con {{name}}",
+      "modes": {
+        "product": "Mi producto",
+        "new": "Crear nuevo",
+        "skip": "No entra"
+      },
+      "product": "Producto",
+      "reasons": {
+        "remembered": "Como la vez pasada",
+        "code": "Por su código",
+        "cabys": "Por su CABYS"
+      },
+      "factor": "Unidades tuyas por cada una",
+      "enters": "Entran {{qty}} a {{cost}} c/u. Si el proveedor vende por caja (de 50, por ejemplo), pon cuántas trae.",
+      "newName": "Nombre del producto nuevo",
+      "price": "Precio de venta",
+      "newHint": "Se crea con unidad {{unit}}, {{tax}} y CABYS {{cabys}}, como dice la factura. Puedes completarlo después en Productos.",
+      "skipHint": "No entra al inventario (por ejemplo flete, servicio o algo para uso de la empresa).",
+      "location": "Dónde entra",
+      "locationHint": "La sucursal o bodega que recibió la mercadería.",
+      "category": "Categoría de los productos nuevos",
+      "pickCategory": "Elige…",
+      "save": "Entrar al inventario",
+      "error": "No se pudo entrar la mercadería."
     }
   },
   "banks": {

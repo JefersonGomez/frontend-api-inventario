@@ -478,7 +478,8 @@
       "SALE": "Sale",
       "RETURN": "Return",
       "COUNT": "Count",
-      "TRANSFER": "Transfer"
+      "TRANSFER": "Transfer",
+      "SUPPLIER_INVOICE": "Supplier invoice"
     }
   },
   "reports": {
@@ -2324,6 +2325,38 @@
       "noCredit": "No tax credit: accepted as an expense, no VAT to credit.",
       "detail": "Reason",
       "send": "Send to Hacienda"
+    },
+    "stock": {
+      "button": "Add to inventory",
+      "done": "Already in inventory",
+      "title": "Add to inventory · invoice {{number}} from {{supplier}}",
+      "subtitle": "Pick which of your products each line is. The next invoice from this supplier will remember it.",
+      "cost": "cost {{amount}} each",
+      "code": "code {{code}}",
+      "what": "What to do with {{name}}",
+      "modes": {
+        "product": "My product",
+        "new": "Create new",
+        "skip": "Doesn't enter"
+      },
+      "product": "Product",
+      "reasons": {
+        "remembered": "Like last time",
+        "code": "By its code",
+        "cabys": "By its CABYS"
+      },
+      "factor": "Your units per each",
+      "enters": "{{qty}} enter at {{cost}} each. If the supplier sells by box (of 50, for example), enter how many it holds.",
+      "newName": "New product name",
+      "price": "Sale price",
+      "newHint": "Created with unit {{unit}}, {{tax}} and CABYS {{cabys}}, as the invoice says. You can complete it later in Products.",
+      "skipHint": "Doesn't enter inventory (e.g. freight, a service or something for the company's own use).",
+      "location": "Where it enters",
+      "locationHint": "The branch or warehouse that received the goods.",
+      "category": "Category for the new products",
+      "pickCategory": "Choose…",
+      "save": "Add to inventory",
+      "error": "The goods couldn't be added."
     }
   },
   "banks": {
