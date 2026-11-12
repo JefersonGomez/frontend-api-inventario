@@ -8,6 +8,7 @@ import { getSuppliers } from "@/api/suppliers"
 import { BankAccountSelect } from "@/components/banks/DepositDialog"
 import { TaxLinesEditor } from "@/components/payables/TaxLinesEditor"
 import { ImportXmlDialog } from "@/components/payables/ImportXmlDialog"
+import { ReceiverResponse } from "@/components/payables/ReceiverResponse"
 import { toTaxLines } from "@/lib/tax-lines"
 import { useListParams } from "@/hoocks/useListParams"
 import { useMoney } from "@/hoocks/useMoney"
@@ -196,7 +197,15 @@ export function PayableAccount() {
   const { id } = useParams()
   const [creating, setCreating] = useState(false)
   const [paying, setPaying] = useState(false)
-  const { data: account, isLoading } = useQuery({ queryKey: ["payables", id], queryFn: () => getSupplierAccount(id) })
+  // mientras una respuesta a Hacienda está en camino, el estado se actualiza solo
+  const { data: account, isLoading } = useQuery({
+    queryKey: ["payables", id],
+    queryFn: () => getSupplierAccount(id),
+    refetchInterval: (query) => {
+      const states = (query.state.data?.invoices ?? []).map((i) => i.receiverMessage?.status)
+      return states.includes("SENT") ? 5_000 : states.includes("PENDING") ? 30_000 : false
+    },
+  })
   if (isLoading || !account) return <p className="text-muted-foreground">{t("common.loading")}</p>
   const s = account.supplier
 
@@ -302,6 +311,7 @@ function InvoiceTable({ invoices, loading, showSupplier, canVoid }) {
                 <span className={cn("font-mono text-sm", i.voidedAt && "line-through")}>{i.number}</span>
                 {(i.voidReason || i.note) && <span className="block text-xs text-muted-foreground">{i.voidReason || i.note}</span>}
                 {i.creditable === false && <Badge variant="outline" className="mt-0.5 text-[10px]">{t("payables.invoice.notCreditable")}</Badge>}
+                <ReceiverResponse invoice={i} />
               </TableCell>
               {showSupplier && (
                 <TableCell><Link to={`/payables/${i.supplier.id}`} className="hover:underline">{i.supplier.name}</Link></TableCell>

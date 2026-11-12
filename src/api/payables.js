@@ -25,3 +25,8 @@ const multipart = { headers: { "Content-Type": "multipart/form-data" } }
 export const previewSupplierXml = (files) => api.post("/payables/invoices/xml/preview", xmlForm(files), multipart).then((res) => res.data)
 // fields: { dueDate?, creditable?: boolean, note? }
 export const importSupplierXml = (files, fields) => api.post("/payables/invoices/xml", xmlForm(files, fields), multipart).then((res) => res.data)
+
+// Mensaje receptor: { decision: "ACCEPT" | "PARTIAL" | "REJECT", detail? } → el mensaje con su estado
+export const respondSupplierInvoice = (id, data) => api.post(`/payables/invoices/${id}/respond`, data).then((res) => res.data)
+// reintentar el envío o consultar la respuesta de Hacienda
+export const retrySupplierResponse = (id) => api.post(`/payables/invoices/${id}/respond/retry`).then((res) => res.data)

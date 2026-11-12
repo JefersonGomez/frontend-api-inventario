@@ -2288,7 +2288,42 @@
       "creditable": "Da crédito fiscal",
       "creditableHint": "Su IVA se puede rebajar en la declaración (factura a nombre de la empresa, para el negocio).",
       "save": "Registrar factura",
-      "saveError": "No se pudo registrar la factura."
+      "saveError": "No se pudo registrar la factura.",
+      "respond": "Aceptarla ante Hacienda",
+      "respondHint": "Le avisa a Hacienda que recibiste la factura y estás de acuerdo (mensaje receptor). Respalda el crédito de IVA. Si algo no cuadra, desactívalo y respóndela después desde el proveedor."
+    },
+    "receiver": {
+      "none": "Sin responder a Hacienda",
+      "respond": "Responder",
+      "again": "Responder de nuevo",
+      "check": "Reintentar o consultar a Hacienda",
+      "error": "No se pudo completar la acción.",
+      "status": {
+        "PENDING": "Respuesta por enviar (reintenta sola)",
+        "SENT": "Respuesta enviada a Hacienda",
+        "REJECTED": "Hacienda rechazó tu respuesta",
+        "ERROR": "Respuesta con error"
+      },
+      "done": {
+        "1": "Aceptada ante Hacienda",
+        "2": "Aceptada en parte ante Hacienda",
+        "3": "Rechazada ante Hacienda"
+      },
+      "title": "Responder a Hacienda · factura {{number}}",
+      "options": {
+        "ACCEPT": "Aceptar",
+        "PARTIAL": "Aceptar en parte",
+        "REJECT": "Rechazar"
+      },
+      "hints": {
+        "ACCEPT": "Recibiste lo facturado y los montos están bien.",
+        "PARTIAL": "Estás de acuerdo con una parte (por ejemplo, faltó mercadería). Explica qué.",
+        "REJECT": "La factura no corresponde (precios, productos o datos equivocados). El proveedor tendrá que corregirla."
+      },
+      "credit": "Da crédito fiscal: se acredita todo su IVA.",
+      "noCredit": "No da crédito fiscal: se acepta como gasto, sin IVA que acreditar.",
+      "detail": "Motivo",
+      "send": "Enviar a Hacienda"
     }
   },
   "banks": {

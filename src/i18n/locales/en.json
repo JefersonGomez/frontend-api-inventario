@@ -2288,7 +2288,42 @@
       "creditable": "Gives tax credit",
       "creditableHint": "Its VAT can be deducted in the return (invoice in the company's name, for the business).",
       "save": "Register invoice",
-      "saveError": "The invoice couldn't be registered."
+      "saveError": "The invoice couldn't be registered.",
+      "respond": "Accept it with Hacienda",
+      "respondHint": "Tells Hacienda you received the invoice and agree (receiver message). Backs the VAT credit. If something's off, turn it off and answer later from the supplier."
+    },
+    "receiver": {
+      "none": "Not answered to Hacienda",
+      "respond": "Answer",
+      "again": "Answer again",
+      "check": "Retry or check with Hacienda",
+      "error": "The action could not be completed.",
+      "status": {
+        "PENDING": "Answer to send (retries automatically)",
+        "SENT": "Answer sent to Hacienda",
+        "REJECTED": "Hacienda rejected your answer",
+        "ERROR": "Answer with an error"
+      },
+      "done": {
+        "1": "Accepted with Hacienda",
+        "2": "Partially accepted with Hacienda",
+        "3": "Rejected with Hacienda"
+      },
+      "title": "Answer Hacienda · invoice {{number}}",
+      "options": {
+        "ACCEPT": "Accept",
+        "PARTIAL": "Accept in part",
+        "REJECT": "Reject"
+      },
+      "hints": {
+        "ACCEPT": "You received what was invoiced and the amounts are right.",
+        "PARTIAL": "You agree with part of it (e.g. goods were missing). Explain what.",
+        "REJECT": "The invoice is wrong (prices, products or details). The supplier will have to fix it."
+      },
+      "credit": "Gives tax credit: all its VAT is credited.",
+      "noCredit": "No tax credit: accepted as an expense, no VAT to credit.",
+      "detail": "Reason",
+      "send": "Send to Hacienda"
     }
   },
   "banks": {

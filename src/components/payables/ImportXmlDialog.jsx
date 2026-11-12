@@ -38,13 +38,14 @@ function ImportBody({ onClose }) {
   const queryClient = useQueryClient()
   const input = useRef(null)
   const [files, setFiles] = useState([])
-  const [edit, setEdit] = useState({ dueDate: null, creditable: null, note: "" }) // null = lo que propone el sistema
+  const [edit, setEdit] = useState({ dueDate: null, creditable: null, note: "", respond: true }) // null = lo que propone el sistema
   const preview = useMutation({ mutationFn: previewSupplierXml })
   const save = useMutation({
     mutationFn: () => importSupplierXml(files, {
       ...(edit.dueDate && { dueDate: edit.dueDate }),
       ...(edit.creditable !== null && { creditable: edit.creditable }),
       ...(edit.note.trim() && { note: edit.note.trim() }),
+      ...(preview.data?.receiverReady && { respond: edit.respond }),
     }),
     onSuccess: (invoice) => {
       queryClient.invalidateQueries({ queryKey: ["payables"] })
@@ -58,7 +59,7 @@ function ImportBody({ onClose }) {
     const picked = Array.from(list ?? []).slice(0, 2)
     if (!picked.length) return
     setFiles(picked)
-    setEdit({ dueDate: null, creditable: null, note: "" })
+    setEdit({ dueDate: null, creditable: null, note: "", respond: true })
     save.reset()
     preview.mutate(picked)
   }
@@ -194,6 +195,15 @@ function ImportBody({ onClose }) {
                 </div>
                 <Switch id="xml-creditable" checked={creditable} onCheckedChange={(v) => setEdit({ ...edit, creditable: v })} />
               </div>
+              {p.receiverReady && (
+                <div className="flex items-start justify-between gap-3 rounded-lg border border-border p-3 sm:col-span-2">
+                  <div>
+                    <Label htmlFor="xml-respond">{t("payables.xml.respond")}</Label>
+                    <p className="text-xs text-muted-foreground">{t("payables.xml.respondHint")}</p>
+                  </div>
+                  <Switch id="xml-respond" checked={edit.respond} onCheckedChange={(v) => setEdit({ ...edit, respond: v })} />
+                </div>
+              )}
             </div>
           )}
 
