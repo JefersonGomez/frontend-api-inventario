@@ -9,6 +9,7 @@ import { apiErrorMessage } from "@/lib/api-error"
 import { formatFiscalId } from "@/lib/fiscal"
 import { TAX_RATES, qtyStep } from "@/lib/units"
 import { ProductPicker } from "@/components/ProductPicker"
+import { CabysSearch } from "@/components/CabysSearch"
 import { LocationSelect } from "@/components/LocationSelect"
 import { CustomerPicker } from "@/components/pos/CustomerPicker"
 import { BankAccountSelect } from "@/components/banks/DepositDialog"
@@ -50,7 +51,7 @@ export function NewInvoice() {
   const hasId = Boolean(customer?.idType && customer?.idNumber)
   const canCredit = customer?.creditLimit != null
   const linesOk = lines.length > 0 && lines.every((l) =>
-    Number(l.quantity) > 0 && (l.kind === "product" ? Boolean(l.product) : l.description.trim() && Number(l.price) >= 0 && l.price !== ""))
+    Number(l.quantity) > 0 && (l.kind === "product" ? Boolean(l.product) : l.description.trim() && Number(l.price) >= 0 && l.price !== "" && /^\d{13}$/.test(l.cabys)))
 
   const save = useMutation({
     mutationFn: () =>
@@ -60,7 +61,7 @@ export function NewInvoice() {
         lines: lines.map((l) =>
           l.kind === "product"
             ? { productId: l.product.id, quantity: Number(l.quantity), ...(l.price !== "" && { unitPriceWithTax: Number(l.price) }) }
-            : { description: l.description.trim(), quantity: Number(l.quantity), unitPriceWithTax: Number(l.price), taxRate: l.taxRate, ...(/^\d{13}$/.test(l.cabys) && { cabys: l.cabys }) },
+            : { description: l.description.trim(), quantity: Number(l.quantity), unitPriceWithTax: Number(l.price), taxRate: l.taxRate, cabys: l.cabys },
         ),
         ...(mode === "cash"
           ? { payment: { method: payment.method, ...(payment.reference.trim() && { reference: payment.reference.trim() }), ...(payment.bankAccountId && { bankAccountId: payment.bankAccountId }) } }
@@ -127,7 +128,7 @@ export function NewInvoice() {
                     <ProductPicker id={`inv-p-${l.key}`} value={l.product} onChange={(p) => update(l.key, { product: p, price: "" })} />
                   </div>
                 ) : (
-                  <div className="col-span-2 grid gap-2 sm:col-span-1 sm:grid-cols-[1fr_120px_130px]">
+                  <div className="col-span-2 grid gap-2 sm:col-span-1 sm:grid-cols-[1fr_120px_200px]">
                     <div className="space-y-1.5">
                       <Label htmlFor={`inv-d-${l.key}`}>{t("invoice.service", { n: i + 1 })}</Label>
                       <Input id={`inv-d-${l.key}`} maxLength={200} placeholder={t("invoice.servicePlaceholder")} value={l.description} onChange={(e) => update(l.key, { description: e.target.value })} />
@@ -140,7 +141,7 @@ export function NewInvoice() {
                     </div>
                     <div className="space-y-1.5">
                       <Label htmlFor={`inv-c-${l.key}`}>CABYS</Label>
-                      <Input id={`inv-c-${l.key}`} inputMode="numeric" maxLength={13} value={l.cabys} onChange={(e) => update(l.key, { cabys: e.target.value.replace(/\D/g, "") })} />
+                      <CabysSearch id={`inv-c-${l.key}`} required value={l.cabys} suggest={l.description} onChange={(cabys) => update(l.key, { cabys })} />
                     </div>
                   </div>
                 )}

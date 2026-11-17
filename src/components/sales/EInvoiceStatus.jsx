@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Download, Loader2, Mail, RefreshCw, Send, WifiOff } from "lucide-react"
@@ -6,6 +7,7 @@ import { apiErrorMessage } from "@/lib/api-error"
 import { usePermissions } from "@/hoocks/usePermissions"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { CabysSearch } from "@/components/CabysSearch"
 import { cn } from "@/lib/utils"
 
 // Estado de un comprobante ante Hacienda (Bloque 9). PENDING/SENT = en camino, ACCEPTED, REJECTED, ERROR.
@@ -26,7 +28,8 @@ export function EInvoiceBadge({ status, className }) {
 // Panel del detalle de la venta: estado, motivo y acciones (enviar o reintentar, consultar, XML)
 // referenceStatus (nota de crédito): estado ante Hacienda de la venta que corrige; la nota solo sale si está aceptada
 // offline: la caja la vendió sin conexión (va a Hacienda como "sin internet", con la hora real de la venta)
-export function EInvoicePanel({ documentId, type, einvoice, referenceStatus, offline }) {
+// lines: las del comprobante; si quedó Con error porque alguna no tiene CABYS, aquí se completa y se reintenta
+export function EInvoicePanel({ documentId, type, einvoice, referenceStatus, offline, lines = [] }) {
   const { t, i18n } = useTranslation()
   const { can } = usePermissions()
   const queryClient = useQueryClient()
@@ -34,7 +37,8 @@ export function EInvoicePanel({ documentId, type, einvoice, referenceStatus, off
     queryClient.invalidateQueries({ queryKey: ["sales", documentId] })
     queryClient.invalidateQueries({ queryKey: ["sales"] })
   }
-  const send = useMutation({ mutationFn: () => sendEInvoice(documentId), onSettled: refresh })
+  const [fix, setFix] = useState({}) // número de línea → CABYS
+  const send = useMutation({ mutationFn: (body) => sendEInvoice(documentId, body), onSettled: refresh })
   const check = useMutation({ mutationFn: () => refreshEInvoice(documentId), onSettled: refresh })
   const xml = useMutation({ mutationFn: () => downloadEInvoiceXml(documentId) })
   const mail = useMutation({ mutationFn: () => emailEInvoice(documentId), onSettled: refresh })
@@ -48,6 +52,13 @@ export function EInvoicePanel({ documentId, type, einvoice, referenceStatus, off
   const detail = einvoice?.message || einvoice?.lastError
   const when = (d) => new Date(d).toLocaleString(i18n.language, { dateStyle: "short", timeStyle: "short" })
   const error = send.error || check.error || xml.error || mail.error
+  // líneas sin CABYS cuando quedó Con error (las de producto toman el que el producto tenga ahora si se corrigió)
+  const missing = status === "ERROR" && manage ? lines.filter((l) => !l.cabys) : []
+  const fixReady = missing.every((l) => l.productId || /^d{13}$/.test(fix[l.lineNumber] ?? ""))
+  const fixBody = () => {
+    const cabys = Object.fromEntries(Object.entries(fix).filter(([, v]) => /^d{13}$/.test(v)))
+    return Object.keys(cabys).length ? { cabys } : undefined
+  }
 
   return (
     <section aria-labelledby="einv-title" className="rounded-xl border border-border p-4">
@@ -59,7 +70,7 @@ export function EInvoicePanel({ documentId, type, einvoice, referenceStatus, off
         </h2>
         <div className="flex flex-wrap gap-2">
           {canSend && (
-            <Button size="sm" variant="outline" disabled={send.isPending} onClick={() => send.mutate()}>
+            <Button size="sm" variant="outline" disabled={send.isPending || (missing.length > 0 && !fixReady)} onClick={() => send.mutate(fixBody())}>
               {send.isPending ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Send className="h-4 w-4" aria-hidden />}
               {einvoice ? t("einvoice.panel.retry") : t("einvoice.panel.send")}
             </Button>
@@ -115,6 +126,25 @@ export function EInvoicePanel({ documentId, type, einvoice, referenceStatus, off
         </p>
       )}
       {mail.isSuccess && <p role="status" className="sr-only">{t("einvoice.panel.emailSent")}</p>}
+      {missing.length > 0 && (
+        <div className="mt-3 space-y-3 rounded-lg border border-amber-500/40 bg-amber-500/5 p-3">
+          <p className="text-sm font-medium">{t("einvoice.panel.fixTitle")}</p>
+          <p className="text-xs text-muted-foreground">{t("einvoice.panel.fixHint")}</p>
+          {missing.map((l) => (
+            <div key={l.lineNumber} className="grid gap-1.5 sm:grid-cols-[1fr_320px] sm:items-start">
+              <label htmlFor={`fix-${l.lineNumber}`} className="pt-2 text-sm">
+                {t("einvoice.panel.fixLine", { n: l.lineNumber, name: l.description })}
+                {l.productId && <span className="block text-xs text-muted-foreground">{t("einvoice.panel.fixProduct")}</span>}
+              </label>
+              <CabysSearch id={`fix-${l.lineNumber}`} value={fix[l.lineNumber] ?? ""} suggest={l.description} onChange={(v) => setFix((f) => ({ ...f, [l.lineNumber]: v }))} />
+            </div>
+          ))}
+          <Button size="sm" disabled={send.isPending || !fixReady} onClick={() => send.mutate(fixBody())}>
+            {send.isPending ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Send className="h-4 w-4" aria-hidden />}
+            {t("einvoice.panel.fixSend")}
+          </Button>
+        </div>
+      )}
       {error && <p role="alert" className="mt-2 text-sm text-destructive">{apiErrorMessage(error, t("einvoice.panel.error"))}</p>}
     </section>
   )

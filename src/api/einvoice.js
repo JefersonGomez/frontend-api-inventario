@@ -17,7 +17,8 @@ export async function saveEInvoiceSettings(fields, p12) {
 export const testEInvoiceSettings = () => api.post("/einvoice/settings/test").then((res) => res.data)
 
 // estado de un comprobante ante Hacienda, enviarlo (o reintentar) y consultar la respuesta
-export const sendEInvoice = (documentId) => api.post(`/einvoice/documents/${documentId}/send`).then((res) => res.data)
+// body opcional { cabys: { [número de línea]: "13 dígitos" } }: el CABYS de las líneas que no lo traen (al reintentar)
+export const sendEInvoice = (documentId, body) => api.post(`/einvoice/documents/${documentId}/send`, body ?? {}).then((res) => res.data)
 export const refreshEInvoice = (documentId) => api.post(`/einvoice/documents/${documentId}/refresh`).then((res) => res.data)
 
 export async function downloadEInvoiceXml(documentId) {

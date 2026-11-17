@@ -2722,7 +2722,12 @@
         "invalid": "La venta original no tiene validez en Hacienda (rechazada o con error), así que esta nota no se envía.",
         "notSent": "La venta original no se envió a Hacienda (por ejemplo, se vendió antes de encender el envío), así que esta nota tampoco se envía."
       },
-      "offline": "Vendida sin internet: va a Hacienda marcada como «sin internet», con la hora real de la venta."
+      "offline": "Vendida sin internet: va a Hacienda marcada como «sin internet», con la hora real de la venta.",
+      "fixTitle": "Falta el CABYS en estas líneas",
+      "fixHint": "Ponle a cada una su código (con la lupa lo buscas en el catálogo de Hacienda) y reintenta. La venta no cambia: el código va en el comprobante que se envía.",
+      "fixLine": "Línea {{n}}: {{name}}",
+      "fixProduct": "Si ya lo corregiste en Productos, puedes dejarlo vacío: se toma de ahí.",
+      "fixSend": "Reintentar con estos CABYS"
     }
   },
   "invoice": {
@@ -2744,7 +2749,7 @@
     "tax": "IVA",
     "qty": "Cantidad",
     "price": "Precio con IVA",
-    "priceHint": "El precio ya incluye el IVA. Vacío = el precio del producto. Los servicios no tocan el inventario.",
+    "priceHint": "El precio ya incluye el IVA. Vacío = el precio del producto. Los servicios no tocan el inventario y necesitan su CABYS (usa la lupa).",
     "removeLine": "Quitar la línea {{n}}",
     "addProduct": "Agregar producto",
     "addService": "Agregar servicio",

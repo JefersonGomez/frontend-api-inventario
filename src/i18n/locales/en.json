@@ -2722,7 +2722,12 @@
         "invalid": "The original sale isn't valid at Hacienda (rejected or with an error), so this note isn't sent.",
         "notSent": "The original sale wasn't sent to Hacienda (e.g. sold before auto-send was on), so this note isn't sent either."
       },
-      "offline": "Sold offline: sent to Hacienda marked as “no internet”, with the real time of the sale."
+      "offline": "Sold offline: sent to Hacienda marked as “no internet”, with the real time of the sale.",
+      "fixTitle": "These lines are missing their CABYS",
+      "fixHint": "Give each one its code (find it in Hacienda's catalog with the magnifier) and retry. The sale doesn't change: the code goes in the document that's sent.",
+      "fixLine": "Line {{n}}: {{name}}",
+      "fixProduct": "If you already fixed it in Products, you can leave it empty: it's taken from there.",
+      "fixSend": "Retry with these CABYS"
     }
   },
   "invoice": {
@@ -2744,7 +2749,7 @@
     "tax": "VAT",
     "qty": "Quantity",
     "price": "Price incl. VAT",
-    "priceHint": "Prices include VAT. Empty = the product's price. Services don't touch inventory.",
+    "priceHint": "Prices include VAT. Empty = the product price. Services do not touch inventory and need their CABYS (use the magnifier).",
     "removeLine": "Remove line {{n}}",
     "addProduct": "Add product",
     "addService": "Add service",
