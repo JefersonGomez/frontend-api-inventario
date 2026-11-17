@@ -1280,7 +1280,8 @@
     "credit.manage": "Give customers credit and set their limit",
     "receivables.manage": "Receivables and off-register payments",
     "payables.manage": "Payables: supplier invoices and payments",
-    "banks.manage": "Banks: accounts, statements and reconciliation"
+    "banks.manage": "Banks: accounts, statements and reconciliation",
+    "invoices.issue": "Invoice from the office (no register)"
   },
   "locations": {
     "label": "Location",
@@ -2723,5 +2724,43 @@
       },
       "offline": "Sold offline: sent to Hacienda marked as “no internet”, with the real time of the sale."
     }
+  },
+  "invoice": {
+    "new": "New invoice",
+    "title": "New invoice",
+    "subtitle": "Electronic invoice in a customer's name, without the register. Goods leave inventory and it's sent to Hacienda automatically.",
+    "customer": "Customer",
+    "pickCustomer": "Choose the customer",
+    "changeCustomer": "Change",
+    "noId": "No ID",
+    "needsId": "The electronic invoice needs the customer's ID: complete it in Customers or choose another.",
+    "emailTo": "Once Hacienda accepts it, it's emailed to {{email}}.",
+    "noEmail": "The customer has no email: the invoice is still issued, but can't be sent to them.",
+    "lines": "What's invoiced",
+    "from": "Leaves from",
+    "product": "Product {{n}}",
+    "service": "Service {{n}}",
+    "servicePlaceholder": "E.g.: delivery to the site, installation",
+    "tax": "VAT",
+    "qty": "Quantity",
+    "price": "Price incl. VAT",
+    "priceHint": "Prices include VAT. Empty = the product's price. Services don't touch inventory.",
+    "removeLine": "Remove line {{n}}",
+    "addProduct": "Add product",
+    "addService": "Add service",
+    "total": "Total",
+    "payment": "How they pay",
+    "modes": {
+      "cash": "Cash",
+      "credit": "Credit"
+    },
+    "noCredit": "This customer has no approved credit: cash only.",
+    "method": "Payment method",
+    "reference": "Reference (receipt)",
+    "notes": "Note (optional)",
+    "missingCustomer": "Choose the customer to invoice.",
+    "sendsAlone": "It's sent to Hacienda automatically when issued.",
+    "issue": "Issue invoice · {{total}}",
+    "error": "The invoice couldn't be issued."
   }
 }

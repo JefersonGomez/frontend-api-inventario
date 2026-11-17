@@ -7,3 +7,5 @@ export const getSales = (params = {}) => api.get("/sales", { params }).then((res
 export const getSale = (id) => api.get(`/sales/${id}`).then((res) => res.data)
 // { lines: [{ lineId, quantity, condition: GOOD|DAMAGED }], reason, refund?: { method, reference? }, pin } → tiquete de la nota + credited + refund
 export const createReturn = (id, data) => api.post(`/sales/${id}/returns`, data).then((res) => res.data)
+// factura desde la oficina (sin caja): { customerId, locationId?, lines, payment? | credit?, notes? } → tiquete de la factura
+export const issueOfficeInvoice = (data) => api.post("/sales/invoices", data).then((res) => res.data)

@@ -35,6 +35,7 @@ import { ReceivableAccount, Receivables } from "@/pages/Receivables"
 import { PayableAccount, Payables } from "@/pages/Payables"
 import { Banks } from "@/pages/Banks"
 import { SaleDetail, Sales } from "@/pages/Sales"
+import { NewInvoice } from "@/pages/NewInvoice"
 import { CashClosings } from "@/pages/CashClosings"
 import { CashClosing } from "@/pages/CashClosing"
 
@@ -86,6 +87,7 @@ const router = createBrowserRouter([
       { path: "suppliers", element: <Suppliers /> },
       { path: "customers", element: <Customers /> },
       { path: "sales", element: <PermissionRoute perm={["sales.sell", "sales.void", "reports.view"]}><Sales /></PermissionRoute> },
+      { path: "sales/new-invoice", element: <PermissionRoute perm="invoices.issue"><NewInvoice /></PermissionRoute> },
       { path: "sales/:id", element: <PermissionRoute perm={["sales.sell", "sales.void", "reports.view"]}><SaleDetail /></PermissionRoute> },
       { path: "receivables", element: <PermissionRoute perm="receivables.manage"><Receivables /></PermissionRoute> },
       { path: "receivables/:id", element: <PermissionRoute perm="receivables.manage"><ReceivableAccount /></PermissionRoute> },

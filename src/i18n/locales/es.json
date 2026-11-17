@@ -1280,7 +1280,8 @@
     "credit.manage": "Dar crédito a clientes y fijar su límite",
     "receivables.manage": "Cuentas por cobrar y abonos sin caja",
     "payables.manage": "Cuentas por pagar: facturas de proveedores y pagos",
-    "banks.manage": "Bancos: cuentas, estado bancario y conciliación"
+    "banks.manage": "Bancos: cuentas, estado bancario y conciliación",
+    "invoices.issue": "Facturar desde la oficina (sin caja)"
   },
   "locations": {
     "label": "Ubicación",
@@ -2723,5 +2724,43 @@
       },
       "offline": "Vendida sin internet: va a Hacienda marcada como «sin internet», con la hora real de la venta."
     }
+  },
+  "invoice": {
+    "new": "Nueva factura",
+    "title": "Nueva factura",
+    "subtitle": "Factura electrónica a nombre de un cliente, sin pasar por la caja. La mercadería sale del inventario y se envía sola a Hacienda.",
+    "customer": "Cliente",
+    "pickCustomer": "Elegir el cliente",
+    "changeCustomer": "Cambiar",
+    "noId": "Sin cédula",
+    "needsId": "La factura electrónica necesita la cédula del cliente: complétala en Clientes o elige otro.",
+    "emailTo": "Cuando Hacienda la acepte, le llega a {{email}}.",
+    "noEmail": "El cliente no tiene correo: la factura sale igual, pero no se le puede enviar.",
+    "lines": "Qué se factura",
+    "from": "Sale de",
+    "product": "Producto {{n}}",
+    "service": "Servicio {{n}}",
+    "servicePlaceholder": "Ej.: flete a la obra, instalación",
+    "tax": "IVA",
+    "qty": "Cantidad",
+    "price": "Precio con IVA",
+    "priceHint": "El precio ya incluye el IVA. Vacío = el precio del producto. Los servicios no tocan el inventario.",
+    "removeLine": "Quitar la línea {{n}}",
+    "addProduct": "Agregar producto",
+    "addService": "Agregar servicio",
+    "total": "Total",
+    "payment": "Cómo paga",
+    "modes": {
+      "cash": "De contado",
+      "credit": "A crédito"
+    },
+    "noCredit": "Este cliente no tiene crédito autorizado: solo de contado.",
+    "method": "Forma de pago",
+    "reference": "Referencia (comprobante)",
+    "notes": "Nota (opcional)",
+    "missingCustomer": "Elige el cliente para poder facturar.",
+    "sendsAlone": "Se envía sola a Hacienda al emitirla.",
+    "issue": "Emitir factura · {{total}}",
+    "error": "No se pudo emitir la factura."
   }
 }

@@ -2,7 +2,7 @@ import { useState } from "react"
 import { Link, useNavigate, useParams } from "react-router-dom"
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
-import { ArrowLeft, Printer, Undo2 } from "lucide-react"
+import { ArrowLeft, FilePlus2, Printer, Undo2 } from "lucide-react"
 import { getSale, getSales } from "@/api/sales"
 import { saleDetailPoll, salesListPoll } from "@/lib/einvoice"
 import { useListParams } from "@/hoocks/useListParams"
@@ -25,6 +25,7 @@ const when = (d) => new Date(d).toLocaleString("es-CR", { dateStyle: "short", ti
 // Ventas: tiquetes, facturas y notas de crédito con filtros; el detalle reimprime y devuelve
 export function Sales() {
   const { t } = useTranslation()
+  const { can } = usePermissions()
   const money = useMoney()
   const navigate = useNavigate()
   const list = useListParams()
@@ -47,9 +48,18 @@ export function Sales() {
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold">{t("sales.title")}</h1>
-        <p className="text-sm text-muted-foreground">{t("sales.subtitle")}</p>
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold">{t("sales.title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("sales.subtitle")}</p>
+        </div>
+        {/* factura desde la oficina (sin caja): administrador y encargado */}
+        {can("invoices.issue") && (
+          <Button render={<Link to="/sales/new-invoice" />}>
+            <FilePlus2 />
+            {t("invoice.new")}
+          </Button>
+        )}
       </div>
 
       <div className="mb-4 flex flex-wrap items-end gap-3">
