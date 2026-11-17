@@ -12,6 +12,8 @@ import { ProductPicker } from "@/components/ProductPicker"
 import { LocationSelect } from "@/components/LocationSelect"
 import { CustomerPicker } from "@/components/pos/CustomerPicker"
 import { BankAccountSelect } from "@/components/banks/DepositDialog"
+import { useBankAccounts } from "@/hoocks/useBankAccounts"
+import { usePermissions } from "@/hoocks/usePermissions"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -29,6 +31,9 @@ export function NewInvoice() {
   const money = useMoney()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const { can } = usePermissions()
+  const { data: accounts = [], isSuccess: accountsLoaded } = useBankAccounts()
+  const noAccounts = accountsLoaded && !accounts.some((a) => a.isActive)
   const [customer, setCustomer] = useState(null)
   const [picking, setPicking] = useState(false)
   const [locationId, setLocationId] = useState("")
@@ -194,6 +199,13 @@ export function NewInvoice() {
                 <Input id="inv-ref" maxLength={60} value={payment.reference} onChange={(e) => setPayment({ ...payment, reference: e.target.value })} />
               </div>
               <BankAccountSelect id="inv-bank" value={payment.bankAccountId} onChange={(v) => setPayment({ ...payment, bankAccountId: v })} />
+              {/* sin cuentas registradas el selector no aparece: se explica en vez de dejar el hueco */}
+              {noAccounts && (
+                <p className="self-end rounded-md bg-muted px-3 py-2 text-xs text-muted-foreground">
+                  {t("invoice.noAccounts")}{" "}
+                  {can("banks.manage") && <Link to="/banks" className="font-medium text-foreground underline">{t("invoice.goBanks")}</Link>}
+                </p>
+              )}
             </div>
           ) : (
             <div className="grid gap-3 sm:grid-cols-2">

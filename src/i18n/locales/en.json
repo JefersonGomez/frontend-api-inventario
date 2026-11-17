@@ -2761,6 +2761,8 @@
     "missingCustomer": "Choose the customer to invoice.",
     "sendsAlone": "It's sent to Hacienda automatically when issued.",
     "issue": "Issue invoice · {{total}}",
-    "error": "The invoice couldn't be issued."
+    "error": "The invoice couldn't be issued.",
+    "noAccounts": "You have no bank accounts registered: the invoice is still issued, with no account assigned.",
+    "goBanks": "Add one in Banks"
   }
 }
