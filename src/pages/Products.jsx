@@ -26,7 +26,7 @@ import {
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
-import { Plus, Pencil, Trash2, FileUp, Layers, ChevronRight } from "lucide-react"
+import { Plus, Pencil, Trash2, FileUp, Layers, ChevronRight, Package, Wrench } from "lucide-react"
 import { BarcodeScanner } from "@/components/BarcodeScanner"
 import { useMoney } from "@/hoocks/useMoney"
 import { usePermissions } from "@/hoocks/usePermissions"
@@ -61,6 +61,7 @@ const emptyForm = {
   tracksLots: false, // maneja lotes con vencimiento
   lotCode: "", // con lotes y stock inicial: lote y vencimiento
   lotExpires: "",
+  isService: false, // servicio: sin inventario, código opcional y CABYS de servicios
 }
 
 // "Talla M · Color Rojo" debajo del nombre de una variante
@@ -155,20 +156,22 @@ export function Products() {
 
   const createMutation = useMutation({
     mutationFn: async () => {
+      const service = form.isService
       const product = await createProduct({
         ...form,
+        ...(service && { sku: form.sku.trim() || undefined, unit: "UNIT", tracksLots: false, barcode: "" }),
         price: Number(form.price),
         cost: form.cost === "" ? null : Number(form.cost),
-        stock: Number(form.stock),
+        stock: service ? 0 : Number(form.stock),
         locationId: form.locationId || undefined,
         ...(form.tracksLots && Number(form.stock) > 0 && {
           lot: { code: form.lotCode.trim(), expiresAt: form.lotExpires || null },
         }),
-        minStock: Number(form.minStock),
-        supplierId: form.supplierId || null,
-        expirationDate: form.expirationDate || undefined,
+        minStock: service ? 0 : Number(form.minStock),
+        supplierId: (!service && form.supplierId) || null,
+        expirationDate: (!service && form.expirationDate) || undefined,
         cabys: form.cabys.trim() || null,
-        ...variantPayload(),
+        ...(service ? { groupId: null, attributes: null } : variantPayload()),
       })
       // si la foto falla, el producto ya quedó creado: el diálogo pasa a editarlo para reintentar
       if (!pendingImage) return { product }
@@ -208,8 +211,9 @@ export function Products() {
         unit: form.unit,
         taxRate: form.taxRate,
         cabys: form.cabys.trim() || null,
-        tracksLots: form.tracksLots,
-        ...variantPayload(),
+        tracksLots: !form.isService && form.tracksLots,
+        isService: form.isService,
+        ...(form.isService ? { groupId: null, attributes: null, minStock: 0 } : variantPayload()),
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] })
@@ -227,9 +231,9 @@ export function Products() {
     },
   })
 
-  function openCreateDialog() {
+  function openCreateDialog(isService = false) {
     setEditingProduct(null)
-    setForm(emptyForm)
+    setForm({ ...emptyForm, isService })
     setDialogOpen(true)
   }
 
@@ -280,6 +284,7 @@ export function Products() {
       tracksLots: product.tracksLots ?? false,
       lotCode: "",
       lotExpires: "",
+      isService: product.isService ?? false,
     })
     setDialogOpen(true)
   }
@@ -326,6 +331,7 @@ export function Products() {
             <ProductThumb url={product.imageUrl} className="h-9 w-9 max-sm:hidden" />
             <div className="min-w-0">
               {product.name}
+              {product.isService && <Badge variant="outline" className="ml-2 align-middle text-[10px]">{t("products.service.badge")}</Badge>}
               {variantLabel(product) && (
                 <span className="block text-xs font-normal text-muted-foreground">{variantLabel(product)}</span>
               )}
@@ -339,7 +345,7 @@ export function Products() {
         <TableCell>
           {product.pendingReview ? <Badge variant="outline">{t("products.pending.badge")}</Badge> : money.format(product.price)}
           {/* pantallas muy angostas: el stock va debajo del precio */}
-          {showStock && <span className={`block text-xs whitespace-nowrap sm:hidden ${product.stock <= product.minStock ? "text-destructive" : "text-muted-foreground"}`}>
+          {showStock && !product.isService && <span className={`block text-xs whitespace-nowrap sm:hidden ${product.stock <= product.minStock ? "text-destructive" : "text-muted-foreground"}`}>
             {formatQty(product.stock, product.unit, t)}
           </span>}
         </TableCell>
@@ -349,7 +355,7 @@ export function Products() {
           </TableCell>
         )}
         {showStock && <TableCell className="whitespace-nowrap max-sm:hidden">
-          {product.stock <= product.minStock ? (
+          {product.isService ? "—" : product.stock <= product.minStock ? (
             <Badge variant="destructive">{formatQty(product.stock, product.unit, t)}</Badge>
           ) : (
             formatQty(product.stock, product.unit, t)
@@ -390,7 +396,13 @@ export function Products() {
             </Button>
           )}
           {canManage && (
-            <Button onClick={openCreateDialog}>
+            <Button variant="outline" onClick={() => openCreateDialog(true)}>
+              <Wrench className="w-4 h-4 mr-2" />
+              {t("products.service.new")}
+            </Button>
+          )}
+          {canManage && (
+            <Button onClick={() => openCreateDialog(false)}>
               <Plus className="w-4 h-4 mr-2" />
               {t("products.new_button")}
             </Button>
@@ -499,9 +511,32 @@ export function Products() {
           <form onSubmit={handleSubmit} className="space-y-5">
             <DialogHeader>
               <DialogTitle>
-                {editingProduct ? t("products.dialog.edit_title") : t("products.dialog.create_title")}
+                {form.isService
+                  ? t(editingProduct ? "products.service.edit_title" : "products.service.create_title")
+                  : editingProduct ? t("products.dialog.edit_title") : t("products.dialog.create_title")}
               </DialogTitle>
             </DialogHeader>
+
+            {/* ¿qué es? un producto lleva inventario; un servicio (consultoría, instalación…) no */}
+            <div role="radiogroup" aria-label={t("products.service.kind")} className="grid grid-cols-2 gap-2 sm:max-w-md">
+              {[false, true].map((svc) => (
+                <button
+                  key={String(svc)}
+                  type="button"
+                  role="radio"
+                  aria-checked={form.isService === svc}
+                  disabled={svc && Boolean(editingProduct) && !editingProduct.isService && Number(editingProduct.stock) !== 0}
+                  onClick={() => setForm((f) => ({ ...f, isService: svc }))}
+                  className={`flex items-start gap-2 rounded-lg border p-2.5 text-left text-sm disabled:opacity-50 ${form.isService === svc ? "border-primary ring-1 ring-primary bg-primary/5" : "border-border hover:bg-muted"}`}
+                >
+                  {svc ? <Wrench className="mt-0.5 h-4 w-4 shrink-0" aria-hidden /> : <Package className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />}
+                  <span>
+                    <span className="block font-medium">{t(svc ? "products.service.kindService" : "products.service.kindProduct")}</span>
+                    <span className="block text-xs text-muted-foreground">{t(svc ? "products.service.kindServiceHint" : "products.service.kindProductHint")}</span>
+                  </span>
+                </button>
+              ))}
+            </div>
 
             <fieldset className="space-y-3">
               <legend className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("products.dialog.section_basic")}</legend>
@@ -526,10 +561,10 @@ export function Products() {
                 ) : (
                   <div className="space-y-1.5">
                     <Label htmlFor="product-sku">{t("products.dialog.label_sku")}</Label>
-                    <Input id="product-sku" value={form.sku} onChange={(e) => setForm({ ...form, sku: e.target.value })} required />
+                    <Input id="product-sku" value={form.sku} onChange={(e) => setForm({ ...form, sku: e.target.value })} required={!form.isService} placeholder={form.isService ? t("products.service.skuAuto") : undefined} />
                   </div>
                 )}
-                <div className="space-y-1.5 sm:col-span-2">
+                {!form.isService && <div className="space-y-1.5 sm:col-span-2">
                   <Label htmlFor="product-barcode">{t("products.dialog.label_barcode")}</Label>
                   <div className="flex gap-2">
                     <Input
@@ -540,7 +575,7 @@ export function Products() {
                     />
                     <BarcodeScanner onScan={handleScan} />
                   </div>
-                </div>
+                </div>}
                 <div className="space-y-1.5">
                   <Label htmlFor="product-category">{t("products.dialog.label_category")}</Label>
                   <Select
@@ -562,7 +597,7 @@ export function Products() {
                   <Label htmlFor="product-description">{t("products.dialog.label_description")}</Label>
                   <Input id="product-description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
                 </div>
-                <div className="space-y-1.5">
+                {!form.isService && <div className="space-y-1.5">
                   <Label htmlFor="product-supplier">{t("products.dialog.label_supplier")}</Label>
                   <Select
                     value={form.supplierId || "none"}
@@ -578,7 +613,7 @@ export function Products() {
                       ))}
                     </SelectContent>
                   </Select>
-                </div>
+                </div>}
               </div>
             </fieldset>
 
@@ -616,10 +651,14 @@ export function Products() {
                 />
               </div>
               <p id="price-hint" className="text-xs text-muted-foreground">
-                {t("products.dialog.tax_hint")} {t("products.dialog.cost_hint")} {t("products.dialog.cabys_hint")}
+                {t("products.dialog.tax_hint")} {t("products.dialog.cost_hint")} {t(form.isService ? "products.service.cabysHint" : "products.dialog.cabys_hint")}
               </p>
+              {form.isService && /^\d{13}$/.test(form.cabys) && !/^[5-9]/.test(form.cabys) && (
+                <p role="alert" className="text-sm text-destructive">{t("products.service.cabysGoods")}</p>
+              )}
             </fieldset>
 
+            {!form.isService && <>
             <fieldset className="space-y-3">
               <legend className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t(showStock ? "products.dialog.section_stock" : "products.dialog.section_unit")}</legend>
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -726,6 +765,7 @@ export function Products() {
               </div>
               <p id="product-group-hint" className="text-xs text-muted-foreground">{t("products.variants.group_hint")}</p>
             </fieldset>
+            </>}
 
             {/* Historial de precios, solo al editar */}
             {editingProduct && <ProductPriceHistory productId={editingProduct.id} />}

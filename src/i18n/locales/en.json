@@ -428,6 +428,20 @@
       "taxMismatch": "Hacienda says VAT {{tax}} for this code.",
       "useTax": "Use {{tax}}",
       "unavailable": "Couldn't reach Hacienda right now."
+    },
+    "service": {
+      "new": "New service",
+      "create_title": "New service",
+      "edit_title": "Edit service",
+      "kind": "Type",
+      "kindProduct": "Product",
+      "kindProductHint": "Merchandise: tracks inventory.",
+      "kindService": "Service",
+      "kindServiceHint": "Consulting, installation, freight… No inventory.",
+      "skuAuto": "Generated automatically (SERV-0001)",
+      "cabysHint": "Use the search to find the service CABYS (service codes start with 5 to 9).",
+      "cabysGoods": "That CABYS is for goods. For a service pick one starting with 5 to 9.",
+      "badge": "Service"
     }
   },
   "categories": {

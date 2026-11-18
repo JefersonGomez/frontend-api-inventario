@@ -428,6 +428,20 @@
       "taxMismatch": "Hacienda indica IVA {{tax}} para este código.",
       "useTax": "Usar {{tax}}",
       "unavailable": "No se pudo consultar a Hacienda en este momento."
+    },
+    "service": {
+      "new": "Nuevo servicio",
+      "create_title": "Nuevo servicio",
+      "edit_title": "Editar servicio",
+      "kind": "Tipo",
+      "kindProduct": "Producto",
+      "kindProductHint": "Mercadería: lleva inventario.",
+      "kindService": "Servicio",
+      "kindServiceHint": "Consultoría, instalación, flete… Sin inventario.",
+      "skuAuto": "Se genera solo (SERV-0001)",
+      "cabysHint": "Usa la lupa para buscar el CABYS del servicio (los de servicios empiezan con 5 a 9).",
+      "cabysGoods": "Ese CABYS es de un bien (mercadería). Para un servicio elige uno que empiece con 5 a 9.",
+      "badge": "Servicio"
     }
   },
   "categories": {
