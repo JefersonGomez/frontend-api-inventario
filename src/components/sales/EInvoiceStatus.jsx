@@ -54,9 +54,9 @@ export function EInvoicePanel({ documentId, type, einvoice, referenceStatus, off
   const error = send.error || check.error || xml.error || mail.error
   // líneas sin CABYS cuando quedó Con error (las de producto toman el que el producto tenga ahora si se corrigió)
   const missing = status === "ERROR" && manage ? lines.filter((l) => !l.cabys) : []
-  const fixReady = missing.every((l) => l.productId || /^d{13}$/.test(fix[l.lineNumber] ?? ""))
+  const fixReady = missing.every((l) => l.productId || /^\d{13}$/.test(fix[l.lineNumber] ?? ""))
   const fixBody = () => {
-    const cabys = Object.fromEntries(Object.entries(fix).filter(([, v]) => /^d{13}$/.test(v)))
+    const cabys = Object.fromEntries(Object.entries(fix).filter(([, v]) => /^\d{13}$/.test(v)))
     return Object.keys(cabys).length ? { cabys } : undefined
   }
 
