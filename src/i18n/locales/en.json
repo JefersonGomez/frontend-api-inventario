@@ -1672,7 +1672,8 @@
       "reason": "Reason: {{reason}}",
       "refund": "Refund {{method}}",
       "returnBy": "Return approved by {{name}}",
-      "provisional": "Offline sale · Ref. {{number}}"
+      "provisional": "Offline sale · Ref. {{number}}",
+      "debitNote": "DEBIT NOTE"
     },
     "close": {
       "title": "Close register",
@@ -2023,7 +2024,8 @@
     "kinds": {
       "all": "All",
       "SALE": "Sales",
-      "CREDIT_NOTE": "Credit notes"
+      "CREDIT_NOTE": "Credit notes",
+      "DEBIT_NOTE": "Debit notes"
     },
     "from": "From",
     "to": "To",
@@ -2788,5 +2790,18 @@
     "noAccounts": "You have no bank accounts registered: the invoice is still issued, with no account assigned.",
     "goBanks": "Add one in Banks",
     "serviceCabys": "Service CABYS (use the magnifier to find it)"
+  },
+  "debit": {
+    "button": "Debit note",
+    "title": "Debit note · sale {{number}}",
+    "subtitle": "Charge the customer an extra amount on this sale (e.g. uncharged delivery or interest). It's sent to Hacienda automatically.",
+    "reason": "Reason",
+    "reasonPlaceholder": "E.g.: delivery that wasn't charged",
+    "charge": "Charge {{n}}",
+    "addCharge": "Add charge",
+    "sendsAlone": "It's sent to Hacienda once the original sale is accepted.",
+    "issue": "Issue debit note · {{total}}",
+    "error": "The debit note couldn't be issued.",
+    "listTitle": "Extra charges (debit notes)"
   }
 }

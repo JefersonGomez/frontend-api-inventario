@@ -2,7 +2,7 @@ import { useState } from "react"
 import { Link, useNavigate, useParams } from "react-router-dom"
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
-import { ArrowLeft, FilePlus2, Printer, Undo2 } from "lucide-react"
+import { ArrowLeft, FilePlus2, Printer, ReceiptText, Undo2 } from "lucide-react"
 import { getSale, getSales } from "@/api/sales"
 import { saleDetailPoll, salesListPoll } from "@/lib/einvoice"
 import { useListParams } from "@/hoocks/useListParams"
@@ -13,6 +13,7 @@ import { SearchInput } from "@/components/SearchInput"
 import { Ticket } from "@/components/pos/Ticket"
 import { ReturnFlow } from "@/components/sales/ReturnFlow"
 import { EInvoiceBadge, EInvoicePanel } from "@/components/sales/EInvoiceStatus"
+import { DebitNoteDialog } from "@/components/sales/DebitNoteDialog"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -44,6 +45,7 @@ export function Sales() {
     { value: "all", label: t("sales.kinds.all") },
     { value: "SALE", label: t("sales.kinds.SALE") },
     { value: "CREDIT_NOTE", label: t("sales.kinds.CREDIT_NOTE") },
+    { value: "DEBIT_NOTE", label: t("sales.kinds.DEBIT_NOTE") },
   ]
 
   return (
@@ -133,11 +135,12 @@ export function SaleDetail() {
   const { can } = usePermissions()
   const { id } = useParams()
   const [returning, setReturning] = useState(false)
+  const [debiting, setDebiting] = useState(false)
   // mientras Hacienda no responde, el estado se actualiza solo (sin refrescar la página)
   const { data: sale, isLoading } = useQuery({ queryKey: ["sales", id], queryFn: () => getSale(id), refetchInterval: (query) => saleDetailPoll(query.state.data) })
   if (isLoading || !sale) return <p className="text-muted-foreground">{t("common.loading")}</p>
   const doc = sale.document
-  const isNote = doc.type === "CREDIT_NOTE"
+  const isNote = doc.type === "CREDIT_NOTE" || doc.type === "DEBIT_NOTE"
   const allBack = doc.lines.every((l) => (sale.returned[l.id] ?? 0) >= Number(l.quantity))
   const expired = sale.returnUntil && new Date(sale.returnUntil) < new Date()
 
@@ -167,6 +170,13 @@ export function SaleDetail() {
             <Printer />
             {t("pos.print")}
           </Button>
+          {/* cargo extra sobre la venta (administrador y encargado) */}
+          {!isNote && can("invoices.issue") && (
+            <Button variant="outline" onClick={() => setDebiting(true)}>
+              <ReceiptText />
+              {t("debit.button")}
+            </Button>
+          )}
           {!isNote && (can("sales.sell") || can("sales.void")) && (
             <Button onClick={() => setReturning(true)} disabled={allBack || expired}>
               <Undo2 />
@@ -222,12 +232,32 @@ export function SaleDetail() {
               </ul>
             </div>
           )}
+          {sale.debitNotes?.length > 0 && (
+            <div>
+              <h2 className="mb-2 text-lg font-semibold">{t("debit.listTitle")}</h2>
+              <ul className="divide-y divide-border rounded-xl border border-border">
+                {sale.debitNotes.map((n) => (
+                  <li key={n.id} className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 text-sm">
+                    <span>
+                      <Link to={`/sales/${n.id}`} className="font-mono text-xs hover:underline">{n.consecutive.slice(-10)}</Link>
+                      <span className="ml-2 text-muted-foreground">{when(n.issuedAt)} · {n.referenceReason} · {n.createdBy?.name}</span>
+                    </span>
+                    <span className="flex items-center gap-2">
+                      <EInvoiceBadge status={n.einvoice?.status} />
+                      <span className="font-mono">+{money.format(n.total)}</span>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
         {/* mientras se devuelve, solo la nota queda para imprimir */}
         <div className="justify-self-center">{!returning && <Ticket data={sale} />}</div>
       </div>
 
       <ReturnFlow saleId={returning ? doc.id : null} onClose={() => setReturning(false)} />
+      <DebitNoteDialog open={debiting} sale={sale} onClose={() => setDebiting(false)} />
     </div>
   )
 }

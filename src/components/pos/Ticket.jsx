@@ -27,7 +27,7 @@ export function Ticket({ data }) {
       </header>
       <hr />
       <p className="stk-ticket-center stk-ticket-strong">
-        {doc.type === "CREDIT_NOTE" ? t("pos.ticket.creditNote") : doc.type === "INVOICE" ? t("pos.ticket.internalInvoice") : t("pos.ticket.internal")}
+        {doc.type === "CREDIT_NOTE" ? t("pos.ticket.creditNote") : doc.type === "DEBIT_NOTE" ? t("pos.ticket.debitNote") : doc.type === "INVOICE" ? t("pos.ticket.internalInvoice") : t("pos.ticket.internal")}
       </p>
       <p className="stk-ticket-center">{doc.provisional ? t("pos.ticket.provisional", { number: doc.consecutive }) : `N.º ${doc.consecutive}`}</p>
       {doc.referenceDocument && <p>{t("pos.ticket.reference_doc", { number: doc.referenceDocument.consecutive })}</p>}

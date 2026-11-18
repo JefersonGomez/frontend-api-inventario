@@ -1672,7 +1672,8 @@
       "reason": "Motivo: {{reason}}",
       "refund": "Reembolso {{method}}",
       "returnBy": "Devolución autorizada por {{name}}",
-      "provisional": "Venta sin conexión · Ref. {{number}}"
+      "provisional": "Venta sin conexión · Ref. {{number}}",
+      "debitNote": "NOTA DE DÉBITO"
     },
     "close": {
       "title": "Cierre de caja",
@@ -2023,7 +2024,8 @@
     "kinds": {
       "all": "Todo",
       "SALE": "Ventas",
-      "CREDIT_NOTE": "Notas de crédito"
+      "CREDIT_NOTE": "Notas de crédito",
+      "DEBIT_NOTE": "Notas de débito"
     },
     "from": "Desde",
     "to": "Hasta",
@@ -2788,5 +2790,18 @@
     "noAccounts": "No tienes cuentas bancarias registradas: la factura se emite igual, sin cuenta asignada.",
     "goBanks": "Registrar una en Bancos",
     "serviceCabys": "CABYS del servicio (usa la lupa para buscarlo)"
+  },
+  "debit": {
+    "button": "Nota de débito",
+    "title": "Nota de débito · venta {{number}}",
+    "subtitle": "Cóbrale al cliente un cargo extra sobre esta venta (por ejemplo un flete que no se cobró o intereses). Se envía sola a Hacienda.",
+    "reason": "Motivo",
+    "reasonPlaceholder": "Ej.: flete a domicilio que no se cobró",
+    "charge": "Cargo {{n}}",
+    "addCharge": "Agregar cargo",
+    "sendsAlone": "Sale a Hacienda cuando la venta original esté aceptada.",
+    "issue": "Emitir nota de débito · {{total}}",
+    "error": "No se pudo emitir la nota de débito.",
+    "listTitle": "Cargos extra (notas de débito)"
   }
 }
