@@ -1673,7 +1673,18 @@
       "refund": "Reembolso {{method}}",
       "returnBy": "Devolución autorizada por {{name}}",
       "provisional": "Venta sin conexión · Ref. {{number}}",
-      "debitNote": "NOTA DE DÉBITO"
+      "debitNote": "NOTA DE DÉBITO",
+      "electronic": {
+        "ticket": "TIQUETE ELECTRÓNICO",
+        "invoice": "FACTURA ELECTRÓNICA",
+        "creditNote": "NOTA DE CRÉDITO ELECTRÓNICA",
+        "debitNote": "NOTA DE DÉBITO ELECTRÓNICA"
+      },
+      "clave": "Clave:",
+      "accepted": "Aceptado por el Ministerio de Hacienda",
+      "sending": "En proceso de envío a Hacienda",
+      "testEnv": "(ambiente de pruebas: sin validez fiscal)",
+      "electronicFooter": "Representación impresa del comprobante electrónico."
     },
     "close": {
       "title": "Cierre de caja",

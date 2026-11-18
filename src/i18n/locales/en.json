@@ -1673,7 +1673,18 @@
       "refund": "Refund {{method}}",
       "returnBy": "Return approved by {{name}}",
       "provisional": "Offline sale · Ref. {{number}}",
-      "debitNote": "DEBIT NOTE"
+      "debitNote": "DEBIT NOTE",
+      "electronic": {
+        "ticket": "ELECTRONIC TICKET",
+        "invoice": "ELECTRONIC INVOICE",
+        "creditNote": "ELECTRONIC CREDIT NOTE",
+        "debitNote": "ELECTRONIC DEBIT NOTE"
+      },
+      "clave": "Key:",
+      "accepted": "Accepted by the Ministry of Finance",
+      "sending": "Being sent to Hacienda",
+      "testEnv": "(test environment: no tax validity)",
+      "electronicFooter": "Printed representation of the electronic document."
     },
     "close": {
       "title": "Close register",

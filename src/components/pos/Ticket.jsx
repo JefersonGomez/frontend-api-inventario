@@ -4,8 +4,9 @@ import { documentTaxes, TAX_PERCENT } from "@/lib/pos"
 import { formatFiscalId } from "@/lib/fiscal"
 import { PrintArea } from "./PrintArea"
 
-// Tiquete térmico (80 o 58 mm según la caja). "TIQUETE/FACTURA INTERNA" hasta que la facturación
-// electrónica esté activa (Bloque 9). Los montos se muestran con IVA, como los ve el cliente.
+// Tiquete térmico (80 o 58 mm según la caja). Los montos se muestran con IVA, como los ve el cliente.
+// Si el comprobante es electrónico (ya armado y no rechazado, o lo va a mandar el envío automático) se
+// imprime como tal, con su clave; si no, "TIQUETE/FACTURA INTERNA" sin validez fiscal.
 export function Ticket({ data }) {
   const { t } = useTranslation()
   const { document: doc, company, register, location, cashier } = data
@@ -15,6 +16,9 @@ export function Ticket({ data }) {
   const issued = new Date(doc.issuedAt)
   const withTax = (l, v) => Number(v) * (1 + TAX_PERCENT[l.taxRate] / 100)
   const discount = doc.lines.reduce((s, l) => s + withTax(l, l.discount), 0)
+  const ei = data.einvoice
+  const electronic = ei ? Boolean(ei.clave) && !["REJECTED", "ERROR"].includes(ei.status) : Boolean(data.einvoiceOn)
+  const kind = { TICKET: "ticket", INVOICE: "invoice", CREDIT_NOTE: "creditNote", DEBIT_NOTE: "debitNote" }[doc.type]
 
   return (
     <PrintArea width={register?.ticketWidth ?? 80}>
@@ -27,7 +31,9 @@ export function Ticket({ data }) {
       </header>
       <hr />
       <p className="stk-ticket-center stk-ticket-strong">
-        {doc.type === "CREDIT_NOTE" ? t("pos.ticket.creditNote") : doc.type === "DEBIT_NOTE" ? t("pos.ticket.debitNote") : doc.type === "INVOICE" ? t("pos.ticket.internalInvoice") : t("pos.ticket.internal")}
+        {electronic
+          ? t(`pos.ticket.electronic.${kind}`)
+          : doc.type === "CREDIT_NOTE" ? t("pos.ticket.creditNote") : doc.type === "DEBIT_NOTE" ? t("pos.ticket.debitNote") : doc.type === "INVOICE" ? t("pos.ticket.internalInvoice") : t("pos.ticket.internal")}
       </p>
       <p className="stk-ticket-center">{doc.provisional ? t("pos.ticket.provisional", { number: doc.consecutive }) : `N.º ${doc.consecutive}`}</p>
       {doc.referenceDocument && <p>{t("pos.ticket.reference_doc", { number: doc.referenceDocument.consecutive })}</p>}
@@ -123,7 +129,24 @@ export function Ticket({ data }) {
       )}
       <hr />
       <p className="stk-ticket-center">{t("pos.ticket.thanks")}</p>
-      <p className="stk-ticket-center stk-ticket-small">{t("pos.ticket.notFiscal")}</p>
+      {electronic ? (
+        <>
+          {/* la clave del comprobante: con ella el cliente lo consulta en Hacienda */}
+          {ei?.clave ? (
+            <>
+              <p className="stk-ticket-small">{t("pos.ticket.clave")}</p>
+              <p className="stk-ticket-small" style={{ wordBreak: "break-all" }}>{ei.clave}</p>
+              <p className="stk-ticket-center stk-ticket-small">{ei.status === "ACCEPTED" ? t("pos.ticket.accepted") : t("pos.ticket.sending")}</p>
+            </>
+          ) : (
+            <p className="stk-ticket-center stk-ticket-small">{t("pos.ticket.sending")}</p>
+          )}
+          {ei?.environment === "pruebas" && <p className="stk-ticket-center stk-ticket-small">{t("pos.ticket.testEnv")}</p>}
+          <p className="stk-ticket-center stk-ticket-small">{t("pos.ticket.electronicFooter")}</p>
+        </>
+      ) : (
+        <p className="stk-ticket-center stk-ticket-small">{t("pos.ticket.notFiscal")}</p>
+      )}
     </PrintArea>
   )
 }
