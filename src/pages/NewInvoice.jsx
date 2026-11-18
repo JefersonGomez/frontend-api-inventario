@@ -128,7 +128,7 @@ export function NewInvoice() {
                     <ProductPicker id={`inv-p-${l.key}`} value={l.product} onChange={(p) => update(l.key, { product: p, price: "" })} />
                   </div>
                 ) : (
-                  <div className="col-span-2 grid gap-2 sm:col-span-1 sm:grid-cols-[1fr_120px_200px]">
+                  <div className="col-span-2 grid gap-2 sm:col-span-1 sm:grid-cols-[1fr_120px]">
                     <div className="space-y-1.5">
                       <Label htmlFor={`inv-d-${l.key}`}>{t("invoice.service", { n: i + 1 })}</Label>
                       <Input id={`inv-d-${l.key}`} maxLength={200} placeholder={t("invoice.servicePlaceholder")} value={l.description} onChange={(e) => update(l.key, { description: e.target.value })} />
@@ -138,10 +138,6 @@ export function NewInvoice() {
                       <select id={`inv-t-${l.key}`} className={selectClass} value={l.taxRate} onChange={(e) => update(l.key, { taxRate: e.target.value })}>
                         {TAX_RATES.map((r) => <option key={r} value={r}>{t(`taxRates.${r}`)}</option>)}
                       </select>
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label htmlFor={`inv-c-${l.key}`}>CABYS</Label>
-                      <CabysSearch id={`inv-c-${l.key}`} required value={l.cabys} suggest={l.description} onChange={(cabys) => update(l.key, { cabys })} />
                     </div>
                   </div>
                 )}
@@ -162,6 +158,13 @@ export function NewInvoice() {
                 <Button type="button" variant="ghost" size="icon-sm" className="justify-self-end" disabled={lines.length === 1} onClick={() => remove(l.key)} aria-label={t("invoice.removeLine", { n: i + 1 })}>
                   <Trash2 />
                 </Button>
+                {/* el CABYS del servicio en su propio renglón, a todo el ancho: el buscador necesita espacio */}
+                {l.kind === "service" && (
+                  <div className="col-span-full space-y-1.5 sm:max-w-xl">
+                    <Label htmlFor={`inv-c-${l.key}`}>{t("invoice.serviceCabys")}</Label>
+                    <CabysSearch id={`inv-c-${l.key}`} required value={l.cabys} suggest={l.description} onChange={(cabys) => update(l.key, { cabys })} />
+                  </div>
+                )}
               </li>
             ))}
           </ul>

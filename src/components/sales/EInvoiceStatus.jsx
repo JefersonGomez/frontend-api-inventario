@@ -131,8 +131,8 @@ export function EInvoicePanel({ documentId, type, einvoice, referenceStatus, off
           <p className="text-sm font-medium">{t("einvoice.panel.fixTitle")}</p>
           <p className="text-xs text-muted-foreground">{t("einvoice.panel.fixHint")}</p>
           {missing.map((l) => (
-            <div key={l.lineNumber} className="grid gap-1.5 sm:grid-cols-[1fr_320px] sm:items-start">
-              <label htmlFor={`fix-${l.lineNumber}`} className="pt-2 text-sm">
+            <div key={l.lineNumber} className="space-y-1.5 sm:max-w-xl">
+              <label htmlFor={`fix-${l.lineNumber}`} className="block text-sm">
                 {t("einvoice.panel.fixLine", { n: l.lineNumber, name: l.description })}
                 {l.productId && <span className="block text-xs text-muted-foreground">{t("einvoice.panel.fixProduct")}</span>}
               </label>

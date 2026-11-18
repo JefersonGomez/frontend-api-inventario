@@ -2768,6 +2768,7 @@
     "issue": "Issue invoice · {{total}}",
     "error": "The invoice couldn't be issued.",
     "noAccounts": "You have no bank accounts registered: the invoice is still issued, with no account assigned.",
-    "goBanks": "Add one in Banks"
+    "goBanks": "Add one in Banks",
+    "serviceCabys": "Service CABYS (use the magnifier to find it)"
   }
 }

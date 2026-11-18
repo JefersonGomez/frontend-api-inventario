@@ -2768,6 +2768,7 @@
     "issue": "Emitir factura · {{total}}",
     "error": "No se pudo emitir la factura.",
     "noAccounts": "No tienes cuentas bancarias registradas: la factura se emite igual, sin cuenta asignada.",
-    "goBanks": "Registrar una en Bancos"
+    "goBanks": "Registrar una en Bancos",
+    "serviceCabys": "CABYS del servicio (usa la lupa para buscarlo)"
   }
 }
