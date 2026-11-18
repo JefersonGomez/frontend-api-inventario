@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, Navigate } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { Box } from "lucide-react"
@@ -8,6 +8,7 @@ import { getDashboard, getLowStockReport, getInventoryValueBreakdown } from "@/a
 import { useAuth } from "@/context/AuthContext"
 import { useMoney } from "@/hoocks/useMoney"
 import { usePermissions } from "@/hoocks/usePermissions"
+import { usePlan } from "@/hoocks/usePlan"
 import "./Dashboard.css"
 import { OnboardingCard } from "@/components/OnboardingCard"
 import { DailySummaryCard } from "@/components/DailySummaryCard"
@@ -18,7 +19,15 @@ const pct = (part, total) => (total > 0 ? Math.round((part / total) * 100) : 0)
 const initials = (name = "") =>
   name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase() || "?"
 
+// plan "Solo facturación": no hay inventario que mostrar; la portada son sus comprobantes
 export function Dashboard() {
+  const { invoicingOnly, isLoading } = usePlan()
+  if (isLoading) return null
+  if (invoicingOnly) return <Navigate to="/sales" replace />
+  return <InventoryDashboard />
+}
+
+function InventoryDashboard() {
   const { t } = useTranslation()
   const { user } = useAuth()
   const money = useMoney()

@@ -4,13 +4,14 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "@/context/AuthContext";
 import { usePlatformOwner } from "@/hoocks/usePlatformOwner";
 import { usePermissions } from "@/hoocks/usePermissions";
+import { usePlan } from "@/hoocks/usePlan";
 import { useQuery } from "@tanstack/react-query";
 import { getLocations } from "@/api/locations";
 import { CubivoMark } from "@/components/CubivoMark";
 import {
   LayoutDashboard, Package, FolderTree, ArrowLeftRight, Route, ClipboardCheck, Tag, BarChart3, ClipboardList, ShoppingCart,
   Settings as SettingsIcon, Users as UsersIcon, Truck, ShieldCheck, UserRound, LogOut, ScanBarcode, Building2, Contact,
-  Monitor, AlertTriangle, Calculator, HandCoins, Receipt, Menu, X, Pin, PinOff, Wallet, Landmark,
+  Monitor, AlertTriangle, Calculator, HandCoins, Receipt, Menu, X, Pin, PinOff, Wallet, Landmark, FilePlus2,
 } from "lucide-react";
 
 const ICON = { className: "w-[18px] h-[18px]", strokeWidth: 1.7, "aria-hidden": true };
@@ -89,6 +90,7 @@ export function Sidebar() {
   const { can } = usePermissions();
   const { data: locations = [] } = useQuery({ queryKey: ["locations"], queryFn: () => getLocations() });
   const { isPlatformOwner } = usePlatformOwner();
+  const { invoicingOnly } = usePlan();
 
   const isMobile = useMedia("(max-width: 760px)");
   const canHover = useMedia("(hover: hover) and (pointer: fine)");
@@ -141,6 +143,46 @@ export function Sidebar() {
   // el dueño de la plataforma no usa el inventario de un cliente: solo ve la plataforma
   const groups = isPlatformOwner
     ? [{ id: "platform", items: [{ to: "/platform", label: t("sidebar.platform"), icon: Building2 }] }]
+    : invoicingOnly
+    ? // plan "Solo facturación": sin inventario, cajas ni compras; solo lo que hace falta para facturar
+      [
+        {
+          id: "sales",
+          title: t("sidebar.groups.invoicing"),
+          items: all(
+            can("invoices.issue") && { to: "/sales/new-invoice", label: t("sidebar.newInvoice"), icon: FilePlus2 },
+            { to: "/sales", label: t("sidebar.documents"), icon: Receipt },
+            { to: "/customers", label: t("sidebar.customers"), icon: Contact },
+            can("receivables.manage") && { to: "/receivables", label: t("sidebar.receivables"), icon: HandCoins },
+          ),
+        },
+        {
+          id: "catalog",
+          title: t("sidebar.groups.catalog"),
+          items: [
+            { to: "/products", label: t("sidebar.catalog"), icon: Package },
+            { to: "/categories", label: t("sidebar.categories"), icon: FolderTree },
+          ],
+        },
+        {
+          id: "purchases",
+          title: t("sidebar.groups.received"),
+          items: all(
+            { to: "/suppliers", label: t("sidebar.suppliers"), icon: Truck },
+            can("payables.manage") && { to: "/payables", label: t("sidebar.receivedInvoices"), icon: Wallet },
+          ),
+        },
+        {
+          id: "admin",
+          title: t("sidebar.groups.admin"),
+          items: all(
+            can("reports.view") && { to: "/reports", label: t("sidebar.reports"), icon: BarChart3 },
+            can("banks.manage") && { to: "/banks", label: t("sidebar.banks"), icon: Landmark },
+            can("users.manage") && { to: "/users", label: t("sidebar.users"), icon: UsersIcon },
+            can("audit.view") && { to: "/audit-log", label: t("sidebar.auditLog"), icon: ShieldCheck },
+          ),
+        },
+      ].filter((g) => g.items.length)
     : [
         { id: "home", items: [{ to: "/", label: t("sidebar.dashboard"), icon: LayoutDashboard }] },
         {

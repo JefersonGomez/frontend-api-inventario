@@ -8,7 +8,10 @@ import { Check, ChevronsUpDown, X } from "lucide-react"
 
 // Selector de producto con búsqueda en el servidor (nombre, SKU, código de barras): no hace falta
 // bajar el catálogo entero. value = producto elegido (objeto) o null.
+import { usePlan } from "@/hoocks/usePlan"
+
 export function ProductPicker({ id, value, onChange, disabled, required, ariaDescribedBy }) {
+  const { invoicingOnly } = usePlan() // solo facturación: sin existencias que mostrar
   const { t } = useTranslation()
   const [input, setInput] = useState("")
   const [term, setTerm] = useState("")
@@ -89,7 +92,7 @@ export function ProductPicker({ id, value, onChange, disabled, required, ariaDes
                     <span className="col-start-2 flex min-w-0 flex-col">
                       <span className="truncate font-medium">{p.name}</span>
                       <span className="text-xs text-muted-foreground">
-                        {p.sku} · {t("picker.stock", { stock: formatQty(p.stock, p.unit, t) })}
+                        {p.sku}{!invoicingOnly && <> · {t("picker.stock", { stock: formatQty(p.stock, p.unit, t) })}</>}
                       </span>
                     </span>
                   </Combobox.Item>

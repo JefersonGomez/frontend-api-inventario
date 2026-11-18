@@ -16,13 +16,15 @@ import { Label } from "@/components/ui/label"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
+import { usePlan } from "@/hoocks/usePlan"
 
 // Botón de cada factura importada desde su XML: entrar su mercadería al inventario (o "ya entró")
 export function StockEntry({ invoice }) {
   const { t } = useTranslation()
   const { can } = usePermissions()
   const [open, setOpen] = useState(false)
-  if (!invoice.clave || invoice.voidedAt) return null
+  const { invoicingOnly } = usePlan() // solo facturación: no hay inventario donde meter la mercadería
+  if (!invoice.clave || invoice.voidedAt || invoicingOnly) return null
   if (invoice.stockReceivedAt) {
     return (
       <Badge variant="outline" className="mt-1 border-emerald-500/40 text-[10px] text-emerald-700 dark:text-emerald-400">

@@ -271,3 +271,18 @@
 .stk-btn-outline:hover { background: var(--stk-accent-soft); }
 .stk-btn-outline:disabled { opacity: 0.6; cursor: progress; }
 .stk-btn-outline:focus-visible { outline: 2px solid var(--stk-accent-strong); outline-offset: 2px; }
+
+/* qué necesita: todo el sistema o solo facturar */
+.stk-plans { border: 0; margin: 0 0 4px; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.stk-plans legend { font-size: 13px; font-weight: 600; color: var(--stk-ink); margin-bottom: 8px; padding: 0; }
+.stk-plan {
+  display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border-radius: 10px; cursor: pointer;
+  border: 1px solid var(--stk-border); background: var(--stk-field); color: var(--stk-ink);
+}
+.stk-plan[data-on] { border-color: var(--stk-accent); box-shadow: 0 0 0 1px var(--stk-accent); background: #fff; }
+.stk-plan input { margin-top: 3px; accent-color: var(--stk-accent); flex: none; }
+.stk-plan input:focus-visible { outline: 2px solid var(--stk-accent-strong); outline-offset: 2px; }
+.stk-plan span { display: grid; gap: 2px; }
+.stk-plan strong { font-size: 14px; }
+.stk-plan small { font-size: 12px; color: var(--stk-muted); line-height: 1.35; }
+@media (max-width: 520px) { .stk-plans { grid-template-columns: 1fr; } }

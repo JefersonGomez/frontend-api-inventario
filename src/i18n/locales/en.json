@@ -40,14 +40,21 @@
       "sales": "Sales",
       "inventory": "Inventory",
       "purchases": "Purchasing",
-      "admin": "Administration"
+      "admin": "Administration",
+      "invoicing": "Invoicing",
+      "catalog": "Catalog",
+      "received": "Suppliers"
     },
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
     "pin": "Keep the menu open",
     "unpin": "Collapse the menu",
     "payables": "Payables",
-    "banks": "Banks"
+    "banks": "Banks",
+    "newInvoice": "New invoice",
+    "documents": "Documents",
+    "catalog": "Products & services",
+    "receivedInvoices": "Received invoices"
   },
   "topbar": {
     "search": "Search product or SKU",
@@ -97,7 +104,18 @@
       },
       "artLabel": "Inventory boxes with a barcode",
       "inStock": "In stock",
-      "units": "{{count}} units"
+      "units": "{{count}} units",
+      "plan": {
+        "question": "What do you need?",
+        "BASIC": {
+          "title": "Inventory and sales",
+          "text": "Stock, register, purchasing, reports and e-invoicing."
+        },
+        "INVOICING": {
+          "title": "Invoicing only",
+          "text": "E-invoices to Hacienda, customers and collections. No inventory."
+        }
+      }
     },
     "demo": {
       "title": "Here to see the project?",
@@ -201,7 +219,8 @@
       "image_remove": "Remove",
       "image_hint": "JPEG, PNG or WEBP. Shown in Products and at the register.",
       "image_pending": "Uploaded when you save the product.",
-      "image_failed": "The product was saved, but the photo couldn't be uploaded. Choose it again."
+      "image_failed": "The product was saved, but the photo couldn't be uploaded. Choose it again.",
+      "section_unit": "Unit of measure"
     },
     "delete": {
       "title": "Delete this product?",
@@ -980,7 +999,10 @@
       "limits": "Includes: {{items}}",
       "branches_one": "{{count}} branch",
       "branches_other": "{{count}} branches",
-      "unlimitedBranches": "unlimited branches"
+      "unlimitedBranches": "unlimited branches",
+      "INVOICING": "Invoicing only",
+      "documentsUsed": "Documents this month: {{used}} of {{max}}",
+      "invoicingOnlyHint": "Your plan is for invoicing: no inventory, registers or purchasing. If you ever need them, upgrade without losing anything."
     }
   },
   "users": {
@@ -2800,7 +2822,10 @@
     "error": "The invoice couldn't be issued.",
     "noAccounts": "You have no bank accounts registered: the invoice is still issued, with no account assigned.",
     "goBanks": "Add one in Banks",
-    "serviceCabys": "Service CABYS (use the magnifier to find it)"
+    "serviceCabys": "Service CABYS (use the magnifier to find it)",
+    "subtitleSimple": "Electronic invoice to a customer. It is sent to Hacienda automatically and emailed to them.",
+    "quota": "You have {{left}} of {{max}} documents left this month.",
+    "quotaFull": "You used all {{max}} documents for this month. It resets on the 1st; upgrade your plan if you need more."
   },
   "debit": {
     "button": "Debit note",

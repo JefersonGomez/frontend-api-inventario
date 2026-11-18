@@ -40,14 +40,21 @@
       "sales": "Ventas",
       "inventory": "Inventario",
       "purchases": "Compras",
-      "admin": "Administración"
+      "admin": "Administración",
+      "invoicing": "Facturación",
+      "catalog": "Catálogo",
+      "received": "Proveedores"
     },
     "openMenu": "Abrir el menú",
     "closeMenu": "Cerrar el menú",
     "pin": "Dejar el menú abierto",
     "unpin": "Plegar el menú",
     "payables": "Cuentas por pagar",
-    "banks": "Bancos"
+    "banks": "Bancos",
+    "newInvoice": "Facturar",
+    "documents": "Comprobantes",
+    "catalog": "Productos y servicios",
+    "receivedInvoices": "Facturas recibidas"
   },
   "topbar": {
     "search": "Buscar producto o SKU",
@@ -97,7 +104,18 @@
       },
       "artLabel": "Cajas de inventario con código de barras",
       "inStock": "En stock",
-      "units": "{{count}} uds"
+      "units": "{{count}} uds",
+      "plan": {
+        "question": "¿Qué necesitas?",
+        "BASIC": {
+          "title": "Inventario y ventas",
+          "text": "Stock, caja, compras, reportes y factura electrónica."
+        },
+        "INVOICING": {
+          "title": "Solo facturar",
+          "text": "Factura electrónica a Hacienda, clientes y cobros. Sin inventario."
+        }
+      }
     },
     "demo": {
       "title": "¿Vienes a ver el proyecto?",
@@ -201,7 +219,8 @@
       "image_remove": "Quitar",
       "image_hint": "JPEG, PNG o WEBP. Se ve en Productos y en la caja.",
       "image_pending": "Se sube al guardar el producto.",
-      "image_failed": "El producto se guardó, pero la foto no se pudo subir. Elígela de nuevo."
+      "image_failed": "El producto se guardó, pero la foto no se pudo subir. Elígela de nuevo.",
+      "section_unit": "Unidad de medida"
     },
     "delete": {
       "title": "¿Eliminar este producto?",
@@ -980,7 +999,10 @@
       "limits": "Incluye: {{items}}",
       "branches_one": "{{count}} sucursal",
       "branches_other": "{{count}} sucursales",
-      "unlimitedBranches": "sucursales ilimitadas"
+      "unlimitedBranches": "sucursales ilimitadas",
+      "INVOICING": "Solo facturación",
+      "documentsUsed": "Comprobantes este mes: {{used}} de {{max}}",
+      "invoicingOnlyHint": "Tu plan es para facturar: no lleva inventario, cajas ni compras. Si un día lo necesitas, se mejora el plan sin perder nada."
     }
   },
   "users": {
@@ -2800,7 +2822,10 @@
     "error": "No se pudo emitir la factura.",
     "noAccounts": "No tienes cuentas bancarias registradas: la factura se emite igual, sin cuenta asignada.",
     "goBanks": "Registrar una en Bancos",
-    "serviceCabys": "CABYS del servicio (usa la lupa para buscarlo)"
+    "serviceCabys": "CABYS del servicio (usa la lupa para buscarlo)",
+    "subtitleSimple": "Factura electrónica a nombre de un cliente. Se envía sola a Hacienda y le llega por correo.",
+    "quota": "Te quedan {{left}} de {{max}} comprobantes este mes.",
+    "quotaFull": "Ya usaste los {{max}} comprobantes de este mes. El 1.º se renueva; si necesitas más, mejora tu plan."
   },
   "debit": {
     "button": "Nota de débito",

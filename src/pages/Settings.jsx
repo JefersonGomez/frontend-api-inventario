@@ -127,6 +127,12 @@ function CompanyCard() {
             <p className="text-sm">
               {t("companies.plan.title")}: <span className="font-semibold">{t(`companies.plan.${data.plan}`)}</span>
             </p>
+            {data.limits.documentsPerMonth != null && data.usage && (
+              <p className="text-sm mt-1">
+                {t("companies.plan.documentsUsed", { used: data.usage.documentsThisMonth, max: data.limits.documentsPerMonth })}
+              </p>
+            )}
+            {data.limits.invoicingOnly && <p className="text-xs text-muted-foreground mt-1">{t("companies.plan.invoicingOnlyHint")}</p>}
             <p className="text-xs text-muted-foreground mt-1">
               {t("companies.plan.limits", {
                 items: [

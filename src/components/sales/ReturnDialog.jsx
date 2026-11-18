@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
+import { usePlan } from "@/hoocks/usePlan"
 
 const round2 = (v) => Math.round(v * 100) / 100
 
@@ -29,11 +30,14 @@ function ReturnForm({ sale, onDone }) {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
   const doc = sale.document
+  // solo facturación: sin caja ni inventario (no hay efectivo que sacar, estado de la mercadería ni código de encargado)
+  const { invoicingOnly } = usePlan()
+  const methods = invoicingOnly ? ["TRANSFER", "SINPE", "CARD"] : ["CASH", "CARD", "SINPE", "TRANSFER"]
   const money = moneyFormatter(sale.company.currency)
   const left = (l) => Number(l.quantity) - (sale.returned[l.id] ?? 0)
   const [rows, setRows] = useState(() => Object.fromEntries(doc.lines.map((l) => [l.id, { quantity: "", condition: "GOOD" }])))
   const [reason, setReason] = useState("")
-  const [method, setMethod] = useState(doc.payments[0]?.method ?? "CASH")
+  const [method, setMethod] = useState(() => (methods.includes(doc.payments[0]?.method) ? doc.payments[0].method : methods[0]))
   const [reference, setReference] = useState("")
   const [pin, setPin] = useState("")
   const expired = sale.returnUntil && new Date(sale.returnUntil) < new Date()
@@ -43,7 +47,7 @@ function ReturnForm({ sale, onDone }) {
   // aproximado (el servidor calcula la nota): la parte proporcional del total de la línea
   const estimate = round2(picked.reduce((s, l) => s + (Number(l.total) * Number(rows[l.id].quantity)) / Number(l.quantity), 0))
   const tooMany = picked.some((l) => Number(rows[l.id].quantity) > left(l))
-  const valid = picked.length > 0 && !tooMany && reason.trim().length >= 3 && pin.length >= 4 && !expired
+  const valid = picked.length > 0 && !tooMany && reason.trim().length >= 3 && (invoicingOnly || pin.length >= 4) && !expired
 
   const save = useMutation({
     mutationFn: () =>
@@ -51,7 +55,7 @@ function ReturnForm({ sale, onDone }) {
         lines: picked.map((l) => ({ lineId: l.id, quantity: Number(rows[l.id].quantity), condition: rows[l.id].condition })),
         reason: reason.trim(),
         refund: { method, ...(reference.trim() && { reference: reference.trim() }) },
-        pin,
+        ...(!invoicingOnly && { pin }),
       }),
     onSuccess: (data) => {
       for (const key of ["sales", "products", "cash-session", "receivables"]) queryClient.invalidateQueries({ queryKey: [key] })
@@ -114,7 +118,7 @@ function ReturnForm({ sale, onDone }) {
                 value={r.quantity}
                 onChange={(e) => setRow(l.id, { quantity: e.target.value })}
               />
-              <div role="radiogroup" aria-label={t("sales.return.condition")} className="flex overflow-hidden rounded-md border border-border text-xs">
+              {!invoicingOnly && <div role="radiogroup" aria-label={t("sales.return.condition")} className="flex overflow-hidden rounded-md border border-border text-xs">
                 {["GOOD", "DAMAGED"].map((c) => (
                   <button
                     key={c}
@@ -130,12 +134,12 @@ function ReturnForm({ sale, onDone }) {
                     {t(`sales.condition.${c}`)}
                   </button>
                 ))}
-              </div>
+              </div>}
             </li>
           )
         })}
       </ul>
-      <p className="text-xs text-muted-foreground">{t("sales.return.conditionHint")}</p>
+      {!invoicingOnly && <p className="text-xs text-muted-foreground">{t("sales.return.conditionHint")}</p>}
 
       <div className="space-y-2">
         <Label htmlFor="return-reason">{t("sales.return.reason")}</Label>
@@ -152,7 +156,7 @@ function ReturnForm({ sale, onDone }) {
         <div className="space-y-2">
           <Label htmlFor="return-method">{credit ? t("sales.return.methodIfAny") : t("sales.return.method")}</Label>
           <select id="return-method" className="h-9 w-full rounded-md border border-input bg-background px-2 text-sm" value={method} onChange={(e) => setMethod(e.target.value)}>
-            {["CASH", "CARD", "SINPE", "TRANSFER"].map((m) => <option key={m} value={m}>{t(`pos.methods.${m}`)}</option>)}
+            {methods.map((m) => <option key={m} value={m}>{t(`pos.methods.${m}`)}</option>)}
           </select>
         </div>
         {method !== "CASH" && (
@@ -163,7 +167,7 @@ function ReturnForm({ sale, onDone }) {
         )}
       </div>
 
-      <div className="space-y-2">
+      {!invoicingOnly && <div className="space-y-2">
         <Label htmlFor="return-pin">{t("pos.discount.pin")}</Label>
         <Input
           id="return-pin"
@@ -175,7 +179,7 @@ function ReturnForm({ sale, onDone }) {
           value={pin}
           onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))}
         />
-      </div>
+      </div>}
       {save.isError && <p role="alert" className="text-sm text-destructive">{apiErrorMessage(save.error, t("sales.return.error"))}</p>}
       <Button type="submit" className="w-full" disabled={!valid || save.isPending}>{t("sales.return.submit")}</Button>
     </form>

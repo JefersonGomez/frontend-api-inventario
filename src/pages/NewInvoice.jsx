@@ -15,6 +15,7 @@ import { CustomerPicker } from "@/components/pos/CustomerPicker"
 import { BankAccountSelect } from "@/components/banks/DepositDialog"
 import { useBankAccounts } from "@/hoocks/useBankAccounts"
 import { usePermissions } from "@/hoocks/usePermissions"
+import { usePlan } from "@/hoocks/usePlan"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -33,6 +34,9 @@ export function NewInvoice() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const { can } = usePermissions()
+  // solo facturación: no hay bodegas ni stock; se ve cuántos comprobantes quedan en el mes
+  const { invoicingOnly, limits, usage } = usePlan()
+  const quota = limits?.documentsPerMonth != null && usage ? { used: usage.documentsThisMonth, max: limits.documentsPerMonth } : null
   const { data: accounts = [], isSuccess: accountsLoaded } = useBankAccounts()
   const noAccounts = accountsLoaded && !accounts.some((a) => a.isActive)
   const [customer, setCustomer] = useState(null)
@@ -69,7 +73,7 @@ export function NewInvoice() {
         ...(notes.trim() && { notes: notes.trim() }),
       }),
     onSuccess: (ticket) => {
-      for (const key of ["sales", "products", "receivables"]) queryClient.invalidateQueries({ queryKey: [key] })
+      for (const key of ["sales", "products", "receivables", "company"]) queryClient.invalidateQueries({ queryKey: [key] })
       navigate(`/sales/${ticket.document.id}`)
     },
   })
@@ -82,7 +86,12 @@ export function NewInvoice() {
       </Button>
       <div className="mb-6">
         <h1 className="flex items-center gap-2 text-2xl font-semibold"><FileText className="h-6 w-6" aria-hidden />{t("invoice.title")}</h1>
-        <p className="text-sm text-muted-foreground">{t("invoice.subtitle")}</p>
+        <p className="text-sm text-muted-foreground">{t(invoicingOnly ? "invoice.subtitleSimple" : "invoice.subtitle")}</p>
+        {quota && (
+          <p className={cn("mt-2 text-sm", quota.used >= quota.max ? "text-destructive" : "text-muted-foreground")}>
+            {quota.used >= quota.max ? t("invoice.quotaFull", { max: quota.max }) : t("invoice.quota", { left: quota.max - quota.used, max: quota.max })}
+          </p>
+        )}
       </div>
 
       <form
@@ -115,9 +124,11 @@ export function NewInvoice() {
         <section className="space-y-3 rounded-xl border border-border p-4">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <h2 className="text-base font-semibold">{t("invoice.lines")}</h2>
-            <div className="w-full sm:w-72">
-              <LocationSelect id="invoice-location" label={t("invoice.from")} value={locationId} onChange={setLocationId} />
-            </div>
+            {!invoicingOnly && (
+              <div className="w-full sm:w-72">
+                <LocationSelect id="invoice-location" label={t("invoice.from")} value={locationId} onChange={setLocationId} />
+              </div>
+            )}
           </div>
           <ul className="space-y-3">
             {lines.map((l, i) => (

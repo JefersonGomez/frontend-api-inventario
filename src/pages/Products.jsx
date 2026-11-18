@@ -35,6 +35,7 @@ import { ProductPriceHistory } from "@/components/products/ProductPriceHistory"
 import { UNITS, TAX_RATES, qtyStep, formatQty } from "@/lib/units"
 import { apiErrorMessage } from "@/lib/api-error"
 import { LocationSelect } from "@/components/LocationSelect"
+import { usePlan } from "@/hoocks/usePlan"
 import { getProductGroups } from "@/api/productGroups"
 import { CabysField } from "@/components/products/CabysField"
 import { ProductGroupsDialog } from "@/components/products/ProductGroupsDialog"
@@ -72,7 +73,9 @@ export function Products() {
   const { can } = usePermissions()
   const canManage = can("products.manage")
   const showCost = can("costs.view")
-  const cols = showCost ? 7 : 6
+  // plan "Solo facturación": los productos son un catálogo para facturar, sin existencias
+  const showStock = !usePlan().invoicingOnly
+  const cols = 5 + (showCost ? 1 : 0) + (showStock ? 1 : 0)
   const [importing, setImporting] = useState(false)
   const [managingGroups, setManagingGroups] = useState(false)
   const [expanded, setExpanded] = useState(() => new Set()) // productos base desplegados
@@ -336,22 +339,22 @@ export function Products() {
         <TableCell>
           {product.pendingReview ? <Badge variant="outline">{t("products.pending.badge")}</Badge> : money.format(product.price)}
           {/* pantallas muy angostas: el stock va debajo del precio */}
-          <span className={`block text-xs whitespace-nowrap sm:hidden ${product.stock <= product.minStock ? "text-destructive" : "text-muted-foreground"}`}>
+          {showStock && <span className={`block text-xs whitespace-nowrap sm:hidden ${product.stock <= product.minStock ? "text-destructive" : "text-muted-foreground"}`}>
             {formatQty(product.stock, product.unit, t)}
-          </span>
+          </span>}
         </TableCell>
         {showCost && (
           <TableCell className="hidden md:table-cell text-muted-foreground">
             {product.cost == null ? "—" : money.format(product.cost)}
           </TableCell>
         )}
-        <TableCell className="whitespace-nowrap max-sm:hidden">
+        {showStock && <TableCell className="whitespace-nowrap max-sm:hidden">
           {product.stock <= product.minStock ? (
             <Badge variant="destructive">{formatQty(product.stock, product.unit, t)}</Badge>
           ) : (
             formatQty(product.stock, product.unit, t)
           )}
-        </TableCell>
+        </TableCell>}
         <TableCell className="text-right whitespace-nowrap">
           {canManage && (<>
           <Button variant="ghost" size="icon" onClick={() => openEditDialog(product)} aria-label={`${t("products.dialog.edit_title")}: ${product.name}`}>
@@ -422,14 +425,14 @@ export function Products() {
             {categoryFilterItems.map((c) => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}
           </SelectContent>
         </Select>
-        <Button
+        {showStock && <Button
           variant={filters.lowStock ? "default" : "outline"}
           size="sm"
           aria-pressed={filters.lowStock}
           onClick={() => list.set({ lowStock: filters.lowStock ? "" : 1 })}
         >
           {t("products.lowStockFilter")}
-        </Button>
+        </Button>}
       </div>
 
       <div className="border border-border rounded-xl overflow-hidden overflow-x-auto">
@@ -441,7 +444,7 @@ export function Products() {
               <TableHead className="max-md:hidden">{t("products.table.category")}</TableHead>
               <TableHead>{t("products.table.price")}</TableHead>
               {showCost && <TableHead className="hidden md:table-cell">{t("products.table.cost")}</TableHead>}
-              <TableHead className="max-sm:hidden">{t("products.table.stock")}</TableHead>
+              {showStock && <TableHead className="max-sm:hidden">{t("products.table.stock")}</TableHead>}
               <TableHead className="text-right">{t("products.table.actions")}</TableHead>
             </TableRow>
           </TableHeader>
@@ -473,6 +476,7 @@ export function Products() {
                   canManage={canManage}
                   showCost={showCost}
                   cols={cols}
+                  showStock={showStock}
                   // con filtros, los grupos que aparecen es porque alguna variante coincide: se abren solos
                   open={expanded.has(r.id) || hasFilters}
                   variantParams={filterParams}
@@ -617,7 +621,7 @@ export function Products() {
             </fieldset>
 
             <fieldset className="space-y-3">
-              <legend className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("products.dialog.section_stock")}</legend>
+              <legend className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t(showStock ? "products.dialog.section_stock" : "products.dialog.section_unit")}</legend>
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                 <div className="space-y-1.5">
                   <Label htmlFor="product-unit">{t("products.dialog.label_unit")}</Label>
@@ -632,12 +636,13 @@ export function Products() {
                     </SelectContent>
                   </Select>
                 </div>
-                {!editingProduct && (
+                {!editingProduct && showStock && (
                   <div className="space-y-1.5">
                     <Label htmlFor="product-stock">{t("products.dialog.label_initial_stock")}</Label>
                     <Input id="product-stock" type="number" min="0" step={step} value={form.stock} onChange={(e) => setForm({ ...form, stock: e.target.value })} required />
                   </div>
                 )}
+                {showStock && <>
                 <div className="space-y-1.5">
                   <Label htmlFor="product-minstock">{t("products.dialog.label_min_stock")}</Label>
                   <Input id="product-minstock" type="number" min="0" step={step} value={form.minStock} onChange={(e) => setForm({ ...form, minStock: e.target.value })} required />
@@ -646,8 +651,10 @@ export function Products() {
                   <Label htmlFor="product-expiration">{t("products.dialog.label_expiration_date", "Fecha de vencimiento")}</Label>
                   <Input id="product-expiration" type="date" value={form.expirationDate} onChange={(e) => setForm({ ...form, expirationDate: e.target.value })} />
                 </div>
+                </>}
               </div>
               <p id="stock-hint" className="text-xs text-muted-foreground">{t("products.dialog.unit_hint")}</p>
+              {showStock && <>
               <label className="flex items-start gap-2.5 text-sm">
                 <input
                   type="checkbox"
@@ -682,6 +689,7 @@ export function Products() {
                   onChange={(locationId) => setForm({ ...form, locationId })}
                 />
               )}
+              </>}
             </fieldset>
 
             <fieldset className="space-y-3">
@@ -810,7 +818,7 @@ function StockByLocation({ productId, unit, t }) {
   )
 }
 
-function GroupRows({ group, t, money, canManage, showCost, cols, open, variantParams, onToggle, onAddVariant, renderProduct }) {
+function GroupRows({ group, t, money, canManage, showCost, showStock, cols, open, variantParams, onToggle, onAddVariant, renderProduct }) {
   const { variantCount: count, minPrice, maxPrice, totalStock, unit, lowCount: low } = group
   const variantsQuery = useQuery({
     queryKey: ["products", "variants", group.id, variantParams],
@@ -862,10 +870,10 @@ function GroupRows({ group, t, money, canManage, showCost, cols, open, variantPa
         </TableCell>
         <TableCell className="whitespace-nowrap">{price}</TableCell>
         {showCost && <TableCell className="hidden md:table-cell text-muted-foreground">—</TableCell>}
-        <TableCell className="whitespace-nowrap max-sm:hidden">
+        {showStock && <TableCell className="whitespace-nowrap max-sm:hidden">
           {totalStock != null && unit ? formatQty(totalStock, unit, t) : "—"}
           {low > 0 && <Badge variant="destructive" className="ml-2">{t("products.variants.low", { count: low })}</Badge>}
-        </TableCell>
+        </TableCell>}
         <TableCell className="text-right">
           {canManage && (
             <Button variant="outline" size="sm" onClick={onAddVariant} aria-label={t("products.variants.add_variant_aria", { name: group.name })}>

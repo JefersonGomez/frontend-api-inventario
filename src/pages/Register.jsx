@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useSearchParams } from "react-router-dom"
 import { useMutation } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { registerRequest } from "@/api/auth"
@@ -13,6 +13,9 @@ const EMPTY = { name: "", email: "", phone: "", company: "", password: "", confi
 
 export function Register() {
   const { t } = useTranslation()
+  const [params] = useSearchParams()
+  // qué necesita: todo el sistema o solo facturar (?plan=facturacion lo deja elegido desde un enlace)
+  const [plan, setPlan] = useState(params.get("plan") === "facturacion" ? "INVOICING" : "BASIC")
   const [form, setForm] = useState(EMPTY)
   const [mismatch, setMismatch] = useState(false)
   const [accepted, setAccepted] = useState(false)
@@ -27,6 +30,7 @@ export function Register() {
         ...(form.phone.trim() && { phone: form.phone.trim() }),
         ...(form.company.trim() && { company: form.company.trim() }),
         acceptTerms: true,
+        plan,
       }),
   })
 
@@ -71,6 +75,19 @@ export function Register() {
           ) : (
             <form className="stk-form" onSubmit={handleSubmit} noValidate>
               <h2 className="stk-form-title">{t("auth.register.title")}</h2>
+
+              <fieldset className="stk-plans">
+                <legend>{t("auth.register.plan.question")}</legend>
+                {["BASIC", "INVOICING"].map((p) => (
+                  <label key={p} className="stk-plan" data-on={plan === p || undefined}>
+                    <input type="radio" name="plan" value={p} checked={plan === p} onChange={() => setPlan(p)} />
+                    <span>
+                      <strong>{t(`auth.register.plan.${p}.title`)}</strong>
+                      <small>{t(`auth.register.plan.${p}.text`)}</small>
+                    </span>
+                  </label>
+                ))}
+              </fieldset>
 
               <div className="stk-field">
                 <label htmlFor="name">{t("auth.register.name")}</label>

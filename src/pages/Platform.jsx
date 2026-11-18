@@ -15,7 +15,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
-const PLANS = ["BASIC", "PRO", "BUSINESS"]
+const PLANS = ["INVOICING", "BASIC", "PRO", "BUSINESS"]
 const fold = (v) => (v ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
 
 function Usage({ used, max }) {
