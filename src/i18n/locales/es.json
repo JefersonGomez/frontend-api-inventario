@@ -2292,7 +2292,18 @@
       "save": "Registrar factura",
       "saveError": "No se pudo registrar la factura.",
       "respond": "Aceptarla ante Hacienda",
-      "respondHint": "Le avisa a Hacienda que recibiste la factura y estás de acuerdo (mensaje receptor). Respalda el crédito de IVA. Si algo no cuadra, desactívalo y respóndela después desde el proveedor."
+      "respondHint": "Le avisa a Hacienda que recibiste la factura y estás de acuerdo (mensaje receptor). Respalda el crédito de IVA. Si algo no cuadra, desactívalo y respóndela después desde el proveedor.",
+      "kinds": {
+        "INVOICE": "Factura electrónica",
+        "TICKET": "Tiquete electrónico",
+        "CREDIT_NOTE": "Nota de crédito"
+      },
+      "creditTotal": "Rebaja",
+      "corrects": "Corrige la factura {{number}}",
+      "noOriginal": "La factura que corrige no está registrada",
+      "appliedTo": "Se rebaja de la factura {{number}}",
+      "inFavor": "Queda a favor (el proveedor te lo debe)",
+      "saveNote": "Registrar nota de crédito"
     },
     "receiver": {
       "none": "Sin responder a Hacienda",
@@ -2357,8 +2368,15 @@
       "category": "Categoría de los productos nuevos",
       "pickCategory": "Elige…",
       "save": "Entrar al inventario",
-      "error": "No se pudo entrar la mercadería."
-    }
+      "error": "No se pudo entrar la mercadería.",
+      "buttonOut": "Sacar del inventario",
+      "doneOut": "Ya salió del inventario",
+      "titleOut": "Sacar del inventario · nota de crédito {{number}} de {{supplier}}",
+      "subtitleOut": "Lo que le devolviste al proveedor sale del inventario. Elige a qué producto tuyo corresponde cada línea.",
+      "entersOut": "Salen {{qty}}. El costo de lo que queda no cambia.",
+      "saveOut": "Sacar del inventario"
+    },
+    "creditNote": "Nota de crédito"
   },
   "banks": {
     "title": "Bancos",

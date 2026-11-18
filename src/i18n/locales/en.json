@@ -2292,7 +2292,18 @@
       "save": "Register invoice",
       "saveError": "The invoice couldn't be registered.",
       "respond": "Accept it with Hacienda",
-      "respondHint": "Tells Hacienda you received the invoice and agree (receiver message). Backs the VAT credit. If something's off, turn it off and answer later from the supplier."
+      "respondHint": "Tells Hacienda you received the invoice and agree (receiver message). Backs the VAT credit. If something's off, turn it off and answer later from the supplier.",
+      "kinds": {
+        "INVOICE": "Electronic invoice",
+        "TICKET": "Electronic ticket",
+        "CREDIT_NOTE": "Credit note"
+      },
+      "creditTotal": "Credit",
+      "corrects": "Corrects invoice {{number}}",
+      "noOriginal": "The invoice it corrects isn't registered",
+      "appliedTo": "Deducted from invoice {{number}}",
+      "inFavor": "Left in your favor (the supplier owes you)",
+      "saveNote": "Register credit note"
     },
     "receiver": {
       "none": "Not answered to Hacienda",
@@ -2357,8 +2368,15 @@
       "category": "Category for the new products",
       "pickCategory": "Choose…",
       "save": "Add to inventory",
-      "error": "The goods couldn't be added."
-    }
+      "error": "The goods couldn't be added.",
+      "buttonOut": "Remove from inventory",
+      "doneOut": "Already removed from inventory",
+      "titleOut": "Remove from inventory · credit note {{number}} from {{supplier}}",
+      "subtitleOut": "What you returned to the supplier leaves inventory. Pick which of your products each line is.",
+      "entersOut": "{{qty}} leave. The cost of what remains doesn't change.",
+      "saveOut": "Remove from inventory"
+    },
+    "creditNote": "Credit note"
   },
   "banks": {
     "title": "Banks",

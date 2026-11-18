@@ -264,7 +264,7 @@ export function PayableAccount() {
             {account.payments.map((p) => (
               <TableRow key={p.id}>
                 <TableCell className="whitespace-nowrap">{day(p.paidAt)}</TableCell>
-                <TableCell>{t(`pos.methods.${p.method}`)}</TableCell>
+                <TableCell>{p.creditNoteId ? t("payables.creditNote") : t(`pos.methods.${p.method}`)}</TableCell>
                 <TableCell className="hidden font-mono text-xs md:table-cell">{p.reference || "—"}</TableCell>
                 <TableCell className="hidden text-xs lg:table-cell">{p.allocations.map((a) => a.invoice.number).join(", ")}</TableCell>
                 <TableCell className="hidden sm:table-cell">{p.user.name}</TableCell>
@@ -320,9 +320,12 @@ function InvoiceTable({ invoices, loading, showSupplier, canVoid }) {
               )}
               <TableCell className="hidden whitespace-nowrap md:table-cell">{day(i.issueDate)}</TableCell>
               <TableCell className="whitespace-nowrap">{day(i.dueDate)}</TableCell>
-              <TableCell className="hidden text-right font-mono sm:table-cell">{money.format(i.total)}</TableCell>
-              <TableCell className="text-right font-mono">{i.voidedAt ? "—" : money.format(pendingOf(i))}</TableCell>
-              <TableCell className="text-right"><InvoiceStatus invoice={i} /></TableCell>
+              {/* una nota de crédito del proveedor resta: no queda pendiente, ya rebajó lo que se debía */}
+              <TableCell className="hidden text-right font-mono sm:table-cell">{i.type === "CREDIT_NOTE" ? "−" : ""}{money.format(i.total)}</TableCell>
+              <TableCell className="text-right font-mono">{i.voidedAt || i.type === "CREDIT_NOTE" ? "—" : money.format(pendingOf(i))}</TableCell>
+              <TableCell className="text-right">
+                {i.type === "CREDIT_NOTE" ? <Badge variant="outline">{t("payables.creditNote")}</Badge> : <InvoiceStatus invoice={i} />}
+              </TableCell>
               {canVoid && (
                 <TableCell className="text-right">
                   {!i.voidedAt && Number(i.paid) === 0 && (

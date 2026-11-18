@@ -27,7 +27,7 @@ export function StockEntry({ invoice }) {
     return (
       <Badge variant="outline" className="mt-1 border-emerald-500/40 text-[10px] text-emerald-700 dark:text-emerald-400">
         <CheckCircle2 className="h-3 w-3" aria-hidden />
-        {t("payables.stock.done")}
+        {invoice.type === "CREDIT_NOTE" ? t("payables.stock.doneOut") : t("payables.stock.done")}
       </Badge>
     )
   }
@@ -36,7 +36,7 @@ export function StockEntry({ invoice }) {
     <>
       <Button size="xs" variant="outline" className="mt-1" onClick={() => setOpen(true)}>
         <PackagePlus aria-hidden />
-        {t("payables.stock.button")}
+        {invoice.type === "CREDIT_NOTE" ? t("payables.stock.buttonOut") : t("payables.stock.button")}
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-3xl">{open && <StockForm invoiceId={invoice.id} onClose={() => setOpen(false)} />}</DialogContent>
@@ -89,6 +89,8 @@ function StockForm({ invoiceId, onClose }) {
   if (isLoading) return <p className="text-muted-foreground">{t("common.loading")}</p>
   if (error) return <p role="alert" className="text-sm text-destructive">{apiErrorMessage(error, t("payables.stock.error"))}</p>
   const lines = plan.lines
+  const out = plan.invoice.direction === "OUT" // devolución al proveedor: sale del inventario
+  const k = (key) => (out ? `${key}Out` : key)
   const anyNew = lines.some((l) => current[l.line]?.mode === "new")
   const missing = lines.some((l) => {
     const r = current[l.line]
@@ -100,8 +102,8 @@ function StockForm({ invoiceId, onClose }) {
   return (
     <div className="space-y-4">
       <DialogHeader>
-        <DialogTitle>{t("payables.stock.title", { number: plan.invoice.number.slice(-10), supplier: plan.invoice.supplier })}</DialogTitle>
-        <p className="text-sm text-muted-foreground">{t("payables.stock.subtitle")}</p>
+        <DialogTitle>{t(`payables.stock.${k("title")}`, { number: plan.invoice.number.slice(-10), supplier: plan.invoice.supplier })}</DialogTitle>
+        <p className="text-sm text-muted-foreground">{t(`payables.stock.${k("subtitle")}`)}</p>
       </DialogHeader>
 
       <ul className="space-y-3">
@@ -119,7 +121,7 @@ function StockForm({ invoiceId, onClose }) {
                   </p>
                 </div>
                 <div className="flex gap-1" role="group" aria-label={t("payables.stock.what", { name: l.description })}>
-                  {MODES.map((m) => (
+                  {MODES.filter((m) => !(out && m === "new")).map((m) => (
                     <Button key={m} type="button" size="xs" variant={r.mode === m ? "default" : "outline"} aria-pressed={r.mode === m} onClick={() => set(l.line, { mode: m })}>
                       {t(`payables.stock.modes.${m}`)}
                     </Button>
@@ -142,7 +144,7 @@ function StockForm({ invoiceId, onClose }) {
                     <Label htmlFor={`stock-f-${l.line}`}>{t("payables.stock.factor")}</Label>
                     <Input id={`stock-f-${l.line}`} type="number" min="0.001" step="any" value={r.factor} onChange={(e) => set(l.line, { factor: e.target.value })} aria-describedby={`stock-fh-${l.line}`} />
                     <p id={`stock-fh-${l.line}`} className="text-xs text-muted-foreground">
-                      {t("payables.stock.enters", { qty: +(l.quantity * factor).toFixed(3), cost: money.format(l.unitCost / factor) })}
+                      {t(`payables.stock.${k("enters")}`, { qty: +(l.quantity * factor).toFixed(3), cost: money.format(l.unitCost / factor) })}
                     </p>
                   </div>
                 </div>
@@ -194,7 +196,7 @@ function StockForm({ invoiceId, onClose }) {
         <Button type="button" variant="outline" onClick={onClose}>{t("common.cancel")}</Button>
         <Button type="button" disabled={save.isPending || missing || nothing || (anyNew && !categoryId)} onClick={() => save.mutate()}>
           {save.isPending && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
-          {t("payables.stock.save")}
+          {t(`payables.stock.${k("save")}`)}
         </Button>
       </div>
     </div>

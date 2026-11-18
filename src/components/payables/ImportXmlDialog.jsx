@@ -110,7 +110,7 @@ function ImportBody({ onClose }) {
               </Badge>
             </div>
             <div>
-              <p className="text-xs text-muted-foreground">{p.kind === "TICKET" ? t("payables.xml.ticket") : t("payables.xml.invoice")}</p>
+              <p className="text-xs text-muted-foreground">{t(`payables.xml.kinds.${p.kind}`)}</p>
               <p className="font-mono">{p.number.slice(-10)}</p>
               <p className="text-xs text-muted-foreground">{t("payables.xml.issued", { date: day(p.issueDate) })}</p>
               {p.haciendaStatus === "Aceptado" && (
@@ -169,15 +169,35 @@ function ImportBody({ onClose }) {
               </p>
             ))}
             <p className="flex justify-between border-t border-border pt-1 text-base font-semibold">
-              <span>{t("payables.xml.total")}</span>
-              <span className="font-mono">{money.format(p.total)}</span>
+              <span>{p.kind === "CREDIT_NOTE" ? t("payables.xml.creditTotal") : t("payables.xml.total")}</span>
+              <span className="font-mono">{p.kind === "CREDIT_NOTE" ? "−" : ""}{money.format(p.total)}</span>
             </p>
           </div>
+
+          {/* nota de crédito: qué factura corrige y a qué se rebaja */}
+          {p.credit && (
+            <div className="space-y-1 rounded-lg border border-border bg-muted/40 p-3 text-sm">
+              <p className="font-medium">{p.credit.original ? t("payables.xml.corrects", { number: p.credit.original.number.slice(-10) }) : t("payables.xml.noOriginal")}</p>
+              {p.credit.applied.map((a) => (
+                <p key={a.id} className="flex justify-between text-muted-foreground">
+                  <span>{t("payables.xml.appliedTo", { number: a.number.slice(-10) })}</span>
+                  <span className="font-mono">−{money.format(a.amount)}</span>
+                </p>
+              ))}
+              {p.credit.unapplied > 0 && (
+                <p className="flex justify-between text-amber-700 dark:text-amber-400">
+                  <span>{t("payables.xml.inFavor")}</span>
+                  <span className="font-mono">{money.format(p.credit.unapplied)}</span>
+                </p>
+              )}
+            </div>
+          )}
 
           {/* lo que se puede ajustar */}
           {p.canImport && (
             <div className="grid gap-3 sm:grid-cols-2">
-              <div className="space-y-1.5">
+              {/* una nota de crédito no vence: rebaja lo que se debe */}
+              <div className={cn("space-y-1.5", p.kind === "CREDIT_NOTE" && "hidden")}>
                 <Label htmlFor="xml-due">{t("payables.xml.dueDate")}</Label>
                 <Input id="xml-due" type="date" value={dueDate} min={p.issueDate} onChange={(e) => setEdit({ ...edit, dueDate: e.target.value })} aria-describedby="xml-due-hint" />
                 <p id="xml-due-hint" className="text-xs text-muted-foreground">
@@ -212,7 +232,7 @@ function ImportBody({ onClose }) {
             <Button type="button" variant="outline" onClick={onClose}>{t("common.cancel")}</Button>
             <Button type="button" disabled={!p.canImport || save.isPending || !dueDate} onClick={() => save.mutate()}>
               {save.isPending && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
-              {t("payables.xml.save")}
+              {p.kind === "CREDIT_NOTE" ? t("payables.xml.saveNote") : t("payables.xml.save")}
             </Button>
           </div>
         </>
