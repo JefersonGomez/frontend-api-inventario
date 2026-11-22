@@ -1135,7 +1135,8 @@
     "tabs": {
       "companies": "Companies",
       "ai": "Artificial intelligence",
-      "actions": "My actions"
+      "actions": "My actions",
+      "einvoice": "E-invoicing"
     },
     "signups": "New companies per week",
     "signupsHint": "Last 12 weeks; hover a bar to see the date",
@@ -1166,6 +1167,26 @@
       "cost": "Cost",
       "none": "No AI requests this month",
       "estimateNote": "Estimated cost using Google's per-token price (checked on 2026-10-16). Google's actual bill may vary slightly."
+    },
+    "einvoice": {
+      "subtitle": "Your customers' documents that need attention. Refreshes every minute; only status and reason are shown, no amounts or customers.",
+      "error": "Could not load the e-invoicing status",
+      "allGood": "All good: no rejected, failed or stuck documents.",
+      "keysTitle": "Cryptographic keys about to expire",
+      "keyExpires": "expires on {{date}}",
+      "keyExpired": "expired on {{date}}: cannot invoice until renewed",
+      "company": "Company",
+      "document": "Document",
+      "problem": "Problem",
+      "reason": "Reason",
+      "updated": "Last change",
+      "kinds": {
+        "REJECTED": "Rejected",
+        "ERROR": "Error",
+        "RETRYING": "Retrying ({{count}})",
+        "NO_ANSWER": "No answer"
+      },
+      "hint": "Rejected in the last 30 days, with errors, with 3 or more failed attempts, or sent over an hour ago with no answer from Hacienda."
     }
   },
   "legal": {
@@ -1505,6 +1526,35 @@
       "firstRegister": {
         "title": "Create your first register and open it",
         "hint": "In Settings → Registers; it checks itself when someone opens the first shift"
+      }
+    },
+    "invoicing": {
+      "title": "To issue your first invoice",
+      "subtitle": "{{done}} of {{total}} steps done. Follow them in order.",
+      "steps": {
+        "fiscal": {
+          "title": "Your tax details",
+          "hint": "Legal name, ID number, economic activity and address, exactly as registered with Hacienda"
+        },
+        "einvoice": {
+          "title": "Connect to Hacienda",
+          "hint": "Your Hacienda username and password and your cryptographic key (.p12) with its PIN. You get them in ATV",
+          "enable": "Your credentials are in: turn on automatic sending"
+        },
+        "catalog": {
+          "title": "Add what you sell",
+          "hint": "Your services or products, each with its price, VAT and CABYS code",
+          "missing_one": "{{count}} is missing its CABYS code",
+          "missing_other": "{{count}} are missing their CABYS code"
+        },
+        "customer": {
+          "title": "Add your first customer",
+          "hint": "With their ID number and email: the invoice is sent there"
+        },
+        "firstInvoice": {
+          "title": "Issue your first invoice",
+          "hint": "Checked automatically when Hacienda accepts it"
+        }
       }
     }
   },

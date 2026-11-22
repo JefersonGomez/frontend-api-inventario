@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useState } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { usePlan } from "@/hoocks/usePlan"
 import { usePermissions } from "@/hoocks/usePermissions"
 import { usePlatformOwner } from "@/hoocks/usePlatformOwner"
 import { getCompany, updateCompany } from "@/api/company"
@@ -163,7 +164,9 @@ export function Settings() {
   const { t, i18n } = useTranslation()
   const [params, setParams] = useSearchParams()
   const showCompany = can("company.manage") && !isPlatformOwner
-  const tabs = ["general", ...(showCompany ? ["company", "locations", "registers", "fiscal", "einvoice"] : [])]
+  // solo facturación: sin sucursales ni cajas que configurar
+  const { invoicingOnly } = usePlan()
+  const tabs = ["general", ...(showCompany ? (invoicingOnly ? ["company", "fiscal", "einvoice"] : ["company", "locations", "registers", "fiscal", "einvoice"]) : [])]
   const tab = tabs.includes(params.get("tab")) ? params.get("tab") : "general"
   const changeTab = (next) => setParams(next === "general" ? {} : { tab: next }, { replace: true })
 
@@ -185,8 +188,8 @@ export function Settings() {
         <TabsList className="w-full overflow-x-auto sm:w-fit">
           <TabsTrigger value="general">{t("settings.tabs.general")}</TabsTrigger>
           {showCompany && <TabsTrigger value="company">{t("settings.tabs.company")}</TabsTrigger>}
-          {showCompany && <TabsTrigger value="locations">{t("settings.tabs.locations")}</TabsTrigger>}
-          {showCompany && <TabsTrigger value="registers">{t("settings.tabs.registers")}</TabsTrigger>}
+          {showCompany && !invoicingOnly && <TabsTrigger value="locations">{t("settings.tabs.locations")}</TabsTrigger>}
+          {showCompany && !invoicingOnly && <TabsTrigger value="registers">{t("settings.tabs.registers")}</TabsTrigger>}
           {showCompany && <TabsTrigger value="fiscal">{t("settings.tabs.fiscal")}</TabsTrigger>}
           {showCompany && <TabsTrigger value="einvoice">{t("settings.tabs.einvoice")}</TabsTrigger>}
         </TabsList>

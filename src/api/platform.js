@@ -13,3 +13,4 @@ export const getPlatformOverview = () => api.get("/platform/overview").then((res
 export const getAiUsage = (month) => api.get("/platform/ai-usage", { params: month ? { month } : {} }).then((res) => res.data)
 export const setAiBudget = (data) => api.put("/platform/ai-budget", data).then((res) => res.data)
 export const getOwnerActions = () => api.get("/platform/actions").then((res) => res.data)
+export const getEInvoiceIssues = () => api.get("/platform/einvoice-issues").then((res) => res.data)

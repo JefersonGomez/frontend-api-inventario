@@ -20,12 +20,15 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { usePlan } from "@/hoocks/usePlan"
+import { OnboardingCard } from "@/components/OnboardingCard"
 
 const when = (d) => new Date(d).toLocaleString("es-CR", { dateStyle: "short", timeStyle: "short" })
 
 // Ventas: tiquetes, facturas y notas de crédito con filtros; el detalle reimprime y devuelve
 export function Sales() {
   const { t } = useTranslation()
+  const { invoicingOnly } = usePlan()
   const { can } = usePermissions()
   const money = useMoney()
   const navigate = useNavigate()
@@ -50,6 +53,8 @@ export function Sales() {
 
   return (
     <div>
+      {/* solo facturación: esta es su portada, aquí va su guía de primeros pasos */}
+      {invoicingOnly && <div className="mb-6"><OnboardingCard /></div>}
       <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold">{t("sales.title")}</h1>

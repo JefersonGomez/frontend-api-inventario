@@ -6,6 +6,7 @@ import { getPlatformCompanies, setCompanyPlan, setCompanySuspended, getPlatformO
 import { useSearchParams } from "react-router-dom"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { AiUsagePanel } from "@/components/platform/AiUsagePanel"
+import { EInvoiceIssuesPanel } from "@/components/platform/EInvoiceIssuesPanel"
 import { apiErrorMessage } from "@/lib/api-error"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -46,7 +47,7 @@ export function Platform() {
   const maxSignups = Math.max(1, ...(overview?.signups ?? []).map((s) => s.count))
   // pestaña en la URL (el aviso de presupuesto de IA lleva a ?tab=ai)
   const [params, setParams] = useSearchParams()
-  const tab = ["companies", "ai", "actions"].includes(params.get("tab")) ? params.get("tab") : "companies"
+  const tab = ["companies", "einvoice", "ai", "actions"].includes(params.get("tab")) ? params.get("tab") : "companies"
   const changeTab = (next) => setParams(next === "companies" ? {} : { tab: next }, { replace: true })
 
   const refresh = () => {
@@ -104,6 +105,7 @@ export function Platform() {
       <Tabs value={tab} onValueChange={changeTab} className="gap-4">
         <TabsList className="w-full sm:w-fit">
           <TabsTrigger value="companies">{t("platform.tabs.companies")}</TabsTrigger>
+          <TabsTrigger value="einvoice">{t("platform.tabs.einvoice")}</TabsTrigger>
           <TabsTrigger value="ai">{t("platform.tabs.ai")}</TabsTrigger>
           <TabsTrigger value="actions">{t("platform.tabs.actions")}</TabsTrigger>
         </TabsList>
@@ -260,6 +262,9 @@ export function Platform() {
 
         </TabsContent>
 
+        <TabsContent value="einvoice">
+          <EInvoiceIssuesPanel />
+        </TabsContent>
         <TabsContent value="ai">
           <AiUsagePanel />
         </TabsContent>

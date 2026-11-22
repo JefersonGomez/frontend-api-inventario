@@ -1135,7 +1135,8 @@
     "tabs": {
       "companies": "Empresas",
       "ai": "Inteligencia artificial",
-      "actions": "Mis acciones"
+      "actions": "Mis acciones",
+      "einvoice": "Facturación"
     },
     "signups": "Empresas nuevas por semana",
     "signupsHint": "Últimas 12 semanas; pasa el mouse por una barra para ver la fecha",
@@ -1166,6 +1167,26 @@
       "cost": "Costo",
       "none": "Sin consultas a la IA este mes",
       "estimateNote": "Costo estimado con el precio por token de Google (verificado el 16-oct-2026). La factura real de Google puede variar un poco."
+    },
+    "einvoice": {
+      "subtitle": "Comprobantes de tus clientes que necesitan atención. Se actualiza cada minuto; solo se ve el estado y el motivo, no montos ni clientes.",
+      "error": "No se pudo cargar el estado de la facturación",
+      "allGood": "Todo en orden: no hay comprobantes rechazados, con error ni atascados.",
+      "keysTitle": "Llaves criptográficas por vencer",
+      "keyExpires": "vence el {{date}}",
+      "keyExpired": "venció el {{date}}: no puede facturar hasta renovarla",
+      "company": "Empresa",
+      "document": "Comprobante",
+      "problem": "Problema",
+      "reason": "Motivo",
+      "updated": "Último cambio",
+      "kinds": {
+        "REJECTED": "Rechazado",
+        "ERROR": "Con error",
+        "RETRYING": "Reintentando ({{count}})",
+        "NO_ANSWER": "Sin respuesta"
+      },
+      "hint": "Rechazados de los últimos 30 días, con error, con 3 o más intentos fallidos, o enviados hace más de una hora sin respuesta de Hacienda."
     }
   },
   "legal": {
@@ -1505,6 +1526,35 @@
       "firstRegister": {
         "title": "Crea tu primera caja y ábrela",
         "hint": "En Configuración → Cajas; se marca sola cuando alguien abre el primer turno"
+      }
+    },
+    "invoicing": {
+      "title": "Para emitir tu primera factura",
+      "subtitle": "{{done}} de {{total}} pasos listos. Síguelos en orden.",
+      "steps": {
+        "fiscal": {
+          "title": "Tus datos fiscales",
+          "hint": "Razón social, cédula, actividad económica y dirección, tal como están en Hacienda"
+        },
+        "einvoice": {
+          "title": "Conecta con Hacienda",
+          "hint": "Tu usuario y contraseña de Hacienda y tu llave criptográfica (.p12) con su PIN. Se sacan en ATV (Administración Tributaria Virtual)",
+          "enable": "Ya están tus credenciales: falta encender el envío automático"
+        },
+        "catalog": {
+          "title": "Agrega lo que vendes",
+          "hint": "Tus servicios o productos, cada uno con su precio, IVA y código CABYS",
+          "missing_one": "A {{count}} le falta el código CABYS",
+          "missing_other": "A {{count}} les falta el código CABYS"
+        },
+        "customer": {
+          "title": "Agrega tu primer cliente",
+          "hint": "Con su cédula y su correo: ahí le llega la factura"
+        },
+        "firstInvoice": {
+          "title": "Emite tu primera factura",
+          "hint": "Se marca sola cuando Hacienda la acepte"
+        }
       }
     }
   },
