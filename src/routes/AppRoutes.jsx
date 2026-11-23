@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom"
+import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom"
 import { Layout } from "@/components/layout/Layout"
 import { Dashboard } from "@/pages/Dashboard"
 import { Products } from "@/pages/Products"
@@ -51,6 +51,8 @@ const router = createBrowserRouter([
     element: <Login />,
   },
    { path: "/register", element: <Register /> },
+  // con recarga completa "/" es la landing (nginx); al panel se entra por aquí y React Router lo lleva a "/"
+  { path: "/inicio", element: <Navigate to="/" replace /> },
   // link de invitación: público (quien lo abre todavía no tiene sesión)
   { path: "/invite/:token", element: <AcceptInvite /> },
   // documentos legales: públicos (se leen antes de crear la cuenta)

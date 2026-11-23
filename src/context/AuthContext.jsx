@@ -46,7 +46,7 @@ export function AuthProvider({ children }) {
   async function switchCompany(companyId) {
     const data = await switchCompanyRequest(companyId)
     login(data.token, data.refreshToken, data.user, data.company.id)
-    window.location.assign("/")
+    window.location.assign("/inicio") // "/" con recarga completa es la landing; /inicio lleva al panel
   }
 
   // Avisa al backend para revocar el refresh token y cierra la sesión de esta cuenta

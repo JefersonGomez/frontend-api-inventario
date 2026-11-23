@@ -1,5 +1,5 @@
-import { useState } from "react"
-import { Link } from "react-router-dom"
+import { useEffect, useRef, useState } from "react"
+import { Link, useSearchParams } from "react-router-dom"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { demoLogin, getDemoInfo, loginRequest } from "@/api/auth"
@@ -18,12 +18,22 @@ export function Login() {
   const enter = (data) => {
     login(data.token, data.refreshToken, data.user, data.company?.id)
     // recarga completa: no queda en memoria nada del usuario que estaba antes en esta pestaña
-    window.location.assign(data.user.role === "CASHIER" ? "/pos/abrir" : "/")
+    window.location.assign(data.user.role === "CASHIER" ? "/pos/abrir" : "/inicio") // "/" es la landing
   }
   const mutation = useMutation({ mutationFn: () => loginRequest(email.trim(), password), onSuccess: enter })
   // demo pública: solo aparece si el servidor la tiene activa
   const { data: demo } = useQuery({ queryKey: ["demo-info"], queryFn: getDemoInfo, retry: false })
   const demoEnter = useMutation({ mutationFn: demoLogin, onSuccess: enter })
+  // "Ver la demo" desde la landing (/login?demo=admin|cajero): entra directo, una sola vez
+  const [params] = useSearchParams()
+  const autoDemo = useRef(false)
+  useEffect(() => {
+    const wanted = { admin: "ADMIN", cajero: "CASHIER" }[params.get("demo")]
+    if (wanted && demo?.enabled && !autoDemo.current) {
+      autoDemo.current = true
+      demoEnter.mutate(wanted)
+    }
+  }, [params, demo, demoEnter])
 
   function handleSubmit(e) {
     e.preventDefault()
