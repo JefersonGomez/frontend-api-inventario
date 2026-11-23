@@ -7,11 +7,11 @@ export const LANDING = {
   loginUrl: "/login",
   demoUrl: "/login?demo=admin", // entra directo a la ferretería de ejemplo (si la demo está activa)
 
-  // contacto (pendiente)
-  whatsapp: null, // solo dígitos con código de país, p. ej. "50688887777"
+  // contacto (null = no se muestra)
+  whatsapp: "50661718236", // solo dígitos con código de país (506 = Costa Rica)
   whatsappMessage: "Hola, quiero saber más de Cubivo",
-  email: null, // p. ej. "hola@cubivo.cr"
-  linkedin: null,
+  email: "jefersonbustamantegomez@gmail.com", // provisional: cambiar por el correo de Cubivo cuando exista
+  linkedin: null, // opcional (el usuario lo dejó a criterio): "https://www.linkedin.com/in/jefersonbustamantegomez/"
 
   // planes de pago (pendiente: fase de planes)
   prices: { INVOICING: null, BASIC: null, PRO: null, BUSINESS: null }, // colones por mes

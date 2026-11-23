@@ -4,6 +4,7 @@ import "./landing.css"
 import { LANDING } from "./config.js"
 import { initPricing } from "./pricing.js"
 import { initTour } from "./tour.js"
+import { initContact, initFaq } from "./contact.js"
 
 const root = document.documentElement
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
@@ -77,3 +78,5 @@ if (art) {
 
 initPricing()
 initTour()
+initContact()
+initFaq()
