@@ -13,9 +13,10 @@ export const LANDING = {
   email: "jefersonbustamantegomez@gmail.com", // provisional: cambiar por el correo de Cubivo cuando exista
   linkedin: null, // opcional (el usuario lo dejó a criterio): "https://www.linkedin.com/in/jefersonbustamantegomez/"
 
-  // planes de pago (pendiente: fase de planes)
-  prices: { INVOICING: null, BASIC: null, PRO: null, BUSINESS: null }, // colones por mes
-  annualDiscountPercent: null,
-  trialDays: null,
-  paymentMethods: null, // p. ej. "Tarjeta de crédito o débito (ONVO)"
+  // planes (decididos el 22-nov-2026; colones, IVA incluido). La fase de cobro los lleva al backend.
+  prices: { INVOICING: 5900, BASIC: 14900, PRO: 29900, BUSINESS: 59900 }, // por mes, pago mensual
+  annualPrices: { INVOICING: 4900, BASIC: 12400, PRO: 24900, BUSINESS: 49900 }, // por mes, pago anual (≈ 2 meses gratis)
+  annualLabel: "2 meses gratis",
+  trialDays: 14,
+  paymentMethods: "Con tarjeta de crédito o débito, o por SINPE Móvil", // cobro con ONVO
 }

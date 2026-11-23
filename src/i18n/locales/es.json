@@ -889,7 +889,8 @@
     "welcomeMessage": "¡Hola! Puedo ayudarte a consultar productos, stock bajo, valor de inventario y movimientos. ¿Qué querés saber?",
     "thinking": "Pensando...",
     "errorMessage": "Hubo un problema al procesar tu pregunta. Intentá de nuevo.",
-    "send": "Enviar"
+    "send": "Enviar",
+    "quotaReached": "Ya usaste las preguntas al asistente de este mes que incluye tu plan."
   },
   "notifications": {
     "title": "Notificaciones",
@@ -1016,7 +1017,8 @@
       "unlimitedBranches": "sucursales ilimitadas",
       "INVOICING": "Solo facturación",
       "documentsUsed": "Comprobantes este mes: {{used}} de {{max}}",
-      "invoicingOnlyHint": "Tu plan es para facturar: no lleva inventario, cajas ni compras. Si un día lo necesitas, se mejora el plan sin perder nada."
+      "invoicingOnlyHint": "Tu plan es para facturar: no lleva inventario, cajas ni compras. Si un día lo necesitas, se mejora el plan sin perder nada.",
+      "aiChatsUsed": "Preguntas al asistente este mes: {{used}} de {{max}}"
     }
   },
   "users": {
@@ -1538,7 +1540,7 @@
         },
         "einvoice": {
           "title": "Conecta con Hacienda",
-          "hint": "Tu usuario y contraseña de Hacienda y tu llave criptográfica (.p12) con su PIN. Se sacan en ATV (Administración Tributaria Virtual)",
+          "hint": "Tu usuario y contraseña de Hacienda y tu llave criptográfica (.p12) con su PIN. Se sacan en TRIBU-CR, la plataforma de Hacienda",
           "enable": "Ya están tus credenciales: falta encender el envío automático"
         },
         "catalog": {

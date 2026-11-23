@@ -6,6 +6,7 @@ import { sendChatMessage } from "@/api/assistant"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
+import { apiErrorMessage } from "@/lib/api-error"
 
 export function AssistantWidget() {
   const { t } = useTranslation()
@@ -22,11 +23,11 @@ export function AssistantWidget() {
     onSuccess: (data) => {
       setMessages((prev) => [...prev, { role: "assistant", text: data.reply }])
     },
-    onError: () => {
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", text: t("assistant.errorMessage"), isError: true },
-      ])
+    onError: (err) => {
+      // tope del plan (429) o presupuesto de la plataforma (503): el mensaje del servidor lo explica
+      const status = err?.response?.status
+      const text = status === 429 || status === 503 ? apiErrorMessage(err, t("assistant.quotaReached")) : t("assistant.errorMessage")
+      setMessages((prev) => [...prev, { role: "assistant", text, isError: true }])
     },
   })
 

@@ -25,8 +25,6 @@ export function initContact() {
     if (LANDING.linkedin) a.href = LANDING.linkedin
     else a.closest("li")?.remove()
   }
-  const pay = document.getElementById("faq-pay")
-  if (pay && LANDING.paymentMethods) pay.textContent = `${LANDING.paymentMethods}, mes a mes o un año por adelantado. Puedes cancelar cuando quieras, sin permanencia ni multas.`
   const year = document.getElementById("year")
   if (year) year.textContent = String(new Date().getFullYear())
 }

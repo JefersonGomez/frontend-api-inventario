@@ -133,6 +133,11 @@ function CompanyCard() {
                 {t("companies.plan.documentsUsed", { used: data.usage.documentsThisMonth, max: data.limits.documentsPerMonth })}
               </p>
             )}
+            {data.limits.aiChatsPerMonth > 0 && data.usage && (
+              <p className="text-sm mt-1">
+                {t("companies.plan.aiChatsUsed", { used: data.usage.aiChatsThisMonth ?? 0, max: data.limits.aiChatsPerMonth })}
+              </p>
+            )}
             {data.limits.invoicingOnly && <p className="text-xs text-muted-foreground mt-1">{t("companies.plan.invoicingOnlyHint")}</p>}
             <p className="text-xs text-muted-foreground mt-1">
               {t("companies.plan.limits", {

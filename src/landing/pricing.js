@@ -30,6 +30,7 @@ function features(p) {
   }
   list.push(p.documentsPerMonth == null ? "Comprobantes ilimitados" : `${fmt.format(p.documentsPerMonth)} comprobantes al mes`)
   list.push(p.invoicingOnly ? "Factura electrónica y cuentas por cobrar" : "Factura electrónica, inventario y reportes")
+  if (p.aiChatsPerMonth) list.push(`Asistente con IA: ${fmt.format(p.aiChatsPerMonth)} preguntas al mes`)
   if (p.maxCompanies > 1) list.push(`Hasta ${p.maxCompanies} empresas en una cuenta`)
   return list
 }
@@ -37,9 +38,9 @@ function features(p) {
 function priceText(code, billing) {
   const monthly = LANDING.prices?.[code]
   if (monthly == null) return { amount: "₡ —", note: "Precio por anunciar" }
-  const discount = LANDING.annualDiscountPercent ?? 0
-  const value = billing === "annual" ? Math.round(monthly * (1 - discount / 100)) : monthly
-  return { amount: `₡${fmt.format(value)}`, note: billing === "annual" ? `₡${fmt.format(value * 12)} al año` : "" }
+  if (billing !== "annual") return { amount: `₡${fmt.format(monthly)}`, note: "" }
+  const value = LANDING.annualPrices?.[code] ?? monthly
+  return { amount: `₡${fmt.format(value)}`, note: `₡${fmt.format(value * 12)} al año · ahorras ₡${fmt.format((monthly - value) * 12)}` }
 }
 
 const registerFor = (code) => (code === "INVOICING" ? LANDING.registerInvoicingUrl : `${LANDING.registerUrl}?plan=${code.toLowerCase()}`)
@@ -80,7 +81,7 @@ export async function initPricing() {
   let plans = []
 
   const save = document.getElementById("annual-save")
-  if (save && LANDING.annualDiscountPercent) save.textContent = `· ahorra ${LANDING.annualDiscountPercent} %`
+  if (save && LANDING.annualLabel) save.textContent = `· ${LANDING.annualLabel}`
   const trial = document.getElementById("trial-line")
   if (trial && LANDING.trialDays) trial.textContent = `Prueba gratis ${LANDING.trialDays} días, sin tarjeta`
 

@@ -889,7 +889,8 @@
     "welcomeMessage": "Hi! I can help you check products, low stock, inventory value and movements. What would you like to know?",
     "thinking": "Thinking...",
     "errorMessage": "There was a problem processing your question. Please try again.",
-    "send": "Send"
+    "send": "Send",
+    "quotaReached": "You used all the assistant questions included in your plan this month."
   },
   "notifications": {
     "title": "Notifications",
@@ -1016,7 +1017,8 @@
       "unlimitedBranches": "unlimited branches",
       "INVOICING": "Invoicing only",
       "documentsUsed": "Documents this month: {{used}} of {{max}}",
-      "invoicingOnlyHint": "Your plan is for invoicing: no inventory, registers or purchasing. If you ever need them, upgrade without losing anything."
+      "invoicingOnlyHint": "Your plan is for invoicing: no inventory, registers or purchasing. If you ever need them, upgrade without losing anything.",
+      "aiChatsUsed": "Assistant questions this month: {{used}} of {{max}}"
     }
   },
   "users": {
@@ -1538,7 +1540,7 @@
         },
         "einvoice": {
           "title": "Connect to Hacienda",
-          "hint": "Your Hacienda username and password and your cryptographic key (.p12) with its PIN. You get them in ATV",
+          "hint": "Your Hacienda username and password and your cryptographic key (.p12) with its PIN. You get them in TRIBU-CR, Hacienda's platform",
           "enable": "Your credentials are in: turn on automatic sending"
         },
         "catalog": {
