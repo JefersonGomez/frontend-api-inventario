@@ -316,7 +316,91 @@
         </div>
       </section>
 
-      <!-- Fases 3 y 4: elige cómo usarlo, precios, recorrido, preguntas, llamado final y pie -->
+      <!-- 7. Elige cómo usarlo -->
+      <section class="section section-tight" aria-labelledby="choose-title">
+        <div class="wrap">
+          <div class="section-head center">
+            <p class="eyebrow">Elige cómo usarlo</p>
+            <h2 id="choose-title" class="h2"><span class="w300">Un sistema,</span> <span class="w800 accent">dos formas de trabajar</span></h2>
+          </div>
+          <div class="choose-grid">
+            <article class="choose-card">
+              <span class="choose-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3h7l5 5v13H7Z" /><path d="M14 3v5h5" /><path d="m9.5 14 2 2 3.5-4" /></svg></span>
+              <h3>Solo facturar</h3>
+              <p>Para consultores, profesionales y servicios. Facturas electrónicas a Hacienda, clientes y cobros, <b>sin inventario</b>.</p>
+              <ul class="mini-checks">
+                <li>Productos y servicios con su CABYS</li>
+                <li>Notas de crédito y débito</li>
+                <li>Cuentas por cobrar</li>
+              </ul>
+              <a class="btn btn-ghost" href="#precios">Ver el plan</a>
+            </article>
+            <article class="choose-card">
+              <span class="choose-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 20 7.5v9L12 21 4 16.5v-9Z" /><path d="M4 7.5 12 12l8-4.5M12 12v9" /></svg></span>
+              <h3>Inventario y ventas</h3>
+              <p>Para tiendas, ferreterías y distribuidores. Todo lo de facturar, <b>más stock, caja, compras y reportes</b>.</p>
+              <ul class="mini-checks">
+                <li>Punto de venta con lector de código</li>
+                <li>Stock por sucursal y bodega</li>
+                <li>Compras, proveedores y reportes</li>
+              </ul>
+              <a class="btn btn-accent" href="#precios">Ver los planes</a>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- 8. Precios (los límites vienen del sistema: GET /plans; los montos, de config.js) -->
+      <section id="precios" class="section" aria-labelledby="pricing-title">
+        <div class="wrap">
+          <div class="section-head split">
+            <div>
+              <p class="eyebrow">Precios</p>
+              <h2 id="pricing-title" class="h2"><span class="w300">Un plan para</span> <span class="w800 accent">cada etapa</span></h2>
+            </div>
+            <div class="billing" role="group" aria-label="Forma de pago del plan">
+              <button type="button" class="billing-opt" data-billing="monthly" aria-pressed="true">Mensual</button>
+              <button type="button" class="billing-opt" data-billing="annual" aria-pressed="false">Anual <span class="save" id="annual-save"></span></button>
+            </div>
+          </div>
+          <div class="plans" id="plans" aria-live="polite">
+            <p class="plans-loading">Cargando los planes…</p>
+          </div>
+          <p class="plans-foot" id="plans-foot">
+            <span id="trial-line">Prueba gratis, sin tarjeta</span>
+            <span>Cancela cuando quieras</span>
+            <span>Precios en colones, IVA incluido</span>
+          </p>
+        </div>
+      </section>
+
+      <!-- 9. Recorrido -->
+      <section class="tour-block" aria-labelledby="tour-title">
+        <div class="wrap">
+          <div class="section-head center">
+            <p class="eyebrow">Recorrido</p>
+            <h2 id="tour-title" class="h2"><span class="w300">Así se ve</span> <span class="w800 accent">por dentro</span></h2>
+          </div>
+          <div class="tabs" role="tablist" aria-label="Pantallas de Cubivo">
+            <button type="button" role="tab" id="tab-caja" aria-controls="panel-tour" aria-selected="true" data-tab="caja">Caja</button>
+            <button type="button" role="tab" id="tab-inventario" aria-controls="panel-tour" aria-selected="false" tabindex="-1" data-tab="inventario">Inventario</button>
+            <button type="button" role="tab" id="tab-factura" aria-controls="panel-tour" aria-selected="false" tabindex="-1" data-tab="factura">Factura</button>
+            <button type="button" role="tab" id="tab-reportes" aria-controls="panel-tour" aria-selected="false" tabindex="-1" data-tab="reportes">Reportes</button>
+            <button type="button" role="tab" id="tab-celular" aria-controls="panel-tour" aria-selected="false" tabindex="-1" data-tab="celular">Celular</button>
+          </div>
+          <div class="tour" id="panel-tour" role="tabpanel" aria-labelledby="tab-caja" tabindex="0">
+            <div class="tour-copy">
+              <h3 id="tour-h">Cobra en segundos</h3>
+              <p id="tour-p">Busca o escanea el producto, cobra en efectivo, tarjeta o SINPE y el tiquete sale solo. Si se cae el internet, la caja sigue vendiendo.</p>
+            </div>
+            <figure class="tour-frame" id="tour-frame">
+              <img id="tour-img" src="/landing/caja.webp" width="1568" height="777" loading="lazy" decoding="async" alt="Caja de Cubivo con una venta en curso de cemento, varilla y pintura" />
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <!-- Fase 4: testimonios (oculto), preguntas, llamado final y pie -->
     </main>
 
     <script type="module" src="/src/landing/landing.js"></script>

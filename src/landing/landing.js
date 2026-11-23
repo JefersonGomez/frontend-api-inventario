@@ -2,6 +2,8 @@
 // contador de stock de la portada. Sin dependencias: la página tiene que cargar rápido.
 import "./landing.css"
 import { LANDING } from "./config.js"
+import { initPricing } from "./pricing.js"
+import { initTour } from "./tour.js"
 
 const root = document.documentElement
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
@@ -72,3 +74,6 @@ if (art) {
   }, { threshold: 0.35 })
   io.observe(art)
 }
+
+initPricing()
+initTour()
