@@ -11,6 +11,7 @@ export const getPlans = () => api.get("/plans").then((res) => res.data)
 export const getCardSetup = () => api.get("/billing/card-setup").then((res) => res.data)
 export const payWithCard = (paymentMethodId) => api.post("/billing/pay", { paymentMethodId }).then((res) => res.data)
 export const syncPayment = (id) => api.post(`/billing/payments/${id}/sync`).then((res) => res.data)
+export const paySinpe = (data) => api.post("/billing/pay-sinpe", data).then((res) => res.data)
 export const getPayments = () => api.get("/billing/payments").then((res) => res.data)
 
 // La tarjeta va DIRECTO del navegador a ONVO con la llave pública (nunca pasa por el servidor de Cubivo).

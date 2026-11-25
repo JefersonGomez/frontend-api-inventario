@@ -3012,7 +3012,8 @@
         "declined": "El banco rechazó el pago. Revisa los datos o usa otra tarjeta.",
         "onvo": "La tarjeta no se pudo registrar: {{detail}}",
         "generic": "No se pudo hacer el pago. Inténtalo de nuevo."
-      }
+      },
+      "button": "Pagar con tarjeta"
     },
     "history": {
       "title": "Pagos",
@@ -3023,6 +3024,34 @@
         "SUCCEEDED": "Pagado",
         "FAILED": "Rechazado",
         "PENDING": "En verificación"
+      }
+    },
+    "sinpe": {
+      "button": "Pagar con SINPE Móvil",
+      "title": "Pagar {{amount}} por SINPE Móvil",
+      "subtitle": "Indica desde qué cuenta vas a transferir. ONVO Pay reconoce el pago por la cédula de esa cuenta y el monto exacto.",
+      "idType": "La cuenta que transfiere es de",
+      "idTypes": {
+        "FISICA": "Persona física (cédula)",
+        "JURIDICA": "Empresa (cédula jurídica)",
+        "DIMEX": "Residente (DIMEX)"
+      },
+      "idNumber": "Número de identificación",
+      "idPlaceholder": {
+        "FISICA": "1-1393-1919",
+        "JURIDICA": "3-101-123456",
+        "DIMEX": "123456789012"
+      },
+      "idHint": "La de la persona o empresa dueña de la cuenta desde la que sale el SINPE.",
+      "phone": "Teléfono desde el que harás el SINPE",
+      "create": "Continuar",
+      "creating": "Preparando el pago…",
+      "waitingTitle": "Haz el SINPE Móvil",
+      "waitingText": "Envía exactamente {{amount}} al {{to}} (ONVO Pay) desde la cuenta a nombre de la identificación {{id}}. Si el monto o la cuenta no coinciden, el SINPE se rechaza y no se te cobra.",
+      "waiting": "Esperando la transferencia… se confirma sola en unos segundos.",
+      "errors": {
+        "id": "Revisa el número de identificación.",
+        "phone": "El teléfono tiene 8 números."
       }
     }
   }

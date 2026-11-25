@@ -3012,7 +3012,8 @@
         "declined": "The bank declined the payment. Check the details or use another card.",
         "onvo": "The card couldn't be registered: {{detail}}",
         "generic": "The payment couldn't be made. Please try again."
-      }
+      },
+      "button": "Pay by card"
     },
     "history": {
       "title": "Payments",
@@ -3023,6 +3024,34 @@
         "SUCCEEDED": "Paid",
         "FAILED": "Declined",
         "PENDING": "Verifying"
+      }
+    },
+    "sinpe": {
+      "button": "Pay with SINPE Móvil",
+      "title": "Pay {{amount}} with SINPE Móvil",
+      "subtitle": "Tell us which account you'll transfer from. ONVO Pay recognizes the payment by that account's ID and the exact amount.",
+      "idType": "The sending account belongs to",
+      "idTypes": {
+        "FISICA": "An individual (cédula)",
+        "JURIDICA": "A company (cédula jurídica)",
+        "DIMEX": "A resident (DIMEX)"
+      },
+      "idNumber": "ID number",
+      "idPlaceholder": {
+        "FISICA": "1-1393-1919",
+        "JURIDICA": "3-101-123456",
+        "DIMEX": "123456789012"
+      },
+      "idHint": "The ID of the person or company that owns the account the SINPE comes from.",
+      "phone": "Phone you'll send the SINPE from",
+      "create": "Continue",
+      "creating": "Preparing the payment…",
+      "waitingTitle": "Make the SINPE Móvil transfer",
+      "waitingText": "Send exactly {{amount}} to {{to}} (ONVO Pay) from the account under ID {{id}}. If the amount or the account don't match, the SINPE is rejected and you aren't charged.",
+      "waiting": "Waiting for the transfer… it confirms by itself in a few seconds.",
+      "errors": {
+        "id": "Check the ID number.",
+        "phone": "The phone number has 8 digits."
       }
     }
   }

@@ -2,13 +2,14 @@ import { useEffect, useRef, useState } from "react"
 import { useSearchParams } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { Check, CircleCheck, CircleX, CreditCard } from "lucide-react"
+import { Check, CircleCheck, CircleX, CreditCard, Loader2, Smartphone } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { getPayments, getPlans, syncPayment, updateSubscription } from "@/api/billing"
 import { CardPaymentDialog } from "@/components/billing/CardPaymentDialog"
+import { SinpePaymentDialog } from "@/components/billing/SinpePaymentDialog"
 import { useSubscription } from "@/hoocks/useSubscription"
 import { apiErrorMessage } from "@/lib/api-error"
 
@@ -27,6 +28,7 @@ export function Subscription() {
   const { data: plans } = useQuery({ queryKey: ["plans"], queryFn: getPlans, staleTime: 5 * 60_000 })
   const { data: payments = [] } = useQuery({ queryKey: ["billing-payments"], queryFn: getPayments, enabled: !!sub?.enabled && !!sub?.isOwner })
   const [payOpen, setPayOpen] = useState(false)
+  const [sinpeOpen, setSinpeOpen] = useState(false)
   const [notice, setNotice] = useState(null) // { ok, text }
   const [params, setParams] = useSearchParams()
   const returning = params.get("payment")
@@ -43,6 +45,17 @@ export function Subscription() {
     else if (payment.status === "FAILED") setNotice({ ok: false, text: payment.failureMessage || t("billing.card.errors.declined") })
     else setNotice({ ok: false, text: t("billing.card.stillPending") })
   }
+
+  // SINPE esperando la transferencia: se le pregunta a ONVO cada 5 segundos mientras la página está abierta
+  const waiting = payments.find((p) => p.status === "PENDING" && p.method === "SINPE" && p.sinpe)
+  useEffect(() => {
+    if (!waiting) return
+    const timer = setInterval(() => {
+      syncPayment(waiting.id).then((p) => { if (p.status !== "PENDING") announce(p) }).catch(() => {})
+    }, 5000)
+    return () => clearInterval(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [waiting?.id])
 
   // vuelta de la verificación del banco: se le pregunta a ONVO cómo terminó
   useEffect(() => {
@@ -127,6 +140,22 @@ export function Subscription() {
             </p>
           )}
           <p>{status}</p>
+          {waiting && (
+            <div role="status" className="space-y-2 rounded-xl border-2 border-[var(--stk-accent-strong)] bg-[var(--stk-accent-soft)] p-4">
+              <p className="flex items-center gap-2 font-semibold">
+                <Smartphone className="h-4 w-4" aria-hidden />
+                {t("billing.sinpe.waitingTitle")}
+              </p>
+              <p className="text-2xl font-semibold tracking-tight">
+                {money(waiting.sinpe.amount)} → {waiting.sinpe.to}
+              </p>
+              <p className="text-sm">{t("billing.sinpe.waitingText", { amount: money(waiting.sinpe.amount), to: waiting.sinpe.to, id: waiting.sinpe.identification })}</p>
+              <p className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                {t("billing.sinpe.waiting")}
+              </p>
+            </div>
+          )}
           {sub.card && sub.isOwner && (
             <p className="text-sm text-muted-foreground">{t("billing.card.savedLine", { brand: sub.card.brand, last4: sub.card.last4 })}</p>
           )}
@@ -141,10 +170,16 @@ export function Subscription() {
                 </p>
               </div>
               <div className="flex flex-col items-end gap-1">
-                <Button disabled={!sub.cardPayments || !!returning} onClick={() => { setNotice(null); setPayOpen(true) }}>
-                  <CreditCard className="h-4 w-4" aria-hidden />
-                  {t("billing.pay", { amount: money(due) })}
-                </Button>
+                <div className="flex flex-wrap justify-end gap-2">
+                  <Button variant="outline" disabled={!sub.cardPayments || !!returning || !!waiting} onClick={() => { setNotice(null); setSinpeOpen(true) }}>
+                    <Smartphone className="h-4 w-4" aria-hidden />
+                    {t("billing.sinpe.button")}
+                  </Button>
+                  <Button disabled={!sub.cardPayments || !!returning || !!waiting} onClick={() => { setNotice(null); setPayOpen(true) }}>
+                    <CreditCard className="h-4 w-4" aria-hidden />
+                    {t("billing.card.button")}
+                  </Button>
+                </div>
                 {!sub.cardPayments && <span className="text-xs text-muted-foreground">{t("billing.payComing")}</span>}
               </div>
             </div>
@@ -232,7 +267,7 @@ export function Subscription() {
                     </p>
                     <p className="text-muted-foreground">
                       {date(p.paidAt ?? p.createdAt)}
-                      {p.cardLast4 && ` · ${p.cardBrand ?? ""} ••${p.cardLast4}`}
+                      {p.method === "SINPE" ? ` · SINPE Móvil` : p.cardLast4 && ` · ${p.cardBrand ?? ""} ••${p.cardLast4}`}
                       {p.status === "SUCCEEDED" && p.periodEnd && ` · ${t("billing.history.covers", { date: date(p.periodEnd) })}`}
                       {p.status === "FAILED" && p.failureMessage && ` · ${p.failureMessage}`}
                     </p>
@@ -246,6 +281,13 @@ export function Subscription() {
           </Card>
         </section>
       )}
+
+      <SinpePaymentDialog
+        open={sinpeOpen}
+        onClose={() => setSinpeOpen(false)}
+        amountText={money(due)}
+        onStarted={() => queryClient.invalidateQueries({ queryKey: ["billing-payments"] })}
+      />
 
       <CardPaymentDialog
         open={payOpen}
