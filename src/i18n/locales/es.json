@@ -1146,7 +1146,8 @@
       "companies": "Empresas",
       "ai": "Inteligencia artificial",
       "actions": "Mis acciones",
-      "einvoice": "Facturación"
+      "einvoice": "Facturación",
+      "subscriptions": "Suscripciones"
     },
     "signups": "Empresas nuevas por semana",
     "signupsHint": "Últimas 12 semanas; pasa el mouse por una barra para ver la fecha",
@@ -1197,6 +1198,41 @@
         "NO_ANSWER": "Sin respuesta"
       },
       "hint": "Rechazados de los últimos 30 días, con error, con 3 o más intentos fallidos, o enviados hace más de una hora sin respuesta de Hacienda."
+    },
+    "subs": {
+      "title": "Cuentas",
+      "account": "Cuenta",
+      "plan": "Plan",
+      "state": "Estado",
+      "until": "Vence",
+      "method": "Paga con",
+      "actions": "Soporte",
+      "next": "→ {{plan}} al renovar",
+      "cancelled": "No se renovará",
+      "extend": "+7 días",
+      "exempt": "Cuenta interna",
+      "unexempt": "Quitar interna",
+      "payments": "Últimos pagos",
+      "noPayments": "Todavía no hay pagos.",
+      "card": "tarjeta",
+      "error": "No se pudieron cargar las suscripciones.",
+      "disabled": "El cobro está apagado en el servidor (BILLING_ENABLED): nadie vence todavía.",
+      "states": {
+        "trial": "Prueba",
+        "active": "Al día",
+        "grace": "Vencida",
+        "expired": "Solo lectura",
+        "exempt": "Interna",
+        "none": "Sin empezar"
+      },
+      "totals": {
+        "mrr": "Ingreso mensual",
+        "monthRevenue": "Cobrado este mes",
+        "active": "Al día",
+        "trial": "En prueba",
+        "grace": "En gracia",
+        "expired": "Solo lectura"
+      }
     }
   },
   "legal": {
@@ -3026,7 +3062,8 @@
         "FAILED": "Rechazado",
         "PENDING": "En verificación"
       },
-      "automatic": "renovación automática"
+      "automatic": "renovación automática",
+      "upgrade": "cambio a {{plan}}"
     },
     "sinpe": {
       "button": "Pagar con SINPE Móvil",
@@ -3056,6 +3093,26 @@
         "phone": "El teléfono tiene 8 números."
       },
       "renewReminder": "Te enviaremos un recordatorio por correo 3 días antes de que venza, para que pagues por SINPE Móvil o con tarjeta."
+    },
+    "change": {
+      "howItWorks": "Subir de plan rige al instante y pagas solo la diferencia por los días que quedan. Bajar de plan o cambiar el periodo rige desde la próxima renovación.",
+      "upgrade": "Subir ahora",
+      "atRenewal": "Cambiar al renovar",
+      "chosenNext": "Elegido para la renovación · deshacer",
+      "scheduled": "Desde el {{date}}: plan {{plan}} {{interval}}.",
+      "undo": "Deshacer",
+      "upgradeTitle": "Subir a {{plan}}: pagas {{amount}} hoy",
+      "upgradeText": "Es la diferencia por los días que quedan hasta el {{date}}. Desde la renovación pagas el precio normal del plan.",
+      "upgraded": "¡Listo! Ya tienes el plan {{plan}}."
+    },
+    "cancel": {
+      "button": "Cancelar la renovación",
+      "title": "¿Cancelar la renovación?",
+      "text": "Tu plan sigue funcionando hasta el {{date}} y no se te vuelve a cobrar. Después tienes 3 días de gracia y la cuenta pasa a solo lectura: no se borra nada y puedes reactivarla cuando quieras.",
+      "keep": "Mantener mi plan",
+      "confirm": "Sí, cancelar",
+      "cancelled": "Cancelada: no se renovará. Funciona hasta el {{date}}.",
+      "reactivate": "Reactivar"
     }
   }
 }

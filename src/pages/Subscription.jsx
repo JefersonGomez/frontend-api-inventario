@@ -7,8 +7,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { getPayments, getPlans, syncPayment, updateSubscription } from "@/api/billing"
+import { getPayments, getPlans, getUpgradeQuote, setCancellation, syncPayment, updateSubscription } from "@/api/billing"
 import { CardPaymentDialog } from "@/components/billing/CardPaymentDialog"
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
+  AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { SinpePaymentDialog } from "@/components/billing/SinpePaymentDialog"
 import { useSubscription } from "@/hoocks/useSubscription"
 import { apiErrorMessage } from "@/lib/api-error"
@@ -16,6 +20,7 @@ import { apiErrorMessage } from "@/lib/api-error"
 // Mi suscripción: estado de la prueba o del periodo pagado, elegir plan y periodo (C1) y pagar con
 // tarjeta por ONVO (C2). Al volver de la verificación del banco (?payment=<id>) se confirma el pago.
 const ORDER = ["INVOICING", "BASIC", "PRO", "BUSINESS"]
+const RANK = { INVOICING: 0, BASIC: 1, PRO: 2, BUSINESS: 3 }
 const BADGE = { trial: "secondary", active: "default", grace: "outline", expired: "destructive", exempt: "secondary" }
 
 export function Subscription() {
@@ -29,6 +34,8 @@ export function Subscription() {
   const { data: payments = [] } = useQuery({ queryKey: ["billing-payments"], queryFn: getPayments, enabled: !!sub?.enabled && !!sub?.isOwner })
   const [payOpen, setPayOpen] = useState(false)
   const [sinpeOpen, setSinpeOpen] = useState(false)
+  const [upgrade, setUpgrade] = useState(null) // { plan, amount }: subir de plan pagando la diferencia (C5)
+  const [confirmCancel, setConfirmCancel] = useState(false)
   const [notice, setNotice] = useState(null) // { ok, text }
   const [params, setParams] = useSearchParams()
   const returning = params.get("payment")
@@ -41,7 +48,8 @@ export function Subscription() {
   }
   const announce = (payment) => {
     refresh()
-    if (payment.status === "SUCCEEDED") setNotice({ ok: true, text: t("billing.card.done", { date: date(payment.periodEnd) }) })
+    if (payment.status === "SUCCEEDED" && payment.kind === "UPGRADE") setNotice({ ok: true, text: t("billing.change.upgraded", { plan: t(`billing.plans.${payment.plan}`) }) })
+    else if (payment.status === "SUCCEEDED") setNotice({ ok: true, text: t("billing.card.done", { date: date(payment.periodEnd) }) })
     else if (payment.status === "FAILED") setNotice({ ok: false, text: payment.failureMessage || t("billing.card.errors.declined") })
     else setNotice({ ok: false, text: t("billing.card.stillPending") })
   }
@@ -68,6 +76,23 @@ export function Subscription() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [returning])
 
+
+  const cancelMutation = useMutation({
+    mutationFn: setCancellation,
+    onSuccess: (data) => {
+      queryClient.setQueryData(["subscription"], data)
+      setConfirmCancel(false)
+    },
+  })
+  const quoteMutation = useMutation({
+    mutationFn: getUpgradeQuote,
+    onSuccess: (q) => {
+      setNotice(null)
+      // sin diferencia que cobrar (quedan muy pocos días), el cambio se aplica sin pago
+      if (!q.amount) mutation.mutate({ plan: q.plan })
+      else setUpgrade(q)
+    },
+  })
 
   const mutation = useMutation({
     mutationFn: updateSubscription,
@@ -104,8 +129,12 @@ export function Subscription() {
     )
   }
 
-  const interval = sub.interval
-  const canChange = sub.isOwner && sub.state !== "exempt" && sub.state !== "active"
+  const active = sub.state === "active"
+  // el periodo que rige al renovar (lo programado) se muestra marcado
+  const interval = (active && sub.nextInterval) || sub.interval
+  const canChange = sub.isOwner && sub.state !== "exempt" && !active // pagar un periodo / cambiar libre
+  const canEdit = sub.isOwner && sub.state !== "exempt" // con periodo pagado: subir, programar o cancelar
+  const scheduled = active && (sub.nextPlan || sub.nextInterval)
   const priceOf = (code) => sub.prices[code]
   const perMonth = (code) => (interval === "ANNUAL" ? priceOf(code).annual : priceOf(code).monthly)
   const due = interval === "ANNUAL" ? priceOf(sub.plan).annual * 12 : priceOf(sub.plan).monthly
@@ -156,14 +185,53 @@ export function Subscription() {
               </p>
             </div>
           )}
-          {sub.card && sub.isOwner && (
+          {scheduled && sub.isOwner && (
+            <p className="flex flex-wrap items-center gap-x-2 text-sm">
+              {t("billing.change.scheduled", {
+                date: date(sub.paidUntil),
+                plan: planName(sub.nextPlan ?? sub.plan),
+                interval: t(`billing.history.${sub.nextInterval ?? sub.interval}`),
+              })}
+              <button type="button" className="font-medium underline underline-offset-2" disabled={mutation.isPending} onClick={() => choose({ plan: sub.plan, interval: sub.interval })}>
+                {t("billing.change.undo")}
+              </button>
+            </p>
+          )}
+          {active && sub.cancelAtPeriodEnd && sub.isOwner && (
+            <p className="flex flex-wrap items-center gap-x-2 rounded-lg bg-[var(--stk-warn-bg)] px-3 py-2 text-sm text-[var(--stk-warn)]">
+              {t("billing.cancel.cancelled", { date: date(sub.paidUntil) })}
+              <button type="button" className="font-semibold underline underline-offset-2" disabled={cancelMutation.isPending} onClick={() => cancelMutation.mutate(false)}>
+                {t("billing.cancel.reactivate")}
+              </button>
+            </p>
+          )}
+          {sub.card && sub.isOwner && !(active && sub.cancelAtPeriodEnd) && (
             <p className="text-sm text-muted-foreground">
               {sub.state === "active"
                 ? t("billing.card.autoRenew", { date: date(sub.paidUntil), brand: sub.card.brand, last4: sub.card.last4 })
                 : t("billing.card.savedLine", { brand: sub.card.brand, last4: sub.card.last4 })}
             </p>
           )}
-          {sub.state === "active" && !sub.card && sub.isOwner && (
+          {upgrade && (
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border-2 border-[var(--stk-accent-strong)] p-4">
+              <div>
+                <p className="font-medium">{t("billing.change.upgradeTitle", { plan: planName(upgrade.plan), amount: money(upgrade.amount) })}</p>
+                <p className="text-sm text-muted-foreground">{t("billing.change.upgradeText", { date: date(sub.paidUntil) })}</p>
+              </div>
+              <div className="flex flex-wrap justify-end gap-2">
+                <Button variant="ghost" onClick={() => setUpgrade(null)}>{t("common.cancel")}</Button>
+                <Button variant="outline" disabled={!!waiting} onClick={() => setSinpeOpen(true)}>
+                  <Smartphone className="h-4 w-4" aria-hidden />
+                  {t("billing.sinpe.button")}
+                </Button>
+                <Button disabled={!!waiting} onClick={() => setPayOpen(true)}>
+                  <CreditCard className="h-4 w-4" aria-hidden />
+                  {t("billing.card.button")}
+                </Button>
+              </div>
+            </div>
+          )}
+          {sub.state === "active" && !sub.card && !sub.cancelAtPeriodEnd && sub.isOwner && (
             <p className="text-sm text-muted-foreground">{t("billing.sinpe.renewReminder")}</p>
           )}
           {!sub.isOwner && <p className="text-sm text-muted-foreground">{t("billing.ownerManages", { name: sub.ownerName })}</p>}
@@ -191,6 +259,11 @@ export function Subscription() {
               </div>
             </div>
           )}
+          {active && sub.isOwner && !sub.cancelAtPeriodEnd && (
+            <button type="button" className="text-sm text-muted-foreground underline underline-offset-2 hover:text-foreground" onClick={() => setConfirmCancel(true)}>
+              {t("billing.cancel.button")}
+            </button>
+          )}
         </CardContent>
       </Card>
 
@@ -204,8 +277,8 @@ export function Subscription() {
                   key={value}
                   type="button"
                   aria-pressed={interval === value}
-                  disabled={!canChange || mutation.isPending}
-                  onClick={() => sub.interval !== value && choose({ interval: value })}
+                  disabled={!canEdit || mutation.isPending}
+                  onClick={() => interval !== value && choose({ interval: value })}
                   className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors disabled:cursor-not-allowed ${interval === value ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
                 >
                   {t(`billing.intervals.${value}`)}
@@ -214,9 +287,10 @@ export function Subscription() {
             </div>
           </div>
 
-          {mutation.isError && (
+          {active && sub.isOwner && <p className="text-sm text-muted-foreground">{t("billing.change.howItWorks")}</p>}
+          {(mutation.isError || quoteMutation.isError || cancelMutation.isError) && (
             <p role="alert" className="text-sm text-[var(--stk-crit)]">
-              {apiErrorMessage(mutation.error, t("billing.changeError"))}
+              {apiErrorMessage(mutation.error ?? quoteMutation.error ?? cancelMutation.error, t("billing.changeError"))}
             </p>
           )}
 
@@ -224,6 +298,23 @@ export function Subscription() {
             {ORDER.map((code) => {
               const limits = plans?.find((p) => p.code === code)
               const current = sub.plan === code
+              const next = active && sub.nextPlan === code
+              const higher = RANK[code] > RANK[sub.plan]
+              const label = current
+                ? t("billing.current")
+                : !active
+                  ? t("billing.choose")
+                  : next
+                    ? t("billing.change.chosenNext")
+                    : higher
+                      ? t("billing.change.upgrade")
+                      : t("billing.change.atRenewal")
+              const onPick = () => {
+                if (!active) return choose({ plan: code })
+                if (next) return choose({ plan: sub.plan }) // deshacer lo programado
+                if (higher) return quoteMutation.mutate(code)
+                return choose({ plan: code })
+              }
               return (
                 <Card key={code} className={current ? "border-primary ring-1 ring-primary" : ""}>
                   <CardContent className="flex h-full flex-col gap-3 pt-6">
@@ -246,11 +337,11 @@ export function Subscription() {
                       </ul>
                     )}
                     <Button
-                      variant={current ? "secondary" : "outline"}
-                      disabled={current || !canChange || mutation.isPending}
-                      onClick={() => choose({ plan: code })}
+                      variant={current || next ? "secondary" : "outline"}
+                      disabled={current || !canEdit || mutation.isPending || quoteMutation.isPending}
+                      onClick={onPick}
                     >
-                      {current ? t("billing.current") : t("billing.choose")}
+                      {label}
                     </Button>
                   </CardContent>
                 </Card>
@@ -270,7 +361,7 @@ export function Subscription() {
                 <div key={p.id} className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 text-sm">
                   <div>
                     <p className="font-medium">
-                      {money(p.amount)} · {planName(p.plan)} {t(`billing.history.${p.interval}`)}
+                      {money(p.amount)} · {p.kind === "UPGRADE" ? t("billing.history.upgrade", { plan: planName(p.plan) }) : `${planName(p.plan)} ${t(`billing.history.${p.interval}`)}`}
                       {p.automatic && <span className="font-normal text-muted-foreground"> · {t("billing.history.automatic")}</span>}
                     </p>
                     <p className="text-muted-foreground">
@@ -293,16 +384,39 @@ export function Subscription() {
       <SinpePaymentDialog
         open={sinpeOpen}
         onClose={() => setSinpeOpen(false)}
-        amountText={money(due)}
-        onStarted={() => queryClient.invalidateQueries({ queryKey: ["billing-payments"] })}
+        amountText={money(upgrade?.amount ?? due)}
+        upgradeTo={upgrade?.plan}
+        onStarted={() => {
+          setUpgrade(null)
+          queryClient.invalidateQueries({ queryKey: ["billing-payments"] })
+        }}
       />
+
+      <AlertDialog open={confirmCancel} onOpenChange={setConfirmCancel}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("billing.cancel.title")}</AlertDialogTitle>
+            <AlertDialogDescription>{t("billing.cancel.text", { date: date(sub.paidUntil) })}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("billing.cancel.keep")}</AlertDialogCancel>
+            <AlertDialogAction onClick={() => cancelMutation.mutate(true)} disabled={cancelMutation.isPending}>
+              {t("billing.cancel.confirm")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <CardPaymentDialog
         open={payOpen}
         onClose={() => setPayOpen(false)}
-        amountText={money(due)}
+        amountText={money(upgrade?.amount ?? due)}
         savedCard={sub.card}
-        onDone={announce}
+        upgradeTo={upgrade?.plan}
+        onDone={(payment) => {
+          if (payment.status === "SUCCEEDED") setUpgrade(null)
+          announce(payment)
+        }}
       />
     </div>
   )

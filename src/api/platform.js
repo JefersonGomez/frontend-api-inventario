@@ -14,3 +14,7 @@ export const getAiUsage = (month) => api.get("/platform/ai-usage", { params: mon
 export const setAiBudget = (data) => api.put("/platform/ai-budget", data).then((res) => res.data)
 export const getOwnerActions = () => api.get("/platform/actions").then((res) => res.data)
 export const getEInvoiceIssues = () => api.get("/platform/einvoice-issues").then((res) => res.data)
+
+// suscripciones de todas las cuentas (cobro C5) y herramientas de soporte
+export const getPlatformSubscriptions = () => api.get("/platform/subscriptions").then((res) => res.data)
+export const updatePlatformSubscription = ({ userId, ...data }) => api.patch(`/platform/subscriptions/${userId}`, data)

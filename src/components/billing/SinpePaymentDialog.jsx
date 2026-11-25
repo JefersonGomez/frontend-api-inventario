@@ -13,10 +13,10 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 // Pagar la suscripción por SINPE Móvil (C3). ONVO reconoce la transferencia por la identificación de quien
 // la manda y el monto exacto: se pide la cédula de la cuenta que va a transferir y su teléfono.
 // Al generarlo, Mi suscripción muestra a qué número y cuánto transferir, y espera la confirmación sola.
-export function SinpePaymentDialog({ open, onClose, amountText, onStarted }) {
+export function SinpePaymentDialog({ open, onClose, amountText, onStarted, upgradeTo }) {
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="sm:max-w-md">{open && <SinpeForm onClose={onClose} amountText={amountText} onStarted={onStarted} />}</DialogContent>
+      <DialogContent className="sm:max-w-md">{open && <SinpeForm onClose={onClose} amountText={amountText} onStarted={onStarted} upgradeTo={upgradeTo} />}</DialogContent>
     </Dialog>
   )
 }
@@ -24,7 +24,7 @@ export function SinpePaymentDialog({ open, onClose, amountText, onStarted }) {
 const ID_TYPES = ["FISICA", "JURIDICA", "DIMEX"]
 const selectClass = "h-9 w-full rounded-md border border-input bg-background px-2 text-sm"
 
-function SinpeForm({ onClose, amountText, onStarted }) {
+function SinpeForm({ onClose, amountText, onStarted, upgradeTo }) {
   const { t } = useTranslation()
   // se propone la cédula y el teléfono de los datos fiscales de la empresa (se pueden cambiar)
   const { data: company } = useQuery({ queryKey: ["company"], queryFn: getCompany })
@@ -46,7 +46,7 @@ function SinpeForm({ onClose, amountText, onStarted }) {
     if (form.phone.replace(/\D/g, "").replace(/^506(?=\d{8}$)/, "").length !== 8) return setError(t("billing.sinpe.errors.phone"))
     setBusy(true)
     try {
-      const { payment } = await paySinpe(form)
+      const { payment } = await paySinpe({ ...form, ...(upgradeTo && { upgradeTo }) })
       onStarted(payment)
       onClose()
     } catch (err) {

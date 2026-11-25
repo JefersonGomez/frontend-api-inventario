@@ -1146,7 +1146,8 @@
       "companies": "Companies",
       "ai": "Artificial intelligence",
       "actions": "My actions",
-      "einvoice": "E-invoicing"
+      "einvoice": "E-invoicing",
+      "subscriptions": "Subscriptions"
     },
     "signups": "New companies per week",
     "signupsHint": "Last 12 weeks; hover a bar to see the date",
@@ -1197,6 +1198,41 @@
         "NO_ANSWER": "No answer"
       },
       "hint": "Rejected in the last 30 days, with errors, with 3 or more failed attempts, or sent over an hour ago with no answer from Hacienda."
+    },
+    "subs": {
+      "title": "Accounts",
+      "account": "Account",
+      "plan": "Plan",
+      "state": "Status",
+      "until": "Ends",
+      "method": "Pays with",
+      "actions": "Support",
+      "next": "→ {{plan}} at renewal",
+      "cancelled": "Won't renew",
+      "extend": "+7 days",
+      "exempt": "Internal account",
+      "unexempt": "Remove internal",
+      "payments": "Latest payments",
+      "noPayments": "No payments yet.",
+      "card": "card",
+      "error": "Subscriptions couldn't be loaded.",
+      "disabled": "Billing is off on the server (BILLING_ENABLED): nobody expires yet.",
+      "states": {
+        "trial": "Trial",
+        "active": "Up to date",
+        "grace": "Overdue",
+        "expired": "Read-only",
+        "exempt": "Internal",
+        "none": "Not started"
+      },
+      "totals": {
+        "mrr": "Monthly revenue",
+        "monthRevenue": "Collected this month",
+        "active": "Up to date",
+        "trial": "On trial",
+        "grace": "In grace",
+        "expired": "Read-only"
+      }
     }
   },
   "legal": {
@@ -3026,7 +3062,8 @@
         "FAILED": "Declined",
         "PENDING": "Verifying"
       },
-      "automatic": "automatic renewal"
+      "automatic": "automatic renewal",
+      "upgrade": "upgrade to {{plan}}"
     },
     "sinpe": {
       "button": "Pay with SINPE Móvil",
@@ -3056,6 +3093,26 @@
         "phone": "The phone number has 8 digits."
       },
       "renewReminder": "We'll email you a reminder 3 days before it expires so you can pay with SINPE Móvil or by card."
+    },
+    "change": {
+      "howItWorks": "Upgrading applies instantly and you only pay the difference for the days left. Downgrading or changing the billing period applies from the next renewal.",
+      "upgrade": "Upgrade now",
+      "atRenewal": "Switch at renewal",
+      "chosenNext": "Chosen for renewal · undo",
+      "scheduled": "From {{date}}: {{plan}} plan, {{interval}}.",
+      "undo": "Undo",
+      "upgradeTitle": "Upgrade to {{plan}}: pay {{amount}} today",
+      "upgradeText": "It's the difference for the days left until {{date}}. From the renewal on you pay the plan's regular price.",
+      "upgraded": "Done! You're now on the {{plan}} plan."
+    },
+    "cancel": {
+      "button": "Cancel renewal",
+      "title": "Cancel the renewal?",
+      "text": "Your plan keeps working until {{date}} and you won't be charged again. After that you get 3 grace days and the account becomes read-only: nothing is deleted and you can reactivate it anytime.",
+      "keep": "Keep my plan",
+      "confirm": "Yes, cancel",
+      "cancelled": "Cancelled: it won't renew. It works until {{date}}.",
+      "reactivate": "Reactivate"
     }
   }
 }

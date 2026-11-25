@@ -9,9 +9,12 @@ export const getPlans = () => api.get("/plans").then((res) => res.data)
 
 // Pago con tarjeta (C2, ONVO)
 export const getCardSetup = () => api.get("/billing/card-setup").then((res) => res.data)
-export const payWithCard = (paymentMethodId) => api.post("/billing/pay", { paymentMethodId }).then((res) => res.data)
+export const payWithCard = (paymentMethodId, upgradeTo) => api.post("/billing/pay", { paymentMethodId, upgradeTo }).then((res) => res.data)
 export const syncPayment = (id) => api.post(`/billing/payments/${id}/sync`).then((res) => res.data)
 export const paySinpe = (data) => api.post("/billing/pay-sinpe", data).then((res) => res.data)
+// C5: cancelar / reactivar la renovación y cuánto cuesta subir de plan ahora
+export const setCancellation = (cancel) => api.put("/billing/cancel", { cancel }).then((res) => res.data)
+export const getUpgradeQuote = (plan) => api.get("/billing/upgrade-quote", { params: { plan } }).then((res) => res.data)
 export const getPayments = () => api.get("/billing/payments").then((res) => res.data)
 
 // La tarjeta va DIRECTO del navegador a ONVO con la llave pública (nunca pasa por el servidor de Cubivo).

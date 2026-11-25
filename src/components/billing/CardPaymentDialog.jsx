@@ -11,11 +11,11 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 // Pagar la suscripción con tarjeta (C2). Los datos de la tarjeta van del navegador directo a ONVO con la
 // llave pública; a Cubivo solo llega el id. Si el banco pide verificar (3DS) se va a su página y vuelve a
 // /subscription?payment=<id>, donde se confirma.
-export function CardPaymentDialog({ open, onClose, amountText, savedCard, onDone }) {
+export function CardPaymentDialog({ open, onClose, amountText, savedCard, onDone, upgradeTo }) {
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="sm:max-w-md">
-        {open && <CardForm onClose={onClose} amountText={amountText} savedCard={savedCard} onDone={onDone} />}
+        {open && <CardForm onClose={onClose} amountText={amountText} savedCard={savedCard} onDone={onDone} upgradeTo={upgradeTo} />}
       </DialogContent>
     </Dialog>
   )
@@ -43,7 +43,7 @@ function validCardNumber(s) {
   return sum % 10 === 0
 }
 
-function CardForm({ onClose, amountText, savedCard, onDone }) {
+function CardForm({ onClose, amountText, savedCard, onDone, upgradeTo }) {
   const { t } = useTranslation()
   const [useSaved, setUseSaved] = useState(!!savedCard)
   const [form, setForm] = useState({ number: "", name: "", expiry: "", cvv: "" })
@@ -86,7 +86,7 @@ function CardForm({ onClose, amountText, savedCard, onDone }) {
         })
         paymentMethodId = pm.id
       }
-      const result = await payWithCard(paymentMethodId)
+      const result = await payWithCard(paymentMethodId, upgradeTo)
       if (result.redirectUrl) {
         // el banco pide verificar: su página vuelve sola a Mi suscripción
         window.location.assign(result.redirectUrl)
