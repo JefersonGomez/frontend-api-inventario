@@ -1,0 +1,4 @@
+# Cubivo: la landing y las páginas públicas se pueden indexar; la app pide sesión
+User-agent: *
+Allow: /
+Sitemap: https://cubivo.org/sitemap.xml
