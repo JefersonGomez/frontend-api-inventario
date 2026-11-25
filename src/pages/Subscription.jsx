@@ -157,7 +157,14 @@ export function Subscription() {
             </div>
           )}
           {sub.card && sub.isOwner && (
-            <p className="text-sm text-muted-foreground">{t("billing.card.savedLine", { brand: sub.card.brand, last4: sub.card.last4 })}</p>
+            <p className="text-sm text-muted-foreground">
+              {sub.state === "active"
+                ? t("billing.card.autoRenew", { date: date(sub.paidUntil), brand: sub.card.brand, last4: sub.card.last4 })
+                : t("billing.card.savedLine", { brand: sub.card.brand, last4: sub.card.last4 })}
+            </p>
+          )}
+          {sub.state === "active" && !sub.card && sub.isOwner && (
+            <p className="text-sm text-muted-foreground">{t("billing.sinpe.renewReminder")}</p>
           )}
           {!sub.isOwner && <p className="text-sm text-muted-foreground">{t("billing.ownerManages", { name: sub.ownerName })}</p>}
 
@@ -264,6 +271,7 @@ export function Subscription() {
                   <div>
                     <p className="font-medium">
                       {money(p.amount)} · {planName(p.plan)} {t(`billing.history.${p.interval}`)}
+                      {p.automatic && <span className="font-normal text-muted-foreground"> · {t("billing.history.automatic")}</span>}
                     </p>
                     <p className="text-muted-foreground">
                       {date(p.paidAt ?? p.createdAt)}

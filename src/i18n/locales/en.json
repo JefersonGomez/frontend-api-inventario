@@ -3013,7 +3013,8 @@
         "onvo": "The card couldn't be registered: {{detail}}",
         "generic": "The payment couldn't be made. Please try again."
       },
-      "button": "Pay by card"
+      "button": "Pay by card",
+      "autoRenew": "Renews automatically on {{date}} with your {{brand}} ending in {{last4}}. If the charge fails we'll email you."
     },
     "history": {
       "title": "Payments",
@@ -3024,7 +3025,8 @@
         "SUCCEEDED": "Paid",
         "FAILED": "Declined",
         "PENDING": "Verifying"
-      }
+      },
+      "automatic": "automatic renewal"
     },
     "sinpe": {
       "button": "Pay with SINPE Móvil",
@@ -3052,7 +3054,8 @@
       "errors": {
         "id": "Check the ID number.",
         "phone": "The phone number has 8 digits."
-      }
+      },
+      "renewReminder": "We'll email you a reminder 3 days before it expires so you can pay with SINPE Móvil or by card."
     }
   }
 }

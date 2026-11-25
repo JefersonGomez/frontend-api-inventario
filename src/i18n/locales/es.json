@@ -3013,7 +3013,8 @@
         "onvo": "La tarjeta no se pudo registrar: {{detail}}",
         "generic": "No se pudo hacer el pago. Inténtalo de nuevo."
       },
-      "button": "Pagar con tarjeta"
+      "button": "Pagar con tarjeta",
+      "autoRenew": "Se renueva solo el {{date}} con tu {{brand}} terminada en {{last4}}. Si el cobro falla te avisamos por correo."
     },
     "history": {
       "title": "Pagos",
@@ -3024,7 +3025,8 @@
         "SUCCEEDED": "Pagado",
         "FAILED": "Rechazado",
         "PENDING": "En verificación"
-      }
+      },
+      "automatic": "renovación automática"
     },
     "sinpe": {
       "button": "Pagar con SINPE Móvil",
@@ -3052,7 +3054,8 @@
       "errors": {
         "id": "Revisa el número de identificación.",
         "phone": "El teléfono tiene 8 números."
-      }
+      },
+      "renewReminder": "Te enviaremos un recordatorio por correo 3 días antes de que venza, para que pagues por SINPE Móvil o con tarjeta."
     }
   }
 }
