@@ -731,6 +731,7 @@
       "activity": "Economic activity",
       "activity_hint": "The code of your registered activity, with the dot (e.g. 6201.0).",
       "invoiceEmail": "Email for receipts",
+      "invoiceEmail_hint": "If your customers or suppliers reply to an invoice or purchase order, the reply comes to this email.",
       "phone": "Phone",
       "province": "Province",
       "province_none": "Not set",

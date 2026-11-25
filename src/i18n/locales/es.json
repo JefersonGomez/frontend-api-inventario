@@ -731,6 +731,7 @@
       "activity": "Actividad económica",
       "activity_hint": "El código de tu actividad inscrita en Hacienda, con el punto (ej. 6201.0).",
       "invoiceEmail": "Correo para comprobantes",
+      "invoiceEmail_hint": "Si tus clientes o proveedores responden una factura u orden de compra, la respuesta te llega a este correo.",
       "phone": "Teléfono",
       "province": "Provincia",
       "province_none": "Sin indicar",

@@ -10,7 +10,7 @@ export const LANDING = {
   // contacto (null = no se muestra)
   whatsapp: "50661718236", // solo dígitos con código de país (506 = Costa Rica)
   whatsappMessage: "Hola, quiero saber más de Cubivo",
-  email: "jefersonbustamantegomez@gmail.com", // provisional: cambiar por el correo de Cubivo cuando exista
+  email: "hola@cubivo.org", // llega a la bandeja de Cubivo (reenvío con ImprovMX)
   linkedin: null, // opcional (el usuario lo dejó a criterio): "https://www.linkedin.com/in/jefersonbustamantegomez/"
 
   // planes (decididos el 22-nov-2026; colones, IVA incluido). La fase de cobro los lleva al backend.

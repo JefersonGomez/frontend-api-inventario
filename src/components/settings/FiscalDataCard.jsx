@@ -91,7 +91,8 @@ export function FiscalDataCard() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="fiscal-invoiceEmail">{t("settings.fiscal.invoiceEmail")}</Label>
-              {field("invoiceEmail", { type: "email" })}
+              {field("invoiceEmail", { type: "email", "aria-describedby": "fiscal-invoiceEmail-hint" })}
+              <p id="fiscal-invoiceEmail-hint" className="text-xs text-muted-foreground">{t("settings.fiscal.invoiceEmail_hint")}</p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="fiscal-phone">{t("settings.fiscal.phone")}</Label>
