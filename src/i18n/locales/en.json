@@ -98,6 +98,12 @@
       "company": "Company",
       "optional": "(optional)",
       "confirmPassword": "Confirm password",
+      "closed": {
+        "title": "Coming soon",
+        "text": "We're about to open sign-ups. Meanwhile you can try Cubivo with the demo, or write to us and we'll let you know as soon as it opens.",
+        "demo": "Try the demo",
+        "contact": "Write to hola@cubivo.org"
+      },
       "success": {
         "title": "All set, {{name}}!",
         "text": "Your account was created. You can sign in now."

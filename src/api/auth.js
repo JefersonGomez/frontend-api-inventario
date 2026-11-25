@@ -14,5 +14,6 @@ export async function registerRequest({ name, email, password, phone, company, a
 export const getMe = () => api.get("/auth/me").then((res) => res.data.user)
 
 // Demo pública: si está activa (y los códigos de caja que se muestran) y entrar sin contraseña
+export const getRegistrationStatus = () => api.get("/auth/registration").then((res) => res.data)
 export const getDemoInfo = () => api.get("/auth/demo").then((res) => res.data)
 export const demoLogin = (role) => api.post("/auth/demo", { role }).then((res) => res.data)

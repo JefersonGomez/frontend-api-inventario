@@ -1,8 +1,8 @@
 import { useState } from "react"
 import { Link, useSearchParams } from "react-router-dom"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
-import { registerRequest } from "@/api/auth"
+import { getRegistrationStatus, registerRequest } from "@/api/auth"
 import { BoxesIllustration } from "@/components/BoxesIllustration"
 import { AuthBrand } from "@/components/auth/AuthBrand"
 import { TermsCheck } from "@/components/auth/TermsCheck"
@@ -21,6 +21,9 @@ export function Register() {
   const [accepted, setAccepted] = useState(false)
   const [needsTerms, setNeedsTerms] = useState(false)
 
+  // mientras el cobro no esté listo el registro está cerrado (REGISTRATION_CLOSED en el servidor)
+  const status = useQuery({ queryKey: ["registration-status"], queryFn: getRegistrationStatus, staleTime: 60_000 })
+
   const mutation = useMutation({
     mutationFn: () =>
       registerRequest({
@@ -33,6 +36,8 @@ export function Register() {
         plan,
       }),
   })
+
+  const closed = status.data?.open === false || mutation.error?.response?.data?.code === "REGISTRATION_CLOSED"
 
   const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }))
 
@@ -63,7 +68,22 @@ export function Register() {
         </aside>
 
         <div className="stk-form-wrap">
-          {mutation.isSuccess ? (
+          {closed ? (
+            <div className="stk-success" role="status">
+              <span className="stk-success-dot" aria-hidden="true" />
+              <h2>{t("auth.register.closed.title")}</h2>
+              <p>{t("auth.register.closed.text")}</p>
+              <Link to="/login?demo=admin" className="stk-btn">
+                {t("auth.register.closed.demo")}
+              </Link>
+              <a href="mailto:hola@cubivo.org" className="stk-btn-outline">
+                {t("auth.register.closed.contact")}
+              </a>
+              <p className="stk-foot">
+                {t("auth.register.hasAccount")} <Link to="/login">{t("auth.register.login")}</Link>
+              </p>
+            </div>
+          ) : mutation.isSuccess ? (
             <div className="stk-success" role="status">
               <span className="stk-success-dot" aria-hidden="true" />
               <h2>{t("auth.register.success.title", { name: form.name.trim().split(/\s+/)[0] })}</h2>

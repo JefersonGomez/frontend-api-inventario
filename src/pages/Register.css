@@ -269,6 +269,7 @@
   cursor: pointer;
 }
 .stk-btn-outline:hover { background: var(--stk-accent-soft); }
+a.stk-btn-outline { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
 .stk-btn-outline:disabled { opacity: 0.6; cursor: progress; }
 .stk-btn-outline:focus-visible { outline: 2px solid var(--stk-accent-strong); outline-offset: 2px; }
 

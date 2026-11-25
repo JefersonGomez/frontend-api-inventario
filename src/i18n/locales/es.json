@@ -98,6 +98,12 @@
       "company": "Empresa",
       "optional": "(opcional)",
       "confirmPassword": "Confirmar contraseña",
+      "closed": {
+        "title": "Muy pronto",
+        "text": "Estamos por abrir el registro de cuentas nuevas. Mientras tanto puedes probar Cubivo con la demo, o escríbenos y te avisamos apenas abra.",
+        "demo": "Probar la demo",
+        "contact": "Escribir a hola@cubivo.org"
+      },
       "success": {
         "title": "¡Listo, {{name}}!",
         "text": "Tu cuenta fue creada. Ya puedes iniciar sesión."
