@@ -1,16 +1,19 @@
+import { useEffect, useRef, useState } from "react"
+import { useSearchParams } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { Check, CreditCard } from "lucide-react"
+import { Check, CircleCheck, CircleX, CreditCard } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { getPlans, updateSubscription } from "@/api/billing"
+import { getPayments, getPlans, syncPayment, updateSubscription } from "@/api/billing"
+import { CardPaymentDialog } from "@/components/billing/CardPaymentDialog"
 import { useSubscription } from "@/hoocks/useSubscription"
 import { apiErrorMessage } from "@/lib/api-error"
 
-// Mi suscripción (fase de cobro C1): estado de la prueba o del periodo pagado, elegir plan y periodo.
-// El botón de pagar se enciende en la C2 (ONVO); por ahora explica que llega pronto.
+// Mi suscripción: estado de la prueba o del periodo pagado, elegir plan y periodo (C1) y pagar con
+// tarjeta por ONVO (C2). Al volver de la verificación del banco (?payment=<id>) se confirma el pago.
 const ORDER = ["INVOICING", "BASIC", "PRO", "BUSINESS"]
 const BADGE = { trial: "secondary", active: "default", grace: "outline", expired: "destructive", exempt: "secondary" }
 
@@ -18,11 +21,40 @@ export function Subscription() {
   const { t, i18n } = useTranslation()
   const queryClient = useQueryClient()
   const { sub, isLoading } = useSubscription()
-  const { data: plans } = useQuery({ queryKey: ["plans"], queryFn: getPlans, staleTime: 5 * 60_000 })
-
   const locale = i18n.language?.startsWith("en") ? "en-US" : "es-CR"
   const money = (n) => `₡${new Intl.NumberFormat("es-CR").format(n)}`
   const date = (d) => (d ? new Date(d).toLocaleDateString(locale, { day: "numeric", month: "long", year: "numeric" }) : "")
+  const { data: plans } = useQuery({ queryKey: ["plans"], queryFn: getPlans, staleTime: 5 * 60_000 })
+  const { data: payments = [] } = useQuery({ queryKey: ["billing-payments"], queryFn: getPayments, enabled: !!sub?.enabled && !!sub?.isOwner })
+  const [payOpen, setPayOpen] = useState(false)
+  const [notice, setNotice] = useState(null) // { ok, text }
+  const [params, setParams] = useSearchParams()
+  const returning = params.get("payment")
+  const synced = useRef(null)
+
+  const refresh = () => {
+    queryClient.invalidateQueries({ queryKey: ["subscription"] })
+    queryClient.invalidateQueries({ queryKey: ["billing-payments"] })
+    queryClient.invalidateQueries({ queryKey: ["company"] })
+  }
+  const announce = (payment) => {
+    refresh()
+    if (payment.status === "SUCCEEDED") setNotice({ ok: true, text: t("billing.card.done", { date: date(payment.periodEnd) }) })
+    else if (payment.status === "FAILED") setNotice({ ok: false, text: payment.failureMessage || t("billing.card.errors.declined") })
+    else setNotice({ ok: false, text: t("billing.card.stillPending") })
+  }
+
+  // vuelta de la verificación del banco: se le pregunta a ONVO cómo terminó
+  useEffect(() => {
+    if (!returning || synced.current === returning) return
+    synced.current = returning
+    syncPayment(returning)
+      .then(announce)
+      .catch((err) => setNotice({ ok: false, text: apiErrorMessage(err, t("billing.card.errors.generic")) }))
+      .finally(() => setParams((p) => { p.delete("payment"); p.delete("payment_intent_id"); return p }, { replace: true }))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [returning])
+
 
   const mutation = useMutation({
     mutationFn: updateSubscription,
@@ -88,7 +120,16 @@ export function Subscription() {
           <Badge variant={BADGE[sub.state]}>{t(`billing.state.${sub.state}`)}</Badge>
         </CardHeader>
         <CardContent className="space-y-4">
+          {notice && (
+            <p role={notice.ok ? "status" : "alert"} className={`flex items-start gap-2 rounded-lg px-3 py-2 text-sm ${notice.ok ? "bg-[var(--stk-ok-bg)] text-[var(--stk-ok)]" : "bg-[var(--stk-crit-bg)] text-[var(--stk-crit)]"}`}>
+              {notice.ok ? <CircleCheck className="mt-0.5 h-4 w-4 shrink-0" aria-hidden /> : <CircleX className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />}
+              {notice.text}
+            </p>
+          )}
           <p>{status}</p>
+          {sub.card && sub.isOwner && (
+            <p className="text-sm text-muted-foreground">{t("billing.card.savedLine", { brand: sub.card.brand, last4: sub.card.last4 })}</p>
+          )}
           {!sub.isOwner && <p className="text-sm text-muted-foreground">{t("billing.ownerManages", { name: sub.ownerName })}</p>}
 
           {canChange && (
@@ -100,11 +141,11 @@ export function Subscription() {
                 </p>
               </div>
               <div className="flex flex-col items-end gap-1">
-                <Button disabled>
+                <Button disabled={!sub.cardPayments || !!returning} onClick={() => { setNotice(null); setPayOpen(true) }}>
                   <CreditCard className="h-4 w-4" aria-hidden />
                   {t("billing.pay", { amount: money(due) })}
                 </Button>
-                <span className="text-xs text-muted-foreground">{t("billing.payComing")}</span>
+                {!sub.cardPayments && <span className="text-xs text-muted-foreground">{t("billing.payComing")}</span>}
               </div>
             </div>
           )}
@@ -177,6 +218,42 @@ export function Subscription() {
           <p className="text-sm text-muted-foreground">{t("billing.downgradeNote")}</p>
         </section>
       )}
+
+      {sub.isOwner && payments.length > 0 && (
+        <section className="space-y-3" aria-labelledby="payments-title">
+          <h2 id="payments-title" className="text-lg font-semibold">{t("billing.history.title")}</h2>
+          <Card>
+            <CardContent className="divide-y p-0">
+              {payments.map((p) => (
+                <div key={p.id} className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 text-sm">
+                  <div>
+                    <p className="font-medium">
+                      {money(p.amount)} · {planName(p.plan)} {t(`billing.history.${p.interval}`)}
+                    </p>
+                    <p className="text-muted-foreground">
+                      {date(p.paidAt ?? p.createdAt)}
+                      {p.cardLast4 && ` · ${p.cardBrand ?? ""} ••${p.cardLast4}`}
+                      {p.status === "SUCCEEDED" && p.periodEnd && ` · ${t("billing.history.covers", { date: date(p.periodEnd) })}`}
+                      {p.status === "FAILED" && p.failureMessage && ` · ${p.failureMessage}`}
+                    </p>
+                  </div>
+                  <Badge variant={p.status === "SUCCEEDED" ? "default" : p.status === "FAILED" ? "destructive" : "outline"}>
+                    {t(`billing.history.status.${p.status}`)}
+                  </Badge>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </section>
+      )}
+
+      <CardPaymentDialog
+        open={payOpen}
+        onClose={() => setPayOpen(false)}
+        amountText={money(due)}
+        savedCard={sub.card}
+        onDone={announce}
+      />
     </div>
   )
 }

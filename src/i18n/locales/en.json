@@ -2987,6 +2987,43 @@
       "seePlans": "See my subscription",
       "pay": "Pay now",
       "tellOwner": "Let {{name}}, the account owner, know."
+    },
+    "card": {
+      "title": "Pay {{amount}}",
+      "subtitle": "With a credit or debit card. It's saved to renew your plan.",
+      "which": "Which card to pay with",
+      "saved": "{{brand}} ending in {{last4}}",
+      "other": "Use another card",
+      "number": "Card number",
+      "name": "Name as it appears on the card",
+      "expiry": "Expires (MM/YY)",
+      "cvv": "Security code",
+      "pay": "Pay {{amount}}",
+      "paying": "Processing payment…",
+      "secure": "Your card details go encrypted straight to ONVO Pay, the payment processor. Cubivo never sees or stores them.",
+      "savedLine": "Card for renewals: {{brand}} ending in {{last4}}.",
+      "done": "Payment received! Your plan is paid until {{date}}.",
+      "stillPending": "The bank hasn't confirmed the payment yet. Check again in a few minutes.",
+      "errors": {
+        "number": "Check the card number.",
+        "name": "Enter the name as it appears on the card.",
+        "expiry": "Check the expiration date (MM/YY).",
+        "cvv": "The security code is the 3 or 4 digits on the back of the card.",
+        "declined": "The bank declined the payment. Check the details or use another card.",
+        "onvo": "The card couldn't be registered: {{detail}}",
+        "generic": "The payment couldn't be made. Please try again."
+      }
+    },
+    "history": {
+      "title": "Payments",
+      "MONTHLY": "monthly",
+      "ANNUAL": "yearly",
+      "covers": "covers until {{date}}",
+      "status": {
+        "SUCCEEDED": "Paid",
+        "FAILED": "Declined",
+        "PENDING": "Verifying"
+      }
     }
   }
 }

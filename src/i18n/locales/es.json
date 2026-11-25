@@ -2987,6 +2987,43 @@
       "seePlans": "Ver mi suscripción",
       "pay": "Pagar ahora",
       "tellOwner": "Avísale a {{name}}, el dueño de la cuenta."
+    },
+    "card": {
+      "title": "Pagar {{amount}}",
+      "subtitle": "Con tarjeta de crédito o débito. Queda guardada para renovar tu plan.",
+      "which": "Con qué tarjeta pagar",
+      "saved": "{{brand}} terminada en {{last4}}",
+      "other": "Usar otra tarjeta",
+      "number": "Número de tarjeta",
+      "name": "Nombre como aparece en la tarjeta",
+      "expiry": "Vence (MM/AA)",
+      "cvv": "Código de seguridad",
+      "pay": "Pagar {{amount}}",
+      "paying": "Procesando el pago…",
+      "secure": "Los datos de tu tarjeta van cifrados directo a ONVO Pay, el procesador de pagos. Cubivo no los ve ni los guarda.",
+      "savedLine": "Tarjeta para renovar: {{brand}} terminada en {{last4}}.",
+      "done": "¡Pago recibido! Tu plan está al día hasta el {{date}}.",
+      "stillPending": "El banco todavía no confirma el pago. Revisa en unos minutos.",
+      "errors": {
+        "number": "Revisa el número de la tarjeta.",
+        "name": "Escribe el nombre como aparece en la tarjeta.",
+        "expiry": "Revisa la fecha de vencimiento (MM/AA).",
+        "cvv": "El código de seguridad son 3 o 4 números, atrás de la tarjeta.",
+        "declined": "El banco rechazó el pago. Revisa los datos o usa otra tarjeta.",
+        "onvo": "La tarjeta no se pudo registrar: {{detail}}",
+        "generic": "No se pudo hacer el pago. Inténtalo de nuevo."
+      }
+    },
+    "history": {
+      "title": "Pagos",
+      "MONTHLY": "mensual",
+      "ANNUAL": "anual",
+      "covers": "cubre hasta el {{date}}",
+      "status": {
+        "SUCCEEDED": "Pagado",
+        "FAILED": "Rechazado",
+        "PENDING": "En verificación"
+      }
     }
   }
 }
