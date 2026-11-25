@@ -54,7 +54,8 @@
     "newInvoice": "Facturar",
     "documents": "Comprobantes",
     "catalog": "Productos y servicios",
-    "receivedInvoices": "Facturas recibidas"
+    "receivedInvoices": "Facturas recibidas",
+    "subscription": "Mi suscripción"
   },
   "topbar": {
     "search": "Buscar producto o SKU",
@@ -2912,5 +2913,80 @@
     "issue": "Emitir nota de débito · {{total}}",
     "error": "No se pudo emitir la nota de débito.",
     "listTitle": "Cargos extra (notas de débito)"
+  },
+  "billing": {
+    "title": "Mi suscripción",
+    "subtitle": "Tu plan de Cubivo: la prueba gratis dura {{days}} días y después se paga por mes o por año.",
+    "yourPlan": "Plan {{plan}}",
+    "notEnabled": "El cobro todavía no está activo: tu cuenta funciona sin límite de tiempo.",
+    "ownerManages": "La suscripción la maneja {{name}}, el dueño de la cuenta.",
+    "plans": {
+      "INVOICING": "Solo facturación",
+      "BASIC": "Básico",
+      "PRO": "Pro",
+      "BUSINESS": "Empresarial"
+    },
+    "for": {
+      "INVOICING": "Para profesionales y servicios.",
+      "BASIC": "Para un negocio con un local y una caja.",
+      "PRO": "Para negocios con varias sucursales.",
+      "BUSINESS": "Para cadenas y distribuidores."
+    },
+    "state": {
+      "trial": "Prueba gratis",
+      "active": "Al día",
+      "grace": "Vencida",
+      "expired": "Solo lectura",
+      "exempt": "Cuenta interna"
+    },
+    "status": {
+      "trial_one": "Tu prueba gratis termina el {{date}}: queda {{count}} día.",
+      "trial_other": "Tu prueba gratis termina el {{date}}: quedan {{count}} días.",
+      "active": "Pagado hasta el {{date}}.",
+      "grace": "Venció el {{date}}. Todo sigue funcionando hasta el {{until}}; después la cuenta queda en solo lectura.",
+      "expired": "La cuenta está en solo lectura desde el {{date}}: puedes ver y exportar tus datos, pero no vender ni facturar hasta pagar.",
+      "exempt": "Esta cuenta no vence."
+    },
+    "due": "A pagar: {{amount}}",
+    "dueMonthly": "Pago mensual, IVA incluido.",
+    "dueAnnual": "Pago anual ({{perMonth}} por mes), IVA incluido.",
+    "pay": "Pagar {{amount}}",
+    "payComing": "El pago con tarjeta o SINPE Móvil se activa en los próximos días.",
+    "choosePlan": "Elige tu plan",
+    "interval": "Periodo de pago",
+    "intervals": {
+      "MONTHLY": "Mensual",
+      "ANNUAL": "Anual · 2 meses gratis"
+    },
+    "perMonth": "/mes",
+    "current": "Tu plan",
+    "choose": "Elegir este plan",
+    "changeError": "No se pudo cambiar el plan",
+    "downgradeNote": "Si bajas de plan no se borra nada: lo que pase del límite queda para ver y exportar.",
+    "f": {
+      "users_one": "{{count}} usuario",
+      "users_other": "{{count}} usuarios",
+      "usersUnlimited": "Usuarios ilimitados",
+      "noInventory": "Sin inventario ni caja: solo facturar",
+      "branches_one": "{{count}} sucursal",
+      "branches_other": "{{count}} sucursales",
+      "branchesUnlimited": "Sucursales ilimitadas",
+      "products_one": "Hasta {{n}} producto",
+      "products_other": "Hasta {{n}} productos",
+      "productsUnlimited": "Productos ilimitados",
+      "documents": "{{n}} comprobantes al mes",
+      "documentsUnlimited": "Comprobantes ilimitados",
+      "ai": "Asistente con IA: {{n}} preguntas al mes"
+    },
+    "banner": {
+      "trial_one": "Prueba gratis del plan {{plan}}: te queda {{count}} día.",
+      "trial_other": "Prueba gratis del plan {{plan}}: te quedan {{count}} días.",
+      "grace_one": "Tu suscripción venció. Mañana la cuenta queda en solo lectura.",
+      "grace_other": "Tu suscripción venció. En {{count}} días la cuenta queda en solo lectura.",
+      "expired": "Cuenta en solo lectura: puedes ver y exportar, pero no vender ni facturar.",
+      "seePlans": "Ver mi suscripción",
+      "pay": "Pagar ahora",
+      "tellOwner": "Avísale a {{name}}, el dueño de la cuenta."
+    }
   }
 }

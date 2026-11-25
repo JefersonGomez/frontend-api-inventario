@@ -1,5 +1,5 @@
-// Precios de la landing: los LÍMITES de cada plan vienen del sistema (GET /plans, config/plans.ts del
-// backend) y los MONTOS de config.js (pendientes hasta la fase de planes de pago).
+// Precios de la landing: límites y montos de cada plan vienen del sistema (GET /plans, config/plans.ts del
+// backend: la misma fuente que "Mi suscripción"). config.js queda solo de respaldo si el sistema no los manda.
 import { LANDING } from "./config.js"
 
 const API = import.meta.env.VITE_API_URL ?? "/api"
@@ -35,11 +35,11 @@ function features(p) {
   return list
 }
 
-function priceText(code, billing) {
-  const monthly = LANDING.prices?.[code]
+function priceText(p, billing) {
+  const monthly = p.prices?.monthly ?? LANDING.prices?.[p.code]
   if (monthly == null) return { amount: "₡ —", note: "Precio por anunciar" }
   if (billing !== "annual") return { amount: `₡${fmt.format(monthly)}`, note: "" }
-  const value = LANDING.annualPrices?.[code] ?? monthly
+  const value = p.prices?.annual ?? LANDING.annualPrices?.[p.code] ?? monthly
   return { amount: `₡${fmt.format(value)}`, note: `₡${fmt.format(value * 12)} al año · ahorras ₡${fmt.format((monthly - value) * 12)}` }
 }
 
@@ -47,7 +47,7 @@ const registerFor = (code) => (code === "INVOICING" ? LANDING.registerInvoicingU
 
 function card(p, billing) {
   const meta = META[p.code] ?? { name: p.code, for: "" }
-  const price = priceText(p.code, billing)
+  const price = priceText(p, billing)
   const el = document.createElement("article")
   el.className = `plan${meta.featured ? " featured" : ""}`
   el.innerHTML = `
@@ -101,6 +101,8 @@ export async function initPricing() {
     const res = await fetch(`${API}/plans`)
     if (!res.ok) throw new Error(String(res.status))
     plans = await res.json()
+    const days = plans[0]?.trialDays ?? LANDING.trialDays
+    if (trial && days) trial.textContent = `Prueba gratis ${days} días, sin tarjeta`
     render()
   } catch {
     box.innerHTML = '<p class="plans-loading">No se pudieron cargar los planes. Recarga la página o escríbenos.</p>'

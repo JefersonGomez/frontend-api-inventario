@@ -13,7 +13,7 @@ export const LANDING = {
   email: "hola@cubivo.org", // llega a la bandeja de Cubivo (reenvío con ImprovMX)
   linkedin: null, // opcional (el usuario lo dejó a criterio): "https://www.linkedin.com/in/jefersonbustamantegomez/"
 
-  // planes (decididos el 22-nov-2026; colones, IVA incluido). La fase de cobro los lleva al backend.
+  // RESPALDO: los precios reales vienen de GET /plans (backend config/plans.ts PRICES). Solo se usan si no llegan.
   prices: { INVOICING: 5900, BASIC: 14900, PRO: 29900, BUSINESS: 59900 }, // por mes, pago mensual
   annualPrices: { INVOICING: 4900, BASIC: 12400, PRO: 24900, BUSINESS: 49900 }, // por mes, pago anual (≈ 2 meses gratis)
   annualLabel: "2 meses gratis",

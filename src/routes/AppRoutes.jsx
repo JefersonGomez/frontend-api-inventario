@@ -38,6 +38,7 @@ import { SaleDetail, Sales } from "@/pages/Sales"
 import { NewInvoice } from "@/pages/NewInvoice"
 import { CashClosings } from "@/pages/CashClosings"
 import { CashClosing } from "@/pages/CashClosing"
+import { Subscription } from "@/pages/Subscription"
 
 // Caja: a pantalla completa, fuera del Layout (por eso no va en children)
 const pos = (page) => (
@@ -85,6 +86,7 @@ const router = createBrowserRouter([
       { path: "reports", element: <PermissionRoute perm="reports.view"><Reports /></PermissionRoute> },
       { path: "profile", element: <Profile /> },
       {path:"settings", element:<Settings/>},
+      { path: "subscription", element: <Subscription /> },
       { path: "users", element: <PermissionRoute perm="users.manage"><Users /></PermissionRoute> },
       { path: "suppliers", element: <Suppliers /> },
       { path: "customers", element: <Customers /> },

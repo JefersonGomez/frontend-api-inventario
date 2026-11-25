@@ -54,7 +54,8 @@
     "newInvoice": "New invoice",
     "documents": "Documents",
     "catalog": "Products & services",
-    "receivedInvoices": "Received invoices"
+    "receivedInvoices": "Received invoices",
+    "subscription": "My subscription"
   },
   "topbar": {
     "search": "Search product or SKU",
@@ -2912,5 +2913,80 @@
     "issue": "Issue debit note · {{total}}",
     "error": "The debit note couldn't be issued.",
     "listTitle": "Extra charges (debit notes)"
+  },
+  "billing": {
+    "title": "My subscription",
+    "subtitle": "Your Cubivo plan: the free trial lasts {{days}} days, then you pay monthly or yearly.",
+    "yourPlan": "{{plan}} plan",
+    "notEnabled": "Billing isn't active yet: your account works with no time limit.",
+    "ownerManages": "The subscription is managed by {{name}}, the account owner.",
+    "plans": {
+      "INVOICING": "Invoicing only",
+      "BASIC": "Basic",
+      "PRO": "Pro",
+      "BUSINESS": "Business"
+    },
+    "for": {
+      "INVOICING": "For professionals and services.",
+      "BASIC": "For a business with one store and one register.",
+      "PRO": "For businesses with several branches.",
+      "BUSINESS": "For chains and distributors."
+    },
+    "state": {
+      "trial": "Free trial",
+      "active": "Up to date",
+      "grace": "Overdue",
+      "expired": "Read-only",
+      "exempt": "Internal account"
+    },
+    "status": {
+      "trial_one": "Your free trial ends on {{date}}: {{count}} day left.",
+      "trial_other": "Your free trial ends on {{date}}: {{count}} days left.",
+      "active": "Paid until {{date}}.",
+      "grace": "It expired on {{date}}. Everything keeps working until {{until}}; after that the account becomes read-only.",
+      "expired": "The account has been read-only since {{date}}: you can view and export your data, but not sell or invoice until you pay.",
+      "exempt": "This account doesn't expire."
+    },
+    "due": "Amount due: {{amount}}",
+    "dueMonthly": "Monthly payment, VAT included.",
+    "dueAnnual": "Yearly payment ({{perMonth}} per month), VAT included.",
+    "pay": "Pay {{amount}}",
+    "payComing": "Card and SINPE Móvil payments will be enabled in the next few days.",
+    "choosePlan": "Choose your plan",
+    "interval": "Billing period",
+    "intervals": {
+      "MONTHLY": "Monthly",
+      "ANNUAL": "Yearly · 2 months free"
+    },
+    "perMonth": "/month",
+    "current": "Your plan",
+    "choose": "Choose this plan",
+    "changeError": "The plan couldn't be changed",
+    "downgradeNote": "Downgrading never deletes anything: whatever goes over the limit stays available to view and export.",
+    "f": {
+      "users_one": "{{count}} user",
+      "users_other": "{{count}} users",
+      "usersUnlimited": "Unlimited users",
+      "noInventory": "No inventory or register: invoicing only",
+      "branches_one": "{{count}} branch",
+      "branches_other": "{{count}} branches",
+      "branchesUnlimited": "Unlimited branches",
+      "products_one": "Up to {{n}} product",
+      "products_other": "Up to {{n}} products",
+      "productsUnlimited": "Unlimited products",
+      "documents": "{{n}} documents per month",
+      "documentsUnlimited": "Unlimited documents",
+      "ai": "AI assistant: {{n}} questions per month"
+    },
+    "banner": {
+      "trial_one": "{{plan}} plan free trial: {{count}} day left.",
+      "trial_other": "{{plan}} plan free trial: {{count}} days left.",
+      "grace_one": "Your subscription expired. Tomorrow the account becomes read-only.",
+      "grace_other": "Your subscription expired. In {{count}} days the account becomes read-only.",
+      "expired": "Read-only account: you can view and export, but not sell or invoice.",
+      "seePlans": "See my subscription",
+      "pay": "Pay now",
+      "tellOwner": "Let {{name}}, the account owner, know."
+    }
   }
 }

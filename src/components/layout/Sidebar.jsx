@@ -5,12 +5,13 @@ import { useAuth } from "@/context/AuthContext";
 import { usePlatformOwner } from "@/hoocks/usePlatformOwner";
 import { usePermissions } from "@/hoocks/usePermissions";
 import { usePlan } from "@/hoocks/usePlan";
+import { useSubscription } from "@/hoocks/useSubscription";
 import { useQuery } from "@tanstack/react-query";
 import { getLocations } from "@/api/locations";
 import { CubivoMark } from "@/components/CubivoMark";
 import {
   LayoutDashboard, Package, FolderTree, ArrowLeftRight, Route, ClipboardCheck, Tag, BarChart3, ClipboardList, ShoppingCart,
-  Settings as SettingsIcon, Users as UsersIcon, Truck, ShieldCheck, UserRound, LogOut, ScanBarcode, Building2, Contact,
+  Settings as SettingsIcon, CreditCard, Users as UsersIcon, Truck, ShieldCheck, UserRound, LogOut, ScanBarcode, Building2, Contact,
   Monitor, AlertTriangle, Calculator, HandCoins, Receipt, Menu, X, Pin, PinOff, Wallet, Landmark, FilePlus2,
 } from "lucide-react";
 
@@ -84,6 +85,7 @@ function GlideList({ className, children, pathname }) {
 // En el celular es un botón de menú que abre el mismo panel.
 export function Sidebar() {
   const { t } = useTranslation();
+  const { sub } = useSubscription();
   const { logout } = useAuth();
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -332,6 +334,12 @@ export function Sidebar() {
         </GlideList>
 
         <GlideList className="stk-nav-foot" pathname={pathname}>
+          {sub?.enabled && sub.isOwner && (
+            <NavLink to="/subscription" className="stk-link" title={expanded ? undefined : t("sidebar.subscription")}>
+              <CreditCard {...ICON} />
+              {label(t("sidebar.subscription"))}
+            </NavLink>
+          )}
           <NavLink to="/settings" className="stk-link" title={expanded ? undefined : t("sidebar.settings")}>
             <SettingsIcon {...ICON} />
             {label(t("sidebar.settings"))}

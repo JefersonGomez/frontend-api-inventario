@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query"
 import { getCompany } from "@/api/company"
 import { SuspendedScreen } from "@/components/SuspendedScreen"
 import { DemoBanner } from "@/components/DemoBanner"
+import { SubscriptionBanner } from "@/components/SubscriptionBanner"
 import { usePlatformOwner } from "@/hoocks/usePlatformOwner"
 import { usePermissions } from "@/hoocks/usePermissions"
 
@@ -32,6 +33,7 @@ export function Layout() {
           <Topbar />
           <main key={pathname} className="stk-page-enter max-md:pb-20">
             <DemoBanner />
+            <SubscriptionBanner />
             {company?.suspendedAt ? <SuspendedScreen reason={company.suspensionReason} /> : <Outlet />}
           </main>
         </div>
