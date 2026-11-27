@@ -34,6 +34,7 @@ export function SubscriptionsPanel() {
   return (
     <div className="space-y-5">
       {!enabled && <p className="rounded-lg bg-[var(--stk-warn-bg)] px-3 py-2 text-sm text-[var(--stk-warn)]">{t("platform.subs.disabled")}</p>}
+      {enabled && !data.invoicing && <p className="rounded-lg bg-[var(--stk-warn-bg)] px-3 py-2 text-sm text-[var(--stk-warn)]">{t("platform.subs.noInvoicing")}</p>}
 
       <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
         {[
@@ -119,6 +120,8 @@ export function SubscriptionsPanel() {
                       {" · "}{p.method === "SINPE" ? "SINPE Móvil" : t("platform.subs.card")}
                       {p.automatic && ` · ${t("billing.history.automatic")}`}
                       {p.status === "FAILED" && p.failureMessage && ` · ${p.failureMessage}`}
+                      {p.invoice && ` · ${t(`platform.subs.invoice.${p.invoice}`)}`}
+                      {p.invoice === "ERROR" && p.invoiceError && ` (${p.invoiceError})`}
                     </p>
                   </TableCell>
                   <TableCell className="text-right font-medium">{money(p.amount)}</TableCell>

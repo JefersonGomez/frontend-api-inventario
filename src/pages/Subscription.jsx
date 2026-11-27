@@ -369,6 +369,7 @@ export function Subscription() {
                       {p.method === "SINPE" ? ` · SINPE Móvil` : p.cardLast4 && ` · ${p.cardBrand ?? ""} ••${p.cardLast4}`}
                       {p.status === "SUCCEEDED" && p.periodEnd && ` · ${t("billing.history.covers", { date: date(p.periodEnd) })}`}
                       {p.status === "FAILED" && p.failureMessage && ` · ${p.failureMessage}`}
+                      {p.invoiced && ` · ${t("billing.history.invoiced")}`}
                     </p>
                   </div>
                   <Badge variant={p.status === "SUCCEEDED" ? "default" : p.status === "FAILED" ? "destructive" : "outline"}>

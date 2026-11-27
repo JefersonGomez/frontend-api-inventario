@@ -1232,7 +1232,13 @@
         "trial": "On trial",
         "grace": "In grace",
         "expired": "Read-only"
-      }
+      },
+      "invoice": {
+        "OK": "invoice issued",
+        "PENDING": "invoice pending",
+        "ERROR": "invoice error"
+      },
+      "noInvoicing": "Payment invoices are off: PLATFORM_COMPANY_ID (Cubivo's issuing company) is missing on the server."
     }
   },
   "legal": {
@@ -3063,7 +3069,8 @@
         "PENDING": "Verifying"
       },
       "automatic": "automatic renewal",
-      "upgrade": "upgrade to {{plan}}"
+      "upgrade": "upgrade to {{plan}}",
+      "invoiced": "invoice sent to your email"
     },
     "sinpe": {
       "button": "Pay with SINPE Móvil",

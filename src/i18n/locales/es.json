@@ -1232,7 +1232,13 @@
         "trial": "En prueba",
         "grace": "En gracia",
         "expired": "Solo lectura"
-      }
+      },
+      "invoice": {
+        "OK": "factura emitida",
+        "PENDING": "factura pendiente",
+        "ERROR": "factura con error"
+      },
+      "noInvoicing": "Las facturas de los pagos están apagadas: falta PLATFORM_COMPANY_ID en el servidor (la empresa de Cubivo que factura)."
     }
   },
   "legal": {
@@ -3063,7 +3069,8 @@
         "PENDING": "En verificación"
       },
       "automatic": "renovación automática",
-      "upgrade": "cambio a {{plan}}"
+      "upgrade": "cambio a {{plan}}",
+      "invoiced": "factura enviada a tu correo"
     },
     "sinpe": {
       "button": "Pagar con SINPE Móvil",
